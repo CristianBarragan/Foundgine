@@ -25,8 +25,9 @@ public sealed class SemanticLexicalResolver
     /// <param name="contract">The frozen semantic contract to resolve against.</param>
     /// <param name="source">The candidate retrieval boundary (Elasticsearch, pgvector, or a composite).</param>
     /// <param name="candidateLimit">Maximum candidates retained per token across all semantic kinds. The
-    /// candidate source is queried once per token and the resulting candidates are normalized and then
-    /// truncated to this total limit before graph search.</param>
+    /// candidate source is queried once per token with a one-candidate sentinel (<c>candidateLimit + 1</c>)
+    /// so the resolver can reliably observe provider-side truncation. The returned candidates are normalized
+    /// and then truncated to this total limit before graph search.</param>
     /// <param name="maxBridgeHops">Maximum relationship hops the bridging BFS will traverse to connect a
     /// candidate back to the current entity. Bounds graph depth per transition.</param>
     /// <param name="ambiguityThreshold">Interpretation-score gap below which two competing interpretations
@@ -566,15 +567,29 @@ public sealed class SemanticLexicalResolver
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var candidates = _source
-                .Retrieve(new SemanticLexicalRequest(token, Limit: _candidateLimit), cancellationToken);
+            // Ask for one more candidate than we are willing to retain. The source is
+            // allowed (and expected) to honor this limit, so requesting exactly
+            // _candidateLimit would make provider-side truncation indistinguishable
+            // from an exact result set of that size. The extra row is a sentinel: if
+            // it arrives, we have proof that at least one candidate was cut at the
+            // resolver boundary.
+            var retrievalLimit = _candidateLimit + 1;
+            var retrieved = _source.Retrieve(
+                new SemanticLexicalRequest(token, Limit: retrievalLimit),
+                cancellationToken);
 
             // A synchronous provider may ignore the cancellation token. Detect
             // that case at the same deadline boundary immediately after it returns.
             if (stopwatch.Elapsed >= _retrievalTimeout)
                 throw new GroundingRetrievalTimeoutException(token, stopwatch.Elapsed);
 
-            candidates = candidates
+            // Preserve the raw count before normalization/deduplication. A source
+            // may legitimately return multiple retrieval representations of the same
+            // semantic identity; deduplicating first could erase the sentinel and make
+            // a genuinely truncated source appear complete.
+            var wasTruncated = retrieved.Count > _candidateLimit;
+
+            var candidates = retrieved
                 .Where(x => x.Score >= 0)
                 // Retrieval providers may legitimately index the same declared
                 // entity more than once (for example the semantic Entity and
@@ -596,22 +611,19 @@ public sealed class SemanticLexicalResolver
                 .ThenBy(x => x.CanonicalName, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
-            // Record truncation BEFORE it happens: candidates beyond
-            // _candidateLimit are dropped here and never reach graph search,
-            // so they are never checked for legality — they are just gone.
-            // If the highest-scoring one we're about to discard is within
-            // the resolver's own ambiguity margin of the lowest one we're
-            // keeping, that is retrieval-boundary risk of exactly the kind
-            // the post-search ambiguity check exists to catch, just one
-            // stage earlier where it would otherwise go unrecorded.
-            if (truncations is not null && candidates.Count > _candidateLimit)
+            // Record truncation before the retained set is handed to graph search.
+            // Because retrieval used a one-candidate sentinel, this remains observable
+            // even when the provider correctly enforces the requested Limit.
+            if (truncations is not null && wasTruncated && candidates.Length >= _candidateLimit)
             {
                 var lowestRetainedScore = candidates[_candidateLimit - 1].Score;
-                var highestTruncatedScore = candidates[_candidateLimit].Score;
+                var highestTruncatedScore = candidates.Length > _candidateLimit
+                    ? candidates[_candidateLimit].Score
+                    : double.NegativeInfinity;
                 truncations[token] = new CandidateTruncation(
                     token,
                     RetainedCount: _candidateLimit,
-                    TruncatedCount: candidates.Count - _candidateLimit,
+                    TruncatedCount: Math.Max(1, retrieved.Count - _candidateLimit),
                     LowestRetainedScore: lowestRetainedScore,
                     HighestTruncatedScore: highestTruncatedScore);
             }
@@ -634,7 +646,7 @@ public sealed class SemanticLexicalResolver
 
             result[token] = candidates;
 
-            if (stopOnFirstEmpty && candidates.Count == 0)
+            if (stopOnFirstEmpty && candidates.Length == 0)
                 break;
         }
 
