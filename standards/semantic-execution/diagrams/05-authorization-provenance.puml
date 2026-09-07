@@ -1,0 +1,16 @@
+@startuml
+title SES authorization provenance chain
+rectangle "Semantic Contract
+Fingerprint" as C
+rectangle "Resolved Operation Graph
+Fingerprint" as G
+rectangle "Authorization Evidence" as A
+rectangle "Semantic Plan" as P
+rectangle "Execution IR" as E
+rectangle "Provider Plan" as PP
+C --> A
+G --> A
+A --> P
+P --> E
+E --> PP
+@enduml

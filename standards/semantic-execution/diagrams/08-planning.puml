@@ -1,0 +1,9 @@
+@startuml
+title SES planning and safe rewrites
+rectangle "Authorized Graph" as G
+rectangle Normalize
+rectangle "Logical Plan" as P
+rectangle "Rewrite / Optimize" as R
+rectangle "Invariant Check" as V
+G --> Normalize --> P --> R --> V
+@enduml

@@ -1,0 +1,29 @@
+{
+  "standard": "SES",
+  "version": "1.0-draft",
+  "status": "forward-specification",
+  "profiles": ["Core", "Secure", "Provider", "Mutation", "Agent", "Static/AOT", "Full"],
+  "requirements": [
+    {"id":"SES-ARCH-001","layer":"L1","severity":"critical","text":"Trust domains MUST be explicit and lower-trust input MUST NOT create authority."},
+    {"id":"SES-LIFE-001","layer":"L2","severity":"critical","text":"Execution MUST follow the canonical lifecycle or an equivalent state-machine trace."},
+    {"id":"SES-SEM-001","layer":"L3","severity":"critical","text":"Semantic meaning MUST derive from an authoritative semantic contract."},
+    {"id":"SES-SOG-001","layer":"L4","severity":"critical","text":"Security- and meaning-relevant operations MUST have canonical graph identity."},
+    {"id":"SES-ALG-001","layer":"L5","severity":"critical","text":"Rewrites MUST preserve declared semantics under explicit algebraic preconditions."},
+    {"id":"SES-RES-001","layer":"L6","severity":"high","text":"Resolution MUST be deterministic or deterministically abstain on ambiguity."},
+    {"id":"SES-TRV-001","layer":"L7","severity":"critical","text":"Traversal MUST enforce semantic scope and bounded resource consumption."},
+    {"id":"SES-AUTH-001","layer":"L8","severity":"critical","text":"Authorization MUST evaluate the fully resolved operation graph in trusted context."},
+    {"id":"SES-PROV-001","layer":"L9","severity":"critical","text":"Authorization provenance MUST bind semantics, policy, and validity to executable artifacts."},
+    {"id":"SES-PLAN-001","layer":"L10","severity":"critical","text":"Planning MUST NOT widen authorized semantics."},
+    {"id":"SES-IR-001","layer":"L11","severity":"critical","text":"Execution IR MUST be independently validated before crossing the provider boundary."},
+    {"id":"SES-PROVIDER-001","layer":"L12","severity":"critical","text":"Provider execution MUST satisfy declared semantic and security fidelity requirements."},
+    {"id":"SES-MUT-001","layer":"L13","severity":"critical","text":"Mutation profiles MUST specify atomicity, idempotency, replay, concurrency, and failure behavior."},
+    {"id":"SES-CACHE-001","layer":"L14","severity":"critical","text":"Plan caching MUST never substitute stale or broader authority for current authorization."},
+    {"id":"SES-AGENT-001","layer":"L15","severity":"critical","text":"All transports and agents MUST converge on equivalent semantic and authorization behavior."},
+    {"id":"SES-RESRC-001","layer":"L16","severity":"critical","text":"Semantic resource amplification MUST be bounded by enforceable budgets."},
+    {"id":"SES-EVID-001","layer":"L17","severity":"high","text":"Evidence MUST reconstruct security lineage without becoming an authority source."},
+    {"id":"SES-AOT-001","layer":"L18","severity":"high","text":"Generated metadata MUST be reproducible, version-bound, and semantically equivalent to its source."},
+    {"id":"SES-TEST-001","layer":"L100","severity":"critical","text":"Every normative requirement MUST map to independent validation and explicit conformance status."},
+    {"id":"SES-VEC-001","layer":"L105","severity":"high","text":"Portable vectors MUST encode both successful and fail-closed expected outcomes."},
+    {"id":"SES-REF-001","layer":"L900","severity":"medium","text":"Reference implementations MUST remain informative and disclose deviations from the normative standard."}
+  ]
+}

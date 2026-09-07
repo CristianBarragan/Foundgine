@@ -1,0 +1,14 @@
+@startuml
+title SES transport and agent convergence
+rectangle JSON
+rectangle GraphQL
+rectangle MCP
+rectangle "AI Tool" as AI
+rectangle "Typed API" as T
+rectangle "Common Intent Boundary" as I
+JSON --> I
+GraphQL --> I
+MCP --> I
+AI --> I
+T --> I
+@enduml

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="760" viewBox="0 0 900 760">
+<rect width="100%" height="100%" fill="white"/>
+<text x="450" y="35" text-anchor="middle" font-family="Arial" font-size="22">SES target semantic execution lifecycle</text>
+<g font-family="Arial" font-size="16" text-anchor="middle">
+<rect x="330" y="60" width="240" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="87">Caller</text>
+<rect x="330" y="120" width="240" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="147">Intent</text>
+<rect x="300" y="180" width="300" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="207">Semantic Contract</text>
+<rect x="285" y="240" width="330" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="267">Semantic Operation Graph</text>
+<rect x="255" y="300" width="390" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="327">Candidate Retrieval / Resolution</text>
+<rect x="330" y="360" width="240" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="387">Authorization</text>
+<rect x="330" y="420" width="240" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="447">Semantic Plan</text>
+<rect x="330" y="480" width="240" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="507">Execution IR</text>
+<rect x="270" y="540" width="360" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="567">Provider Conformance Gate</text>
+<rect x="300" y="600" width="300" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="627">Physical Execution</text>
+<rect x="330" y="660" width="240" height="42" rx="8" fill="#f8f8f8" stroke="#333"/><text x="450" y="687">Evidence</text>
+</g>
+<g stroke="#333" stroke-width="2" fill="none">
+<path d="M450 102 L450 120"/><path d="M450 162 L450 180"/><path d="M450 222 L450 240"/><path d="M450 282 L450 300"/><path d="M450 342 L450 360"/><path d="M450 402 L450 420"/><path d="M450 462 L450 480"/><path d="M450 522 L450 540"/><path d="M450 582 L450 600"/><path d="M450 642 L450 660"/>
+</g>
+</svg>

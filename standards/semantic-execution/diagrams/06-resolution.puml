@@ -1,0 +1,12 @@
+@startuml
+title SES retrieval and resolution
+rectangle Intent
+rectangle "Candidate Retrieval" as CR
+rectangle "Exact / Fuzzy / FullText / BM25 / Graph / Vector" as STR
+rectangle "Semantic Resolution" as SR
+rectangle "Resolved Graph" as G
+Intent --> CR
+CR --> STR
+STR --> SR
+SR --> G
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+title SES semantic contract and structural metadata
+class StructuralMetadata
+class SemanticContract
+class Entity
+class Field
+class Relationship
+class Connection
+class Capability
+StructuralMetadata --> SemanticContract : enriches
+SemanticContract *-- Entity
+Entity *-- Field
+Entity *-- Relationship
+Entity *-- Connection
+SemanticContract *-- Capability
+@enduml

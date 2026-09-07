@@ -1,0 +1,24 @@
+@startuml
+title SES target semantic execution lifecycle
+actor Caller
+rectangle Intent
+rectangle "Semantic Contract" as Contract
+rectangle "Semantic Operation Graph" as Graph
+rectangle "Candidate Retrieval / Resolution" as Resolution
+rectangle Authorization
+rectangle "Semantic Plan" as Plan
+rectangle "Execution IR" as IR
+rectangle "Provider Conformance Gate" as Gate
+rectangle "Physical Execution" as Execute
+rectangle Evidence
+Caller --> Intent
+Intent --> Contract
+Contract --> Graph
+Graph --> Resolution
+Resolution --> Authorization
+Authorization --> Plan
+Plan --> IR
+IR --> Gate
+Gate --> Execute
+Execute --> Evidence
+@enduml

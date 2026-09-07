@@ -1,0 +1,8 @@
+@startuml
+title SES AOT and generated metadata
+rectangle "Source metadata / semantics" as S
+rectangle "Compiler / generator" as G
+rectangle "Generated registry" as R
+rectangle "Runtime semantic model" as M
+S --> G --> R --> M
+@enduml
