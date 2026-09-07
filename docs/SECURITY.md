@@ -320,15 +320,66 @@ in particular that retrieval/capability discovery is advisory only, that claims
 cannot self-assert identity or privilege, and that authorization is re-evaluated
 for the actual request rather than trusted from discovery.
 
-One gap worth tracking: the execution API's blocked calls surface as a generic
-`"An error occurred invoking '<tool>'."` MCP error rather than an explicit,
-structured denial like the semantic API's `{"result":{"allowed":false,"kind":"Denied"}}`.
-Functionally both block the attack, but the execution API's generic error message
-does not by itself distinguish "blocked by authorization" from "blocked by an
-unrelated bug," which weakens audit signal. Recommended follow-up: have the
-execution API's tool-invocation errors carry the same explicit denial shape used
-by the semantic API, and confirm via server-side logs which exception path each
-of the five blocked execution calls above actually took.
+### Why the two APIs' error shapes differ
+
+The execution API's uniform `"An error occurred invoking '<tool>'."` message is not
+an accident of this sample — it is the MCP C# SDK's own default behavior. The SDK
+sanitizes tool-invocation failures by design: any exception other than its own
+`McpException` type is collapsed into that generic message before it reaches the
+caller, precisely so a server author cannot accidentally leak exception details
+(stack traces, internal identifiers, database errors) to an untrusted MCP client.
+`McpException.Message`, by contrast, is documented as safe to propagate verbatim —
+it exists for a tool to deliberately choose what to tell the caller.
+
+The semantic API's richer response (`{"result":{"allowed":false,"kind":"Denied"}}`,
+and the named-claim detail on spoofing attempts) is not a framework default at all.
+It comes from `Semantic/Api/Mcp/Program.cs`'s `policy_probe` tool, which is a
+teaching/lab tool: its explicit purpose is to let a caller see which authorization
+decision path was taken (`Denied` vs. a `conditional` predicate vs. an outright
+error), so the Supply Chain sample can demonstrate the security model described
+earlier in this document. That is a reasonable choice for a documentation/lab
+surface whose whole job is to make policy decisions legible — it is not necessarily
+the right choice for the same shape on a production authorization endpoint, where a
+caller probing many variants could use `Denied` vs. `RequiresClarification` vs. the
+specific rejected-claim detail to map out policy boundaries faster than a uniform
+error would allow.
+
+### Implemented: server-side classification with a correlation id
+
+The execution API's `Execute` helper in
+[`MCP.Foundgine/Program.cs`](../samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine/Program.cs)
+now:
+
+1. Generates a short opaque correlation id for every call before it runs.
+2. Classifies any failure — authorization denial, not-found, validation error,
+   invalid-operation, or an unhandled exception — into a stable, greppable
+   `BlockedCallClassification`, independent of which .NET exception type happened
+   to be thrown for it.
+3. Logs the classification, correlation id, capability, and actor together with the
+   full exception via `ILogger`, so an operator can distinguish "blocked by
+   authorization" from "blocked by an unrelated bug" from the server-side log alone.
+4. Throws a single `McpException` whose message is uniform across every
+   classification — `"Request blocked while invoking '<tool>'. Reference:
+   <correlationId>."` — so the correlation id reaches the caller (via the one
+   exception type the SDK propagates verbatim) without the message itself ever
+   varying by cause. The id lets a support ticket or alert be joined back to the
+   exact log line; it carries no information an attacker could use as an oracle.
+
+This keeps the caller-facing surface exactly as uniform as the SDK's own default —
+it does not make the execution API's errors richer, and it does not adopt the
+semantic API's shape.
+
+### Open question: the semantic API's response verbosity
+
+The semantic API's `kind: Denied` / `RequiresClarification` distinction and its
+named-claim detail on spoofing attempts were not changed. They are appropriate for
+a lab tool whose purpose is demonstrating the authorization model, but the same
+question above applies to it as much as it did to the execution API: is that detail
+something a live caller should see, or does it belong in server-side logging only
+(the same correlation-id pattern used above would apply directly)? Recommended
+follow-up is to make that call explicitly — either document `policy_probe` as a
+lab-only surface not meant to be exposed as-is, or apply the same
+classification/correlation-id treatment to it before any production use.
 
 ---
 
