@@ -577,6 +577,7 @@ public sealed class SemanticLexicalResolverTests
         Assert.Equal(GroundingOutcome.RequiresClarification, decision.Outcome);
         Assert.Null(decision.Committed);
         Assert.Single(decision.EffectiveTruncationRisks);
+        Assert.Equal(2, source.Requests[0].Limit); // candidateLimit + 1 sentinel
 
         var risk = decision.EffectiveTruncationRisks[0];
         Assert.Equal("active", risk.Token);
@@ -635,6 +636,7 @@ public sealed class SemanticLexicalResolverTests
                 .Where(x => string.Equals(x.Token, request.Token, StringComparison.OrdinalIgnoreCase))
                 .Where(x => request.EffectiveKinds.Contains(x.Kind))
                 .OrderByDescending(x => x.Score)
+                .Take(request.Limit)
                 .ToArray();
         }
     }
