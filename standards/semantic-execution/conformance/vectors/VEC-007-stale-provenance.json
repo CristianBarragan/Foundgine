@@ -1,0 +1,43 @@
+{
+  "id": "VEC-007-stale-provenance",
+  "standard_version": "1.0-draft",
+  "profile": "Secure",
+  "family": "stale provenance",
+  "contract": {
+    "entity": "Invoice",
+    "fields": ["id", "customerId", "amount"]
+  },
+  "intent": {
+    "operation": "read",
+    "entity": "Invoice",
+    "filter": { "customerId": "cust-001" }
+  },
+  "trusted_context": {
+    "tenantId": "tenant-a",
+    "principal": "user-alice",
+    "grants": [{ "entity": "Invoice", "action": "read", "scope": { "customerId": "cust-001" } }],
+    "policy_version_at_execution": 2
+  },
+  "expected_graph": {
+    "root": "Invoice",
+    "predicates": [{ "field": "customerId", "op": "eq", "value": "cust-001" }]
+  },
+  "expected_authorization": {
+    "decision": "permit_at_plan_time",
+    "policy_version_bound": 1
+  },
+  "expected_provenance": {
+    "freshness_check_at_execution": "required",
+    "policy_version_mismatch": true
+  },
+  "expected_plan_properties": {
+    "cached": true
+  },
+  "expected_result_or_error": {
+    "outcome": "error",
+    "error_class": "stale_provenance"
+  },
+  "resource_budget": { "max_nodes": 100, "max_depth": 2 },
+  "invariant_under_test": "L9-T03, L14-T02 — a cached plan whose bound provenance was issued under a policy version older than the one active at execution time MUST fail freshness verification rather than execute under stale authority.",
+  "negative_behavior_note": "Fails if the cached plan executes successfully using policy_version 1 after the tenant's policy has moved to version 2, even if version 1 would also have permitted the request."
+}

@@ -1,0 +1,40 @@
+{
+  "id": "VEC-006-traversal-escape",
+  "standard_version": "1.0-draft",
+  "profile": "Secure",
+  "family": "traversal escape",
+  "contract": {
+    "entity": "Customer",
+    "relationships": [{ "name": "invoices", "target": "Invoice" }, { "name": "referredBy", "target": "Customer" }]
+  },
+  "intent": {
+    "operation": "read",
+    "entity": "Customer",
+    "filter": { "id": "cust-001" },
+    "include": ["referredBy.referredBy.referredBy.invoices"]
+  },
+  "trusted_context": {
+    "tenantId": "tenant-a",
+    "principal": "user-alice",
+    "grants": [{ "entity": "Customer", "action": "read", "scope": { "tenantId": "tenant-a" } }]
+  },
+  "expected_graph": {
+    "root": "Customer",
+    "traversal_depth_requested": 4
+  },
+  "expected_authorization": {
+    "decision": "deny",
+    "reason": "traversal_depth_exceeded"
+  },
+  "expected_provenance": null,
+  "expected_plan_properties": {
+    "widened_scope": false
+  },
+  "expected_result_or_error": {
+    "outcome": "error",
+    "error_class": "resource_rejected"
+  },
+  "resource_budget": { "max_nodes": 500, "max_depth": 2 },
+  "invariant_under_test": "L7-T01 — traversal depth beyond the declared limit is rejected before execution, regardless of whether every individual edge in the path is itself authorized.",
+  "negative_behavior_note": "Distinguish resource_rejected from authorization_denied: this vector tests the traversal bound, not the per-edge authorization check (covered separately)."
+}

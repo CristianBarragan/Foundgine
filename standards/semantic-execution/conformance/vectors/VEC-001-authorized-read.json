@@ -1,0 +1,43 @@
+{
+  "id": "VEC-001-authorized-read",
+  "standard_version": "1.0-draft",
+  "profile": "Core",
+  "family": "authorized read",
+  "contract": {
+    "entity": "Invoice",
+    "fields": ["id", "customerId", "amount", "status"]
+  },
+  "intent": {
+    "operation": "read",
+    "entity": "Invoice",
+    "filter": { "customerId": "cust-001" }
+  },
+  "trusted_context": {
+    "tenantId": "tenant-a",
+    "principal": "user-alice",
+    "grants": [{ "entity": "Invoice", "action": "read", "scope": { "customerId": "cust-001" } }]
+  },
+  "expected_graph": {
+    "root": "Invoice",
+    "predicates": [{ "field": "customerId", "op": "eq", "value": "cust-001" }]
+  },
+  "expected_authorization": {
+    "decision": "permit",
+    "scope_matches_grant": true
+  },
+  "expected_provenance": {
+    "bound_to_graph_identity": true,
+    "policy_version_recorded": true
+  },
+  "expected_plan_properties": {
+    "widened_scope": false,
+    "provider_pushdown": "allowed"
+  },
+  "expected_result_or_error": {
+    "outcome": "success",
+    "error_class": null
+  },
+  "resource_budget": { "max_nodes": 100, "max_depth": 2 },
+  "invariant_under_test": "L8-T01, L9-T01 — a request within an explicit grant is permitted and its provenance binds to the exact resolved graph.",
+  "negative_behavior_note": "This vector has no expected failure; it exists to establish the baseline the negative vectors are compared against."
+}

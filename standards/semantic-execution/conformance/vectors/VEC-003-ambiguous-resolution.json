@@ -1,0 +1,32 @@
+{
+  "id": "VEC-003-ambiguous-resolution",
+  "standard_version": "1.0-draft",
+  "profile": "Core",
+  "family": "ambiguous resolution",
+  "contract": {
+    "entity": "Customer",
+    "aliases": [{ "term": "acme", "candidates": ["cust-001", "cust-014"] }]
+  },
+  "intent": {
+    "operation": "read",
+    "entity": "Customer",
+    "reference": "acme"
+  },
+  "trusted_context": {
+    "tenantId": "tenant-a",
+    "principal": "user-alice",
+    "grants": [{ "entity": "Customer", "action": "read", "scope": "*" }]
+  },
+  "expected_graph": null,
+  "expected_authorization": null,
+  "expected_provenance": null,
+  "expected_plan_properties": null,
+  "expected_result_or_error": {
+    "outcome": "abstain",
+    "error_class": "ambiguous_reference",
+    "candidates_disclosed": ["cust-001", "cust-014"]
+  },
+  "resource_budget": { "max_nodes": 50, "max_depth": 1 },
+  "invariant_under_test": "L6-T02 — resolution MUST abstain deterministically when a reference maps to more than one candidate rather than guessing one.",
+  "negative_behavior_note": "An implementation that silently picks the first or highest-ranked candidate fails this vector even if the chosen candidate happens to be authorized."
+}
