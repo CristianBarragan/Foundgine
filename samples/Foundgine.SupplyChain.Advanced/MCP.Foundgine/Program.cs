@@ -5,6 +5,7 @@ using Foundgine.Core.Semantic.Planning;
 using Foundgine.Core.Semantic;
 using Foundgine.Core.Semantic.Authorization;
 using Foundgine.Core.Semantic.IR;
+using ModelContextProtocol;
 using ModelContextProtocol.Server;
 using Npgsql;
 using System.Security.Cryptography;
@@ -194,8 +195,13 @@ public sealed class SupplyChainAuthorizer
 public sealed class SupplyChainMcpTools
 {
     private readonly IServiceScopeFactory scopes;
+    private readonly ILogger<SupplyChainMcpTools> logger;
 
-    public SupplyChainMcpTools(IServiceScopeFactory scopes) => this.scopes = scopes;
+    public SupplyChainMcpTools(IServiceScopeFactory scopes, ILogger<SupplyChainMcpTools> logger)
+    {
+        this.scopes = scopes;
+        this.logger = logger;
+    }
 
     [McpServerTool(Name = "describe_capabilities")]
     public object DescribeCapabilities(string actor) => new
@@ -302,16 +308,95 @@ public sealed class SupplyChainMcpTools
         CancellationToken ct,
         Func<SupplyChainExecutionService, int, Task<object>> operation)
     {
+        // Every blocked or failed call gets a short opaque correlation id.
+        // The id itself carries no information an attacker could use to
+        // distinguish "denied by authorization" from "not found" from "an
+        // unrelated bug" - see BlockedCallClassification below and the
+        // "Why the execution API's error is uniform" section in
+        // docs/SECURITY.md for the reasoning. The classification and full
+        // exception detail go only to the server-side log, keyed by this id,
+        // so an operator can join a support ticket or alert back to the
+        // exact log line without the client-facing surface becoming a richer
+        // oracle than it is today.
+        var correlationId = Guid.NewGuid().ToString("N")[..8];
+
         using var scope = scopes.CreateScope();
         var authorizer = scope.ServiceProvider.GetRequiredService<SupplyChainAuthorizer>();
         var service = scope.ServiceProvider.GetRequiredService<SupplyChainExecutionService>();
         var actorCustomerId = ActorCustomerId(actor);
 
         if (!authorizer.CanExecute(actor, capability, requestedCustomerId, actorCustomerId))
-            throw new UnauthorizedAccessException($"Actor '{actor}' is not authorized for capability '{capability}'.");
+        {
+            LogBlockedCall(correlationId, BlockedCallClassification.AuthDenied, capability, actor,
+                new UnauthorizedAccessException($"Actor '{actor}' is not authorized for capability '{capability}'."));
+            throw BlockedCallError(capability, correlationId);
+        }
 
-        return await operation(service, requestedCustomerId ?? 0);
+        try
+        {
+            return await operation(service, requestedCustomerId ?? 0);
+        }
+        catch (McpException)
+        {
+            // Already an intentional, sanitized message a tool chose to
+            // surface on purpose (see ModelContextProtocol.McpException) -
+            // propagate it as-is rather than double-wrapping it.
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LogBlockedCall(correlationId, Classify(ex), capability, actor, ex);
+            throw BlockedCallError(capability, correlationId);
+        }
     }
+
+    /// <summary>
+    /// Stable, greppable reasons a call can fail, independent of the
+    /// specific .NET exception type. Kept separate from the exception type
+    /// itself so the log query surface stays stable even if an internal
+    /// implementation swaps which exception it throws for the same reason.
+    /// </summary>
+    private enum BlockedCallClassification
+    {
+        AuthDenied,
+        NotFound,
+        ValidationError,
+        InvalidOperation,
+        UnhandledException
+    }
+
+    private static BlockedCallClassification Classify(Exception ex) => ex switch
+    {
+        UnauthorizedAccessException => BlockedCallClassification.AuthDenied,
+        KeyNotFoundException => BlockedCallClassification.NotFound,
+        ArgumentException => BlockedCallClassification.ValidationError,
+        InvalidOperationException => BlockedCallClassification.InvalidOperation,
+        _ => BlockedCallClassification.UnhandledException
+    };
+
+    private void LogBlockedCall(
+        string correlationId, BlockedCallClassification classification, string capability, string actor,
+        Exception ex)
+    {
+        // actor/capability/classification/correlationId are safe to log -
+        // none of them are secrets and all of them are already known to the
+        // caller who made the request. The full exception (ex.ToString() via
+        // the logger's exception parameter) is what an operator needs to
+        // tell "blocked by authorization" apart from "blocked by an
+        // unrelated bug" without that distinction ever reaching the client.
+        logger.LogWarning(ex,
+            "Blocked/failed MCP call. correlationId={CorrelationId} classification={Classification} capability={Capability} actor={Actor}",
+            correlationId, classification, capability, actor);
+    }
+
+    // McpException is the one exception type the SDK propagates verbatim to
+    // the caller instead of collapsing into "An error occurred invoking
+    // '<tool>'." (see McpServerImpl's default sanitization of non-McpException
+    // failures). The message here is therefore deliberately uniform across
+    // every BlockedCallClassification above - it must never vary by cause,
+    // or it becomes exactly the oracle this design is meant to avoid.
+    private static McpException BlockedCallError(string capability, string correlationId) =>
+        new($"Request blocked while invoking '{capability}'. Reference: {correlationId}.");
 
     private static int ActorCustomerId(string actor)
     {

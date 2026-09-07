@@ -168,7 +168,7 @@ Benchmark results are workload-specific and should not be generalized beyond the
 
 ### Latest red-team pentest result
 
-A live adversarial run of `Foundgine.RedTeam` against the Advanced Supply Chain sample sent 18 attack attempts — cross-tenant probes, role/identity claim spoofing, claim-scope widening, write/capability escalation, and unauthenticated-actor calls — across both the semantic authorization API and the execution/tool-calling API. Every adversarial attempt was denied or blocked; only the two intentionally-legitimate baseline calls succeeded. Full attack-by-attack results and a noted follow-up on execution-API error clarity: [`docs/SECURITY.md#red-team-pentest-results-advanced-supply-chain-sample`](docs/SECURITY.md#red-team-pentest-results-advanced-supply-chain-sample).
+A live adversarial run of `Foundgine.RedTeam` against the Advanced Supply Chain sample sent 18 attack attempts — cross-tenant probes, role/identity claim spoofing, claim-scope widening, write/capability escalation, and unauthenticated-actor calls — across both the semantic authorization API and the execution/tool-calling API. Every adversarial attempt was denied or blocked; only the two intentionally-legitimate baseline calls succeeded. Full attack-by-attack results, why the two APIs' error shapes intentionally differ, and the server-side classification/correlation-id logging now implemented for the execution API: [`docs/SECURITY.md#red-team-pentest-results-advanced-supply-chain-sample`](docs/SECURITY.md#red-team-pentest-results-advanced-supply-chain-sample).
 
 ## Development
 
