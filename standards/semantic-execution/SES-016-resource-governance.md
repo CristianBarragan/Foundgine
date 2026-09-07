@@ -1,4 +1,7 @@
 # SES-016 — Resource Limits, Complexity, and Denial-of-Service Controls
+← [SES-015 — Transport, Agent, and Tool Boundaries](SES-015-transport-and-agents.md) · [Standard Index](README.md) · [SES-017 — Execution Evidence, Errors, and Observability](SES-017-evidence-and-observability.md) →
+
+---
 
 ## Status and purpose
 
@@ -41,3 +44,6 @@ Static limits alone are insufficient. The future standard needs **adaptive cost 
 
 Every executable operation MUST have a bounded resource envelope or an explicit administrative profile permitting unbounded behavior. Exceeding a security/resource budget MUST stop expansion safely.
 
+---
+
+← [SES-015 — Transport, Agent, and Tool Boundaries](SES-015-transport-and-agents.md) · [Standard Index](README.md) · [SES-017 — Execution Evidence, Errors, and Observability](SES-017-evidence-and-observability.md) →

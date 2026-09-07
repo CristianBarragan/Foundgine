@@ -1,4 +1,7 @@
 # SES-023 — Versioning, Negotiation, and Compatibility
+← [SES-022 — Transport-Neutral Wire Protocol](SES-022-wire-protocol.md) · [Standard Index](README.md) · [SES-024 — Authority Algebra, Delegation, and Attenuation](SES-024-authority-and-delegation.md) →
+
+---
 
 **Status:** Draft 1.0 — Normative target.
 
@@ -44,3 +47,7 @@ Define a formal compatibility algebra, negotiation transcript, downgrade rules, 
 ## 8. Acceptance
 
 A compatibility harness MUST prove that supported combinations execute, unsupported combinations fail closed, and security-relevant downgrade attempts cannot broaden authority.
+
+---
+
+← [SES-022 — Transport-Neutral Wire Protocol](SES-022-wire-protocol.md) · [Standard Index](README.md) · [SES-024 — Authority Algebra, Delegation, and Attenuation](SES-024-authority-and-delegation.md) →

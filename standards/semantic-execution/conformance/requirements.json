@@ -4,6 +4,7 @@
   "status": "forward-specification",
   "profiles": ["Core", "Secure", "Provider", "Mutation", "Agent", "Static/AOT", "Full"],
   "requirements": [
+    {"id":"SES-TERM-001","layer":"L0","severity":"critical","text":"Conformance claims MUST use the normative terminology and RFC-2119-style language defined in SES-000; undefined terms MUST NOT be relied upon to establish conformance."},
     {"id":"SES-ARCH-001","layer":"L1","severity":"critical","text":"Trust domains MUST be explicit and lower-trust input MUST NOT create authority."},
     {"id":"SES-LIFE-001","layer":"L2","severity":"critical","text":"Execution MUST follow the canonical lifecycle or an equivalent state-machine trace."},
     {"id":"SES-SEM-001","layer":"L3","severity":"critical","text":"Semantic meaning MUST derive from an authoritative semantic contract."},
@@ -22,7 +23,19 @@
     {"id":"SES-RESRC-001","layer":"L16","severity":"critical","text":"Semantic resource amplification MUST be bounded by enforceable budgets."},
     {"id":"SES-EVID-001","layer":"L17","severity":"high","text":"Evidence MUST reconstruct security lineage without becoming an authority source."},
     {"id":"SES-AOT-001","layer":"L18","severity":"high","text":"Generated metadata MUST be reproducible, version-bound, and semantically equivalent to its source."},
+    {"id":"SES-ROADMAP-001","layer":"L19","severity":"informational","text":"Every backlog item in the future development roadmap MUST be tracked with a stable identifier and an explicit status in a machine-readable gap registry until it is resolved or formally deferred."},
+    {"id":"SES-DATA-001","layer":"L20","severity":"critical","text":"Security- and meaning-relevant artifacts MUST conform to the formal data model's typed schema and stated invariants."},
+    {"id":"SES-STATE-001","layer":"L21","severity":"critical","text":"Lifecycle and security-relevant state transitions MUST be representable in the defined state machines, with no reachable undefined transition."},
+    {"id":"SES-WIRE-001","layer":"L22","severity":"critical","text":"Cross-transport exchange of semantic artifacts MUST use the transport-neutral wire protocol, or an encoding independently verified equivalent to it."},
+    {"id":"SES-COMPAT-001","layer":"L23","severity":"high","text":"Independently evolving implementations MUST negotiate compatibility using the defined versioning rules before exchanging semantic artifacts."},
+    {"id":"SES-DELEG-001","layer":"L24","severity":"critical","text":"Delegated or attenuated authority MUST be representable in the authority algebra and independently verifiable at the point of use."},
+    {"id":"SES-PROFILE-001","layer":"L25","severity":"high","text":"Providers MUST declare a capability/fidelity profile, and that profile MUST be independently verifiable against observed execution behavior."},
+    {"id":"SES-ATTEST-001","layer":"L26","severity":"critical","text":"Security- and semantic-relevant claims MUST be independently verifiable via a defined proof or attestation format."},
     {"id":"SES-TEST-001","layer":"L100","severity":"critical","text":"Every normative requirement MUST map to independent validation and explicit conformance status."},
+    {"id":"SES-TESTARCH-001","layer":"L101","severity":"high","text":"Every conformance test MUST declare its fixture and oracle, and at least one independent oracle class MUST be used for security-critical semantic, authorization, rewrite, and provider-fidelity requirements."},
+    {"id":"SES-MATRIX-001","layer":"L102","severity":"critical","text":"Every normative requirement MUST have a traceability record with an explicit status, and CI MUST reject a release when an applicable critical requirement is Missing or Implemented/unproven."},
+    {"id":"SES-SECCONF-001","layer":"L103","severity":"critical","text":"Every declared security boundary MUST have adversarial conformance coverage before a profile can claim that boundary is enforced."},
+    {"id":"SES-GAPMATRIX-001","layer":"L104","severity":"high","text":"The repository MUST maintain a machine-readable gap file mapping every backlog item and requirement to an explicit, current status."},
     {"id":"SES-VEC-001","layer":"L105","severity":"high","text":"Portable vectors MUST encode both successful and fail-closed expected outcomes."},
     {"id":"SES-REF-001","layer":"L900","severity":"medium","text":"Reference implementations MUST remain informative and disclose deviations from the normative standard."}
   ]

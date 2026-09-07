@@ -1,4 +1,7 @@
 # SES-105 — Portable Semantic Execution Conformance Vectors
+← [SES-104 — Future Implementation Gap Matrix](SES-104-foundgine-test-mapping.md) · [Standard Index](README.md) · [SES-900 — Foundgine Reference Implementation Profile (Informative)](SES-900-foundgine-reference-mapping.md) →
+
+---
 
 ## Status and purpose
 
@@ -53,3 +56,6 @@ Vectors need explicit expected **negative behavior**, not just expected results.
 
 A vector is complete only when it identifies the invariant being tested and distinguishes authorization failure, semantic ambiguity, resource rejection, provider incompatibility, and operational failure.
 
+---
+
+← [SES-104 — Future Implementation Gap Matrix](SES-104-foundgine-test-mapping.md) · [Standard Index](README.md) · [SES-900 — Foundgine Reference Implementation Profile (Informative)](SES-900-foundgine-reference-mapping.md) →

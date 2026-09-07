@@ -1,4 +1,7 @@
 # SES-102 — Requirement Traceability and Conformance Matrix
+← [SES-101 — Test Architecture, Fixtures, and Independent Oracles](SES-101-test-architecture-and-fixtures.md) · [Standard Index](README.md) · [SES-103 — Security and Adversarial Conformance](SES-103-security-conformance.md) →
+
+---
 
 ## Status and purpose
 
@@ -36,11 +39,11 @@ The previous mapping approach risks treating names of test classes as evidence. 
 
 CI MUST fail for any claimed profile containing a normative requirement with status Missing, unless an explicitly approved conformance exception exists.
 
-
-
 ## 6. Machine-readable registry
 
 The normative registry is `conformance/requirements.json`. It is the seed registry, not a complete claim of conformance. The registry MUST grow until every normative requirement has a stable identifier and traceability record.
+
+As of the 2026-09-07 audit, `conformance/requirements.json` carries one root requirement per layer L0–L26, L100–L105, and L900 (see SES-104 §5, `SES-GAP-01`). Per-layer traceability (implementation reference, test reference, fixture, oracle, status) beyond this seed registry remains outstanding; see `conformance/known-gaps.json`.
 
 ## 7. Required CI behavior
 
@@ -49,3 +52,7 @@ For every claimed profile, CI MUST reject a release when an applicable critical 
 ## 8. Independence rule
 
 A test that merely exercises the same implementation logic used to produce the expected result is not an independent oracle. At least one independent oracle class MUST be used for security-critical semantic, authorization, rewrite, and provider-fidelity requirements.
+
+---
+
+← [SES-101 — Test Architecture, Fixtures, and Independent Oracles](SES-101-test-architecture-and-fixtures.md) · [Standard Index](README.md) · [SES-103 — Security and Adversarial Conformance](SES-103-security-conformance.md) →

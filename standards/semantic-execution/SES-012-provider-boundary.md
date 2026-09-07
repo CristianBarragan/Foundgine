@@ -1,4 +1,7 @@
 # SES-012 — Provider Compilation, Conformance, and Execution Boundary
+← [SES-011 — Execution Intermediate Representation](SES-011-execution-ir.md) · [Standard Index](README.md) · [SES-013 — Semantic Mutation Model and High-Assurance State Change](SES-013-mutations.md) →
+
+---
 
 ## Status and purpose
 
@@ -44,3 +47,6 @@ Define provider capability negotiation, semantic fallback rules, unsupported-ope
 
 If a provider cannot guarantee a required semantic or security property, execution MUST be rejected or the system MUST select an explicitly authorized alternative strategy.
 
+---
+
+← [SES-011 — Execution Intermediate Representation](SES-011-execution-ir.md) · [Standard Index](README.md) · [SES-013 — Semantic Mutation Model and High-Assurance State Change](SES-013-mutations.md) →

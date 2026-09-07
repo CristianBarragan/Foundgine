@@ -1,4 +1,7 @@
 # SES-017 — Execution Evidence, Errors, and Observability
+← [SES-016 — Resource Limits, Complexity, and Denial-of-Service Controls](SES-016-resource-governance.md) · [Standard Index](README.md) · [SES-018 — AOT, Generated Metadata, and Deterministic Compilation](SES-018-aot-and-generated-metadata.md) →
+
+---
 
 ## Status and purpose
 
@@ -41,3 +44,6 @@ It also needs tamper evidence, retention policy, redaction, evidence schemas, an
 
 Evidence MUST be sufficient to reconstruct the security lineage of an execution while respecting declared data-classification and retention rules.
 
+---
+
+← [SES-016 — Resource Limits, Complexity, and Denial-of-Service Controls](SES-016-resource-governance.md) · [Standard Index](README.md) · [SES-018 — AOT, Generated Metadata, and Deterministic Compilation](SES-018-aot-and-generated-metadata.md) →

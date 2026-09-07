@@ -1,4 +1,7 @@
 # SES-018 — AOT, Generated Metadata, and Deterministic Compilation
+← [SES-017 — Execution Evidence, Errors, and Observability](SES-017-evidence-and-observability.md) · [Standard Index](README.md) · [SES-019 — Future Development Roadmap and Open Research Problems](SES-019-future-development-roadmap.md) →
+
+---
 
 ## Status and purpose
 
@@ -40,3 +43,6 @@ Define a generated-artifact manifest, reproducible-build profile, source-to-arti
 
 Generated and runtime semantic models MUST produce identical identities and equivalent operation graphs for the same source contract, or execution MUST be rejected.
 
+---
+
+← [SES-017 — Execution Evidence, Errors, and Observability](SES-017-evidence-and-observability.md) · [Standard Index](README.md) · [SES-019 — Future Development Roadmap and Open Research Problems](SES-019-future-development-roadmap.md) →

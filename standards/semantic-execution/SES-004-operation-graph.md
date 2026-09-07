@@ -1,4 +1,7 @@
 # SES-004 — Semantic Operation Graph
+← [SES-003 — Semantic Contract and Domain Meaning](SES-003-semantic-contract.md) · [Standard Index](README.md) · [SES-005 — Semantic Operation, Predicate, and Traversal Algebra](SES-005-operation-algebra.md) →
+
+---
 
 ## Status and purpose
 
@@ -47,3 +50,6 @@ Define canonical serialization, graph equivalence, graph hashing, graph diffing,
 
 A graph fingerprint MUST change for every security- or meaning-relevant mutation and remain stable across non-semantic serialization differences.
 
+---
+
+← [SES-003 — Semantic Contract and Domain Meaning](SES-003-semantic-contract.md) · [Standard Index](README.md) · [SES-005 — Semantic Operation, Predicate, and Traversal Algebra](SES-005-operation-algebra.md) →

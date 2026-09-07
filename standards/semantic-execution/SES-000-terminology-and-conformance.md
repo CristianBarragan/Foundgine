@@ -1,4 +1,7 @@
 # SES-000 — Terminology, Normative Language, and Conformance
+← *(start of family)* · [Standard Index](README.md) · [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) →
+
+---
 
 ## Status and purpose
 
@@ -90,3 +93,6 @@ A requirement is **Proven** only when the implementation reference, independent 
 
 Develop the full requirement registry, machine-readable conformance manifest, compatibility matrix, certification rules, version-negotiation protocol, normative schemas, state/event registry, provider profile registry, and portable proof formats. The registry MUST eventually be sufficient for an implementation team with no access to Foundgine to build and test an interoperable implementation.
 
+---
+
+← *(start of family)* · [Standard Index](README.md) · [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) →

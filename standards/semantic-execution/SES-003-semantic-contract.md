@@ -1,4 +1,7 @@
 # SES-003 — Semantic Contract and Domain Meaning
+← [SES-002 — Canonical Semantic Execution Lifecycle](SES-002-canonical-lifecycle.md) · [Standard Index](README.md) · [SES-004 — Semantic Operation Graph](SES-004-operation-graph.md) →
+
+---
 
 ## Status and purpose
 
@@ -59,3 +62,6 @@ Define a versioned semantic contract schema, canonical serialization, compatibil
 
 Two independent implementations given the same contract snapshot MUST derive identical semantic identities and compatible operation capabilities.
 
+---
+
+← [SES-002 — Canonical Semantic Execution Lifecycle](SES-002-canonical-lifecycle.md) · [Standard Index](README.md) · [SES-004 — Semantic Operation Graph](SES-004-operation-graph.md) →

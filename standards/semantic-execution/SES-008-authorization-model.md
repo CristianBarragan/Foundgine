@@ -1,4 +1,7 @@
 # SES-008 — Semantic Authorization Model
+← [SES-007 — Logical Traversal and Path Expansion](SES-007-logical-traversal.md) · [Standard Index](README.md) · [SES-009 — Authorization Provenance and Security Proof](SES-009-authorization-provenance.md) →
+
+---
 
 ## Status and purpose
 
@@ -44,3 +47,6 @@ Define an authority algebra, policy evaluation contract, policy decision provena
 
 A conforming implementation MUST be able to demonstrate that changing any caller-controlled authority claim does not change trusted authorization unless the host explicitly accepts and validates that claim.
 
+---
+
+← [SES-007 — Logical Traversal and Path Expansion](SES-007-logical-traversal.md) · [Standard Index](README.md) · [SES-009 — Authorization Provenance and Security Proof](SES-009-authorization-provenance.md) →

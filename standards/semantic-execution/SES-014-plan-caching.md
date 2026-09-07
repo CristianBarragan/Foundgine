@@ -1,4 +1,7 @@
 # SES-014 — Authorization-Safe Plan Caching
+← [SES-013 — Semantic Mutation Model and High-Assurance State Change](SES-013-mutations.md) · [Standard Index](README.md) · [SES-015 — Transport, Agent, and Tool Boundaries](SES-015-transport-and-agents.md) →
+
+---
 
 ## Status and purpose
 
@@ -37,3 +40,6 @@ These have different safety properties and MUST NOT be conflated.
 
 A cache hit MUST never bypass required freshness or execution-time authorization checks. Poisoning a cache entry MUST not broaden authority.
 
+---
+
+← [SES-013 — Semantic Mutation Model and High-Assurance State Change](SES-013-mutations.md) · [Standard Index](README.md) · [SES-015 — Transport, Agent, and Tool Boundaries](SES-015-transport-and-agents.md) →

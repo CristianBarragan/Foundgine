@@ -1,0 +1,113 @@
+{
+  "standard": "SES",
+  "version": "1.0-draft",
+  "document": "SES-104 machine-readable gap registry (see SES-104 §4)",
+  "last_updated": "2026-09-07",
+  "status_values": ["missing", "partial", "implemented-unproven", "proven", "not-applicable"],
+
+  "roadmap_backlog": [
+    {"id": "SES-RM-01", "category": "foundational", "text": "Formal semantic contract schema.", "status": "missing"},
+    {"id": "SES-RM-02", "category": "foundational", "text": "Canonical SOG serialization and hashing.", "status": "missing"},
+    {"id": "SES-RM-03", "category": "foundational", "text": "Formal operation algebra and equivalence rules.", "status": "missing"},
+    {"id": "SES-RM-04", "category": "foundational", "text": "Deterministic resolution/abstention protocol.", "status": "missing"},
+    {"id": "SES-RM-05", "category": "foundational", "text": "Authority algebra and delegation model.", "status": "missing"},
+    {"id": "SES-RM-06", "category": "foundational", "text": "Provenance/attestation format.", "status": "missing"},
+    {"id": "SES-RM-07", "category": "foundational", "text": "Version negotiation and compatibility rules.", "status": "missing"},
+    {"id": "SES-RM-08", "category": "foundational", "text": "Versioned Execution IR and verifier.", "status": "missing"},
+    {"id": "SES-RM-09", "category": "foundational", "text": "Provider capability/fidelity protocol.", "status": "missing"},
+
+    {"id": "SES-RM-10", "category": "security", "text": "Cryptographic provenance profile.", "status": "missing"},
+    {"id": "SES-RM-11", "category": "security", "text": "Policy freshness/revocation protocol.", "status": "missing"},
+    {"id": "SES-RM-12", "category": "security", "text": "Agent authority and tool delegation.", "status": "missing"},
+    {"id": "SES-RM-13", "category": "security", "text": "Continuous adversarial/fuzzing corpus.", "status": "missing"},
+    {"id": "SES-RM-14", "category": "security", "text": "Cross-provider differential security testing.", "status": "missing"},
+    {"id": "SES-RM-15", "category": "security", "text": "Evidence tamper protection and privacy controls.", "status": "missing"},
+
+    {"id": "SES-RM-16", "category": "scale-and-reliability", "text": "Semantic cost model.", "status": "missing"},
+    {"id": "SES-RM-17", "category": "scale-and-reliability", "text": "Adaptive resource governance.", "status": "missing"},
+    {"id": "SES-RM-18", "category": "scale-and-reliability", "text": "Distributed execution lineage.", "status": "missing"},
+    {"id": "SES-RM-19", "category": "scale-and-reliability", "text": "Cancellation/backpressure propagation.", "status": "missing"},
+    {"id": "SES-RM-20", "category": "scale-and-reliability", "text": "Distributed cache coherence.", "status": "missing"},
+    {"id": "SES-RM-21", "category": "scale-and-reliability", "text": "Mutation workflow/compensation profile.", "status": "missing"},
+    {"id": "SES-RM-22", "category": "scale-and-reliability", "text": "Concurrency and conflict semantics.", "status": "missing"},
+
+    {"id": "SES-RM-23", "category": "semantic-completeness", "text": "Temporal semantics.", "status": "missing"},
+    {"id": "SES-RM-24", "category": "semantic-completeness", "text": "Units/measurement semantics.", "status": "missing"},
+    {"id": "SES-RM-25", "category": "semantic-completeness", "text": "Locale/multilingual semantics.", "status": "missing"},
+    {"id": "SES-RM-26", "category": "semantic-completeness", "text": "Null/duplicate/order equivalence.", "status": "missing"},
+    {"id": "SES-RM-27", "category": "semantic-completeness", "text": "Recursive and correlated graph operations.", "status": "missing"},
+    {"id": "SES-RM-28", "category": "semantic-completeness", "text": "Side-effect and nondeterminism classification.", "status": "missing"},
+
+    {"id": "SES-RM-29", "category": "ecosystem", "text": "Portable conformance vectors.", "status": "missing"},
+    {"id": "SES-RM-30", "category": "ecosystem", "text": "Independent certification tooling.", "status": "missing"},
+    {"id": "SES-RM-31", "category": "ecosystem", "text": "Provider profiles for SQL, document, graph, search, vector, and hybrid engines.", "status": "missing"},
+    {"id": "SES-RM-32", "category": "ecosystem", "text": "Transport profiles for MCP, GraphQL, REST/RPC and future agent protocols.", "status": "missing"},
+    {"id": "SES-RM-33", "category": "ecosystem", "text": "Standard governance and change-control process.", "status": "missing"}
+  ],
+
+  "registry_and_test_coverage_gaps": [
+    {
+      "id": "SES-GAP-01",
+      "text": "conformance/requirements.json previously had no root requirement for L0 (SES-000) or L19-L26 (SES-019 through SES-026) or L101-L104 (SES-101 through SES-104).",
+      "status": "proven",
+      "note": "Resolved 2026-09-07: entries SES-TERM-001, SES-ROADMAP-001, SES-DATA-001, SES-STATE-001, SES-WIRE-001, SES-COMPAT-001, SES-DELEG-001, SES-PROFILE-001, SES-ATTEST-001, SES-TESTARCH-001, SES-MATRIX-001, SES-SECCONF-001, SES-GAPMATRIX-001 added to conformance/requirements.json."
+    },
+    {
+      "id": "SES-GAP-02",
+      "text": "SES-100 defines conformance test requirement IDs (L#-T#) only for layers L0-L16. Layers L17-L26 (evidence/observability, AOT, roadmap, formal data model, state machines, wire protocol, versioning, authority/delegation, provider capability profiles, proof/attestation) have no defined test requirements, and scripts/verify-conformance.py only checks L0-L16.",
+      "status": "missing",
+      "note": "Requires authoring L17-T# through L26-T# test requirements in SES-100 and extending verify-conformance.py's range check accordingly."
+    },
+    {
+      "id": "SES-GAP-03",
+      "text": "SES-104 (\"Future Implementation Gap Matrix\") states the repository SHOULD maintain a machine-readable gap file with every requirement and status; no such file previously existed.",
+      "status": "proven",
+      "note": "Resolved 2026-09-07: this file (conformance/known-gaps.json) is the machine-readable gap registry referenced by SES-104 §4."
+    },
+    {
+      "id": "SES-GAP-04",
+      "text": "The 34 backlog items enumerated in SES-019 were tracked only as prose, with no stable identifiers or status field.",
+      "status": "proven",
+      "note": "Resolved 2026-09-07: tracked as SES-RM-01 through SES-RM-33 in this file's roadmap_backlog array."
+    },
+    {
+      "id": "SES-GAP-05",
+      "text": "SES-105 defines the portable conformance vector format but no vector data files exist in the repository yet.",
+      "status": "missing",
+      "note": "Corresponds to SES-RM-29."
+    },
+    {
+      "id": "SES-GAP-06",
+      "text": "SES-100 §8's 'L#' section labels do not follow the L#=SES-0## convention used by conformance/requirements.json and the rest of the standard. Only L0, L4, and L5 line up with their canonical SES document. From L6 onward every section's content actually belongs to SES-0(n+2): e.g. the 'L8 — planning' section tests SES-010's topic, not SES-008 (Authorization); 'L15 — evidence and observability' tests SES-017's topic, not SES-015 (Transport and agents). Critically, SES-002 (Canonical Lifecycle) and SES-007 (Logical Traversal) have NO section testing their actual subject matter at all -- their 'L2' and 'L7' slots were reassigned to 'intent boundary' and 'provenance' content instead. As a direct consequence, requirements.json's SES-LIFE-001 (L2, critical) and SES-TRV-001 (L7, critical) currently have zero correctly-labeled conformance test requirements in SES-100.",
+      "status": "missing",
+      "impact": "Two critical-severity root requirements (lifecycle ordering, traversal scope/resource bounds) are effectively untested under the standard's own numbering convention, and every L6-L16 test ID in SES-100 identifies the wrong SES document."
+    }
+  ],
+
+  "publication_and_tooling_gaps": [
+    {
+      "id": "SES-PUB-01",
+      "text": "The SES standard is not referenced anywhere in the project's mkdocs.yml navigation, and no page under docs/ or docs-site/ links to standards/semantic-execution/. The root README.md and llms.txt also do not link to it.",
+      "status": "missing",
+      "impact": "The standard is undiscoverable from the project's own documentation entry points."
+    },
+    {
+      "id": "SES-PUB-02",
+      "text": "mkdocs.yml nav references docs/LAYER-SETUP.md, docs/PRODUCT-IDENTITY.md, and docs/PROVIDER-INDEPENDENCE.md, none of which exist under docs/.",
+      "status": "missing",
+      "impact": "mkdocs site build/nav is broken for these three entries."
+    },
+    {
+      "id": "SES-PUB-03",
+      "text": "Ten existing files under docs/ are not referenced in mkdocs.yml nav at all: AI-AGENT.md, AOT.md, AUTHORIZATION.md, MAPPING.md, METADATA-TO-SEMANTICS.md, OPEN-INTENT-API.md, PUBLIC-API.md, ROADMAP.md, RUNTIME.md, WHY-FOUNDGINE.md.",
+      "status": "missing",
+      "impact": "These docs are orphaned; unreachable through site navigation."
+    },
+    {
+      "id": "SES-PUB-04",
+      "text": "None of the CI workflows in .github/workflows/ (build.yml, codeql.yml, security.yml, nuget-downloads.yml) invoke scripts/verify-diagrams.py or scripts/verify-conformance.py.",
+      "status": "missing",
+      "impact": "The README's claim that verify-diagrams.py 'MUST fail on missing source/artifact pairs' is not actually enforced anywhere; both scripts only run when invoked manually."
+    }
+  ]
+}
