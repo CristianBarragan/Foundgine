@@ -257,20 +257,6 @@ against the running `Foundgine.SupplyChain.Advanced` sample, exercising both the
 semantic authorization API (port `4432`) and the execution/tool-calling API
 (port `4422`) over MCP's Streamable HTTP transport.
 
-### Harness notes
-
-Two harness defects were found and fixed before the run produced a usable signal:
-
-| Issue | Symptom | Fix |
-|---|---|---|
-| Missing `using System.Diagnostics;` | Build failed with `CS0103: The name 'Stopwatch' does not exist in the current context` at the two timing calls in `Program.cs` | Added the missing `using` directive |
-| Missing MCP `Accept` header | Every attack request returned `406 Not Acceptable: Client must accept both application/json and text/event-stream` before reaching authorization logic — the run produced no real signal | Added `application/json` and `text/event-stream` to `HttpClient.DefaultRequestHeaders.Accept` when the client is constructed |
-
-Neither defect was in the product under test — both were in the red-team client itself.
-They're documented here because a broken harness that fails closed (build error) or
-fails uninformative (uniform 406s) can look superficially like "everything is secure"
-if the results aren't inspected carefully.
-
 ### Run summary
 
 After both fixes, 18 attack attempts were sent across the two surfaces. All reached
