@@ -1,0 +1,14 @@
+@startuml
+title SES trust boundaries
+rectangle "Untrusted caller / agent" as U
+rectangle "Intent" as I
+rectangle "Semantic resolution" as S
+rectangle "Authorized semantic graph" as A
+rectangle "Execution IR" as E
+rectangle "Provider" as P
+U --> I
+I --> S
+S --> A
+A --> E
+E --> P
+@enduml

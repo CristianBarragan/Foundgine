@@ -1,0 +1,16 @@
+@startuml
+title SES resource governance
+rectangle "Intent / Graph" as G
+rectangle "Depth" as D
+rectangle "Nodes" as N
+rectangle "Predicate complexity" as P
+rectangle "Projection width" as W
+rectangle "Mutation dependencies" as M
+rectangle "Execution budget" as E
+G --> D
+G --> N
+G --> P
+G --> W
+G --> M
+G --> E
+@enduml

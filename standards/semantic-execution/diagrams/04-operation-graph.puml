@@ -1,0 +1,16 @@
+@startuml
+title SES semantic operation graph
+class Operation
+class FieldSelection
+class Predicate
+class Traversal
+class Ordering
+class Pagination
+class Constraint
+Operation *-- FieldSelection
+Operation *-- Predicate
+Operation *-- Traversal
+Operation *-- Ordering
+Operation *-- Pagination
+Operation *-- Constraint
+@enduml

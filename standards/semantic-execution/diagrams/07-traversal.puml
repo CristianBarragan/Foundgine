@@ -1,0 +1,10 @@
+@startuml
+title SES logical traversal expansion
+rectangle "Logical path" as L
+rectangle "Expanded semantic path" as E
+rectangle "Authorization" as A
+rectangle "Physical rewrite" as P
+L --> E
+E --> A
+A --> P
+@enduml

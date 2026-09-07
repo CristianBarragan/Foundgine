@@ -1,0 +1,9 @@
+@startuml
+title SES authorization-safe plan cache
+rectangle "Request" as R
+rectangle "Semantic + Security Fingerprints" as K
+rectangle Cache
+rectangle "Validate provenance" as V
+rectangle Execute
+R --> K --> Cache --> V --> Execute
+@enduml

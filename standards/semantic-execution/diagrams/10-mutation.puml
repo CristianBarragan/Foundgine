@@ -1,0 +1,10 @@
+@startuml
+title SES mutation lifecycle
+rectangle Intent
+rectangle "Mutation Graph" as G
+rectangle Authorization
+rectangle "Dependency Plan" as P
+rectangle "Atomic Execution" as X
+rectangle "Mutation Evidence" as V
+Intent --> G --> Authorization --> P --> X --> V
+@enduml

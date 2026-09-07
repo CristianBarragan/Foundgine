@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="550" viewBox="0 0 1100 550">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#555"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<text x="60" y="38" font-family="Arial,sans-serif" font-size="24" font-weight="700">SES — 09 Execution Ir</text>
+<rect x="60" y="80" width="230" height="58" rx="8" fill="#f8f8f8" stroke="#333" stroke-width="2"/>
+<text x="175.0" y="116" text-anchor="middle" font-family="Arial,sans-serif" font-size="15">Semantic Plan</text>
+<rect x="60" y="170" width="230" height="58" rx="8" fill="#f8f8f8" stroke="#333" stroke-width="2"/>
+<text x="175.0" y="206" text-anchor="middle" font-family="Arial,sans-serif" font-size="15">Execution IR</text>
+<rect x="60" y="260" width="230" height="58" rx="8" fill="#f8f8f8" stroke="#333" stroke-width="2"/>
+<text x="175.0" y="296" text-anchor="middle" font-family="Arial,sans-serif" font-size="15">Provider Compiler</text>
+<rect x="60" y="350" width="230" height="58" rx="8" fill="#f8f8f8" stroke="#333" stroke-width="2"/>
+<text x="175.0" y="386" text-anchor="middle" font-family="Arial,sans-serif" font-size="15">Provider Plan</text>
+<rect x="60" y="440" width="230" height="58" rx="8" fill="#f8f8f8" stroke="#333" stroke-width="2"/>
+<text x="175.0" y="476" text-anchor="middle" font-family="Arial,sans-serif" font-size="15">Security Proof</text>
+</svg>

@@ -1,0 +1,37 @@
+@startuml
+skinparam componentStyle rectangle
+left to right direction
+
+actor "Conformance Runner" as runner
+component "Normative Test Vectors" as vectors
+database "Fixture Corpus" as fixtures
+component "Intent / Semantic Tests" as semantic
+component "Security & Adversarial Tests" as security
+component "Planner / Algebra Tests" as planner
+component "Provider / Integration Tests" as provider
+component "Mutation / Fault / Concurrency Tests" as mutation
+component "AOT / Generator Tests" as aot
+component "E2E Conformance Tests" as e2e
+component "Result / Evidence Reporter" as reporter
+
+runner --> vectors
+runner --> fixtures
+vectors --> semantic
+vectors --> security
+vectors --> planner
+vectors --> provider
+vectors --> mutation
+vectors --> aot
+fixtures --> semantic
+fixtures --> security
+fixtures --> planner
+fixtures --> provider
+fixtures --> mutation
+semantic --> e2e
+security --> e2e
+planner --> e2e
+provider --> e2e
+mutation --> e2e
+aot --> e2e
+e2e --> reporter
+@enduml

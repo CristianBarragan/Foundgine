@@ -1,0 +1,8 @@
+@startuml
+title SES evidence and failure semantics
+rectangle "Execution attempt" as X
+rectangle "Outcome" as O
+rectangle "Evidence" as E
+rectangle "Audit / diagnostics" as A
+X --> O --> E --> A
+@enduml

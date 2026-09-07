@@ -1,0 +1,10 @@
+@startuml
+title SES execution IR boundary
+rectangle "Semantic Plan" as P
+rectangle "Execution IR" as E
+rectangle "Provider Compiler" as C
+rectangle "Provider Plan" as PP
+rectangle "Security Proof" as SP
+P --> E --> C --> PP
+PP --> SP
+@enduml
