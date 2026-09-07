@@ -83,6 +83,10 @@ The `Foundgine.SupplyChain` sample and AgentEndToEnd benchmark demonstrate an ag
 - `Foundgine.Providers.Models` — `Microsoft.Extensions.AI` integration
 - `Foundgine.Runtime.ControlPlane` — optional authority/recovery control-plane infrastructure
 
+## Standard
+
+Foundgine's architecture is specified independently of this implementation as the SES (Semantic Execution) standard under `standards/semantic-execution/`, starting from its `README.md` index. The standard, not this reference implementation, is the authority for conformance claims.
+
 ## Current release
 
 **2.0.1 · .NET 9**

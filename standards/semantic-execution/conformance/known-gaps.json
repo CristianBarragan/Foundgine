@@ -55,8 +55,8 @@
     {
       "id": "SES-GAP-02",
       "text": "SES-100 defines conformance test requirement IDs (L#-T#) only for layers L0-L16. Layers L17-L26 (evidence/observability, AOT, roadmap, formal data model, state machines, wire protocol, versioning, authority/delegation, provider capability profiles, proof/attestation) have no defined test requirements, and scripts/verify-conformance.py only checks L0-L16.",
-      "status": "missing",
-      "note": "Requires authoring L17-T# through L26-T# test requirements in SES-100 and extending verify-conformance.py's range check accordingly."
+      "status": "proven",
+      "note": "Resolved 2026-09-07: SES-100 §8 now defines L17-T# through L26-T# (folded in as part of the SES-GAP-06 renumbering, since correcting the layer labels freed L17-L18 and added L19-L26). scripts/verify-conformance.py now checks range(27) instead of range(17); verified passing."
     },
     {
       "id": "SES-GAP-03",
@@ -73,13 +73,14 @@
     {
       "id": "SES-GAP-05",
       "text": "SES-105 defines the portable conformance vector format but no vector data files exist in the repository yet.",
-      "status": "missing",
-      "note": "Corresponds to SES-RM-29."
+      "status": "partial",
+      "note": "Resolved 2026-09-07 (partial): conformance/vectors/ now contains 8 of the 20 mandatory families from SES-105 \u00a73 (authorized read, unknown capability, ambiguous resolution, cross-tenant read, cross-tenant mutation, traversal escape, stale provenance, prompt injection). See conformance/vectors/README.md for the coverage table of the remaining 12. Corresponds to SES-RM-29."
     },
     {
       "id": "SES-GAP-06",
       "text": "SES-100 §8's 'L#' section labels do not follow the L#=SES-0## convention used by conformance/requirements.json and the rest of the standard. Only L0, L4, and L5 line up with their canonical SES document. From L6 onward every section's content actually belongs to SES-0(n+2): e.g. the 'L8 — planning' section tests SES-010's topic, not SES-008 (Authorization); 'L15 — evidence and observability' tests SES-017's topic, not SES-015 (Transport and agents). Critically, SES-002 (Canonical Lifecycle) and SES-007 (Logical Traversal) have NO section testing their actual subject matter at all -- their 'L2' and 'L7' slots were reassigned to 'intent boundary' and 'provenance' content instead. As a direct consequence, requirements.json's SES-LIFE-001 (L2, critical) and SES-TRV-001 (L7, critical) currently have zero correctly-labeled conformance test requirements in SES-100.",
-      "status": "missing",
+      "status": "proven",
+      "note": "Resolved 2026-09-07: SES-100 \u00a78 renumbered against conformance/requirements.json's canonical layer list. The old 'L2 \u2014 intent boundary' content (trust-domain / caller-authority / prompt-injection tests) matched requirements.json's L1 (SES-ARCH-001, architectural model/trust boundaries) and was moved there; the old 'L1 \u2014 semantic contract' content moved to L3; the old 'L3 \u2014 retrieval and resolution' content moved to L6; the old L6-L16 sections (which tested SES-008..SES-018) shifted to L8-L18. New, genuine test requirements were authored for L2 (SES-002, Canonical Lifecycle) and L7 (SES-007, Logical Traversal), which previously had none. verify-conformance.py confirms all of L0-L26 now have requirements.",
       "impact": "Two critical-severity root requirements (lifecycle ordering, traversal scope/resource bounds) are effectively untested under the standard's own numbering convention, and every L6-L16 test ID in SES-100 identifies the wrong SES document."
     }
   ],
@@ -88,26 +89,26 @@
     {
       "id": "SES-PUB-01",
       "text": "The SES standard is not referenced anywhere in the project's mkdocs.yml navigation, and no page under docs/ or docs-site/ links to standards/semantic-execution/. The root README.md and llms.txt also do not link to it.",
-      "status": "missing",
-      "impact": "The standard is undiscoverable from the project's own documentation entry points."
+      "status": "proven",
+      "note": "Resolved 2026-09-07: added docs/STANDARDS.md (linked from mkdocs.yml nav as 'Standard (SES)') pointing into standards/semantic-execution/; added a 'Standard' section to root README.md linking standards/semantic-execution/README.md, SES-104, and conformance/known-gaps.json; added a 'Standard' section to llms.txt."
     },
     {
       "id": "SES-PUB-02",
       "text": "mkdocs.yml nav references docs/LAYER-SETUP.md, docs/PRODUCT-IDENTITY.md, and docs/PROVIDER-INDEPENDENCE.md, none of which exist under docs/.",
-      "status": "missing",
-      "impact": "mkdocs site build/nav is broken for these three entries."
+      "status": "proven",
+      "note": "Resolved 2026-09-07: a broader pass found 7 broken nav targets, not 3 (this entry's original text undercounted them) -- LAYER-SETUP.md, PRODUCT-IDENTITY.md, PROVIDER-INDEPENDENCE.md, AGENT-SEMANTIC-BOUNDARY.md, EXECUTION-IR.md, GRAPHQL.md, and history/README.md. Retargeted each to its actual content match (LAYER-SETUP.md\u2192METADATA-TO-SEMANTICS.md, PRODUCT-IDENTITY.md\u2192WHY-FOUNDGINE.md, PROVIDER-INDEPENDENCE.md\u2192PUBLIC-API.md, AGENT-SEMANTIC-BOUNDARY.md\u2192AI-AGENT.md, EXECUTION-IR.md\u2192RUNTIME.md), dropped the standalone GraphQL nav entry (no doc's primary topic is GraphQL; it's covered as one row of PUBLIC-API.md's package table instead of being force-mapped), and authored the genuinely-missing docs/history/README.md from CHANGELOG.md/git history. Also fixed one unrelated broken in-page link (ROADMAP.md's 'Next:' pointed at a nonexistent MIGRATION.md)."
     },
     {
       "id": "SES-PUB-03",
       "text": "Ten existing files under docs/ are not referenced in mkdocs.yml nav at all: AI-AGENT.md, AOT.md, AUTHORIZATION.md, MAPPING.md, METADATA-TO-SEMANTICS.md, OPEN-INTENT-API.md, PUBLIC-API.md, ROADMAP.md, RUNTIME.md, WHY-FOUNDGINE.md.",
-      "status": "missing",
-      "impact": "These docs are orphaned; unreachable through site navigation."
+      "status": "proven",
+      "note": "Resolved 2026-09-07. This entry's own list was stale: AOT.md, AUTHORIZATION.md, and ROADMAP.md were already in nav at audit time, so only 7 files were actually orphaned. Of those, AI-AGENT.md, WHY-FOUNDGINE.md, and RUNTIME.md were consumed by the SES-PUB-02 retargeting above; MAPPING.md, METADATA-TO-SEMANTICS.md, OPEN-INTENT-API.md, and PUBLIC-API.md got new dedicated nav entries. All 7 are now reachable from mkdocs.yml nav."
     },
     {
       "id": "SES-PUB-04",
       "text": "None of the CI workflows in .github/workflows/ (build.yml, codeql.yml, security.yml, nuget-downloads.yml) invoke scripts/verify-diagrams.py or scripts/verify-conformance.py.",
       "status": "missing",
-      "impact": "The README's claim that verify-diagrams.py 'MUST fail on missing source/artifact pairs' is not actually enforced anywhere; both scripts only run when invoked manually."
+      "note": "Deliberately left out by request 2026-09-07 (no CI workflow change made). The README's claim that verify-diagrams.py 'MUST fail on missing source/artifact pairs' is still not enforced anywhere; both scripts only run when invoked manually."
     }
   ]
 }

@@ -26,22 +26,24 @@ plugins:
 
 nav:
   - Home: README.md
+  - Standard (SES): STANDARDS.md
   - Getting started: GETTING-STARTED.md
-  - Layer setup: LAYER-SETUP.md
+  - Why Foundgine: WHY-FOUNDGINE.md
   - What Foundgine is designed for: APPLICATION-CATEGORIES.md
   - Architecture: ARCHITECTURE.md
+  - Metadata → Semantics (layer setup): METADATA-TO-SEMANTICS.md
+  - Mapping and connections: MAPPING.md
+  - Open Intent API: OPEN-INTENT-API.md
   - Lexical grounding: LEXICAL-GROUNDING.md
   - Grounding decisions: GROUNDING-DECISIONS.md
-  - Product identity: PRODUCT-IDENTITY.md
-  - Provider independence: PROVIDER-INDEPENDENCE.md
+  - Public API and provider independence: PUBLIC-API.md
   - Security: SECURITY.md
-  - Testing: TESTING.md
-  - PostgreSQL E2E: POSTGRES-E2E.md
-  - Current status: CURRENT-STATUS.md
-  - AI boundary: AGENT-SEMANTIC-BOUNDARY.md
-  - Authorization: AUTHORIZATION.md
-  - Execution: EXECUTION-IR.md
-  - GraphQL: GRAPHQL.md
+  - Runtime: RUNTIME.md
   - AOT: AOT.md
+  - AI agent integration: AI-AGENT.md
+  - Authorization: AUTHORIZATION.md
+  - PostgreSQL E2E: POSTGRES-E2E.md
+  - Testing: TESTING.md
+  - Current status: CURRENT-STATUS.md
   - Roadmap: ROADMAP.md
   - History: history/README.md

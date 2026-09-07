@@ -1,0 +1,43 @@
+{
+  "id": "VEC-005-cross-tenant-mutation",
+  "standard_version": "1.0-draft",
+  "profile": "Mutation",
+  "family": "cross-tenant mutation",
+  "contract": {
+    "entity": "Invoice",
+    "fields": ["id", "tenantId", "status"]
+  },
+  "intent": {
+    "operation": "update",
+    "entity": "Invoice",
+    "filter": { "id": "inv-tenant-b-9001" },
+    "set": { "status": "void" }
+  },
+  "trusted_context": {
+    "tenantId": "tenant-a",
+    "principal": "user-alice",
+    "grants": [{ "entity": "Invoice", "action": "update", "scope": { "tenantId": "tenant-a" } }]
+  },
+  "expected_graph": {
+    "root": "Invoice",
+    "predicates": [{ "field": "id", "op": "eq", "value": "inv-tenant-b-9001" }],
+    "mutation_fields": ["status"]
+  },
+  "expected_authorization": {
+    "decision": "deny",
+    "reason": "tenant_boundary_violation"
+  },
+  "expected_provenance": null,
+  "expected_plan_properties": {
+    "widened_scope": false,
+    "committed": false
+  },
+  "expected_result_or_error": {
+    "outcome": "error",
+    "error_class": "authorization_denied",
+    "side_effects": "none"
+  },
+  "resource_budget": { "max_nodes": 20, "max_depth": 1 },
+  "invariant_under_test": "L8-T02, L13-T04 — a mutation authorization check MUST cover the resolved target's actual tenant, and a denied mutation MUST produce zero observable side effects.",
+  "negative_behavior_note": "Fails this vector if any partial write, lock, or audit-log entry attributable to the mutation's intended effect is observable after the denial."
+}

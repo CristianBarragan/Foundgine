@@ -180,6 +180,12 @@ dotnet test
 
 PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md).
 
+Foundgine's architecture is specified independently of this implementation as
+the **Semantic Execution (SES) standard**: [`standards/semantic-execution/`](standards/semantic-execution/README.md).
+The standard is the authority — see [`SES-104`](standards/semantic-execution/SES-104-foundgine-test-mapping.md)
+for the current implementation gap matrix and [`conformance/known-gaps.json`](standards/semantic-execution/conformance/known-gaps.json)
+for the machine-readable status of every tracked item.
+
 ## Release 2.0.3
 
 **Current release: 2.0.3 · .NET 9**

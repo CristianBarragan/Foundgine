@@ -1,0 +1,40 @@
+{
+  "id": "VEC-004-cross-tenant-read",
+  "standard_version": "1.0-draft",
+  "profile": "Secure",
+  "family": "cross-tenant read",
+  "contract": {
+    "entity": "Invoice",
+    "fields": ["id", "tenantId", "customerId", "amount"]
+  },
+  "intent": {
+    "operation": "read",
+    "entity": "Invoice",
+    "filter": { "id": "inv-tenant-b-9001" }
+  },
+  "trusted_context": {
+    "tenantId": "tenant-a",
+    "principal": "user-alice",
+    "grants": [{ "entity": "Invoice", "action": "read", "scope": { "tenantId": "tenant-a" } }]
+  },
+  "expected_graph": {
+    "root": "Invoice",
+    "predicates": [{ "field": "id", "op": "eq", "value": "inv-tenant-b-9001" }]
+  },
+  "expected_authorization": {
+    "decision": "deny",
+    "reason": "tenant_boundary_violation"
+  },
+  "expected_provenance": null,
+  "expected_plan_properties": {
+    "widened_scope": false
+  },
+  "expected_result_or_error": {
+    "outcome": "error",
+    "error_class": "authorization_denied",
+    "observable_difference_from_not_found": false
+  },
+  "resource_budget": { "max_nodes": 100, "max_depth": 2 },
+  "invariant_under_test": "L8-T02 — tenant boundaries cannot be widened by an identifier that happens to resolve to another tenant's resource.",
+  "negative_behavior_note": "The error MUST NOT be distinguishable from a not-found response for a nonexistent ID within the caller's own tenant, to avoid tenant-existence leakage via error-message oracle."
+}
