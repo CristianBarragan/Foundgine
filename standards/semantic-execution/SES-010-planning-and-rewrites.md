@@ -1,4 +1,7 @@
 # SES-010 — Semantic Planning, Normalization, and Safe Rewriting
+← [SES-009 — Authorization Provenance and Security Proof](SES-009-authorization-provenance.md) · [Standard Index](README.md) · [SES-011 — Execution Intermediate Representation](SES-011-execution-ir.md) →
+
+---
 
 ## Status and purpose
 
@@ -48,3 +51,6 @@ Define a rewrite certificate format, reference optimizer, cost-model contract, o
 
 Optimized and reference plans MUST produce equivalent authorized results for all applicable conformance vectors, and any failed proof MUST stop execution rather than silently fall back.
 
+---
+
+← [SES-009 — Authorization Provenance and Security Proof](SES-009-authorization-provenance.md) · [Standard Index](README.md) · [SES-011 — Execution Intermediate Representation](SES-011-execution-ir.md) →

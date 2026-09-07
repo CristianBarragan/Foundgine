@@ -1,4 +1,7 @@
 # SES-026 — Proof, Attestation, and Verification
+← [SES-025 — Provider Capability and Fidelity Profiles](SES-025-provider-capability-profiles.md) · [Standard Index](README.md) · [SES-100 — Forward Conformance Testing Specification](SES-100-conformance-testing.md) →
+
+---
 
 **Status:** Draft 1.0 — Normative target.
 
@@ -39,3 +42,7 @@ Define portable proof formats, proof composition, signature suites, key lifecycl
 ## 7. Acceptance
 
 Mutating any meaning- or authority-relevant byte MUST invalidate verification. A stale policy, altered provider capability, altered IR, or altered contract MUST prevent execution.
+
+---
+
+← [SES-025 — Provider Capability and Fidelity Profiles](SES-025-provider-capability-profiles.md) · [Standard Index](README.md) · [SES-100 — Forward Conformance Testing Specification](SES-100-conformance-testing.md) →

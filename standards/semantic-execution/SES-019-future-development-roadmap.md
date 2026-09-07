@@ -1,4 +1,7 @@
 # SES-019 — Future Development Roadmap and Open Research Problems
+← [SES-018 — AOT, Generated Metadata, and Deterministic Compilation](SES-018-aot-and-generated-metadata.md) · [Standard Index](README.md) · [SES-020 — Formal Semantic Execution Data Model](SES-020-formal-data-model.md) →
+
+---
 
 ## Status and purpose
 
@@ -13,6 +16,8 @@ Normative terms **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, 
 ## 1. Purpose
 
 This document is the master backlog for capabilities that should be developed before the Semantic Execution Standard can be considered mature.
+
+Each numbered item below has a stable identifier and a tracked status in the machine-readable gap registry, [`conformance/known-gaps.json`](conformance/known-gaps.json) (`SES-RM-01` … `SES-RM-33`, in the same order as the sections below). See SES-104 §4–5 for the tracking discipline.
 
 ## 2. Foundational work
 
@@ -75,3 +80,6 @@ The standard should not claim production-grade maturity until every P0 requireme
 - How should distributed mutation semantics be represented without falsely promising exactly-once effects?
 - What is the minimal semantic IR that remains expressive across SQL, graph, search, vector, and document providers?
 
+---
+
+← [SES-018 — AOT, Generated Metadata, and Deterministic Compilation](SES-018-aot-and-generated-metadata.md) · [Standard Index](README.md) · [SES-020 — Formal Semantic Execution Data Model](SES-020-formal-data-model.md) →

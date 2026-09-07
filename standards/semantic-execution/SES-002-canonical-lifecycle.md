@@ -1,4 +1,7 @@
 # SES-002 — Canonical Semantic Execution Lifecycle
+← [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) · [Standard Index](README.md) · [SES-003 — Semantic Contract and Domain Meaning](SES-003-semantic-contract.md) →
+
+---
 
 ## Status and purpose
 
@@ -51,3 +54,6 @@ Each stage MUST define explicit rejection codes and MUST identify whether retryi
 
 A conforming lifecycle implementation MUST produce a traceable lineage from the original intent to physical execution, including every revalidation and every rejection/retry decision.
 
+---
+
+← [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) · [Standard Index](README.md) · [SES-003 — Semantic Contract and Domain Meaning](SES-003-semantic-contract.md) →

@@ -1,4 +1,7 @@
 # SES-100 — Forward Conformance Testing Specification
+← [SES-026 — Proof, Attestation, and Verification](SES-026-proof-and-attestation.md) · [Standard Index](README.md) · [SES-101 — Test Architecture, Fixtures, and Independent Oracles](SES-101-test-architecture-and-fixtures.md) →
+
+---
 
 ## Status and purpose
 
@@ -64,10 +67,11 @@ At minimum the future suite MUST prove:
 
 The next stage is to map every normative requirement to exact test methods and identify missing tests rather than merely listing existing test files.
 
-
 ## 8. Layer-by-layer mandatory requirement identifiers
 
 The following identifiers are normative anchors. Implementations MUST map each identifier to an executable test or an explicitly declared profile exclusion.
+
+> **Known gap (`SES-GAP-06`, see SES-104 §5):** the `L#` labels below do not consistently follow the `L#=SES-0##` convention used in `conformance/requirements.json` and elsewhere in the standard. Only L0, L4, and L5 line up with their canonical document. From L6 onward, each section's content actually belongs to SES-0(n+2) — for example, "L8 — planning" tests SES-010's subject matter, not SES-008 (Authorization). SES-002 (Canonical Lifecycle) and SES-007 (Logical Traversal) currently have no section testing their actual subject matter, so `SES-LIFE-001` and `SES-TRV-001` (both critical, per `requirements.json`) are effectively untested under this document. This MUST be resolved — either by renumbering these sections to the canonical convention and adding the two missing sections, or by introducing a separate, explicitly-named layer identifier space for this document — before this section can be relied on for conformance claims.
 
 ### L0 — terminology and conformance
 - **L0-T01**: normative language and requirement identifiers are machine-readable.
@@ -181,3 +185,7 @@ The following identifiers are normative anchors. Implementations MUST map each i
 - **X-T06**: cached and uncached executions preserve security semantics.
 - **X-T07**: independent providers preserve required semantic guarantees.
 - **X-T08**: every security-boundary failure fails closed.
+
+---
+
+← [SES-026 — Proof, Attestation, and Verification](SES-026-proof-and-attestation.md) · [Standard Index](README.md) · [SES-101 — Test Architecture, Fixtures, and Independent Oracles](SES-101-test-architecture-and-fixtures.md) →

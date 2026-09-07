@@ -1,4 +1,7 @@
 # SES-022 — Transport-Neutral Wire Protocol
+← [SES-021 — Lifecycle and Security State Machines](SES-021-state-machines.md) · [Standard Index](README.md) · [SES-023 — Versioning, Negotiation, and Compatibility](SES-023-versioning-and-compatibility.md) →
+
+---
 
 **Status:** Draft 1.0 — Normative target.
 
@@ -47,3 +50,7 @@ Specify canonical JSON/CBOR encodings, capability discovery, signed envelopes, r
 ## 8. Acceptance
 
 A transport-conformance suite MUST replay the same semantic vector through at least two transport adapters and compare canonical semantic, authorization, provenance, and error outcomes.
+
+---
+
+← [SES-021 — Lifecycle and Security State Machines](SES-021-state-machines.md) · [Standard Index](README.md) · [SES-023 — Versioning, Negotiation, and Compatibility](SES-023-versioning-and-compatibility.md) →

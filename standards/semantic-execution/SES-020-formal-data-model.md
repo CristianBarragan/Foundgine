@@ -1,4 +1,7 @@
 # SES-020 — Formal Semantic Execution Data Model
+← [SES-019 — Future Development Roadmap and Open Research Problems](SES-019-future-development-roadmap.md) · [Standard Index](README.md) · [SES-021 — Lifecycle and Security State Machines](SES-021-state-machines.md) →
+
+---
 
 **Status:** Draft 1.0 — Normative target.
 
@@ -61,3 +64,7 @@ Define a machine-readable schema, canonical binary/text encodings, schema evolut
 ## 9. Acceptance
 
 Two independent implementations given the same canonical inputs MUST produce identical artifact identities and either equivalent artifacts or the same deterministic rejection class.
+
+---
+
+← [SES-019 — Future Development Roadmap and Open Research Problems](SES-019-future-development-roadmap.md) · [Standard Index](README.md) · [SES-021 — Lifecycle and Security State Machines](SES-021-state-machines.md) →

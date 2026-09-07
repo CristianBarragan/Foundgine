@@ -1,4 +1,7 @@
 # SES-015 — Transport, Agent, and Tool Boundaries
+← [SES-014 — Authorization-Safe Plan Caching](SES-014-plan-caching.md) · [Standard Index](README.md) · [SES-016 — Resource Limits, Complexity, and Denial-of-Service Controls](SES-016-resource-governance.md) →
+
+---
 
 ## Status and purpose
 
@@ -37,3 +40,6 @@ Define transport-neutral request envelopes, tool capability manifests, agent/ses
 
 The same authorized semantic request delivered through different transports MUST result in equivalent authorization semantics. A transport-specific shortcut MUST NOT bypass the canonical security pipeline.
 
+---
+
+← [SES-014 — Authorization-Safe Plan Caching](SES-014-plan-caching.md) · [Standard Index](README.md) · [SES-016 — Resource Limits, Complexity, and Denial-of-Service Controls](SES-016-resource-governance.md) →

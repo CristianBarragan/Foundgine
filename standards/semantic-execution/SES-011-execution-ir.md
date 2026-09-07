@@ -1,4 +1,7 @@
 # SES-011 — Execution Intermediate Representation
+← [SES-010 — Semantic Planning, Normalization, and Safe Rewriting](SES-010-planning-and-rewrites.md) · [Standard Index](README.md) · [SES-012 — Provider Compilation, Conformance, and Execution Boundary](SES-012-provider-boundary.md) →
+
+---
 
 ## Status and purpose
 
@@ -41,3 +44,6 @@ Define a versioned IR schema, verifier, canonical serialization, capability nego
 
 No provider may receive an IR artifact that has not passed semantic, authorization, resource, and provenance validation.
 
+---
+
+← [SES-010 — Semantic Planning, Normalization, and Safe Rewriting](SES-010-planning-and-rewrites.md) · [Standard Index](README.md) · [SES-012 — Provider Compilation, Conformance, and Execution Boundary](SES-012-provider-boundary.md) →

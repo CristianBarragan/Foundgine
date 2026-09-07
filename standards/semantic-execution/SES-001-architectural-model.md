@@ -1,4 +1,7 @@
 # SES-001 — Architectural Model and Trust Boundaries
+← [SES-000 — Terminology, Normative Language, and Conformance](SES-000-terminology-and-conformance.md) · [Standard Index](README.md) · [SES-002 — Canonical Semantic Execution Lifecycle](SES-002-canonical-lifecycle.md) →
+
+---
 
 ## Status and purpose
 
@@ -51,3 +54,6 @@ A complete architecture specification MUST define distributed execution lineage,
 
 The architecture is mature only when a test can take an artifact, mutate each trust-classified field independently, and demonstrate that no lower-trust mutation can cross a higher-trust boundary without explicit reauthorization.
 
+---
+
+← [SES-000 — Terminology, Normative Language, and Conformance](SES-000-terminology-and-conformance.md) · [Standard Index](README.md) · [SES-002 — Canonical Semantic Execution Lifecycle](SES-002-canonical-lifecycle.md) →

@@ -1,4 +1,7 @@
 # SES-021 — Lifecycle and Security State Machines
+← [SES-020 — Formal Semantic Execution Data Model](SES-020-formal-data-model.md) · [Standard Index](README.md) · [SES-022 — Transport-Neutral Wire Protocol](SES-022-wire-protocol.md) →
+
+---
 
 **Status:** Draft 1.0 — Normative target.
 
@@ -41,3 +44,7 @@ Define a formal transition table, state/event/error registry, distributed execut
 ## 8. Acceptance
 
 Fault-injection tests MUST demonstrate that every reachable security-context change, timeout, cancellation, retry, and partial-failure path either preserves the stated invariant or terminates without unauthorized execution.
+
+---
+
+← [SES-020 — Formal Semantic Execution Data Model](SES-020-formal-data-model.md) · [Standard Index](README.md) · [SES-022 — Transport-Neutral Wire Protocol](SES-022-wire-protocol.md) →

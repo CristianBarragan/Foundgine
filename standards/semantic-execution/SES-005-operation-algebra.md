@@ -1,4 +1,7 @@
 # SES-005 — Semantic Operation, Predicate, and Traversal Algebra
+← [SES-004 — Semantic Operation Graph](SES-004-operation-graph.md) · [Standard Index](README.md) · [SES-006 — Candidate Retrieval, Grounding, and Semantic Resolution](SES-006-retrieval-and-resolution.md) →
+
+---
 
 ## Status and purpose
 
@@ -44,3 +47,6 @@ Create a reference algebra, canonical normal forms, rewrite certificates, counte
 
 Every optimizer rewrite MUST identify its algebraic preconditions and have differential tests covering cases where those preconditions fail.
 
+---
+
+← [SES-004 — Semantic Operation Graph](SES-004-operation-graph.md) · [Standard Index](README.md) · [SES-006 — Candidate Retrieval, Grounding, and Semantic Resolution](SES-006-retrieval-and-resolution.md) →
