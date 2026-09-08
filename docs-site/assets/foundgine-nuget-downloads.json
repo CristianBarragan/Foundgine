@@ -1,35 +1,35 @@
 {
   "schemaVersion": 1,
   "label": "NuGet Downloads",
-  "message": "51,406",
+  "message": "51,899",
   "color": "blue",
-  "generatedAt": "2026-09-08T04:45:19.4224044Z",
-  "totalDownloads": 51406,
+  "generatedAt": "2026-09-08T11:25:19.9774490Z",
+  "totalDownloads": 51899,
   "packageCount": 33,
   "packages": [
     {
       "id": "Foundgine",
-      "downloads": 2718
+      "downloads": 2727
     },
     {
       "id": "Foundgine.Abstractions",
-      "downloads": 5928
+      "downloads": 5940
     },
     {
       "id": "Foundgine.Agent.OpenAI",
-      "downloads": 1294
+      "downloads": 1302
     },
     {
       "id": "Foundgine.AI",
-      "downloads": 1684
+      "downloads": 1697
     },
     {
       "id": "Foundgine.Aot",
-      "downloads": 2047
+      "downloads": 2059
     },
     {
       "id": "Foundgine.Authorization",
-      "downloads": 611
+      "downloads": 615
     },
     {
       "id": "Foundgine.CoffeeBeanery.Product",
@@ -37,63 +37,63 @@
     },
     {
       "id": "Foundgine.CoffeeBeanery.ProductComposite",
-      "downloads": 1175
+      "downloads": 1189
     },
     {
       "id": "Foundgine.Core",
-      "downloads": 188
+      "downloads": 239
     },
     {
       "id": "Foundgine.Elasticsearch",
-      "downloads": 186
+      "downloads": 188
     },
     {
       "id": "Foundgine.Execution",
-      "downloads": 3960
+      "downloads": 3973
     },
     {
       "id": "Foundgine.Extensions",
-      "downloads": 163
+      "downloads": 174
     },
     {
       "id": "Foundgine.GraphQL.HotChocolate",
-      "downloads": 2158
+      "downloads": 2168
     },
     {
       "id": "Foundgine.GraphQL.HotChocolate.Execution",
-      "downloads": 852
+      "downloads": 859
     },
     {
       "id": "Foundgine.GraphQL.HotChocolate.MutationExecution",
-      "downloads": 649
+      "downloads": 657
     },
     {
       "id": "Foundgine.GraphQL.HotChocolate.Mutations",
-      "downloads": 1794
+      "downloads": 1806
     },
     {
       "id": "Foundgine.HighAssurance.Postgres",
-      "downloads": 909
+      "downloads": 917
     },
     {
       "id": "Foundgine.InMemory",
-      "downloads": 1929
+      "downloads": 1950
     },
     {
       "id": "Foundgine.Intent.Json",
-      "downloads": 2364
+      "downloads": 2372
     },
     {
       "id": "Foundgine.MCP",
-      "downloads": 1511
+      "downloads": 1522
     },
     {
       "id": "Foundgine.Metadata",
-      "downloads": 3459
+      "downloads": 3470
     },
     {
       "id": "Foundgine.Planning",
-      "downloads": 4186
+      "downloads": 4196
     },
     {
       "id": "Foundgine.Postgres.Vector",
@@ -101,43 +101,43 @@
     },
     {
       "id": "Foundgine.Providers",
-      "downloads": 159
+      "downloads": 284
     },
     {
       "id": "Foundgine.Runtime",
-      "downloads": 174
+      "downloads": 220
     },
     {
       "id": "Foundgine.Security.Authority",
-      "downloads": 674
+      "downloads": 687
     },
     {
       "id": "Foundgine.Semantics",
-      "downloads": 5442
+      "downloads": 5453
     },
     {
       "id": "Foundgine.Sql",
-      "downloads": 1817
+      "downloads": 1828
     },
     {
       "id": "Foundgine.SupplyChain.Application",
-      "downloads": 638
+      "downloads": 644
     },
     {
       "id": "Foundgine.SupplyChain.Domain",
-      "downloads": 819
+      "downloads": 827
     },
     {
       "id": "Foundgine.SupplyChain.Infrastructure",
-      "downloads": 614
+      "downloads": 623
     },
     {
       "id": "Foundgine.SupplyChain.Semantic",
-      "downloads": 373
+      "downloads": 376
     },
     {
       "id": "Foundgine.SupplyChain.Semantics",
-      "downloads": 634
+      "downloads": 640
     }
   ]
 }
