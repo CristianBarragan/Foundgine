@@ -133,7 +133,7 @@ jobs:
           echo "NuGet package validation passed."
 
       - name: Upload NuGet artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nuget-packages
           path: artifacts/nuget/*
