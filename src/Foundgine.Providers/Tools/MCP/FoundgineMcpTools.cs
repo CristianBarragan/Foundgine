@@ -3,6 +3,8 @@ using System.Text.Json;
 using Foundgine.Core.Execution;
 using Foundgine.Core.Serialization;
 using Foundgine.Core.Semantic.Security.Execution;
+using Foundgine.Core.Semantic.Resolution;
+using Foundgine.Core.Semantic.Intent;
 using Foundgine.Runtime;
 using ModelContextProtocol.Server;
 using ExecutionContext = Foundgine.Core.Execution.ExecutionContext;
@@ -21,6 +23,7 @@ public sealed class FoundgineMcpTools
 
     private readonly IFoundgine _foundgine;
     private readonly JsonReadIntentAdapter _adapter;
+    private readonly SemanticLexicalReadIntentGrounder? _lexicalGrounder;
     private readonly Func<ExecutionContext> _contextFactory;
     private readonly ISecurityExecutionContextProvider _securityContextProvider;
 
@@ -36,15 +39,18 @@ public sealed class FoundgineMcpTools
     /// Obsolete delegate form of <paramref name="securityContextProvider"/>, retained for
     /// existing hosts. Internally wrapped in a <see cref="DelegateSecurityExecutionContextProvider"/>.
     /// </param>
+    /// <param name="lexicalGrounder"></param>
     public FoundgineMcpTools(
         IFoundgine foundgine,
         JsonReadIntentAdapter? adapter = null,
         Func<ExecutionContext>? contextFactory = null,
         ISecurityExecutionContextProvider? securityContextProvider = null,
-        Func<SecurityExecutionContext?>? securityContextFactory = null)
+        Func<SecurityExecutionContext?>? securityContextFactory = null,
+        SemanticLexicalReadIntentGrounder? lexicalGrounder = null)
     {
         _foundgine = foundgine ?? throw new ArgumentNullException(nameof(foundgine));
         _adapter = adapter ?? new JsonReadIntentAdapter();
+        _lexicalGrounder = lexicalGrounder;
         _contextFactory = contextFactory ?? (() => new ExecutionContext());
 
         if (securityContextProvider is not null && securityContextFactory is not null)
@@ -81,19 +87,56 @@ public sealed class FoundgineMcpTools
     /// </summary>
     [McpServerTool(Name = "foundgine_query")]
     [Description(
-        "Execute a provider-neutral Foundgine read intent as JSON. Use only entities, fields and relationships from foundgine_capabilities. Never supply tenant, identity, authorization predicates, SQL, provider or connection details.")]
+        "Execute an open Foundgine intent using natural-language lexical grounding. Prefer this tool when the caller has a user-level or natural-language request; Foundgine grounds it against the semantic contract before authorization, planning, and execution. If the intent is already structurally resolved, use foundgine_query_semantic instead. Never supply tenant, identity, authorization predicates, SQL, provider or connection details.")]
     public async Task<string> ExecuteQueryAsync(
         [Description(
-            "JSON read intent containing rootEntity, selections, and optional filter/order/limit/offset/after. Do not include authentication, tenant or authorization context.")]
+            "An open intent: either a natural-language expression (for example, 'show customer orders') or a JSON read intent containing rootEntity, selections, and optional filter/order/limit/offset/after. Authentication and authorization context are host-owned.")]
         string intentJson,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(intentJson))
             throw new ArgumentException("Intent JSON is required.", nameof(intentJson));
 
-        var intent = _adapter.Parse(intentJson);
         var security = _securityContextProvider.RequireSecurityExecutionContext(
             "MCP", "execution");
+
+        var intent = ParseOpenIntent(intentJson, cancellationToken);
+        return await ExecuteResolvedIntentAsync(intent, security, cancellationToken);
+    }
+
+    /// <summary>
+    /// Executes an already-structured provider-neutral semantic read intent. This is the
+    /// explicit structured path for agents that have already resolved the semantic model.
+    /// It does not invoke lexical grounding.
+    /// </summary>
+    [McpServerTool(Name = "foundgine_query_semantic")]
+    [Description(
+        "Execute an already-structured provider-neutral Foundgine read intent. Use this when the caller already knows the semantic rootEntity, selections, and optional filter/order/pagination. Use foundgine_query for natural-language intent and lexical grounding. Never supply tenant, identity, authorization predicates, SQL, provider or connection details.")]
+    public async Task<string> ExecuteSemanticQueryAsync(
+        [Description(
+            "A provider-neutral JSON read intent containing rootEntity, selections, and optional filter/order/limit/offset/after. The semantic model is public; physical storage details are not.")]
+        string intentJson,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(intentJson))
+            throw new ArgumentException("Semantic intent JSON is required.", nameof(intentJson));
+
+        var security = _securityContextProvider.RequireSecurityExecutionContext(
+            "MCP", "structured execution");
+
+        using var document = JsonDocument.Parse(intentJson);
+        if (document.RootElement.ValueKind != JsonValueKind.Object)
+            throw new ArgumentException("Structured intent must be a JSON object.", nameof(intentJson));
+
+        var intent = _adapter.Parse(intentJson);
+        return await ExecuteResolvedIntentAsync(intent, security, cancellationToken);
+    }
+
+    private async Task<string> ExecuteResolvedIntentAsync(
+        ReadIntent intent,
+        SecurityExecutionContext security,
+        CancellationToken cancellationToken)
+    {
         intent = intent with { Security = security };
         var result = await _foundgine.ExecuteAsync(
             intent,
@@ -107,5 +150,36 @@ public sealed class FoundgineMcpTools
             evidence = result.Evidence,
             receipt = result.Receipt
         }, JsonOptions);
+    }
+
+    private ReadIntent ParseOpenIntent(string input, CancellationToken cancellationToken)
+    {
+        var trimmed = input.Trim();
+        if (trimmed.StartsWith("{", StringComparison.Ordinal))
+        {
+            using var document = JsonDocument.Parse(trimmed);
+            if (document.RootElement.TryGetProperty("intent", out var intentProperty) &&
+                intentProperty.ValueKind == JsonValueKind.String)
+            {
+                var expression = intentProperty.GetString();
+                if (string.IsNullOrWhiteSpace(expression))
+                    throw new ArgumentException("'intent' cannot be empty.", nameof(input));
+
+                return GroundLexically(expression, cancellationToken);
+            }
+
+            return _adapter.Parse(trimmed);
+        }
+
+        return GroundLexically(trimmed, cancellationToken);
+    }
+
+    private ReadIntent GroundLexically(string expression, CancellationToken cancellationToken)
+    {
+        if (_lexicalGrounder is null)
+            throw new InvalidOperationException(
+                "Open lexical intents are not configured. Enable Foundgine grounding and register an ISemanticLexicalCandidateSource.");
+
+        return _lexicalGrounder.Ground(expression, cancellationToken);
     }
 }

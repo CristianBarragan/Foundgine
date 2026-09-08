@@ -20,10 +20,16 @@ namespace Foundgine.Runtime.Capabilities;
 /// </summary>
 public sealed class Grounding : IFoundgineCapability
 {
-    public static void Configure(FoundgineCapabilityContext context) =>
+    public static void Configure(FoundgineCapabilityContext context)
+    {
         context.Services.AddSingleton(sp => new SemanticLexicalResolver(
             sp.GetRequiredService<SemanticContractSnapshot>(),
             sp.GetRequiredService<ISemanticLexicalCandidateSource>()));
+
+        context.Services.AddSingleton(sp => new SemanticLexicalReadIntentGrounder(
+            sp.GetRequiredService<SemanticContractSnapshot>(),
+            sp.GetRequiredService<SemanticLexicalResolver>()));
+    }
 }
 
 /// <summary>Fluent <c>Use</c>/<c>Disable</c> surface for <see cref="Grounding"/>.</summary>
