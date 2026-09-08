@@ -10,6 +10,12 @@
 		<ProjectReference Include="../../../src/Foundgine.Providers/Foundgine.Providers.csproj" />
 		<ProjectReference Include="../../../src/Foundgine.Core/Foundgine.Core.csproj" />
 		<ProjectReference Include="../../../src/Foundgine.Runtime/Foundgine.Runtime.csproj" />
+		<ProjectReference Include="../../../src/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+		                  OutputItemType="Analyzer"
+		                  ReferenceOutputAssembly="false"
+		                  PrivateAssets="all"
+		                  SkipGetTargetFrameworkProperties="true"
+		                  UndefineProperties="TargetFramework" />
 		
 	</ItemGroup>
 </Project>

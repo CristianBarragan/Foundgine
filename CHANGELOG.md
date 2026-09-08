@@ -1,5 +1,29 @@
 # Changelog
 
+All notable changes to Foundgine are documented here.
+
+## [2.1.1] — 2026-09-09
+
+### Added
+
+- Added generated-metadata-backed open-intent support to the Advanced Supply Chain MCP sample.
+- Added semantic overlays on top of generated metadata for natural-language entity aliases.
+- Added generated metadata identity lookup for the open-intent compatibility layer.
+- Added direct consumption of AOT-generated metadata by the Supply Chain SQL plan compiler.
+
+### Changed
+
+- Supply Chain semantic setup now uses the generated metadata catalog as the structural source of truth.
+- SQL plan compilation no longer requires a manually reconstructed storage metadata registry.
+- Open-intent semantic configuration now layers application meaning over generated structural metadata rather than duplicating entity, field, relationship, or storage definitions.
+- Supply Chain relationship metadata now correctly maps `Product.Inventory` from `Product.Id` to `Inventory.ProductId`.
+- The Advanced Supply Chain MCP sample now follows the generated metadata → semantic overlay → planning → SQL compilation pipeline.
+
+### Validation
+
+- `Foundgine.E2E.Tests` passes.
+- Advanced Supply Chain MCP compilation succeeds after the generated metadata and semantic overlay fixes.
+
 ## 2.1.0 — September 8, 2026
 
 ### Samples

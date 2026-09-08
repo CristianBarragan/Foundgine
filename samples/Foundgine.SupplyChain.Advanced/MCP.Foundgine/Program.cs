@@ -1,159 +1,119 @@
 using Foundgine.Core.Abstractions;
 using Foundgine.Core.Execution;
-using Foundgine.Providers.Tools.MCP;
-using Foundgine.Core.Semantic.Planning;
 using Foundgine.Core.Semantic;
 using Foundgine.Core.Semantic.Authorization;
-using Foundgine.Core.Semantic.IR;
+using Foundgine.Core.Semantic.Security.Execution;
+using Foundgine.Core.Semantic.Security.Warrants;
+using Foundgine.Core.Semantic.Resolution;
+using Foundgine.Runtime.Capabilities;
+using Foundgine.Providers.Storage.Sql;
+using Foundgine.Providers.Tools.MCP;
+using Foundgine.Runtime;
+using Foundgine.SupplyChain.Advanced.OpenIntent;
+using Foundgine.SupplyChain.Advanced.OpenIntent.Domain;
+using Microsoft.AspNetCore.Http;
 using ModelContextProtocol;
 using ModelContextProtocol.Server;
 using Npgsql;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Foundgine.Core.Semantic.IR;
+using Foundgine.Core.Semantic.Planning;
 
 var builder = WebApplication.CreateBuilder(args);
 var cs = builder.Configuration["SupplyChainConnectionString"]
          ?? Environment.GetEnvironmentVariable("SupplyChainConnectionString")
          ?? throw new InvalidOperationException("SupplyChainConnectionString is required.");
 
-builder.Services.AddSingleton(NpgsqlDataSource.Create(cs));
-// The unfrozen model is kept registered for anything that still wants it,
-// but everything that needs a trusted contract (below) uses the frozen
-// snapshot - see the comment on the SemanticContractSnapshot registration.
-builder.Services.AddSingleton(SupplyChainSemanticModel.Build());
-builder.Services.AddSingleton(sp =>
-    sp.GetRequiredService<SemanticModel>().Freeze().CreateSnapshot());
-// Actor/capability authorization for this benchmark is handled by
-// SupplyChainAuthorizer.CanExecute at the MCP tool boundary (see
-// SupplyChainMcpTools.Execute) before any of this code runs - that is the
-// real access-control decision. The SemanticAuthorizer registered here is a
-// second, narrower thing: it produces the SemanticAuthorizationResult that
-// Foundgine's planner requires to stamp a plan with authorization
-// provenance before ExecutionIRCompiler will compile it (see
-// ExecutionIRCompiler.Compile). It uses AllowAllSemanticAuthorizationPolicy
-// because entity/field-level access within this fixed benchmark schema
-// isn't the thing being tested here - the actor gate above is - so this
-// step is honestly just "formally bind provenance to a plan for a request
-// that already passed the real authorization check", not a second
-// independent access-control layer.
+var semanticModel = OpenIntentSemanticModel.Model;
+var dataSource = NpgsqlDataSource.Create(cs);
+
+builder.Services.AddSingleton(dataSource);
+builder.Services.AddSingleton(semanticModel);
+builder.Services.AddSingleton<ISemanticLexicalCandidateSource, SemanticContractLexicalCandidateSource>();
+builder.Services.AddSingleton<IProviderPlanCompiler, SupplyChainSqlPlanCompiler>();
+builder.Services.AddSingleton<IExecutionProvider, PooledSqlExecutionProvider>();
+
+// The closed capability surface still uses its existing application-level
+// authorizer. The open-intent engine has its own semantic policy below; keeping
+// the two explicit prevents a transport adapter from silently becoming the
+// application's authorization authority.
 builder.Services.AddSingleton(new SemanticAuthorizer(new AllowAllSemanticAuthorizationPolicy()));
 builder.Services.AddSingleton<SupplyChainAuthorizer>();
 builder.Services.AddSingleton<Planner>();
 builder.Services.AddScoped<SupplyChainExecutionService>();
+
+// Foundgine's provider-neutral read pipeline: intent -> semantic graph ->
+// authorization -> plan -> Execution IR -> SQL provider.
+builder.Services.AddFoundgine(options =>
+{
+    options.Model = semanticModel;
+    options.UseGrounding();
+    options.AuthorizationPolicy = new AllowAllSemanticAuthorizationPolicy();
+    options.WarrantKeyResolver = new OpenIntentDemoSecurity.KeyResolver();
+    options.ExpectedWarrantIssuer = OpenIntentDemoSecurity.ExpectedIssuer;
+    options.WarrantReplayStore = new MemorySecurityWarrantReplayStore();
+});
+
+// The MCP adapter itself is deliberately unaware of actor/token authentication.
+// The host establishes SecurityExecutionContext before the adapter can execute.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<ISecurityExecutionContextProvider, HttpContextSecurityExecutionContextProvider>();
 builder.Services.AddFoundgineMcp(() => new Foundgine.Core.Execution.ExecutionContext());
+
 builder.Services.AddMcpServer()
     .WithHttpTransport(o => o.Stateless = true)
-    .WithTools<SupplyChainMcpTools>();
+    .WithTools<SupplyChainMcpTools>()
+    .WithTools<FoundgineMcpTools>();
 
 var app = builder.Build();
+app.UseWhen(
+    ctx => ctx.Request.Path.StartsWithSegments("/mcp"),
+    branch => branch.Use(async (ctx, next) =>
+    {
+        await OpenIntentDemoSecurity.PopulateSecurityContextAsync(ctx);
+        await next();
+    }));
 app.MapMcp("/mcp");
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
-app.MapGet("/health/ready", async (NpgsqlDataSource dataSource, CancellationToken ct) =>
+app.MapGet("/health/ready", async (NpgsqlDataSource ds, CancellationToken ct) =>
 {
-    await using var c = await dataSource.OpenConnectionAsync(ct);
+    await using var c = await ds.OpenConnectionAsync(ct);
     await using var cmd = new NpgsqlCommand("SELECT 1", c);
     await cmd.ExecuteScalarAsync(ct);
     return Results.Ok(new { status = "ready" });
 });
 app.Run();
 
-public static class SupplyChainSemanticModel
+public sealed class PooledSqlExecutionProvider : IExecutionProvider
 {
-    public static readonly EntityId Customer = new(1);
-    public static readonly EntityId Order = new(2);
-    public static readonly EntityId OrderItem = new(3);
-    public static readonly EntityId Product = new(4);
-    public static readonly EntityId Supplier = new(5);
-    public static readonly EntityId Category = new(6);
-    public static readonly EntityId Inventory = new(7);
-    public static readonly EntityId Warehouse = new(8);
-    public static readonly EntityId Shipment = new(9);
-    public static readonly EntityId Carrier = new(10);
-    public static readonly EntityId PurchaseOrder = new(11);
+    private readonly NpgsqlDataSource _dataSource;
 
-    public static readonly RelationshipId CustomerOrders = new(1);
-    public static readonly RelationshipId OrderItems = new(2);
-    public static readonly RelationshipId ItemProduct = new(3);
-    public static readonly RelationshipId ProductSupplier = new(4);
-    public static readonly RelationshipId ProductCategory = new(5);
-    public static readonly RelationshipId ProductInventory = new(6);
-    public static readonly RelationshipId InventoryWarehouse = new(7);
-    public static readonly RelationshipId OrderShipments = new(8);
-    public static readonly RelationshipId ShipmentCarrier = new(9);
-    public static readonly RelationshipId ShipmentWarehouse = new(10);
-    public static readonly RelationshipId SupplierPurchaseOrders = new(11);
+    public PooledSqlExecutionProvider(NpgsqlDataSource dataSource) =>
+        _dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
 
-    public static SemanticModel Build() => new SemanticModelBuilder()
-        .Entity(Customer, "Customer", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "FirstName", typeof(string))
-            .Field(new FieldId(3), "LastName", typeof(string))
-            .Field(new FieldId(4), "Email", typeof(string))
-            .Relationship(CustomerOrders, "Orders", Order, RelationshipCardinality.Many))
-        .Entity(Order, "Order", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "CustomerId", typeof(int))
-            .Field(new FieldId(3), "Status", typeof(string))
-            .Field(new FieldId(4), "TotalAmount", typeof(decimal))
-            .Relationship(OrderItems, "Items", OrderItem, RelationshipCardinality.Many)
-            .Relationship(OrderShipments, "Shipments", Shipment, RelationshipCardinality.Many))
-        .Entity(OrderItem, "OrderItem", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "OrderId", typeof(int))
-            .Field(new FieldId(3), "ProductId", typeof(int))
-            .Field(new FieldId(4), "Quantity", typeof(int))
-            .Field(new FieldId(5), "UnitPrice", typeof(decimal))
-            .Relationship(ItemProduct, "Product", Product, RelationshipCardinality.One))
-        .Entity(Product, "Product", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "Name", typeof(string))
-            .Field(new FieldId(3), "Sku", typeof(string))
-            .Field(new FieldId(4), "UnitPrice", typeof(decimal))
-            .Relationship(ProductSupplier, "Supplier", Supplier, RelationshipCardinality.One)
-            .Relationship(ProductCategory, "Category", Category, RelationshipCardinality.One)
-            .Relationship(ProductInventory, "Inventory", Inventory, RelationshipCardinality.Many))
-        .Entity(Supplier, "Supplier", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "Name", typeof(string))
-            .Field(new FieldId(3), "Email", typeof(string))
-            .Field(new FieldId(4), "State", typeof(string))
-            .Field(new FieldId(5), "TotalOrderValue", typeof(decimal))
-            .Field(new FieldId(6), "NegotiatedCost", typeof(decimal))
-            .Relationship(SupplierPurchaseOrders, "PurchaseOrders", PurchaseOrder, RelationshipCardinality.Many))
-        .Entity(PurchaseOrder, "PurchaseOrder", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "SupplierId", typeof(int))
-            .Field(new FieldId(3), "ExpectedDate", typeof(DateOnly))
-            .Field(new FieldId(4), "ReceivedDate", typeof(DateOnly?))
-            .Field(new FieldId(5), "Status", typeof(string)))
-        .Entity(Category, "Category", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "Name", typeof(string)))
-        .Entity(Inventory, "Inventory", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "WarehouseId", typeof(int))
-            .Field(new FieldId(3), "ProductId", typeof(int))
-            .Field(new FieldId(4), "QuantityOnHand", typeof(int))
-            .Field(new FieldId(5), "ReorderLevel", typeof(int))
-            .Relationship(InventoryWarehouse, "Warehouse", Warehouse, RelationshipCardinality.One))
-        .Entity(Warehouse, "Warehouse", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "Name", typeof(string))
-            .Field(new FieldId(3), "Location", typeof(string)))
-        .Entity(Shipment, "Shipment", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "OrderId", typeof(int))
-            .Field(new FieldId(3), "CarrierId", typeof(int))
-            .Field(new FieldId(4), "WarehouseId", typeof(int))
-            .Field(new FieldId(5), "TrackingNumber", typeof(string))
-            .Field(new FieldId(6), "Status", typeof(string))
-            .Relationship(ShipmentCarrier, "Carrier", Carrier, RelationshipCardinality.One)
-            .Relationship(ShipmentWarehouse, "Warehouse", Warehouse, RelationshipCardinality.One))
-        .Entity(Carrier, "Carrier", e => e
-            .Identity(new FieldId(1), "Id")
-            .Field(new FieldId(2), "Name", typeof(string)))
-        .Build();
+    public async Task<ExecutionResult> ExecuteAsync(
+        ProviderPlan plan,
+        Foundgine.Core.Execution.ExecutionContext context,
+        CancellationToken cancellationToken = default)
+    {
+        await using var connection = await _dataSource.OpenConnectionAsync(cancellationToken);
+        return await new SqlExecutionProvider(connection).ExecuteAsync(plan, context, cancellationToken);
+    }
+}
+
+public sealed class HttpContextSecurityExecutionContextProvider : ISecurityExecutionContextProvider
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public HttpContextSecurityExecutionContextProvider(IHttpContextAccessor httpContextAccessor) =>
+        _httpContextAccessor = httpContextAccessor;
+
+    public SecurityExecutionContext? GetSecurityExecutionContext() =>
+        _httpContextAccessor.HttpContext is { } context
+            ? OpenIntentDemoSecurity.GetSecurityExecutionContext(context)
+            : null;
 }
 
 public sealed record OrderLine(int ProductId, int Quantity);
@@ -951,25 +911,25 @@ public sealed class SupplyChainExecutionService
     }
 
     private SemanticPlan PlanCustomerOrders() => Plan(new SemanticOperation(
-        new SemanticReadNode(1, SupplyChainSemanticModel.Customer,
-            new[] { new FieldId(1), new FieldId(2), new FieldId(3) }, null, null,
+        new SemanticReadNode(1, OpenIntentSemanticIds.Entity("Customer"),
+            new[] { OpenIntentSemanticIds.Field("Customer", "Id"), OpenIntentSemanticIds.Field("Customer", "FirstName"), OpenIntentSemanticIds.Field("Customer", "LastName") }, null, null,
             new[]
             {
-                new SemanticReadNode(2, SupplyChainSemanticModel.Order,
-                    new[] { new FieldId(1), new FieldId(3), new FieldId(4) },
-                    SupplyChainSemanticModel.CustomerOrders, null, Array.Empty<SemanticReadNode>())
+                new SemanticReadNode(2, OpenIntentSemanticIds.Entity("Order"),
+                    new[] { OpenIntentSemanticIds.Field("Order", "Id"), OpenIntentSemanticIds.Field("Order", "Status"), OpenIntentSemanticIds.Field("Order", "TotalAmount") },
+                    OpenIntentSemanticIds.Relationship("Customer", "orders"), null, Array.Empty<SemanticReadNode>())
             })));
 
     private SemanticPlan PlanProduct() => Plan(new SemanticOperation(
-        new SemanticReadNode(1, SupplyChainSemanticModel.Product,
-            new[] { new FieldId(1), new FieldId(2), new FieldId(3), new FieldId(4) },
+        new SemanticReadNode(1, OpenIntentSemanticIds.Entity("Product"),
+            new[] { OpenIntentSemanticIds.Field("Product", "Id"), OpenIntentSemanticIds.Field("Product", "Name"), OpenIntentSemanticIds.Field("Product", "Sku"), OpenIntentSemanticIds.Field("Product", "UnitPrice") },
             null, null, Array.Empty<SemanticReadNode>())));
 
     private SemanticPlan PlanPlaceOrder() => PlanProduct();
 
     private SemanticPlan PlanSupplier() => Plan(new SemanticOperation(
-        new SemanticReadNode(1, SupplyChainSemanticModel.Supplier,
-            new[] { new FieldId(1), new FieldId(2), new FieldId(4), new FieldId(5), new FieldId(6) },
+        new SemanticReadNode(1, OpenIntentSemanticIds.Entity("Supplier"),
+            new[] { OpenIntentSemanticIds.Field("Supplier", "Id"), OpenIntentSemanticIds.Field("Supplier", "Name"), OpenIntentSemanticIds.Field("Supplier", "State"), OpenIntentSemanticIds.Field("Supplier", "TotalOrderValue"), OpenIntentSemanticIds.Field("Supplier", "NegotiatedCost") },
             null, null, Array.Empty<SemanticReadNode>())));
 
     // Authorizes the operation against the trusted contract (see the
