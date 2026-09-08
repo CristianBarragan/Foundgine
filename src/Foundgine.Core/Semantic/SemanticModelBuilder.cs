@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Reflection;
 using Foundgine.Core.Abstractions;
 
@@ -13,30 +13,6 @@ public sealed class SemanticModelBuilder
 {
     private readonly Dictionary<EntityId, SemanticEntity> _entities = new();
     private readonly List<SemanticTraversal> _traversals = [];
-    private bool _requireTypedEntities;
-
-    /// <summary>
-    /// Opts into strict typed-entity mode. Once enabled:
-    /// <list type="bullet">
-    /// <item>the untyped <see cref="Entity(EntityId, string, Action{SemanticEntityBuilder})"/>
-    /// overload throws instead of registering an entity - the typed
-    /// <see cref="Entity{TModel}"/> overload becomes the only way to add one;</item>
-    /// <item>the domain model type passed to <see cref="Entity{TModel}"/> must be
-    /// decorated with <see cref="SemanticEntityAttribute"/>, so a type can only
-    /// back a semantic entity if it was deliberately opted in.</item>
-    /// </list>
-    /// This is off by default: a lot of legitimate usage (ad hoc test fixtures,
-    /// metadata-only entities with no CLR model behind them) has no domain type
-    /// to bind to, so making the untyped builder unconditionally internal would
-    /// break that usage. Applications that want the stronger guarantee - that
-    /// semantic fields can never drift from real, deliberately-exposed CLR
-    /// properties - opt in here.
-    /// </summary>
-    public SemanticModelBuilder RequireTypedEntities()
-    {
-        _requireTypedEntities = true;
-        return this;
-    }
 
     /// <summary>
     /// Registers a semantic entity whose fields can be authored against the
@@ -53,12 +29,6 @@ public sealed class SemanticModelBuilder
 
         if (_entities.ContainsKey(id))
             throw new InvalidOperationException($"Semantic entity '{id}' is already registered.");
-
-        if (_requireTypedEntities && typeof(TModel).GetCustomAttribute<SemanticEntityAttribute>() is null)
-        {
-            throw new InvalidOperationException(
-                $"Semantic entity '{name}' targets model type '{typeof(TModel).FullName}', but this model requires typed entities (RequireTypedEntities()) and that type is not marked [SemanticEntity].");
-        }
 
         var builder = new SemanticEntityBuilder<TModel>(id, name);
         configure(builder);
@@ -427,7 +397,6 @@ public sealed class SemanticModelBuilder
         return this;
     }
 
-#pragma warning disable CS0618
     public SemanticModelBuilder Entity(
         EntityId id,
         string name,
@@ -435,12 +404,6 @@ public sealed class SemanticModelBuilder
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentNullException.ThrowIfNull(configure);
-
-        if (_requireTypedEntities)
-        {
-            throw new InvalidOperationException(
-                $"Semantic entity '{name}' was declared with the untyped builder, but this model requires typed entities (RequireTypedEntities()). Use Entity<TModel>(...) instead so fields are validated against a real domain model type.");
-        }
 
         if (_entities.ContainsKey(id))
             throw new InvalidOperationException($"Semantic entity '{id}' is already registered.");

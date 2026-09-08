@@ -377,7 +377,7 @@ public static class AttackCatalog
                     claims = new Dictionary<string,string> { ["scope"] = "*", ["warehouse"] = "all" } } } }, false),
     ];
 
-    // This is the execution sample under samples/.../MCP.Foundgine. It uses
+    // This is the execution sample under samples/.../Semantic/Api/Mcp. It uses
     // actor-based authorization rather than token authentication.
     private static List<AttackCase> ExecutionMcp() =>
     [

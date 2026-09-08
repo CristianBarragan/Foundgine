@@ -7,6 +7,8 @@ This sample deliberately separates four concerns:
 - **Authorization** — who may exercise the discovered semantic surface.
 - **Intent** — what the caller asks Foundgine to do.
 
+Semantic authoring supports both model-independent declarations and optional strongly typed property selectors. The semantic intent surface is not constrained by a CLR model.
+
 `SupplyChainSemanticModel` starts from `SemanticModelBuilder.FromMetadata(...)` and then composes `ManualSupplyChainSemanticModel` as a small typed semantic overlay. It does not recreate the structural schema or replace metadata identities.
 
 Generated numeric identities remain internal metadata implementation details. Application semantic configuration uses logical names and resolves them against the discovered graph.

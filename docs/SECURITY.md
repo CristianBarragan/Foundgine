@@ -333,7 +333,7 @@ error would allow.
 ### Implemented: server-side classification with a correlation id
 
 The execution API's `Execute` helper in
-[`MCP.Foundgine/Program.cs`](../samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine/Program.cs)
+[`Semantic/Api/Mcp/Program.cs`](../samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs)
 now:
 
 1. Generates a short opaque correlation id for every call before it runs.

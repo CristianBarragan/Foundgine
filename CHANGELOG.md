@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.1.0 — September 8, 2026
+
+### Samples
+
+- Added a generic, authorization-focused MCP server (`Foundgine.SupplyChain.Advanced.Mcp.Api` under `samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp`) exposing `describe_capabilities`, `read_entity`, `read_relationship`, `write_entity`, and `policy_probe` tools directly against the sample's composed semantic model. This is additive: it runs standalone and is not wired into the Supply Chain E2E harness.
+
+### Fixed
+
+- The commit that added the generic MCP server also deleted `samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine` (the Postgres-backed MCP server the Supply Chain E2E `Agent` and `run-supply-chain.ps1` actually depend on — `get_order`, `get_inventory`, `list_suppliers`, and the rest of the Agent's tool contract) along with its `docker-compose.yml` service and solution entries, without updating the harness. This broke `run-supply-chain.ps1` at step 3/8 with `no such service: mcp-foundgine`. Restored the `MCP.Foundgine` project, its `docker-compose.yml` service, and its `Foundgine.sln` entries so the Supply Chain E2E + PenTest harness runs again.
+- Reverted an unrelated, uncommitted in-progress edit to `benchmarks/AgentEndToEnd/Run5/docker-compose.yml` that had stripped its `mcp-foundgine` service block while the project files were left in place, which would have broken Run5 the same way.
+
+### Release
+
+- Version: `2.1.0`
+- Target framework: `.NET 9`
+- License: MIT
+
 ## 2.0.3 — September 7, 2026
 
 ### Semantic grounding

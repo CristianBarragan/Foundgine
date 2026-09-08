@@ -49,7 +49,9 @@ model disappears.
 
 ## Boundary proof — metadata producer and semantic consumer
 
-The sample deliberately keeps its structural declarations on the CLR domain types. The AOT generator observes `[FoundgineEntity]`, `[FoundgineField]`, and `[FoundgineRelationship]` declarations and emits `GeneratedMetadata.Registry`. `SupplyChainMetadataProducer` exposes that registry as `IMetadataCatalog`; the semantic layer consumes only that catalog.
+Semantic authoring remains open: callers may use the model-independent builder when an intent has no CLR type, or the typed builder when property-level CLR validation is useful. A semantic intent is never required to have a CLR model.
+
+The sample deliberately keeps its structural declarations on the CLR domain types. The AOT generator observes `[FoundgineEntity]`, `[FoundgineField]`, and `[FoundgineRelationship]` declarations and emits `GeneratedMetadata.Registry`. `GeneratedMetadata.Build()` exposes that registry as `IMetadataCatalog`; the semantic layer consumes only that catalog.
 
 This is the intended producer boundary: a future EF, database, or other metadata producer can replace the implementation without changing `SupplyChainSemanticModel`.
 ### Structural metadata contract

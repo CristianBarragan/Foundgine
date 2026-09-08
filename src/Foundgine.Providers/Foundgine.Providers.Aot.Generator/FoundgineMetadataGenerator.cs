@@ -229,7 +229,8 @@ public sealed class FoundgineMetadataGenerator : IIncrementalGenerator
         sb.AppendLine("{");
         sb.AppendLine("    public static readonly MetadataRegistry Registry = Build();");
         sb.AppendLine();
-        sb.AppendLine("    private static MetadataRegistry Build()");
+        sb.AppendLine("    /// <summary>Creates the AOT-generated metadata registry for the compiled CLR model.</summary>");
+        sb.AppendLine("    public static MetadataRegistry Build()");
         sb.AppendLine("    {");
         sb.AppendLine("        var registry = new MetadataRegistry();");
 

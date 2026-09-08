@@ -14,6 +14,15 @@ AI agent bot → MCP → Foundgine capability boundary → semantic model → au
 
 The bot supports up to five customer identities plus Bob, Carol, Dave and Admin, and deliberately mixes valid, invalid and unauthorized operations. The benchmark verifies that denied requests do not mutate PostgreSQL and that successful mutations produce the expected state. The execution path now explicitly lowers semantic plans to Foundgine ExecutionIR before the PostgreSQL boundary, with a plan fingerprint included in receipts.
 
+### Agent HTTP surface
+
+The Semantic MCP API also exposes a plain JSON agent surface:
+
+- `GET /foundgine/capabilities` — semantic entities, fields and relationships available to the authenticated actor.
+- `POST /foundgine/execute` — accepts an open semantic intent (`rootEntity` + `select`) and lets Foundgine resolve, authorize, plan, and execute it.
+
+The HTTP request body is **not** an authority source: actor identity is resolved from the ASP.NET authenticated principal. For local runs without authentication infrastructure, set the server-side `FOUNDGINE_DEMO_ACTOR` environment variable; callers cannot choose that value per request. Mutation capabilities that require replay protection, including `place_order`, require an explicit `idempotencyKey`.
+
 ## Actors
 
 - Alice — Customer; own orders/customer-visible product and shipment reads; create/cancel own orders.
@@ -157,3 +166,7 @@ Do not read the Supply Chain report as a replacement for those gates. It is the 
 - **Security invariants** — recursive graph traversal (`RecursiveSupplierRiskTests`), graph security boundary, open-intent mutation security, adversarial invariants, sensitive-field authorization, and an MCP authorization penetration suite, all against the sample's metadata-discovered semantic model. A separate two-entity manual builder example is included only to illustrate the alternative authoring path; it is not part of the application pipeline.
 
 See `Semantic/README.md` and `Semantic/GUIDE.md` for the full architecture and authorization walkthrough, and `Semantic/Tests/` for the complete semantic test suite.
+
+## HTTP execution boundary hardening
+
+The Semantic MCP API also provides a plain JSON open semantic agent adapter. Its authoritative actor is resolved by the host, not supplied by the request body. The semantic request is passed through resolution and authorization before planning and SQL execution; there is no named-intent dispatch layer on this endpoint.

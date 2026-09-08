@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using System.ComponentModel;
 using Foundgine.Core.Abstractions;
 
 namespace Foundgine.Core.Semantic;
@@ -9,8 +8,10 @@ namespace Foundgine.Core.Semantic;
 /// Small hand-authored construction path. AOT generation can target these
 /// same semantic shapes later.
 /// </summary>
-[EditorBrowsable(EditorBrowsableState.Never)]
-[Obsolete("Use SemanticEntityBuilder<TModel> with property selectors for domain-aligned semantic declarations.", false)]
+/// <summary>
+/// Model-independent semantic entity builder. Use this when an intent/semantic
+/// contract is not backed by a CLR model type.
+/// </summary>
 public sealed class SemanticEntityBuilder
 {
     private readonly EntityId _id;
@@ -134,9 +135,9 @@ public sealed class SemanticEntityBuilder
 }
 
 /// <summary>
-/// Strongly typed manual semantic builder. Property selectors target the
-/// application/domain model type <typeparamref name="TModel"/>; they do not
-/// target Foundgine's semantic entity metadata or a provider's entity type.
+/// Optional strongly typed semantic entity builder. Property selectors target
+/// the application/domain model type <typeparamref name="TModel"/>. This is a
+/// convenience and validation path; semantic intent does not require a CLR model.
 /// </summary>
 /// <typeparam name="TModel">The application/domain model represented by the semantic entity.</typeparam>
 public sealed class SemanticEntityBuilder<TModel>
