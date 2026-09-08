@@ -10,6 +10,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <ProjectReference Include="../Foundgine.SupplyChain.Advanced.csproj" />
+    <ProjectReference Include="../../../../src/Foundgine.Core/Foundgine.Core.csproj" />
     <!-- Needed only by CapabilityBoundaryTests, which pins the Step 37
          execution-boundary invariant against a real provider (InMemory)
          instead of the semantic/planning layer the rest of this project

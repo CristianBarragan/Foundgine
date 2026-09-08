@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <!-- Common NuGet metadata. Individual packages override PackageId/Description. -->
-    <VersionPrefix>2.0.3</VersionPrefix>
+    <VersionPrefix>2.1.0</VersionPrefix>
 
     <!--
       Nothing is packable by default. Only the library projects under src/

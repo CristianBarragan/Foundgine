@@ -1,5 +1,5 @@
+using Foundgine.Generated;
 using Foundgine.Core.Abstractions;
-using Foundgine.SupplyChain.Advanced.Infrastructure.Metadata;
 using Foundgine.Core.Semantic.Metadata;
 using Foundgine.Core.Semantic;
 
@@ -14,7 +14,7 @@ namespace Foundgine.SupplyChain.Advanced.Semantics;
 /// </summary>
 public static class SupplyChainSemanticModel
 {
-    public static IMetadataCatalog Metadata { get; } = SupplyChainMetadataProducer.Catalog;
+    public static IMetadataCatalog Metadata { get; } = GeneratedMetadata.Build();
     public static SemanticModel Model { get; } = Build();
 
     public static EntityId Product => Entity("Product");

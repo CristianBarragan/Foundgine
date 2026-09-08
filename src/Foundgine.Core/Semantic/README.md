@@ -7,7 +7,7 @@
 The package contains:
 
 - semantic entities, fields, relationships, aliases, constraints, traversals, and operations;
-- `SemanticModel` and `SemanticEntityBuilder`;
+- `SemanticModel`, the model-independent `SemanticEntityBuilder`, and the optional typed `SemanticEntityBuilder<TModel>`;
 - `ReadIntent`, mutation intent and semantic result contracts;
 - semantic identity and deterministic contract fingerprints;
 - immutable `SemanticContractSnapshot` and contract providers;

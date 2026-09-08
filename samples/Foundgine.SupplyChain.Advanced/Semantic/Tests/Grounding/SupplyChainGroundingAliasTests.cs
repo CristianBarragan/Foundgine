@@ -9,7 +9,7 @@ namespace Foundgine.SupplyChain.Advanced.Tests.Grounding;
 /// purchase orders from our top supplier in Texas" — run against the real
 /// generated Supply Chain semantic contract, the same contract
 /// <c>find_top_supplier_overdue_orders</c> resolves against in
-/// <c>MCP.Foundgine/Program.cs</c>.
+/// <c>Semantic/Api/Mcp/Program.cs</c>.
 ///
 /// Unlike <see cref="SupplyChainGroundingAmbiguityTests"/> and
 /// <see cref="SupplyChainGroundingUnresolvedTests"/>, which hand-write fake

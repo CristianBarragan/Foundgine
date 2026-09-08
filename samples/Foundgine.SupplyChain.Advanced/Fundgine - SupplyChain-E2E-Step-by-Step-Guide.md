@@ -9,7 +9,7 @@ Open PowerShell and verify the repository:
 cd C:\Foundgine\samples\Foundgine.SupplyChain.Advanced
 Then inspect the directory:
 Get-ChildItem
-Expected entries include: Database, Agent, MCP.Foundgine, docker-compose.yml, run-supply-chain.ps1, and README.md.
+Expected entries include: Database, Agent, Semantic/Api/Mcp, docker-compose.yml, run-supply-chain.ps1, and README.md.
 
 Step 1 — Verify .NET
 
@@ -30,7 +30,7 @@ Step 3 — Verify Supply Chain Project Files
 Run:
 Test-Path .\Database\Database.csproj
 Test-Path .\Agent\Agent.csproj
-Test-Path .\MCP.Foundgine\MCP.Foundgine.csproj
+Test-Path .\Semantic/Api/Mcp\Semantic/Api/Mcp.csproj
 Test-Path .\docker-compose.yml
 Test-Path .\run-supply-chain.ps1
 All five commands should return True.
@@ -50,7 +50,7 @@ Expected: Build succeeded.
 Step 6 — Build MCP + Foundgine
 
 Run:
-dotnet build .\MCP.Foundgine\MCP.Foundgine.csproj -c Release
+dotnet build .\Semantic/Api/Mcp\Semantic/Api/Mcp.csproj -c Release
 Expected: Build succeeded.
 
 Step 7 — Validate Docker Compose
@@ -143,6 +143,6 @@ docker compose version
 
 Test-Path .\Database\Database.csproj
 Test-Path .\Agent\Agent.csproj
-Test-Path .\MCP.Foundgine\MCP.Foundgine.csproj
+Test-Path .\Semantic/Api/Mcp\Semantic/Api/Mcp.csproj
 Test-Path .\docker-compose.yml
 Test-Path .\run-supply-chain.ps1

@@ -27,8 +27,6 @@ public static class ManualSupplyChainSemanticModel
     public static SemanticModel Build()
     {
         var builder = new SemanticModelBuilder()
-            .RequireTypedEntities()
-
             // Only Product is manually authored here. The complete Product
             // schema in the running application still comes from metadata.
             .Entity<D.Product>(Product, "Product", e => e

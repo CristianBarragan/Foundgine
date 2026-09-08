@@ -24,10 +24,10 @@ public sealed class SemanticLexicalResolver
 
     /// <param name="contract">The frozen semantic contract to resolve against.</param>
     /// <param name="source">The candidate retrieval boundary (Elasticsearch, pgvector, or a composite).</param>
-    /// <param name="candidateLimit">Maximum candidates retained per token across all semantic kinds. The
-    /// candidate source is queried once per token with a one-candidate sentinel (<c>candidateLimit + 1</c>)
-    /// so the resolver can reliably observe provider-side truncation. The returned candidates are normalized
-    /// and then truncated to this total limit before graph search.</param>
+    /// <param name="candidateLimit">Maximum candidates retained per token across all semantic kinds.
+    /// The resolver retrieves one additional bounded cutoff candidate so it can detect whether the
+    /// highest-scoring candidate excluded by the retention limit is still within the ambiguity margin
+    /// of the lowest retained candidate.</param>
     /// <param name="maxBridgeHops">Maximum relationship hops the bridging BFS will traverse to connect a
     /// candidate back to the current entity. Bounds graph depth per transition.</param>
     /// <param name="ambiguityThreshold">Interpretation-score gap below which two competing interpretations
@@ -56,7 +56,7 @@ public sealed class SemanticLexicalResolver
     /// <see>
     ///     <cref>Ground</cref>
     /// </see>
-    ///     call. Retrieval (Elasticsearch, pgvector, or any I/O-backed
+    /// call. Retrieval (Elasticsearch, pgvector, or any I/O-backed
     /// <see cref="ISemanticLexicalCandidateSource"/>) happens entirely before the in-memory search budget
     /// starts counting, so without this bound a slow or hung candidate source could block <see>
     ///         <cref>Ground</cref>
@@ -97,6 +97,7 @@ public sealed class SemanticLexicalResolver
             throw new ArgumentOutOfRangeException(nameof(retrievalTimeout));
         if (minimumAliasWeight is { } maw && maw is < 1 or > 100)
             throw new ArgumentOutOfRangeException(nameof(minimumAliasWeight));
+
         _candidateLimit = candidateLimit;
         _maxBridgeHops = maxBridgeHops;
         _ambiguityThreshold = ambiguityThreshold;
@@ -115,22 +116,32 @@ public sealed class SemanticLexicalResolver
     /// competing meanings actually were, should call <see>
     ///     <cref>Ground</cref>
     /// </see>
-    /// instead —
-    /// this method only tells you a tie existed, not what it was between.
+    /// instead — this method only tells you a tie existed, not what it was between.
     /// </summary>
     public SemanticLexicalResolution Resolve(string expression, CancellationToken cancellationToken = default)
     {
         var decision = Ground(expression, cancellationToken);
 
         if (decision.Outcome == GroundingOutcome.Unresolved)
-            return new(SemanticLexicalResolutionOutcome.Unresolved, [], 0, null, decision.Reason,
+            return new(
+                SemanticLexicalResolutionOutcome.Unresolved,
+                [],
+                0,
+                null,
+                decision.Reason,
                 decision.RootCandidates);
 
         if (decision.Outcome == GroundingOutcome.BudgetExceeded)
-            return new(SemanticLexicalResolutionOutcome.BudgetExceeded, [], 0, null, decision.Reason,
+            return new(
+                SemanticLexicalResolutionOutcome.BudgetExceeded,
+                [],
+                0,
+                null,
+                decision.Reason,
                 decision.RootCandidates);
 
         var leading = decision.Committed ?? decision.CompetingInterpretations[0];
+
         var outcome = decision.Outcome == GroundingOutcome.RequiresClarification
             ? SemanticLexicalResolutionOutcome.Ambiguous
             : SemanticLexicalResolutionOutcome.Resolved;
@@ -148,29 +159,35 @@ public sealed class SemanticLexicalResolver
     /// Grounds an expression against the semantic contract and returns every
     /// structurally valid, semantically distinct interpretation — not just the
     /// top-ranked one. Interpretations that reach the same relationship, field,
-    /// or value via different bridging routes are treated as one meaning (the
-    /// route is a retrieval/graph artifact, not part of what the user meant).
-    /// Interpretations that map a token onto a different field, value,
-    /// relationship, or root entity are treated as competing meanings: if two
-    /// or more of those remain within <c>ambiguityThreshold</c> interpretation-score
-    /// separation of each other, Foundgine reports <see cref="GroundingOutcome.RequiresClarification"/>
-    /// instead of committing to whichever one happened to score highest.
+    /// or value via different bridging routes are treated as one meaning.
     /// </summary>
-    public GroundingDecision Ground(string expression) => Ground(expression, CancellationToken.None);
+    public GroundingDecision Ground(string expression) =>
+        Ground(expression, CancellationToken.None);
 
-    public GroundingDecision Ground(string expression, CancellationToken cancellationToken)
+    public GroundingDecision Ground(
+        string expression,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(expression))
-            throw new ArgumentException("Lexical expression cannot be empty.", nameof(expression));
+            throw new ArgumentException(
+                "Lexical expression cannot be empty.",
+                nameof(expression));
 
         var tokens = Tokenize(expression);
-        if (tokens.Length == 0)
-            return new(expression, GroundingOutcome.Unresolved, null, [], "No lexical tokens were found.", []);
 
-        // Token count is the dominant term in the search's worst-case branching
-        // (candidateLimit ^ tokenCount before graph-legality pruning), so it is
-        // checked before any retrieval or search work is done at all.
+        if (tokens.Length == 0)
+        {
+            return new(
+                expression,
+                GroundingOutcome.Unresolved,
+                null,
+                [],
+                "No lexical tokens were found.",
+                []);
+        }
+
         if (tokens.Length > _maxTokens)
+        {
             return new(
                 expression,
                 GroundingOutcome.BudgetExceeded,
@@ -179,16 +196,29 @@ public sealed class SemanticLexicalResolver
                 $"Expression has {tokens.Length} tokens, exceeding the configured maximum of {_maxTokens}. Grounding was refused before any retrieval or graph search ran.",
                 [],
                 GroundingBudgetLimit.MaxTokens);
+        }
 
         IReadOnlyDictionary<string, IReadOnlyList<SemanticLexicalCandidate>> candidateSets;
-        var truncations = new Dictionary<string, CandidateTruncation>(StringComparer.OrdinalIgnoreCase);
-        using var retrievalCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+        var truncations =
+            new Dictionary<string, CandidateTruncation>(
+                StringComparer.OrdinalIgnoreCase);
+
+        using var retrievalCts =
+            CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
         retrievalCts.CancelAfter(_retrievalTimeout);
-        var retrievalStopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+        var retrievalStopwatch =
+            System.Diagnostics.Stopwatch.StartNew();
 
         try
         {
-            candidateSets = GetCandidates(tokens, retrievalCts.Token, retrievalStopwatch, stopOnFirstEmpty: true,
+            candidateSets = GetCandidates(
+                tokens,
+                retrievalCts.Token,
+                retrievalStopwatch,
+                stopOnFirstEmpty: true,
                 truncations: truncations);
         }
         catch (GroundingRetrievalTimeoutException ex)
@@ -227,21 +257,22 @@ public sealed class SemanticLexicalResolver
 
         if (candidateSets.Values.Any(x => x.Count == 0))
         {
-            // Semantic declaration names are commonly PascalCase identifiers
-            // (for example PurchaseOrder) while callers naturally write the
-            // same name with spaces ("purchase order"). If token-by-token
-            // retrieval cannot ground the expression, make one bounded fallback
-            // lookup for the compact spelling. This is deliberately all-or-
-            // nothing: it does not silently discard unknown filler tokens or
-            // invent arbitrary n-gram segmentations.
             if (tokens.Length > 1)
             {
                 var compactToken = string.Concat(tokens);
+
                 try
                 {
-                    var compactTruncations = new Dictionary<string, CandidateTruncation>(StringComparer.OrdinalIgnoreCase);
-                    var compactCandidates = GetCandidates([compactToken], retrievalCts.Token, retrievalStopwatch,
+                    var compactTruncations =
+                        new Dictionary<string, CandidateTruncation>(
+                            StringComparer.OrdinalIgnoreCase);
+
+                    var compactCandidates = GetCandidates(
+                        [compactToken],
+                        retrievalCts.Token,
+                        retrievalStopwatch,
                         truncations: compactTruncations);
+
                     if (compactCandidates[compactToken].Count > 0)
                     {
                         tokens = [compactToken];
@@ -284,15 +315,12 @@ public sealed class SemanticLexicalResolver
                 }
             }
 
-            if (candidateSets.Values.Any(x => x.Count == 0) || tokens.Any(x => !candidateSets.ContainsKey(x)))
+            if (candidateSets.Values.Any(x => x.Count == 0) ||
+                tokens.Any(x => !candidateSets.ContainsKey(x)))
             {
-                // With stopOnFirstEmpty, a failed compact-token fallback can
-                // leave candidateSets holding only the tokens queried before
-                // the empty one that triggered the fallback attempt — later
-                // tokens were never looked up at all. Treat an unqueried
-                // token the same as an empty one rather than indexing the
-                // dictionary directly, which would throw for those tokens.
-                var missing = tokens.First(x => !candidateSets.TryGetValue(x, out var c) || c.Count == 0);
+                var missing = tokens.First(
+                    x => !candidateSets.TryGetValue(x, out var c) || c.Count == 0);
+
                 return new(
                     expression,
                     GroundingOutcome.Unresolved,
@@ -305,34 +333,44 @@ public sealed class SemanticLexicalResolver
 
         var roots = candidateSets[tokens[0]]
             .OrderByDescending(x => x.Score)
-            .ThenBy(x => x.CanonicalName, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(
+                x => x.CanonicalName,
+                StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
-        var budget = new SearchBudget(_maxPathsExplored, _timeout, cancellationToken);
+        var budget = new SearchBudget(
+            _maxPathsExplored,
+            _timeout,
+            cancellationToken);
+
         var rawPaths = new List<SemanticLexicalResolution>();
+
         foreach (var root in roots)
         {
-            if (budget.Exceeded) break;
+            if (budget.Exceeded)
+                break;
 
             var state = CreateRootState(tokens[0], root);
+
             if (state is null)
                 continue;
 
-            Search(tokens, 1, candidateSets, state, rawPaths, budget);
+            Search(
+                tokens,
+                1,
+                candidateSets,
+                state,
+                rawPaths,
+                budget);
         }
 
-        // Fail closed: a search the budget cut short cannot prove it found
-        // every legal interpretation, so whatever partial results exist are
-        // not trustworthy evidence of a single meaning. Never fall through
-        // to authorizing the best candidate found before the limit was hit.
-        // The partial interpretations found so far are still surfaced, but
-        // strictly as a diagnostic — Committed remains null regardless.
         if (budget.Exceeded)
         {
             var partial = rawPaths
-                .Select(p => CreateInterpretation(p))
+                .Select(CreateInterpretation)
                 .GroupBy(x => x.Signature)
-                .Select(g => g.OrderByDescending(x => x.InterpretationScore).First())
+                .Select(g =>
+                    g.OrderByDescending(x => x.InterpretationScore).First())
                 .OrderByDescending(x => x.InterpretationScore)
                 .ToArray();
 
@@ -350,6 +388,7 @@ public sealed class SemanticLexicalResolver
         }
 
         if (rawPaths.Count == 0)
+        {
             return new(
                 expression,
                 GroundingOutcome.Unresolved,
@@ -357,27 +396,22 @@ public sealed class SemanticLexicalResolver
                 [],
                 "No complete semantic path could be constructed from the lexical candidates.",
                 roots);
+        }
 
-        // Collapse paths that agree on what each token maps onto but disagree
-        // only on which graph route connects them. Those are not competing
-        // meanings; they are alternate evidence for the same interpretation,
-        // so surfacing them as "ambiguity" would just be retrieval noise.
         var interpretations = rawPaths
-            .Select(p => CreateInterpretation(p))
+            .Select(CreateInterpretation)
             .GroupBy(x => x.Signature)
-            .Select(g => g.OrderByDescending(x => x.InterpretationScore).First())
+            .Select(g =>
+                g.OrderByDescending(x => x.InterpretationScore).First())
             .OrderByDescending(x => x.InterpretationScore)
             .ThenBy(x => x.RootEntity.Value)
             .ToArray();
 
         var best = interpretations[0];
 
-        // Retrieval/graph score answers "which interpretation ranks first".
-        // Alias weight answers a different policy question: "is that selected
-        // meaning sufficiently supported by application-declared lexical
-        // evidence to commit?" Weight never changes the ranking itself.
         if (_minimumAliasWeight is { } minimumAliasWeight &&
-            best.EffectiveAliasEvidence.Status == AliasEvidenceStatus.Insufficient)
+            best.EffectiveAliasEvidence.Status ==
+            AliasEvidenceStatus.Insufficient)
         {
             return new(
                 expression,
@@ -392,29 +426,33 @@ public sealed class SemanticLexicalResolver
         }
 
         var withinAmbiguityMargin = interpretations
-            .Where(x => Math.Abs(x.InterpretationScore - best.InterpretationScore) < _ambiguityThreshold)
+            .Where(x =>
+                Math.Abs(
+                    x.InterpretationScore -
+                    best.InterpretationScore) < _ambiguityThreshold)
             .ToArray();
 
         if (withinAmbiguityMargin.Length <= 1)
         {
-            // Graph search found no competing meaning — but graph search only
-            // ever saw the candidates that survived retrieval-time truncation.
-            // If a token this interpretation depends on had a candidate cut
-            // within the ambiguity margin of what was kept, apply the same
-            // "do not silently pick a winner inside the margin" policy here,
-            // one stage earlier than usual: the cut candidate was never
-            // proven illegal, it just never got to try.
             var truncationRisk = best.Steps
                 .Select(s => s.Token)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Select(t => truncations.TryGetValue(t, out var truncation) ? truncation : null)
-                .Where(t => t is not null && t.WithinAmbiguityMargin(_ambiguityThreshold))
+                .Select(t =>
+                    truncations.TryGetValue(t, out var truncation)
+                        ? truncation
+                        : null)
+                .Where(t =>
+                    t is not null &&
+                    t.WithinAmbiguityMargin(_ambiguityThreshold))
                 .Select(t => t!)
                 .ToArray();
 
             if (truncationRisk.Length > 0)
             {
-                var riskyTokens = string.Join(", ", truncationRisk.Select(t => $"'{t.Token}'"));
+                var riskyTokens = string.Join(
+                    ", ",
+                    truncationRisk.Select(t => $"'{t.Token}'"));
+
                 return new(
                     expression,
                     GroundingOutcome.RequiresClarification,
@@ -458,7 +496,8 @@ public sealed class SemanticLexicalResolver
             best.EffectiveAliasEvidence);
     }
 
-    private GroundingInterpretation CreateInterpretation(SemanticLexicalResolution resolution)
+    private GroundingInterpretation CreateInterpretation(
+        SemanticLexicalResolution resolution)
     {
         var aliasEvidence = AliasWeightEvidenceGate.Evaluate(
             _contract,
@@ -473,26 +512,29 @@ public sealed class SemanticLexicalResolver
             AliasInterpretationEvidence.From(aliasEvidence));
     }
 
-    /// <summary>Identifies what an interpretation means — the ordered mapping
-    /// to canonical contract identities — independent of caller wording and of
-    /// which bridging route the graph search used to get there. Aliases and
-    /// canonical spellings must therefore produce the same signature. Two paths
-    /// with the same signature are the same interpretation.</summary>
-    private static string Signature(IReadOnlyList<SemanticLexicalStep> steps) =>
+    private static string Signature(
+        IReadOnlyList<SemanticLexicalStep> steps) =>
         string.Join(
             "|",
             steps.Select(s =>
-                $"{MeaningKind(s.Candidate.Kind)}:{s.Candidate.CanonicalName}:{s.Candidate.EntityId}:{s.Candidate.FieldId}:{s.Candidate.RelationshipId}:{s.Candidate.Value}"));
+                $"{MeaningKind(s.Candidate.Kind)}:" +
+                $"{s.Candidate.CanonicalName}:" +
+                $"{s.Candidate.EntityId}:" +
+                $"{s.Candidate.FieldId}:" +
+                $"{s.Candidate.RelationshipId}:" +
+                $"{s.Candidate.Value}"));
 
-    /// <summary>Returns the semantic identity represented by a retrieval
-    /// candidate. Entity and Node are intentionally the same identity because
-    /// the lexicon contains both a semantic entity document and a graph-node
-    /// document for the same declared entity. The remaining identity fields
-    /// distinguish genuinely different meanings.</summary>
-    private static string SemanticIdentityKey(SemanticLexicalCandidate candidate) =>
-        $"{MeaningKind(candidate.Kind)}:{candidate.CanonicalName}:{candidate.EntityId}:{candidate.FieldId}:{candidate.RelationshipId}:{candidate.Value}";
+    private static string SemanticIdentityKey(
+        SemanticLexicalCandidate candidate) =>
+        $"{MeaningKind(candidate.Kind)}:" +
+        $"{candidate.CanonicalName}:" +
+        $"{candidate.EntityId}:" +
+        $"{candidate.FieldId}:" +
+        $"{candidate.RelationshipId}:" +
+        $"{candidate.Value}";
 
-    private static int CandidateKindPreference(SemanticLexicalCandidateKind kind) =>
+    private static int CandidateKindPreference(
+        SemanticLexicalCandidateKind kind) =>
         kind switch
         {
             SemanticLexicalCandidateKind.Entity => 0,
@@ -500,145 +542,145 @@ public sealed class SemanticLexicalResolver
             _ => 2
         };
 
-    /// <summary>
-    /// Normalizes retrieval-only representations that carry the same semantic
-    /// identity. An Entity lexicon document and its graph Node document are two
-    /// ways to retrieve the same declared entity, not two competing meanings.
-    /// Keeping that implementation detail in the ambiguity signature makes an
-    /// exact canonical name (and every alias of it) spuriously ambiguous.
-    /// </summary>
-    private static SemanticLexicalCandidateKind MeaningKind(SemanticLexicalCandidateKind kind) =>
+    private static SemanticLexicalCandidateKind MeaningKind(
+        SemanticLexicalCandidateKind kind) =>
         kind == SemanticLexicalCandidateKind.Node
             ? SemanticLexicalCandidateKind.Entity
             : kind;
 
-    /// <summary>Returns the ranked candidate matrix used by the resolver.
+    /// <summary>
+    /// Returns the ranked candidate matrix used by the resolver.
     /// Each token is queried once across all semantic kinds.
+    ///
+    /// The resolver requests one additional candidate beyond
+    /// <see cref="_candidateLimit"/> as a bounded cutoff probe. That extra
+    /// candidate is never retained for graph search; it exists solely so the
+    /// resolver can detect whether retrieval truncation itself introduces
+    /// ambiguity.
     /// </summary>
-    public IReadOnlyDictionary<string, IReadOnlyList<SemanticLexicalCandidate>> GetCandidates(string expression)
+    public IReadOnlyDictionary<string, IReadOnlyList<SemanticLexicalCandidate>>
+        GetCandidates(string expression)
     {
         if (string.IsNullOrWhiteSpace(expression))
-            throw new ArgumentException("Lexical expression cannot be empty.", nameof(expression));
+            throw new ArgumentException(
+                "Lexical expression cannot be empty.",
+                nameof(expression));
 
-        using var retrievalCts = new CancellationTokenSource(_retrievalTimeout);
-        return GetCandidates(Tokenize(expression), retrievalCts.Token, System.Diagnostics.Stopwatch.StartNew());
+        using var retrievalCts =
+            new CancellationTokenSource(_retrievalTimeout);
+
+        return GetCandidates(
+            Tokenize(expression),
+            retrievalCts.Token,
+            System.Diagnostics.Stopwatch.StartNew());
     }
 
-    /// <summary>Retrieves candidates for every token, bounded by
+    /// <summary>
+    /// Retrieves candidates for every token, bounded by
     /// <see cref="_retrievalTimeout"/> and <paramref name="cancellationToken"/>.
-    /// This runs entirely before the in-memory search's <see cref="SearchBudget"/>
-    /// is constructed, so it needs its own independent bound — otherwise a slow
-    /// or hung candidate source could block <see>
-    ///     <cref>Ground</cref>
-    /// </see>
-    /// indefinitely regardless of how the search-time limits are configured. The resolver shares one
-    /// retrieval deadline across all token and compact-fallback lookups.</summary>
-    /// <param name="tokens">The lexical tokens to retrieve candidates for.</param>
-    /// <param name="cancellationToken">Token observed between and after individual retrieval calls.</param>
-    /// <param name="stopwatch">The shared clock the retrieval deadline is measured against.</param>
-    /// <param name="stopOnFirstEmpty">
-    /// When <c>true</c>, retrieval stops as soon as any token comes back with
-    /// no candidates instead of continuing through the remaining tokens. The
-    /// caller (the initial per-token pass in <see>
-    ///     <cref>Ground</cref>
-    /// </see>
-    /// ) falls back to a single compact-token lookup whenever *any* token is
-    /// empty, so querying the rest of the tokens individually first would
-    /// only spend shared retrieval budget on results that are about to be
-    /// discarded — budget the compact-token fallback needs instead.
-    /// </param>
-    /// <param name="truncations">When non-null, populated with one <see cref="CandidateTruncation"/>
-    /// entry per token whose retrieved candidate set exceeded <c>candidateLimit</c> and was cut down to
-    /// it. Diagnostic only — recorded here because this is the one place a truncated candidate is still
-    /// visible before it is discarded; callers that don't need the diagnostic can leave this null.</param>
-    private IReadOnlyDictionary<string, IReadOnlyList<SemanticLexicalCandidate>> GetCandidates(
-        IReadOnlyList<string> tokens,
-        CancellationToken cancellationToken,
-        System.Diagnostics.Stopwatch stopwatch,
-        bool stopOnFirstEmpty = false,
-        Dictionary<string, CandidateTruncation>? truncations = null)
+    /// </summary>
+    private IReadOnlyDictionary<string, IReadOnlyList<SemanticLexicalCandidate>>
+        GetCandidates(
+            IReadOnlyList<string> tokens,
+            CancellationToken cancellationToken,
+            System.Diagnostics.Stopwatch stopwatch,
+            bool stopOnFirstEmpty = false,
+            Dictionary<string, CandidateTruncation>? truncations = null)
     {
-        var result = new Dictionary<string, IReadOnlyList<SemanticLexicalCandidate>>(StringComparer.OrdinalIgnoreCase);
+        var result =
+            new Dictionary<string, IReadOnlyList<SemanticLexicalCandidate>>(
+                StringComparer.OrdinalIgnoreCase);
 
         foreach (var token in tokens)
         {
             if (stopwatch.Elapsed >= _retrievalTimeout)
-                throw new GroundingRetrievalTimeoutException(token, stopwatch.Elapsed);
+                throw new GroundingRetrievalTimeoutException(
+                    token,
+                    stopwatch.Elapsed);
 
-            cancellationToken.ThrowIfCancellationRequested();
+            // Only caller cancellation prevents the provider call.
+			// The resolver's own retrieval deadline is checked by elapsed time
+			// before and after the provider call. This prevents a timer race from
+			// cancelling a provider call that legitimately started within the
+			// configured retrieval window.
+			if (cancellationToken.IsCancellationRequested)
+				throw new OperationCanceledException(cancellationToken);
 
-            // Ask for one more candidate than we are willing to retain. The source is
-            // allowed (and expected) to honor this limit, so requesting exactly
-            // _candidateLimit would make provider-side truncation indistinguishable
-            // from an exact result set of that size. The extra row is a sentinel: if
-            // it arrives, we have proof that at least one candidate was cut at the
-            // resolver boundary.
-            var retrievalLimit = _candidateLimit + 1;
-            var retrieved = _source.Retrieve(
-                new SemanticLexicalRequest(token, Limit: retrievalLimit),
+            // Retrieve one additional candidate as a bounded cutoff probe.
+            // The extra candidate is diagnostic only and is never retained for
+            // graph search. This allows the resolver to detect the important
+            // case where the first excluded candidate is still within the
+            // ambiguity margin of the lowest retained candidate.
+            var retrievalLimit = checked(_candidateLimit + 1);
+
+            var candidates = _source.Retrieve(
+                new SemanticLexicalRequest(
+                    token,
+                    Limit: retrievalLimit),
                 cancellationToken);
 
-            // A synchronous provider may ignore the cancellation token. Detect
-            // that case at the same deadline boundary immediately after it returns.
             if (stopwatch.Elapsed >= _retrievalTimeout)
-                throw new GroundingRetrievalTimeoutException(token, stopwatch.Elapsed);
+            {
+                throw new GroundingRetrievalTimeoutException(
+                    token,
+                    stopwatch.Elapsed);
+            }
 
-            // Preserve the raw count before normalization/deduplication. A source
-            // may legitimately return multiple retrieval representations of the same
-            // semantic identity; deduplicating first could erase the sentinel and make
-            // a genuinely truncated source appear complete.
-            var wasTruncated = retrieved.Count > _candidateLimit;
-
-            var candidates = retrieved
+            candidates = candidates
                 .Where(x => x.Score >= 0)
-                // Retrieval providers may legitimately index the same declared
-                // entity more than once (for example the semantic Entity and
-                // its graph Node projection). Those are two retrieval
-                // representations of one meaning, not two meanings. Collapse
-                // them before graph search so duplicate index documents can
-                // never turn into a false clarification result. Deliberately
-                // do NOT collapse different semantic kinds (field,
-                // relationship, value, or a different entity), because those
-                // remain genuine ambiguity.
                 .GroupBy(SemanticIdentityKey)
-                .Select(g => g
-                    .OrderByDescending(x => x.Score)
-                    .ThenBy(x => CandidateKindPreference(x.Kind))
-                    .ThenBy(x => x.CanonicalName, StringComparer.OrdinalIgnoreCase)
-                    .First())
+                .Select(g =>
+                    g.OrderByDescending(x => x.Score)
+                        .ThenBy(
+                            x => CandidateKindPreference(x.Kind))
+                        .ThenBy(
+                            x => x.CanonicalName,
+                            StringComparer.OrdinalIgnoreCase)
+                        .First())
                 .OrderByDescending(x => x.Score)
-                .ThenBy(x => CandidateKindPreference(x.Kind))
-                .ThenBy(x => x.CanonicalName, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(
+                    x => CandidateKindPreference(x.Kind))
+                .ThenBy(
+                    x => x.CanonicalName,
+                    StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
-            // Record truncation before the retained set is handed to graph search.
-            // Because retrieval used a one-candidate sentinel, this remains observable
-            // even when the provider correctly enforces the requested Limit.
-            if (truncations is not null && wasTruncated && candidates.Length >= _candidateLimit)
+            // Record truncation BEFORE applying the retention limit.
+            //
+            // The source was deliberately asked for candidateLimit + 1, so
+            // candidates.Count > _candidateLimit now means that we actually
+            // observed at least one candidate beyond the retention boundary.
+            if (truncations is not null &&
+                candidates.Count > _candidateLimit)
             {
-                var lowestRetainedScore = candidates[_candidateLimit - 1].Score;
-                var highestTruncatedScore = candidates.Length > _candidateLimit
-                    ? candidates[_candidateLimit].Score
-                    : double.NegativeInfinity;
+                var lowestRetainedScore =
+                    candidates[_candidateLimit - 1].Score;
+
+                var highestTruncatedScore =
+                    candidates[_candidateLimit].Score;
+
                 truncations[token] = new CandidateTruncation(
                     token,
                     RetainedCount: _candidateLimit,
-                    TruncatedCount: Math.Max(1, retrieved.Count - _candidateLimit),
+                    TruncatedCount: candidates.Count - _candidateLimit,
                     LowestRetainedScore: lowestRetainedScore,
                     HighestTruncatedScore: highestTruncatedScore);
             }
 
-            candidates = candidates.Take(_candidateLimit).ToArray();
+            // Only the configured retention budget reaches graph search.
+            candidates = candidates
+                .Take(_candidateLimit)
+                .ToArray();
 
-            // A bare exact canonical entity name is an entity-root expression.
-            // Relationship members can legitimately share that spelling (for
-            // example PurchaseOrder.supplier and PurchaseOrderLine.purchaseOrder),
-            // but they must not make the canonical entity root ambiguous. Aliases
-            // remain ambiguity-aware and are not affected by this preference.
             var exactEntityRoots = candidates
                 .Where(x =>
-                    (x.Kind is SemanticLexicalCandidateKind.Entity or SemanticLexicalCandidateKind.Node) &&
-                    string.Equals(x.CanonicalName, token, StringComparison.OrdinalIgnoreCase))
+                    (x.Kind is
+                        SemanticLexicalCandidateKind.Entity or
+                        SemanticLexicalCandidateKind.Node) &&
+                    string.Equals(
+                        x.CanonicalName,
+                        token,
+                        StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
             if (exactEntityRoots.Length > 0)
@@ -646,7 +688,7 @@ public sealed class SemanticLexicalResolver
 
             result[token] = candidates;
 
-            if (stopOnFirstEmpty && candidates.Length == 0)
+            if (stopOnFirstEmpty && candidates.Count == 0)
                 break;
         }
 
@@ -656,87 +698,175 @@ public sealed class SemanticLexicalResolver
     private void Search(
         IReadOnlyList<string> tokens,
         int index,
-        IReadOnlyDictionary<string, IReadOnlyList<SemanticLexicalCandidate>> candidates,
+        IReadOnlyDictionary<string, IReadOnlyList<SemanticLexicalCandidate>>
+            candidates,
         SearchState state,
         List<SemanticLexicalResolution> results,
         SearchBudget budget)
     {
-        if (budget.Tick()) return;
+        if (budget.Tick())
+            return;
 
         if (index == tokens.Count)
         {
             var interpretationScore = state.Steps.Count == 0
                 ? 0
-                : state.Steps.Select(x => x.Candidate.Score).Average() * state.GraphFactor;
+                : state.Steps
+                    .Select(x => x.Candidate.Score)
+                    .Average() * state.GraphFactor;
+
             results.Add(new(
                 SemanticLexicalResolutionOutcome.Resolved,
                 state.Steps,
                 Math.Clamp(interpretationScore, 0, 1),
                 state.RootEntity,
                 "A complete lexical path was grounded against the semantic contract."));
+
             return;
         }
 
         var token = tokens[index];
+
         foreach (var candidate in candidates[token].Take(_candidateLimit))
         {
-            if (budget.Tick()) return;
+            if (budget.Tick())
+                return;
 
-            foreach (var transition in ResolveTransition(state, candidate, budget))
+            foreach (var transition in ResolveTransition(
+                         state,
+                         candidate,
+                         budget))
             {
-                if (budget.Tick()) return;
+                if (budget.Tick())
+                    return;
 
                 var next = state.Add(
-                    new SemanticLexicalStep(token, candidate, transition.Factor, transition.BridgingPath),
+                    new SemanticLexicalStep(
+                        token,
+                        candidate,
+                        transition.Factor,
+                        transition.BridgingPath),
                     transition.Factor);
-                Search(tokens, index + 1, candidates, next, results, budget);
 
-                if (budget.Exceeded) return;
+                Search(
+                    tokens,
+                    index + 1,
+                    candidates,
+                    next,
+                    results,
+                    budget);
+
+                if (budget.Exceeded)
+                    return;
             }
         }
     }
 
-    private SearchState? CreateRootState(string token, SemanticLexicalCandidate candidate)
+    private SearchState? CreateRootState(
+        string token,
+        SemanticLexicalCandidate candidate)
     {
         return candidate.Kind switch
         {
-            SemanticLexicalCandidateKind.Entity or SemanticLexicalCandidateKind.Node
-                when candidate.EntityId is not null && _contract.TryGet(candidate.EntityId.Value, out _) =>
-                new(candidate.EntityId.Value, candidate.EntityId.Value,
-                    [new SemanticLexicalStep(token, candidate, candidate.Score, [])], candidate.Score),
+            SemanticLexicalCandidateKind.Entity or
+                SemanticLexicalCandidateKind.Node
+                when candidate.EntityId is not null &&
+                     _contract.TryGet(candidate.EntityId.Value, out _) =>
+                new(
+                    candidate.EntityId.Value,
+                    candidate.EntityId.Value,
+                    [
+                        new SemanticLexicalStep(
+                            token,
+                            candidate,
+                            candidate.Score,
+                            [])
+                    ],
+                    candidate.Score),
 
             SemanticLexicalCandidateKind.Relationship
-                when candidate.SourceEntityId is not null && candidate.TargetEntityId is not null &&
-                     _contract.TryGet(candidate.SourceEntityId.Value, out _) &&
-                     _contract.TryGet(candidate.TargetEntityId.Value, out _) =>
-                new(candidate.SourceEntityId.Value, candidate.TargetEntityId.Value,
-                    [new SemanticLexicalStep(token, candidate, candidate.Score, [])], candidate.Score),
+                when candidate.SourceEntityId is not null &&
+                     candidate.TargetEntityId is not null &&
+                     _contract.TryGet(
+                         candidate.SourceEntityId.Value,
+                         out _) &&
+                     _contract.TryGet(
+                         candidate.TargetEntityId.Value,
+                         out _) =>
+                new(
+                    candidate.SourceEntityId.Value,
+                    candidate.TargetEntityId.Value,
+                    [
+                        new SemanticLexicalStep(
+                            token,
+                            candidate,
+                            candidate.Score,
+                            [])
+                    ],
+                    candidate.Score),
 
             SemanticLexicalCandidateKind.Traversal
-                when candidate.SourceEntityId is not null && candidate.TargetEntityId is not null &&
-                     _contract.TryGet(candidate.SourceEntityId.Value, out _) &&
-                     _contract.TryGet(candidate.TargetEntityId.Value, out _) =>
-                new(candidate.SourceEntityId.Value, candidate.TargetEntityId.Value,
-                    [new SemanticLexicalStep(token, candidate, candidate.Score, [])], candidate.Score),
+                when candidate.SourceEntityId is not null &&
+                     candidate.TargetEntityId is not null &&
+                     _contract.TryGet(
+                         candidate.SourceEntityId.Value,
+                         out _) &&
+                     _contract.TryGet(
+                         candidate.TargetEntityId.Value,
+                         out _) =>
+                new(
+                    candidate.SourceEntityId.Value,
+                    candidate.TargetEntityId.Value,
+                    [
+                        new SemanticLexicalStep(
+                            token,
+                            candidate,
+                            candidate.Score,
+                            [])
+                    ],
+                    candidate.Score),
 
-            SemanticLexicalCandidateKind.Field or SemanticLexicalCandidateKind.Value
-                when candidate.EntityId is not null && _contract.TryGet(candidate.EntityId.Value, out _) =>
-                new(candidate.EntityId.Value, candidate.EntityId.Value,
-                    [new SemanticLexicalStep(token, candidate, candidate.Score, [])], candidate.Score),
+            SemanticLexicalCandidateKind.Field or
+                SemanticLexicalCandidateKind.Value
+                when candidate.EntityId is not null &&
+                     _contract.TryGet(
+                         candidate.EntityId.Value,
+                         out _) =>
+                new(
+                    candidate.EntityId.Value,
+                    candidate.EntityId.Value,
+                    [
+                        new SemanticLexicalStep(
+                            token,
+                            candidate,
+                            candidate.Score,
+                            [])
+                    ],
+                    candidate.Score),
 
             _ => null
         };
     }
 
-    private IReadOnlyList<Transition> ResolveTransition(SearchState state, SemanticLexicalCandidate candidate,
+    private IReadOnlyList<Transition> ResolveTransition(
+        SearchState state,
+        SemanticLexicalCandidate candidate,
         SearchBudget budget)
     {
         var owner = candidate.Kind switch
         {
-            SemanticLexicalCandidateKind.Entity or SemanticLexicalCandidateKind.Node => candidate.EntityId,
-            SemanticLexicalCandidateKind.Field or SemanticLexicalCandidateKind.Value => candidate.EntityId,
-            SemanticLexicalCandidateKind.Relationship or SemanticLexicalCandidateKind.Traversal => candidate
-                .SourceEntityId,
+            SemanticLexicalCandidateKind.Entity or
+                SemanticLexicalCandidateKind.Node =>
+                candidate.EntityId,
+
+            SemanticLexicalCandidateKind.Field or
+                SemanticLexicalCandidateKind.Value =>
+                candidate.EntityId,
+
+            SemanticLexicalCandidateKind.Relationship or
+                SemanticLexicalCandidateKind.Traversal =>
+                candidate.SourceEntityId,
+
             _ => null
         };
 
@@ -746,41 +876,53 @@ public sealed class SemanticLexicalResolver
         if (owner.Value == state.CurrentEntity)
             return [new(1.0d, [])];
 
-        var path = FindPath(state.CurrentEntity, owner.Value, _maxBridgeHops, budget);
+        var path = FindPath(
+            state.CurrentEntity,
+            owner.Value,
+            _maxBridgeHops,
+            budget);
+
         if (path.Count == 0)
             return [];
 
-        // A bridge is legal, but deliberately penalized. Direct neighbours beat
-        // longer inferred paths when lexical scores are otherwise comparable.
         var factor = Math.Pow(0.90d, path.Count);
+
         return [new(factor, path)];
     }
 
-    /// <summary>Bridging BFS between two entities. Bounded two ways: structurally
-    /// by <paramref name="maxHops"/> (graph depth), and by <paramref name="budget"/>
-    /// (total search work shared with the outer DFS) — a permissive candidate
-    /// source cannot turn a shallow-looking search into unbounded work just
-    /// because the underlying entity graph is densely connected.</summary>
-    private IReadOnlyList<SemanticLexicalCandidate> FindPath(EntityId source, EntityId target, int maxHops,
+    private IReadOnlyList<SemanticLexicalCandidate> FindPath(
+        EntityId source,
+        EntityId target,
+        int maxHops,
         SearchBudget budget)
     {
-        if (source == target) return [];
+        if (source == target)
+            return [];
 
-        var queue = new Queue<(EntityId Entity, List<SemanticLexicalCandidate> Path)>();
+        var queue =
+            new Queue<(EntityId Entity, List<SemanticLexicalCandidate> Path)>();
+
         var visited = new HashSet<EntityId> { source };
+
         queue.Enqueue((source, []));
 
         while (queue.Count > 0)
         {
-            if (budget.Tick()) return [];
+            if (budget.Tick())
+                return [];
 
             var (entityId, path) = queue.Dequeue();
-            if (path.Count >= maxHops) continue;
+
+            if (path.Count >= maxHops)
+                continue;
 
             var entity = _contract.Get(entityId);
+
             foreach (var relationship in entity.Relationships)
             {
-                var targetEntity = _contract.Get(relationship.Target);
+                var targetEntity =
+                    _contract.Get(relationship.Target);
+
                 var hop = new SemanticLexicalCandidate(
                     relationship.Name,
                     SemanticLexicalCandidateKind.Relationship,
@@ -789,9 +931,12 @@ public sealed class SemanticLexicalResolver
                     RelationshipId: relationship.Id,
                     SourceEntityId: entity.Id,
                     TargetEntityId: targetEntity.Id);
+
                 var nextPath = path.Concat([hop]).ToList();
+
                 if (targetEntity.Id == target)
                     return nextPath;
+
                 if (visited.Add(targetEntity.Id))
                     queue.Enqueue((targetEntity.Id, nextPath));
             }
@@ -801,12 +946,30 @@ public sealed class SemanticLexicalResolver
     }
 
     private static string[] Tokenize(string expression) =>
-        expression.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => x.Trim(',', '.', ';', ':', '?', '!', '(', ')', '[', ']', '{', '}'))
+        expression
+            .Split(
+                (char[]?)null,
+                StringSplitOptions.RemoveEmptyEntries)
+            .Select(x =>
+                x.Trim(
+                    ',',
+                    '.',
+                    ';',
+                    ':',
+                    '?',
+                    '!',
+                    '(',
+                    ')',
+                    '[',
+                    ']',
+                    '{',
+                    '}'))
             .Where(x => x.Length > 0)
             .ToArray();
 
-    private sealed record Transition(double Factor, IReadOnlyList<SemanticLexicalCandidate> BridgingPath);
+    private sealed record Transition(
+        double Factor,
+        IReadOnlyList<SemanticLexicalCandidate> BridgingPath);
 
     private sealed record SearchState(
         EntityId RootEntity,
@@ -814,37 +977,38 @@ public sealed class SemanticLexicalResolver
         IReadOnlyList<SemanticLexicalStep> Steps,
         double GraphFactor)
     {
-        public SearchState Add(SemanticLexicalStep step, double factor) =>
-            new(RootEntity, ResolveCurrent(step.Candidate), Steps.Append(step).ToArray(), GraphFactor * factor);
+        public SearchState Add(
+            SemanticLexicalStep step,
+            double factor) =>
+            new(
+                RootEntity,
+                ResolveCurrent(step.Candidate),
+                Steps.Append(step).ToArray(),
+                GraphFactor * factor);
 
-        private static EntityId ResolveCurrent(SemanticLexicalCandidate candidate) =>
+        private static EntityId ResolveCurrent(
+            SemanticLexicalCandidate candidate) =>
             candidate.TargetEntityId
             ?? candidate.EntityId
             ?? candidate.SourceEntityId
-            ?? throw new InvalidOperationException("Lexical candidate has no semantic entity context.");
+            ?? throw new InvalidOperationException(
+                "Lexical candidate has no semantic entity context.");
     }
 
-    /// <summary>
-    /// Tracks total search work across one <see>
-    ///     <cref>Ground</cref>
-    /// </see>
-    /// call so the
-    /// combined DFS (over tokens/candidates) and bridging BFS (over graph
-    /// hops) share a single resource ceiling. Once any limit is hit the
-    /// budget latches <see cref="Exceeded"/> permanently for that call —
-    /// callers must stop expanding and unwind rather than keep searching,
-    /// since a search that stopped early cannot prove it enumerated every
-    /// legal interpretation.
-    /// </summary>
     private sealed class SearchBudget
     {
         private readonly int _maxNodes;
         private readonly TimeSpan _maxElapsed;
         private readonly CancellationToken _cancellationToken;
-        private readonly System.Diagnostics.Stopwatch _stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        private readonly System.Diagnostics.Stopwatch _stopwatch =
+            System.Diagnostics.Stopwatch.StartNew();
+
         private int _nodesVisited;
 
-        public SearchBudget(int maxNodes, TimeSpan maxElapsed, CancellationToken cancellationToken)
+        public SearchBudget(
+            int maxNodes,
+            TimeSpan maxElapsed,
+            CancellationToken cancellationToken)
         {
             _maxNodes = maxNodes;
             _maxElapsed = maxElapsed;
@@ -853,16 +1017,9 @@ public sealed class SemanticLexicalResolver
 
         public bool Exceeded { get; private set; }
 
-        public GroundingBudgetLimit LimitHit { get; private set; } = GroundingBudgetLimit.None;
+        public GroundingBudgetLimit LimitHit { get; private set; } =
+            GroundingBudgetLimit.None;
 
-        /// <summary>Call once per unit of search work (one DFS node expansion,
-        /// one BFS dequeue). Returns true the moment any limit has fired —
-        /// including on every subsequent call for the rest of this
-        /// <see>
-        ///     <cref>Ground</cref>
-        /// </see>
-        /// invocation — so callers can bail out
-        /// immediately instead of finishing the current loop.</summary>
         public bool Tick()
         {
             if (Exceeded)
@@ -894,13 +1051,17 @@ public sealed class SemanticLexicalResolver
     }
 }
 
-/// <summary>Thrown internally when candidate retrieval for a single token
-/// exceeds the configured retrieval timeout. Caught at the <see cref="SemanticLexicalResolver.Ground(string, CancellationToken)"/>
-/// boundary and translated into a fail-closed <see cref="GroundingOutcome.BudgetExceeded"/>
-/// result rather than propagated to the caller as an exception.</summary>
-public sealed class GroundingRetrievalTimeoutException(string token, TimeSpan elapsed) : Exception(
-    $"Candidate retrieval for token '{token}' exceeded the retrieval timeout after {elapsed.TotalMilliseconds:0}ms.")
+/// <summary>
+/// Thrown internally when candidate retrieval for a single token
+/// exceeds the retrieval timeout.
+/// </summary>
+public sealed class GroundingRetrievalTimeoutException(
+    string token,
+    TimeSpan elapsed)
+    : Exception(
+        $"Candidate retrieval for token '{token}' exceeded the retrieval timeout after {elapsed.TotalMilliseconds:0}ms.")
 {
     public string Token { get; } = token;
+
     public TimeSpan Elapsed { get; } = elapsed;
 }

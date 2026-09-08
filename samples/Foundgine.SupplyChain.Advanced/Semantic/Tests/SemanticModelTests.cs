@@ -1,6 +1,6 @@
+using Foundgine.Generated;
 using Foundgine.SupplyChain.Advanced.Semantics;
 using Foundgine.SupplyChain.Advanced.Application;
-using Foundgine.SupplyChain.Advanced.Infrastructure.Metadata;
 using Foundgine.SupplyChain.Advanced.Authorization;
 using Foundgine.Core.Semantic;
 using Foundgine.Core.Semantic.Capabilities;
@@ -48,7 +48,7 @@ public sealed class SemanticModelTests
         Assert.Contains(component.Relationships, r => r.Name == "componentProduct" && r.Target == product.Id);
 
         // Structural metadata remains the source of the canonical entity identity.
-        Assert.Equal(SupplyChainMetadataProducer.Catalog.GetEntity(product.Id).EntityId, product.Id);
+        Assert.Equal(GeneratedMetadata.Build().GetEntity(product.Id).EntityId, product.Id);
     }
 
     [Fact]

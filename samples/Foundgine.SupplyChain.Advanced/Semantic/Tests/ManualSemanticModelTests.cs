@@ -1,3 +1,4 @@
+using Foundgine.Core.Abstractions;
 using Foundgine.Core.Semantic;
 using Foundgine.SupplyChain.Advanced.Semantics;
 using Xunit;
@@ -45,14 +46,22 @@ public sealed class ManualSemanticModelTests
     }
 
     [Fact]
-    public void RequireTypedEntities_rejects_an_unmarked_model()
+    public void Untyped_semantic_entities_are_first_class_and_do_not_require_a_clr_model()
     {
-        var builder = new SemanticModelBuilder().RequireTypedEntities();
+        var entityId = EntityId.Create("IntentOnly");
+        var fieldId = FieldId.Create("IntentOnly", "ExternalId");
 
-        var ex = Assert.Throws<InvalidOperationException>(() =>
-            builder.Entity<UnmarkedModel>(new(1), "Unmarked", e => e.Identity(x => x.Id)));
+        var model = new SemanticModelBuilder()
+            .Entity(entityId, "IntentOnly", e => e
+                .Identity(fieldId, "ExternalId")
+                .Field(fieldId, "ExternalId", typeof(string))
+                .Alias("intent-only"))
+            .Build();
 
-        Assert.Contains("SemanticEntity", ex.Message);
+        var entity = model.Get(entityId);
+        Assert.Null(entity.ModelType);
+        Assert.Equal("ExternalId", entity.Identity.Name);
+        Assert.Contains(entity.EffectiveAliases, a => a.Name == "intent-only");
     }
 
     [Fact]
@@ -72,6 +81,4 @@ public sealed class ManualSemanticModelTests
         frozen.CreateSnapshot();
     }
 
-    /// <summary>Deliberately not marked [SemanticEntity].</summary>
-    private sealed record UnmarkedModel(int Id);
 }
