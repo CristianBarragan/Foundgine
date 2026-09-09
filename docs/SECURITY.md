@@ -355,17 +355,31 @@ This keeps the caller-facing surface exactly as uniform as the SDK's own default
 it does not make the execution API's errors richer, and it does not adopt the
 semantic API's shape.
 
-### Open question: the semantic API's response verbosity
+### Resolved: the semantic API's response verbosity
 
-The semantic API's `kind: Denied` / `RequiresClarification` distinction and its
-named-claim detail on spoofing attempts were not changed. They are appropriate for
-a lab tool whose purpose is demonstrating the authorization model, but the same
-question above applies to it as much as it did to the execution API: is that detail
-something a live caller should see, or does it belong in server-side logging only
-(the same correlation-id pattern used above would apply directly)? Recommended
-follow-up is to make that call explicitly — either document `policy_probe` as a
-lab-only surface not meant to be exposed as-is, or apply the same
-classification/correlation-id treatment to it before any production use.
+`policy_probe`'s `kind: Denied` / `RequiresClarification` distinction and its
+named-claim detail on spoofing attempts are appropriate for a lab tool whose
+purpose is demonstrating the authorization model, but the same question that
+applies to the execution API applied to it too: is that detail something a
+live caller should see, or does it belong in server-side logging only?
+
+This is now made explicit rather than left open. `SupplyChainMcpTools` (in
+[`Semantic/Api/Mcp/Program.cs`](../samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs))
+gates the verbose decision detail on `IHostEnvironment.IsDevelopment()`:
+
+- **Development/lab** (`ASPNETCORE_ENVIRONMENT=Development`): `policy_probe`
+  returns the full `kind`/predicate/named-claim breakdown, unchanged, so the
+  tool still works for its documented teaching purpose.
+- **Any other environment** (the fail-closed default when the environment
+  variable is unset): the tool logs the full decision server-side via
+  `ILogger`, keyed by a short opaque correlation id, and returns only
+  `{ allowed: false, reference: <id> }` to the caller — the same
+  correlation-id pattern the execution API's `Execute` helper already uses,
+  applied here instead of left as a follow-up.
+
+This does not change `describe_capabilities`, `read_entity`, `read_relationship`,
+or `write_entity`, whose responses do not carry the same probe-many-variants
+risk; only `policy_probe`'s decision-path detail was in question.
 
 ---
 
