@@ -5,6 +5,8 @@ using Foundgine.Core.Semantic.IR;
 using Foundgine.SupplyChain.Advanced.Authorization;
 using Foundgine.SupplyChain.Advanced.Semantics;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,8 +25,24 @@ public partial class Program
 }
 
 [McpServerToolType]
-public sealed class SupplyChainMcpTools(SemanticModel model)
+public sealed class SupplyChainMcpTools(
+    SemanticModel model,
+    ILogger<SupplyChainMcpTools> logger,
+    IHostEnvironment environment)
 {
+    // docs/SECURITY.md ("Open question: the semantic API's response
+    // verbosity") flagged policy_probe's Denied/RequiresClarification
+    // distinction and its named-claim spoofing detail as appropriate for a
+    // teaching surface but not decided for production exposure. This makes
+    // that call explicit rather than leaving it open: the verbose,
+    // decision-path detail is only ever returned when this host is running
+    // as a development/lab environment (ASPNETCORE_ENVIRONMENT=Development
+    // — unset/anything else defaults to production behavior, fail-closed).
+    // Any other environment gets the same uniform,
+    // correlation-id-only shape the execution API already uses (see
+    // MCP.Foundgine/Program.cs's Execute/BlockedCallError), with the full
+    // decision detail going only to the structured server-side log.
+    private bool ExposeDiagnostics => environment.IsDevelopment();
     private static readonly IReadOnlyDictionary<string, (string TenantId, SupplyChainRole Role, string Token)> Actors =
         new Dictionary<string, (string, SupplyChainRole, string)>(StringComparer.OrdinalIgnoreCase)
         {
@@ -203,7 +221,24 @@ public sealed class SupplyChainMcpTools(SemanticModel model)
             _ => Error("Unknown policy probe.")
         };
 
-        return WithClaimDiagnostics(body, validatedClaims);
+        var diagnostics = WithClaimDiagnostics(body, validatedClaims);
+
+        if (ExposeDiagnostics)
+            return diagnostics;
+
+        // Production path: the decision-path detail (Denied vs.
+        // RequiresClarification vs. a named rejected claim) is exactly what
+        // a caller probing many `attack` variants could use to map policy
+        // boundaries faster than a uniform response would allow, per
+        // docs/SECURITY.md. Log the full decision server-side, keyed by a
+        // short opaque correlation id, and return only that id to the
+        // caller.
+        var correlationId = Guid.NewGuid().ToString("N")[..8];
+        logger.LogInformation(
+            "policy_probe decision. correlationId={CorrelationId} actor={Actor} attack={Attack} decision={Decision}",
+            correlationId, actor, attack, diagnostics);
+
+        return new { allowed = false, reference = correlationId };
     }
 
     /// <summary>
