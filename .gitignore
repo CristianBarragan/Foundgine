@@ -65,12 +65,12 @@ BenchmarkDotNet.Artifacts/
 .DS_Store
 Thumbs.db
 # Benchmark generated artifacts
-benchmarks/AgentEndToEnd/*/artifacts/
+src/csharp/benchmarks/AgentEndToEnd/*/artifacts/
 
 # Benchmark generated output
-benchmarks/**/artifacts/
-benchmarks/**/results/
-benchmarks/**/reports/
+src/csharp/benchmarks/**/artifacts/
+src/csharp/benchmarks/**/results/
+src/csharp/benchmarks/**/reports/
 
 # Microsoft Office temporary/lock files
 ~$*

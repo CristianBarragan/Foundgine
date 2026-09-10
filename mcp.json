@@ -43,6 +43,6 @@
   },
   "source": {
     "repository": "https://github.com/CristianBarragan/Foundgine",
-    "mcpProject": "src/Foundgine.Providers/Tools/MCP"
+    "mcpProject": "src/csharp/Foundgine.Providers/Tools/MCP"
   }
 }

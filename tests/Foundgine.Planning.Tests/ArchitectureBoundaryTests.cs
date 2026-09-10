@@ -17,12 +17,12 @@ public sealed class ArchitectureBoundaryTests
 
         AssertProjectReferencesDoNotContain(
             root,
-            "src/Foundgine.Core/Foundgine.Core.csproj",
+            "src/csharp/Foundgine.Core/Foundgine.Core.csproj",
             "GraphQL", "HotChocolate", "Sql", "Npgsql", "InMemory", "Intent.Json", "Aot");
 
         AssertProjectReferencesDoNotContain(
             root,
-            "src/Foundgine.Runtime/Foundgine.Runtime.csproj",
+            "src/csharp/Foundgine.Runtime/Foundgine.Runtime.csproj",
             "GraphQL", "HotChocolate", "Sql", "Npgsql", "InMemory");
     }
 

@@ -12,9 +12,9 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/Foundgine.Runtime/Foundgine.Runtime.csproj" />
-    <ProjectReference Include="../../src/Foundgine.Extensions/Foundgine.Extensions.csproj" />
-    <ProjectReference Include="../../src/Foundgine.Providers/Foundgine.Providers.csproj" />
-    <ProjectReference Include="../../src/Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Extensions/Foundgine.Extensions.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Core/Foundgine.Core.csproj" />
   </ItemGroup>
 </Project>

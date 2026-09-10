@@ -1,0 +1,3 @@
+package com.foundgine.providers.models; import java.util.*; import java.util.concurrent.*;
+/** Minimal provider-neutral agent facade; host-specific AI SDKs can adapt this boundary. */
+public final class FoundgineAiAgent {public interface ToolInvoker {CompletionStage<String> invoke(String tool,String arguments);} private final FoundgineAiToolset toolset;private final ToolInvoker invoker;public FoundgineAiAgent(FoundgineAiToolset t,ToolInvoker i){toolset=Objects.requireNonNull(t);invoker=Objects.requireNonNull(i);}public List<FoundgineAiToolset.Tool> tools(){return toolset.tools();}public CompletionStage<String> invoke(String tool,String args){return invoker.invoke(tool,args);}}

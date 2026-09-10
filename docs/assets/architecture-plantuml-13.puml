@@ -3,7 +3,7 @@ start
 :Semantic mutation graph;
 :Mutation plan;
 :dependency levels;
-:security/conformance gate;
+:src/csharp/security/conformance gate;
 :provider execution;
 stop
 @enduml

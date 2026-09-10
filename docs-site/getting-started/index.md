@@ -4,9 +4,9 @@ Run the canonical Supply Chain sample first. The website stays focused on the ar
 
 ## Start here
 
-- [Starter sample](https://github.com/CristianBarragan/Foundgine/tree/main/samples/Foundgine.SupplyChain)
-- [Starter step-by-step tutorial](https://github.com/CristianBarragan/Foundgine/blob/main/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md)
-- [Starter explained](https://github.com/CristianBarragan/Foundgine/blob/main/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
+- [Starter sample](https://github.com/CristianBarragan/Foundgine/tree/main/src/csharp/samples/Foundgine.SupplyChain)
+- [Starter step-by-step tutorial](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md)
+- [Starter explained](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
 
 ## Follow the layers
 

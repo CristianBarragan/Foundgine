@@ -5,8 +5,8 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/Foundgine.Providers/Foundgine.Providers.csproj" />
-    <ProjectReference Include="../../src/Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Core/Foundgine.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="10.0.3" />

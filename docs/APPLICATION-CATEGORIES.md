@@ -80,12 +80,12 @@ One hardened semantic and authorization core exposed through several
 transports at once (GraphQL, MCP, JSON), so each transport adapter stays a
 thin translation instead of its own security surface.
 
-- `samples/Foundgine.SupplyChain` — the minimal MCP → application → semantic
+- `src/csharp/samples/Foundgine.SupplyChain` — the minimal MCP → application → semantic
   model → planning → SQL → PostgreSQL starter.
-- `samples/Foundgine.SupplyChain.Advanced` — the full semantic proving ground
+- `src/csharp/samples/Foundgine.SupplyChain.Advanced` — the full semantic proving ground
   for Metadata → Semantics → Authorization → Intent, including lexical
   grounding, ambiguity handling, retrieval strategies and adversarial tests.
-- `benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest` — benchmark-only
+- `src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest` — benchmark-only
   transport security regression coverage over GraphQL and MCP.
 
 ### 2. AI-agent tool execution boundaries
@@ -95,8 +95,8 @@ remains the authority over what that intent means and whether it is
 authorized, so a growing tool surface does not become a growing set of
 independent, inconsistently-secured execution paths.
 
-- `samples/Foundgine.SupplyChain` — the starter agent-facing MCP surface.
-- `samples/Foundgine.SupplyChain.Advanced` — the same boundary at full
+- `src/csharp/samples/Foundgine.SupplyChain` — the starter agent-facing MCP surface.
+- `src/csharp/samples/Foundgine.SupplyChain.Advanced` — the same boundary at full
   application and semantic complexity.
 
 See [AI agents](AI-AGENT.md) for the boundary this draws in detail.
@@ -108,10 +108,10 @@ justify explicit dependency ordering, replay protection, deterministic
 locking, and an execution receipt — deliberately *not* inferred from
 natural language.
 
-- `benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Banking` — a `TransferFunds` mutation
+- `src/csharp/benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Banking` — a `TransferFunds` mutation
   whose execution boundary revalidates tenant, ownership, account state,
   and daily limits, and produces an audit entry and receipt.
-- `benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Postgres` — the same capability against
+- `src/csharp/benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Postgres` — the same capability against
   real PostgreSQL execution, transaction, and idempotency semantics.
 
 ### 4. Composite / cross-domain application models
@@ -121,7 +121,7 @@ schema — meaning is assembled from multiple underlying concepts, and the
 semantic layer is what makes that assembly explicit instead of implicit in
 query code.
 
-- `samples/Foundgine.SupplyChain.Advanced` — its application-facing semantic
+- `src/csharp/samples/Foundgine.SupplyChain.Advanced` — its application-facing semantic
   model is explicitly separated from persistence/storage concepts.
 
 ### 5. Free-form / natural-language query surfaces
@@ -134,9 +134,9 @@ text into a semantic interpretation without letting retrieval relevance
 become authorization, and without letting a structurally valid path stand
 in for a correctly understood one.
 
-- `src/Foundgine.Providers/Foundgine.Providers.Storage.Elasticsearch`, `src/Foundgine.Providers/Foundgine.Providers.Storage.PostgresVector` — the two
+- `src/csharp/Foundgine.Providers/Foundgine.Providers.Storage.Elasticsearch`, `src/csharp/Foundgine.Providers/Foundgine.Providers.Storage.PostgresVector` — the two
   optional candidate-retrieval providers for this category.
-- `samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding` — a worked
+- `src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding` — a worked
   example of a materially ambiguous business term (`active supplier`)
   against a real generated semantic contract.
 

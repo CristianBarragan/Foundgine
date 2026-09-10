@@ -9,6 +9,18 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: "Deployment target"
+        required: true
+        default: dotnet
+        type: choice
+        options:
+          - none
+          - dotnet
+          - java
+          - both
 
 permissions:
   contents: read
@@ -188,13 +200,13 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore sample
-        run: dotnet restore benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln
+        run: dotnet restore src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln
 
       - name: Build sample
-        run: dotnet build benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln --no-restore --configuration Release
 
       - name: Run SupplyChain tests
-        run: dotnet test benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
+        run: dotnet test src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
   supplychain-semantic-sample-tests:
     name: SupplyChain EndToEnd — Semantic Cases
@@ -214,13 +226,13 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore sample
-        run: dotnet restore samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln
+        run: dotnet restore src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln
 
       - name: Build sample
-        run: dotnet build samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln --no-restore --configuration Release
 
       - name: Run semantic SupplyChain tests
-        run: dotnet test samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
+        run: dotnet test src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
   integration-tests:
     needs:
@@ -311,7 +323,7 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = 'Stop'
-          $benchmarkScript = Join-Path "${{ github.workspace }}" 'benchmarks/AgentEndToEnd/run-all-agent-benchmarks.ps1'
+          $benchmarkScript = Join-Path "${{ github.workspace }}" 'src/csharp/benchmarks/AgentEndToEnd/run-all-agent-benchmarks.ps1'
           & $benchmarkScript -Smoke
           if ($LASTEXITCODE -ne 0) {
             throw "Agent benchmark smoke test failed with exit code $LASTEXITCODE."
@@ -322,7 +334,7 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = 'Stop'
-          $supplyChainScript = Join-Path "${{ github.workspace }}" 'samples/Foundgine.SupplyChain.Advanced/run-supply-chain.ps1'
+          $supplyChainScript = Join-Path "${{ github.workspace }}" 'src/csharp/samples/Foundgine.SupplyChain.Advanced/run-supply-chain.ps1'
           & $supplyChainScript
           if ($LASTEXITCODE -ne 0) {
             throw "Supply Chain E2E benchmark failed with exit code $LASTEXITCODE."
@@ -331,7 +343,7 @@ jobs:
       - name: Verify smoke test left no artifacts behind
         shell: pwsh
         run: |
-          $benchmarkRoot = Join-Path "${{ github.workspace }}" 'benchmarks/AgentEndToEnd'
+          $benchmarkRoot = Join-Path "${{ github.workspace }}" 'src/csharp/benchmarks/AgentEndToEnd'
           $leftover = Get-ChildItem -Path $benchmarkRoot -Directory |
             Where-Object { Test-Path (Join-Path $_.FullName 'artifacts') } |
             ForEach-Object { Join-Path $_.FullName 'artifacts' }
@@ -361,9 +373,9 @@ jobs:
         run: |
           set -euo pipefail
           projects=(
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
-            "benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
           )
           for project in "${projects[@]}"; do
             echo "Restoring $project"
@@ -375,9 +387,9 @@ jobs:
         run: |
           set -euo pipefail
           projects=(
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
-            "benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
           )
           for project in "${projects[@]}"; do
             echo "Building $project"
@@ -423,7 +435,7 @@ jobs:
           POSTGRES_HOST_PORT: "55433"
         run: |
           set -euo pipefail
-          COMPOSE=benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
+          COMPOSE=src/csharp/benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
           PROJECT=foundgine-performance-smoke-hc
           cleanup() {
             docker compose -p "$PROJECT" -f "$COMPOSE" down -v --remove-orphans || true
@@ -468,9 +480,9 @@ jobs:
         run: |
           set -euo pipefail
           projects=(
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
-            "benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
           )
           for project in "${projects[@]}"; do
             echo "Restoring $project"
@@ -482,9 +494,9 @@ jobs:
         run: |
           set -euo pipefail
           projects=(
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
-            "benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
           )
           for project in "${projects[@]}"; do
             echo "Building $project"
@@ -530,7 +542,7 @@ jobs:
           POSTGRES_HOST_PORT: "55434"
         run: |
           set -euo pipefail
-          COMPOSE=benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
+          COMPOSE=src/csharp/benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
           PROJECT=foundgine-performance-smoke-fg
           cleanup() {
             docker compose -p "$PROJECT" -f "$COMPOSE" down -v --remove-orphans || true
@@ -553,9 +565,100 @@ jobs:
             -e BENCHMARK_REPORT_DIRECTORY=/reports \
             loader
 
+  java-pipeline:
+    name: Java Build & Test
+    # Keep Java opt-in until the port reaches parity with Core/Runtime/Providers,
+    # samples, benchmarks and security. Set repository variable
+    # FOUNDGINE_JAVA_PIPELINE=true when the Java pipeline is ready.
+    if: vars.FOUNDGINE_JAVA_PIPELINE == 'true' || github.event_name == 'workflow_dispatch' && (inputs.deploy_target == 'java' || inputs.deploy_target == 'both')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build Java modules
+        working-directory: src/java
+        run: mvn -B -ntp verify
+
+      - name: Upload Java artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: foundgine-java-artifacts
+          path: |
+            src/java/**/target/*.jar
+            src/java/**/target/*.pom
+          if-no-files-found: error
+
+  publish-java:
+    name: Publish Java artifacts
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') &&
+      (vars.FOUNDGINE_DEPLOY_TARGET == 'java' || vars.FOUNDGINE_DEPLOY_TARGET == 'both' ||
+       (github.event_name == 'workflow_dispatch' &&
+        (inputs.deploy_target == 'java' || inputs.deploy_target == 'both')))
+    needs:
+      - java-pipeline
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Publish Java artifacts
+        working-directory: src/java
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          MAVEN_REPOSITORY_URL: ${{ vars.MAVEN_REPOSITORY_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${MAVEN_USERNAME:-}" || -z "${MAVEN_PASSWORD:-}" ]]; then
+            echo "Java deployment selected, but Maven repository credentials are not configured."
+            exit 1
+          fi
+          repository_url="${MAVEN_REPOSITORY_URL:-https://maven.pkg.github.com/${GITHUB_REPOSITORY}}"
+          cat > settings.xml <<EOF
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
+            <servers>
+              <server>
+                <id>foundgine</id>
+                <username>${MAVEN_USERNAME}</username>
+                <password>${MAVEN_PASSWORD}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+          mvn -B -ntp deploy \
+            -s settings.xml \
+            -Drevision="${GITHUB_REF_NAME#v}" \
+            -DaltDeploymentRepository=foundgine::default::${repository_url}
+
   publish-nuget:
     name: Publish NuGet packages
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') &&
+      (vars.FOUNDGINE_DEPLOY_TARGET == 'dotnet' || vars.FOUNDGINE_DEPLOY_TARGET == 'both' ||
+       (github.event_name == 'workflow_dispatch' &&
+        (inputs.deploy_target == 'dotnet' || inputs.deploy_target == 'both')))
     needs:
       - build-pack
       - unit-tests

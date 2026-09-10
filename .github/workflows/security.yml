@@ -92,7 +92,7 @@ jobs:
           dotnet-version: 9.0.x
       - name: Start PostgreSQL + SupplyChain API
         run: |
-          cd samples/Foundgine.SupplyChain
+          cd src/csharp/samples/Foundgine.SupplyChain
           docker compose up -d --build
       - name: Wait for API readiness
         run: |
@@ -126,7 +126,7 @@ jobs:
       - name: Stop stack
         if: always()
         run: |
-          cd samples/Foundgine.SupplyChain
+          cd src/csharp/samples/Foundgine.SupplyChain
           docker compose down --volumes --remove-orphans
 
   security-penetration-graph:
@@ -140,26 +140,26 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Restore pentest suite
-        run: dotnet restore benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj
+        run: dotnet restore src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj
       - name: Build pentest suite
-        run: dotnet build benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj --no-restore --configuration Release
+        run: dotnet build src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj --no-restore --configuration Release
       - name: Start isolated PostgreSQL 17
-        run: docker compose -f benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml up -d --wait postgres
+        run: docker compose -f src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml up -d --wait postgres
       - name: Seed isolated pentest database
-        run: docker compose -f benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml run --rm seed
+        run: docker compose -f src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml run --rm seed
       - name: Run GraphQL penetration tests
         env:
           SupplyChainConnectionString: Host=localhost;Port=4431;Database=foundgine_supply_chain_pentest;Username=benchmark;Password=benchmark
         run: |
           set -euo pipefail
-          dotnet test benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj \
+          dotnet test src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj \
             --no-build \
             --configuration Release \
             --filter 'FullyQualifiedName~GraphPenetrationTests' \
             --logger 'console;verbosity=normal'
       - name: Teardown isolated database
         if: always()
-        run: docker compose -f benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml down --volumes --remove-orphans
+        run: docker compose -f src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml down --volumes --remove-orphans
 
   security-penetration:
     name: Security Penetration Test — Authorization
@@ -277,7 +277,7 @@ jobs:
           name: foundgine-security-penetration-results
           path: |
             tests/Foundgine.Security.Tests/TestResults/*.trx
-            security/pentest/*.md
+            src/csharp/security/pentest/*.md
           if-no-files-found: warn
 
   security-penetration-mcp:
@@ -291,23 +291,23 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Restore pentest suite
-        run: dotnet restore benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj
+        run: dotnet restore src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj
       - name: Build pentest suite
-        run: dotnet build benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj --no-restore --configuration Release
+        run: dotnet build src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj --no-restore --configuration Release
       - name: Start isolated PostgreSQL 17
-        run: docker compose -f benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml up -d --wait postgres
+        run: docker compose -f src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml up -d --wait postgres
       - name: Seed isolated pentest database
-        run: docker compose -f benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml run --rm seed
+        run: docker compose -f src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml run --rm seed
       - name: Run MCP penetration tests
         env:
           SupplyChainConnectionString: Host=localhost;Port=4431;Database=foundgine_supply_chain_pentest;Username=benchmark;Password=benchmark
         run: |
           set -euo pipefail
-          dotnet test benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj \
+          dotnet test src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj \
             --no-build \
             --configuration Release \
             --filter 'FullyQualifiedName~McpPenetrationTests' \
             --logger 'console;verbosity=normal'
       - name: Teardown isolated database
         if: always()
-        run: docker compose -f benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml down --volumes --remove-orphans
+        run: docker compose -f src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml down --volumes --remove-orphans

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../../../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../../../../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../../../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" SkipGetTargetFrameworkProperties="true" UndefineProperties="TargetFramework" />
+  </ItemGroup>
+</Project>
