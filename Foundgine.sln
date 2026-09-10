@@ -226,15 +226,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.SupplyChain.Advan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.SupplyChain.Advanced.Tests", "samples\Foundgine.SupplyChain.Advanced\Semantic\Tests\Foundgine.SupplyChain.Advanced.Tests.csproj", "{71C1838D-641A-540C-BAA1-CE80668086C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Core", "src\Foundgine.Core\Foundgine.Core.csproj", "{92C1251F-A308-546F-B3DA-C744DF4011E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Core", "src\csharp\Foundgine.Core\Foundgine.Core.csproj", "{92C1251F-A308-546F-B3DA-C744DF4011E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Extensions", "src\Foundgine.Extensions\Foundgine.Extensions.csproj", "{E5DF4410-D617-57A2-A469-132E398FDCE4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Extensions", "src\csharp\Foundgine.Extensions\Foundgine.Extensions.csproj", "{E5DF4410-D617-57A2-A469-132E398FDCE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Providers.Aot.Generator", "src\Foundgine.Providers\Foundgine.Providers.Aot.Generator\Foundgine.Providers.Aot.Generator.csproj", "{461418F1-8923-5376-BB91-C7C471CF358A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Providers.Aot.Generator", "src\csharp\Foundgine.Providers\Foundgine.Providers.Aot.Generator\Foundgine.Providers.Aot.Generator.csproj", "{461418F1-8923-5376-BB91-C7C471CF358A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Providers", "src\Foundgine.Providers\Foundgine.Providers.csproj", "{91EA787A-486F-5E7C-A994-AD0BB6E01356}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Providers", "src\csharp\Foundgine.Providers\Foundgine.Providers.csproj", "{91EA787A-486F-5E7C-A994-AD0BB6E01356}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Runtime", "src\Foundgine.Runtime\Foundgine.Runtime.csproj", "{093B1729-C1D0-5755-BFFF-55C197A07D3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Runtime", "src\csharp\Foundgine.Runtime\Foundgine.Runtime.csproj", "{093B1729-C1D0-5755-BFFF-55C197A07D3D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Aot.Tests", "tests\Foundgine.Aot.Tests\Foundgine.Aot.Tests.csproj", "{86551244-A5EC-599C-88B2-F0FEDB8AD7FA}"
 EndProject

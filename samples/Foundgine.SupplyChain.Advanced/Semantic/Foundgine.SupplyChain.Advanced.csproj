@@ -16,9 +16,9 @@
     <None Remove="McpClient/**/*.cs" />
     <Compile Remove="Benchmarks/**/*.cs" />
     <None Remove="Benchmarks/**/*.cs" />
-    <ProjectReference Include="../../../src/Foundgine.Core/Foundgine.Core.csproj" />
-    <ProjectReference Include="../../../src/Foundgine.Providers/Foundgine.Providers.csproj" />
-    <ProjectReference Include="../../../src/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+    <ProjectReference Include="../../../src/csharp/Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../../src/csharp/Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../../src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false"
                       PrivateAssets="all"

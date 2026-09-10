@@ -5,10 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+
     <!-- This project lives above Run1/Run2/Run3/Run4/Run5.
          Do not let the SDK recursively compile every benchmark source file. -->
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="Program.cs" />
     <PackageReference Include="Npgsql" Version="10.0.3" />

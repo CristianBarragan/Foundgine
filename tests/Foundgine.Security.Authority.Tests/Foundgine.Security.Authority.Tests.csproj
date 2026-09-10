@@ -11,7 +11,7 @@
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <ProjectReference Include="../../benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Postgres/Foundgine.HighAssurance.Postgres.csproj" />
     <ProjectReference Include="../../benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Banking/Foundgine.HighAssurance.Banking.csproj" />
-    <ProjectReference Include="../../src/Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Runtime/Foundgine.Runtime.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="schema.sql" CopyToOutputDirectory="PreserveNewest" />

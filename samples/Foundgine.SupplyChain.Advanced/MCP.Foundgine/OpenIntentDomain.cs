@@ -9,12 +9,9 @@ namespace Foundgine.SupplyChain.Advanced.OpenIntent.Domain;
 /// </summary>
 [FoundgineEntity("Customer", StorageName = "customers")]
 public sealed record Customer(
-    [property: FoundgineField("Id", StorageName = "customer_id", IsPrimaryKey = true)]
-    int Id,
-    [property: FoundgineAlias("given name")]
-    string FirstName,
-    [property: FoundgineAlias("family name")]
-    string LastName,
+    [property: FoundgineField("Id", StorageName = "customer_id", IsPrimaryKey = true)] int Id,
+    [property: FoundgineAlias("given name")] string FirstName,
+    [property: FoundgineAlias("family name")] string LastName,
     string Email,
     string Phone,
     string ShippingAddress)
@@ -25,12 +22,9 @@ public sealed record Customer(
 
 [FoundgineEntity("Order", StorageName = "orders")]
 public sealed record Order(
-    [property: FoundgineField("Id", StorageName = "order_id", IsPrimaryKey = true)]
-    int Id,
-    [property: FoundgineField(StorageName = "customer_id")]
-    int CustomerId,
-    [property: FoundgineField(StorageName = "order_date")]
-    DateTimeOffset OrderDate,
+    [property: FoundgineField("Id", StorageName = "order_id", IsPrimaryKey = true)] int Id,
+    [property: FoundgineField(StorageName = "customer_id")] int CustomerId,
+    [property: FoundgineField(StorageName = "order_date")] DateTimeOffset OrderDate,
     string Status,
     decimal TotalAmount)
 {
@@ -46,12 +40,9 @@ public sealed record Order(
 
 [FoundgineEntity("OrderItem", StorageName = "order_items")]
 public sealed record OrderItem(
-    [property: FoundgineField("Id", StorageName = "order_item_id", IsPrimaryKey = true)]
-    int Id,
-    [property: FoundgineField(StorageName = "order_id")]
-    int OrderId,
-    [property: FoundgineField(StorageName = "product_id")]
-    int ProductId,
+    [property: FoundgineField("Id", StorageName = "order_item_id", IsPrimaryKey = true)] int Id,
+    [property: FoundgineField(StorageName = "order_id")] int OrderId,
+    [property: FoundgineField(StorageName = "product_id")] int ProductId,
     int Quantity,
     decimal UnitPrice)
 {
@@ -66,10 +57,8 @@ public sealed record OrderItem(
 [FoundgineAlias("item")]
 [FoundgineAlias("catalog item")]
 public sealed record Product(
-    [property: FoundgineField("Id", StorageName = "product_id", IsPrimaryKey = true)]
-    int Id,
-    [property: FoundgineAlias("product name")]
-    string Name,
+    [property: FoundgineField("Id", StorageName = "product_id", IsPrimaryKey = true)] int Id,
+    [property: FoundgineAlias("product name")] string Name,
     string Sku,
     decimal UnitPrice,
     int SupplierId,
@@ -82,15 +71,14 @@ public sealed record Product(
     public Category Category { get; init; } = null!;
 
     [FoundgineRelationship(typeof(Inventory), "ProductId", "Id", Name = "inventory")]
-    public IReadOnlyList<Inventory> Inventory { get; init; } = [];
+    public Inventory Inventory { get; init; } = null!;
 }
 
 [FoundgineEntity("Supplier", StorageName = "suppliers")]
 [FoundgineAlias("vendor", Weight = 95)]
 [FoundgineAlias("seller", Weight = 90)]
 public sealed record Supplier(
-    [property: FoundgineField("Id", StorageName = "supplier_id", IsPrimaryKey = true)]
-    int Id,
+    [property: FoundgineField("Id", StorageName = "supplier_id", IsPrimaryKey = true)] int Id,
     string Name,
     string Email,
     string Phone,
@@ -108,10 +96,8 @@ public sealed record Supplier(
 
 [FoundgineEntity("Category", StorageName = "categories")]
 public sealed record Category(
-    [property: FoundgineField("Id", StorageName = "category_id", IsPrimaryKey = true)]
-    int Id,
-    [property: FoundgineAlias("category name")]
-    string Name,
+    [property: FoundgineField("Id", StorageName = "category_id", IsPrimaryKey = true)] int Id,
+    [property: FoundgineAlias("category name")] string Name,
     string Description)
 {
     [FoundgineRelationship(typeof(Product), "CategoryId", "Id", Name = "products")]
@@ -120,8 +106,7 @@ public sealed record Category(
 
 [FoundgineEntity("Inventory", StorageName = "inventory")]
 public sealed record Inventory(
-    [property: FoundgineField("Id", StorageName = "inventory_id", IsPrimaryKey = true)]
-    int Id,
+    [property: FoundgineField("Id", StorageName = "inventory_id", IsPrimaryKey = true)] int Id,
     int WarehouseId,
     int ProductId,
     int QuantityOnHand,
@@ -137,8 +122,7 @@ public sealed record Inventory(
 
 [FoundgineEntity("Warehouse", StorageName = "warehouses")]
 public sealed record Warehouse(
-    [property: FoundgineField("Id", StorageName = "warehouse_id", IsPrimaryKey = true)]
-    int Id,
+    [property: FoundgineField("Id", StorageName = "warehouse_id", IsPrimaryKey = true)] int Id,
     string Name,
     string Location,
     int CapacityM3)
@@ -152,8 +136,7 @@ public sealed record Warehouse(
 
 [FoundgineEntity("Shipment", StorageName = "shipments")]
 public sealed record Shipment(
-    [property: FoundgineField("Id", StorageName = "shipment_id", IsPrimaryKey = true)]
-    int Id,
+    [property: FoundgineField("Id", StorageName = "shipment_id", IsPrimaryKey = true)] int Id,
     int OrderId,
     int CarrierId,
     int WarehouseId,
@@ -175,8 +158,7 @@ public sealed record Shipment(
 
 [FoundgineEntity("Carrier", StorageName = "carriers")]
 public sealed record Carrier(
-    [property: FoundgineField("Id", StorageName = "carrier_id", IsPrimaryKey = true)]
-    int Id,
+    [property: FoundgineField("Id", StorageName = "carrier_id", IsPrimaryKey = true)] int Id,
     string Name,
     string TrackingUrlTemplate,
     string ContactPhone)
@@ -189,8 +171,7 @@ public sealed record Carrier(
 [FoundgineAlias("PO", Weight = 100)]
 [FoundgineAlias("purchase", Weight = 90)]
 public sealed record PurchaseOrder(
-    [property: FoundgineField("Id", StorageName = "purchase_order_id", IsPrimaryKey = true)]
-    int Id,
+    [property: FoundgineField("Id", StorageName = "purchase_order_id", IsPrimaryKey = true)] int Id,
     int SupplierId,
     DateOnly ExpectedDate,
     DateOnly? ReceivedDate,

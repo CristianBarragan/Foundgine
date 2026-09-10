@@ -1,0 +1,1 @@
+package com.foundgine.samples.supplychain; import com.foundgine.runtime.*; public final class Main {public static void main(String[] args){FoundgineOptions options=new FoundgineOptions();System.out.println("Foundgine Supply Chain Java sample");System.out.println("Runtime configured: "+options);}}

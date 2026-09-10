@@ -61,3 +61,5 @@ Do not describe Foundgine as a complete autonomous-agent platform, ORM replaceme
 ## Documentation / source of truth
 
 The active source code and tests are authoritative. Human documentation is under `docs/`; website documentation is under `docs-site/`. The canonical current-status reference is `docs/CURRENT-STATUS.md`. Package-specific READMEs live under `src/`.
+
+Historical milestone language should not be presented as current product capability. `Graphgine` and `CoffeeBeanery` are historical/prototype names and are not the current product identity.

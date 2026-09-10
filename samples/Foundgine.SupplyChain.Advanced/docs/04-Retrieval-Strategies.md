@@ -2,7 +2,7 @@
 
 Files: `Tests/Retrieval/*.cs`. Provider under test:
 `Foundgine.Providers.Storage.Sql.Retrieval.PostgresRetrievalCandidateSource`
-(see also `src/Foundgine.Providers.Storage.Sql/README.md`).
+(see also `src/csharp/Foundgine.Providers.Storage.Sql/README.md`).
 
 ## The concept: retrieval feeds grounding, grounding feeds planning
 

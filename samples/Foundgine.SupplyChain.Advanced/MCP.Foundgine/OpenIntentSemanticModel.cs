@@ -13,8 +13,15 @@ namespace Foundgine.SupplyChain.Advanced.OpenIntent;
 /// </summary>
 public static class OpenIntentSemanticModel
 {
+    /// <summary>
+    /// Gets the immutable metadata generated from the CLR source model.
+    /// </summary>
     public static IMetadataCatalog Metadata { get; } = GeneratedMetadata.Build();
 
+    /// <summary>
+    /// Gets the semantic model produced by applying the sample-specific
+    /// semantic overlay to the generated metadata.
+    /// </summary>
     public static SemanticModel Model { get; } =
         Metadata.FromMetadata()
             .Overlay(BuildOverlay())
@@ -45,17 +52,17 @@ public static class OpenIntentSemanticModel
         params string[] aliases)
     {
         var entity = Metadata.Entities.Single(e =>
-            string.Equals(e.Name, entityName, StringComparison.OrdinalIgnoreCase));
+            string.Equals(
+                e.Name,
+                entityName,
+                StringComparison.OrdinalIgnoreCase));
 
-        var identity = Metadata.Entities
-            .Single(e => e.EntityId == entity.EntityId)
-            .EffectiveFields
-            .Single(f => entity.PrimaryKey is not null && f.Column?.ColumnId == entity.PrimaryKey.ColumnId);
-
-        builder.Entity(entity.EntityId, entity.Name, e =>
-        {
-            e.Identity(identity.Id, identity.Name);
-            e.Aliases(aliases);
-        });
+        builder.Entity<T>(
+            entity.EntityId,
+            entity.Name,
+            e =>
+            {
+                e.Aliases(aliases);
+            });
     }
 }

@@ -1,28 +1,21 @@
 # Changelog
 
-All notable changes to Foundgine are documented here.
+## Unreleased
 
-## [2.1.1] — 2026-09-09
+### Security
 
-### Added
-
-- Added generated-metadata-backed open-intent support to the Advanced Supply Chain MCP sample.
-- Added semantic overlays on top of generated metadata for natural-language entity aliases.
-- Added generated metadata identity lookup for the open-intent compatibility layer.
-- Added direct consumption of AOT-generated metadata by the Supply Chain SQL plan compiler.
-
-### Changed
-
-- Supply Chain semantic setup now uses the generated metadata catalog as the structural source of truth.
-- SQL plan compilation no longer requires a manually reconstructed storage metadata registry.
-- Open-intent semantic configuration now layers application meaning over generated structural metadata rather than duplicating entity, field, relationship, or storage definitions.
-- Supply Chain relationship metadata now correctly maps `Product.Inventory` from `Product.Id` to `Inventory.ProductId`.
-- The Advanced Supply Chain MCP sample now follows the generated metadata → semantic overlay → planning → SQL compilation pipeline.
-
-### Validation
-
-- `Foundgine.E2E.Tests` passes.
-- Advanced Supply Chain MCP compilation succeeds after the generated metadata and semantic overlay fixes.
+- Resolved the open question in `docs/SECURITY.md` ("the semantic API's
+  response verbosity"): `SupplyChainMcpTools.PolicyProbe` (the sample
+  `policy_probe` MCP tool under `samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp`)
+  now only returns its full `kind`/predicate/named-claim decision detail
+  when the host is running in a development environment
+  (`IHostEnvironment.IsDevelopment()`). In every other environment it logs
+  the full decision server-side via `ILogger`, keyed by a short opaque
+  correlation id, and returns only `{ allowed: false, reference: <id> }` —
+  matching the correlation-id pattern `MCP.Foundgine/Program.cs`'s `Execute`
+  helper already used for the execution API, so a caller probing many
+  `attack` variants can no longer use the response shape to map policy
+  boundaries.
 
 ## 2.1.0 — September 8, 2026
 

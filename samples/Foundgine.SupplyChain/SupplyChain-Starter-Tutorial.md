@@ -109,13 +109,13 @@ source, and add the AOT generator as an analyzer:
     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/Foundgine.Core/Foundgine.Core.csproj" />
-    <ProjectReference Include="../../src/Foundgine.Runtime/Foundgine.Runtime.csproj" />
-    <ProjectReference Include="../../src/Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Providers/Foundgine.Providers.csproj" />
 
     <!-- The Roslyn source generator that turns your [FoundgineModel]/[FoundgineEntity]
          attributes into a compiled metadata registry at build time. -->
-    <ProjectReference Include="../../src/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+    <ProjectReference Include="../../src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
                       OutputItemType="Analyzer"
                       ReferenceOutputAssembly="false"
                       PrivateAssets="all"

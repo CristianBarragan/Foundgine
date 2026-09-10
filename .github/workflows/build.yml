@@ -9,6 +9,18 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: "Deployment target"
+        required: true
+        default: dotnet
+        type: choice
+        options:
+          - none
+          - dotnet
+          - java
+          - both
 
 permissions:
   contents: read
@@ -553,9 +565,100 @@ jobs:
             -e BENCHMARK_REPORT_DIRECTORY=/reports \
             loader
 
+  java-pipeline:
+    name: Java Build & Test
+    # Keep Java opt-in until the port reaches parity with Core/Runtime/Providers,
+    # samples, benchmarks and security. Set repository variable
+    # FOUNDGINE_JAVA_PIPELINE=true when the Java pipeline is ready.
+    if: vars.FOUNDGINE_JAVA_PIPELINE == 'true' || github.event_name == 'workflow_dispatch' && (inputs.deploy_target == 'java' || inputs.deploy_target == 'both')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build Java modules
+        working-directory: src/java
+        run: mvn -B -ntp verify
+
+      - name: Upload Java artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: foundgine-java-artifacts
+          path: |
+            src/java/**/target/*.jar
+            src/java/**/target/*.pom
+          if-no-files-found: error
+
+  publish-java:
+    name: Publish Java artifacts
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') &&
+      (vars.FOUNDGINE_DEPLOY_TARGET == 'java' || vars.FOUNDGINE_DEPLOY_TARGET == 'both' ||
+       (github.event_name == 'workflow_dispatch' &&
+        (inputs.deploy_target == 'java' || inputs.deploy_target == 'both')))
+    needs:
+      - java-pipeline
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Publish Java artifacts
+        working-directory: src/java
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          MAVEN_REPOSITORY_URL: ${{ vars.MAVEN_REPOSITORY_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${MAVEN_USERNAME:-}" || -z "${MAVEN_PASSWORD:-}" ]]; then
+            echo "Java deployment selected, but Maven repository credentials are not configured."
+            exit 1
+          fi
+          repository_url="${MAVEN_REPOSITORY_URL:-https://maven.pkg.github.com/${GITHUB_REPOSITORY}}"
+          cat > settings.xml <<EOF
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
+            <servers>
+              <server>
+                <id>foundgine</id>
+                <username>${MAVEN_USERNAME}</username>
+                <password>${MAVEN_PASSWORD}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+          mvn -B -ntp deploy \
+            -s settings.xml \
+            -Drevision="${GITHUB_REF_NAME#v}" \
+            -DaltDeploymentRepository=foundgine::default::${repository_url}
+
   publish-nuget:
     name: Publish NuGet packages
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') &&
+      (vars.FOUNDGINE_DEPLOY_TARGET == 'dotnet' || vars.FOUNDGINE_DEPLOY_TARGET == 'both' ||
+       (github.event_name == 'workflow_dispatch' &&
+        (inputs.deploy_target == 'dotnet' || inputs.deploy_target == 'both')))
     needs:
       - build-pack
       - unit-tests

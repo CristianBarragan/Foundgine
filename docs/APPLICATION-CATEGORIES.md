@@ -134,7 +134,7 @@ text into a semantic interpretation without letting retrieval relevance
 become authorization, and without letting a structurally valid path stand
 in for a correctly understood one.
 
-- `src/Foundgine.Providers/Foundgine.Providers.Storage.Elasticsearch`, `src/Foundgine.Providers/Foundgine.Providers.Storage.PostgresVector` — the two
+- `src/csharp/Foundgine.Providers/Foundgine.Providers.Storage.Elasticsearch`, `src/csharp/Foundgine.Providers/Foundgine.Providers.Storage.PostgresVector` — the two
   optional candidate-retrieval providers for this category.
 - `samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding` — a worked
   example of a materially ambiguous business term (`active supplier`)

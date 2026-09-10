@@ -4,7 +4,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../src/csharp/Foundgine.Providers/Foundgine.Providers.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="xunit.assert" Version="2.9.3" />

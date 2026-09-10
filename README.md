@@ -194,4 +194,4 @@ The 2.0.3 release adds candidate truncation diagnostics to semantic lexical grou
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the release notes.
 
-Foundgine is licensed under the MIT license.
+Foundgine is licensed under the Apache License 2.0.

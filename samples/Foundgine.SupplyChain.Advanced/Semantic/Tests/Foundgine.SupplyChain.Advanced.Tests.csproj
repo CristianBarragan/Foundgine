@@ -10,13 +10,13 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <ProjectReference Include="../Foundgine.SupplyChain.Advanced.csproj" />
-    <ProjectReference Include="../../../../src/Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../../../src/csharp/Foundgine.Core/Foundgine.Core.csproj" />
     <!-- Needed only by CapabilityBoundaryTests, which pins the Step 37
          execution-boundary invariant against a real provider (InMemory)
          instead of the semantic/planning layer the rest of this project
          exercises. Foundgine.Core.Execution and Foundgine.Core.Semantic.Planning come in
          transitively through this reference. -->
-    <ProjectReference Include="../../../../src/Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../../../src/csharp/Foundgine.Providers/Foundgine.Providers.csproj" />
     <!-- Needed only by the Retrieval/* tests, which exercise
          PostgresRetrievalCandidateSource (Fuzzy/pg_trgm, FullText,
          Search/pg_search, GraphSimilarity/Apache AGE, and the reserved

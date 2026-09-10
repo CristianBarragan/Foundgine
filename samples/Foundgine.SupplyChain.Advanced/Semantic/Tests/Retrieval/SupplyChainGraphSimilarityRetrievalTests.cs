@@ -9,7 +9,7 @@ namespace Foundgine.SupplyChain.Advanced.Tests.Retrieval;
 /// <summary>
 /// Exercises <see cref="PostgresRetrievalCandidateSource"/>'s
 /// <see cref="RetrievalStrategy.GraphSimilarity"/> strategy, backed by
-/// Apache AGE per src/Foundgine.Providers.Storage.Sql/README.md. AGE is not installed on a
+/// Apache AGE per src/csharp/Foundgine.Providers.Storage.Sql/README.md. AGE is not installed on a
 /// vanilla PostgreSQL image, so - unlike Fuzzy/FullText - this requires an
 /// explicit second opt-in on top of the connection string:
 /// FOUNDGINE_POSTGRES_AGE=1.

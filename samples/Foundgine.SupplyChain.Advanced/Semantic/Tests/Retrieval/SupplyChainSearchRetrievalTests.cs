@@ -10,7 +10,7 @@ namespace Foundgine.SupplyChain.Advanced.Tests.Retrieval;
 /// Exercises <see cref="PostgresRetrievalCandidateSource"/>'s
 /// <see cref="RetrievalStrategy.Search"/> strategy, which is deliberately
 /// isolated to the pg_search (ParadeDB BM25) extension per
-/// src/Foundgine.Providers.Storage.Sql/README.md. pg_search is not installed on a vanilla
+/// src/csharp/Foundgine.Providers.Storage.Sql/README.md. pg_search is not installed on a vanilla
 /// PostgreSQL image, so - unlike Fuzzy/FullText - this requires an explicit
 /// second opt-in on top of the connection string: FOUNDGINE_POSTGRES_PGSEARCH=1.
 /// </summary>

@@ -144,7 +144,7 @@ The wrapper originally earned its place two ways:
    and a typo failed at **runtime** via `Single()` throwing.
 
 We extended the AOT generator itself
-(`src/Foundgine.Providers/Foundgine.Providers.Aot.Generator/FoundgineMetadataGenerator.cs`,
+(`src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/FoundgineMetadataGenerator.cs`,
 in `EmitSemanticModel`) so it emits a `Relationships` nested class directly
 under each model's generated class — one strongly-typed constant per
 `[FoundgineRelationship]` property found on that model's mapped storage
@@ -217,7 +217,7 @@ what application code is even allowed to reference by name.
 
 ### Where this lives
 
-- Generator change: `src/Foundgine.Providers/Foundgine.Providers.Aot.Generator/FoundgineMetadataGenerator.cs`
+- Generator change: `src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/FoundgineMetadataGenerator.cs`
 - Removed: `samples/Foundgine.SupplyChain/Semantics/SupplyChainSemanticModel.cs`
   (the `Semantics/` folder no longer exists in this sample)
 - Updated call sites: `samples/Foundgine.SupplyChain/Program.cs`,
