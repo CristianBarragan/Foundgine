@@ -29,7 +29,7 @@ without mixing Java and C# projects in the same directory.
 
 - `src/csharp/` contains the existing .NET solution projects.
 - `src/java/` contains the Maven reactor and Java modules.
-- C# tests remain under `tests/`.
+- C# tests remain under `src/csharp/tests/`.
 - Java tests follow Maven convention inside each Java module under
   `src/test/java/`.
 

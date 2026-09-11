@@ -22,7 +22,7 @@ public final class Domain {
   public record Supplier(int id,String name,@FoundgineSemanticDimension("country") String country,BigDecimal riskScore,@FoundgineSemanticDimension("tenant") String tenantId) {}
   @FoundgineEntity(name="SupplierSite") public record SupplierSite(int id,int supplierId,@FoundgineSemanticDimension("country") String country,String name) {}
   @FoundgineEntity(name="SupplierCertification") public record SupplierCertification(int id,int supplierId,String type,LocalDate validFrom,LocalDate validTo) {}
-  @FoundgineEntity(name="Product") public record Product(int id,String sku,String name,@FoundgineSemanticDimension("category") String category,BigDecimal safetyStock) {}
+  @FoundgineEntity(name="Product") public record Product(int id,String sku,String name,@FoundgineSemanticDimension("category") String category,BigDecimal safetyStock,BigDecimal unitPrice) {}
   @FoundgineEntity(name="ProductComponent") public record ProductComponent(int parentProductId,int componentProductId,BigDecimal quantityPerParent,LocalDate effectiveFrom,LocalDate effectiveTo,String revision,boolean phantom,BigDecimal yieldLossPercent,BigDecimal scrapFactor) {}
   public enum PurchaseOrderStatus { OPEN, PARTIALLY_RECEIVED, CANCELLED, CLOSED }
   @FoundgineEntity(name="PurchaseOrder") @FoundgineAlias(value="PO",weight=100) @FoundgineAlias(value="POs",weight=95) @FoundgineAlias(value="Buy",weight=90) @FoundgineAlias(value="Buys",weight=85)

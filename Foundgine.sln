@@ -2,13 +2,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{AA23A18E-EAB6-5A02-8809-526627983EC7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "src\csharp\benchmarks", "{AA23A18E-EAB6-5A02-8809-526627983EC7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{3AA6B7D9-0AEE-5734-9999-29620D583E4B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "src\csharp\samples", "{3AA6B7D9-0AEE-5734-9999-29620D583E4B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "csharp", "csharp", "{E2683E97-068B-56A1-B7CD-049A065F891F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B6BAC99F-AFD8-5128-80D4-ED81DE28CC9B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "src\csharp\tests", "{B6BAC99F-AFD8-5128-80D4-ED81DE28CC9B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AgentEndToEnd", "AgentEndToEnd", "{0632B953-266D-5603-925B-586D3556DAE4}"
 EndProject
@@ -236,31 +236,31 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Providers", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Runtime", "src\csharp\Foundgine.Runtime\Foundgine.Runtime.csproj", "{093B1729-C1D0-5755-BFFF-55C197A07D3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Aot.Tests", "tests\Foundgine.Aot.Tests\Foundgine.Aot.Tests.csproj", "{86551244-A5EC-599C-88B2-F0FEDB8AD7FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Aot.Tests", "src\csharp\tests\Foundgine.Aot.Tests\Foundgine.Aot.Tests.csproj", "{86551244-A5EC-599C-88B2-F0FEDB8AD7FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.E2E.Tests", "tests\Foundgine.E2E.Tests\Foundgine.E2E.Tests.csproj", "{F9B5E690-E2BA-5724-BF50-4C3751924DA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.E2E.Tests", "src\csharp\tests\Foundgine.E2E.Tests\Foundgine.E2E.Tests.csproj", "{F9B5E690-E2BA-5724-BF50-4C3751924DA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.GraphQL.HotChocolate.Tests", "tests\Foundgine.GraphQL.HotChocolate.Tests\Foundgine.GraphQL.HotChocolate.Tests.csproj", "{A9C9E2B3-1CFE-5D83-B9ED-91A911E57CC8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.GraphQL.HotChocolate.Tests", "src\csharp\tests\Foundgine.GraphQL.HotChocolate.Tests\Foundgine.GraphQL.HotChocolate.Tests.csproj", "{A9C9E2B3-1CFE-5D83-B9ED-91A911E57CC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.HighAssurance.Tests", "tests\Foundgine.HighAssurance.Tests\Foundgine.HighAssurance.Tests.csproj", "{C9F5B50A-4524-5DBA-A34B-549B2C5D3168}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.HighAssurance.Tests", "src\csharp\tests\Foundgine.HighAssurance.Tests\Foundgine.HighAssurance.Tests.csproj", "{C9F5B50A-4524-5DBA-A34B-549B2C5D3168}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.InMemory.Tests", "tests\Foundgine.InMemory.Tests\Foundgine.InMemory.Tests.csproj", "{25197976-41AC-5463-8BC4-7E9519D0D823}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.InMemory.Tests", "src\csharp\tests\Foundgine.InMemory.Tests\Foundgine.InMemory.Tests.csproj", "{25197976-41AC-5463-8BC4-7E9519D0D823}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Intent.Json.Tests", "tests\Foundgine.Intent.Json.Tests\Foundgine.Intent.Json.Tests.csproj", "{F5B4C5C9-D5C8-51F4-9E7A-A82A8986F85D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Intent.Json.Tests", "src\csharp\tests\Foundgine.Intent.Json.Tests\Foundgine.Intent.Json.Tests.csproj", "{F5B4C5C9-D5C8-51F4-9E7A-A82A8986F85D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.MCP.Tests", "tests\Foundgine.MCP.Tests\Foundgine.MCP.Tests.csproj", "{84D2A451-0114-5656-8499-2A3D54663D27}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.MCP.Tests", "src\csharp\tests\Foundgine.MCP.Tests\Foundgine.MCP.Tests.csproj", "{84D2A451-0114-5656-8499-2A3D54663D27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Planning.Tests", "tests\Foundgine.Planning.Tests\Foundgine.Planning.Tests.csproj", "{AAB7B8A6-842B-5CC2-AB8F-6811EB9E24CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Planning.Tests", "src\csharp\tests\Foundgine.Planning.Tests\Foundgine.Planning.Tests.csproj", "{AAB7B8A6-842B-5CC2-AB8F-6811EB9E24CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Postgres.Vector.Tests", "tests\Foundgine.Postgres.Vector.Tests\Foundgine.Postgres.Vector.Tests.csproj", "{614C8387-6D5F-569E-933C-D2392F624770}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Postgres.Vector.Tests", "src\csharp\tests\Foundgine.Postgres.Vector.Tests\Foundgine.Postgres.Vector.Tests.csproj", "{614C8387-6D5F-569E-933C-D2392F624770}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Security.Authority.Tests", "tests\Foundgine.Security.Authority.Tests\Foundgine.Security.Authority.Tests.csproj", "{6B89ED52-35AF-5336-90DB-C1AC664BF368}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Security.Authority.Tests", "src\csharp\tests\Foundgine.Security.Authority.Tests\Foundgine.Security.Authority.Tests.csproj", "{6B89ED52-35AF-5336-90DB-C1AC664BF368}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Security.Tests", "tests\Foundgine.Security.Tests\Foundgine.Security.Tests.csproj", "{829C6BEB-19B9-5636-A0F6-C9F8F17728A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Security.Tests", "src\csharp\tests\Foundgine.Security.Tests\Foundgine.Security.Tests.csproj", "{829C6BEB-19B9-5636-A0F6-C9F8F17728A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Semantics.Tests", "tests\Foundgine.Semantics.Tests\Foundgine.Semantics.Tests.csproj", "{DBC143B7-2A15-5B6F-815A-80DF27A96871}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Semantics.Tests", "src\csharp\tests\Foundgine.Semantics.Tests\Foundgine.Semantics.Tests.csproj", "{DBC143B7-2A15-5B6F-815A-80DF27A96871}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Sql.Tests", "tests\Foundgine.Sql.Tests\Foundgine.Sql.Tests.csproj", "{5ECB7EAE-7B93-5E30-92D3-4D07363E10BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Sql.Tests", "src\csharp\tests\Foundgine.Sql.Tests\Foundgine.Sql.Tests.csproj", "{5ECB7EAE-7B93-5E30-92D3-4D07363E10BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

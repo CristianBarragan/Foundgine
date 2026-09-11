@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="AdversarialFixtures\M17.2-hostile-intents.json" CopyToOutputDirectory="PreserveNewest" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
+    <ProjectReference Include="../../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
+
+    <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" SkipGetTargetFrameworkProperties="true" UndefineProperties="TargetFramework" />
+    <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../Foundgine.Extensions/Foundgine.Extensions.csproj" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.11" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+      GHSA-2m69-gcr7-jv3q / CVE-2025-6965: SQLitePCLRaw.lib.e_sqlite3 (transitive,
+      via Microsoft.Data.Sqlite) bundles a SQLite build affected by a memory
+      corruption issue in aggregate term handling (fixed upstream in SQLite 3.50.2+).
+
+      Suppressed here, not upgraded, because the advisory currently lists NO patched
+      NuGet version (checked 2026-08-26: https://github.com/advisories/GHSA-2m69-gcr7-jv3q).
+      Exposure is limited: SQLitePCLRaw is a test only dependency of this E2E project;
+      it is never referenced by, or shipped in, any published Foundgine.* package.
+
+      Remove this suppression and upgrade Microsoft.Data.Sqlite as soon as a patched
+      SQLitePCLRaw.lib.e_sqlite3 version is published. Re-check periodically via:
+        dotnet list package vulnerable include-transitive (see relevant CLI flags in docs)
+    -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-2m69-gcr7-jv3q" />
+  </ItemGroup>
+</Project>

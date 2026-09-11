@@ -1,0 +1,36 @@
+operation,target,concurrency,batch_size,requests_per_second,logical_requests_per_second,p50_ms,p95_ms,p99_ms,cpu_avg_percent,cpu_max_percent,memory_avg_mb,memory_max_mb,memory_end_mb,errors,successful
+"Query top 50 graph","Foundgine - provider-plan cache",1,1,252.00,252.00,3.46,5.93,8.89,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Foundgine - provider-plan cache",8,1,1289.20,1289.20,5.24,9.65,14.16,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Foundgine - provider-plan cache",16,1,1619.30,1619.30,8.67,17.21,22.54,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Foundgine - provider-plan cache",32,1,1858.40,1858.40,15.12,29.17,37.07,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Foundgine - provider-plan cache",64,1,2096.30,2096.30,27.44,52.52,67.86,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",1,1,176.70,176.70,4.99,7.32,11.12,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",8,1,575.60,575.60,13.22,17.63,20.53,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",16,1,557.60,557.60,27.14,35.66,46.24,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",32,1,563.90,563.90,51.30,64.66,77.99,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",64,1,546.00,546.00,106.61,141.22,157.89,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",1,10,134.10,1341.00,6.56,9.50,13.35,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",8,10,367.90,3679.00,20.25,26.36,30.22,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",16,10,395.70,3957.00,38.05,49.42,57.31,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",32,10,396.40,3964.00,74.39,94.61,104.42,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",64,10,390.10,3901.00,149.40,185.59,206.30,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",1,50,15.90,795.00,58.85,73.73,122.57,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",8,50,131.80,6590.00,56.59,72.09,83.28,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",16,50,149.50,7475.00,97.06,123.12,135.76,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",32,50,157.30,7865.00,192.92,232.17,290.33,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - provider-plan cache",64,50,158.10,7905.00,395.53,470.69,531.82,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",1,1,99.00,99.00,9.01,13.39,19.40,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",8,1,472.00,472.00,15.73,22.24,28.50,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",16,1,493.10,493.10,31.20,42.00,49.13,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",32,1,462.00,462.00,64.13,91.27,109.74,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",64,1,491.20,491.20,121.37,164.59,221.04,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",1,10,81.80,818.00,10.73,16.15,21.30,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",8,10,301.40,3014.00,24.32,34.25,40.97,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",16,10,318.50,3185.00,46.68,60.56,71.16,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",32,10,318.60,3186.00,97.37,119.65,131.10,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",64,10,318.00,3180.00,193.97,230.47,249.54,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",1,50,15.30,765.00,60.60,77.00,90.37,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",8,50,116.60,5830.00,63.55,84.06,105.81,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",16,50,136.00,6800.00,108.15,137.81,154.67,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",32,50,145.80,7290.00,210.66,275.20,308.69,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - provider-plan cache",64,50,147.50,7375.00,389.21,642.08,817.41,0.00,0.00,0.00,0.00,0.00,0,True

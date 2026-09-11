@@ -77,7 +77,7 @@ Two callers can ask for the same thing in different words:
 
 Foundgine does not treat the paraphrase as a fuzzy guess at a *different* operation. In the Supply Chain semantic contract, `Buy`/`Buys` are declared aliases of `PurchaseOrder`, and `Seller` is a declared alias of `Supplier`. Both sentences are grounded onto the **same canonical semantic identities** before authorization or planning ever runs — the diagram below follows one request all the way from words to a database call.
 
-*Tests:* [`SupplyChainGroundingAliasTests.cs`](src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics).
+*Tests:* [`SupplyChainGroundingAliasTests.cs`](src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](src/csharp/tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics).
 
 <p align="center"><img src="docs/assets/overdue-purchase-orders-alias-flow.svg" alt="Foundgine alias-matched Supply Chain request from caller intent through semantic resolution, authorization, planning, PostgreSQL execution and evidence." width="100%"></p>
 

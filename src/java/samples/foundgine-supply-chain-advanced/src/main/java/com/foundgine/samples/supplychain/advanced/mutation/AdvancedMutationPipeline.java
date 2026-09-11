@@ -30,6 +30,11 @@ public final class AdvancedMutationPipeline {
     private final FoundgineMutationEngine engine;
 
     public AdvancedMutationPipeline(SupplyChainData data, Authorization.Context auth) {
+        this(data, auth, new DomainMutationProvider(data, auth));
+    }
+
+    public AdvancedMutationPipeline(SupplyChainData data, Authorization.Context auth,
+                                    IMutationBatchExecutionProvider provider) {
         this.data = Objects.requireNonNull(data);
         this.auth = Objects.requireNonNull(auth);
         var model = SupplyChainSemanticModel.MODEL;
@@ -37,7 +42,7 @@ public final class AdvancedMutationPipeline {
         var policy = SupplyChainAuthorization.create(auth.tenantId(),
                 SupplyChainAuthorization.Role.valueOf(auth.role().name()), Map.of());
         this.engine = new FoundgineMutationEngine(schema, policy,
-                new DomainMutationProvider(data, auth), model,
+                Objects.requireNonNull(provider), model,
                 null, null, null, null);
     }
 

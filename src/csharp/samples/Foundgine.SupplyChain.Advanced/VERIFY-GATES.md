@@ -29,7 +29,7 @@ Then run the PostgreSQL-backed integration suite with the repository's PostgreSQ
 
 ```powershell
 docker compose -f docker-compose.postgres.yml up -d --wait postgres
-dotnet test tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~Foundgine.E2E.Tests"
+dotnet test src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~Foundgine.E2E.Tests"
 docker compose -f docker-compose.postgres.yml down --volumes --remove-orphans
 ```
 
@@ -37,14 +37,14 @@ Authorization penetration coverage:
 
 ```powershell
 $env:FOUNDGINE_POSTGRES_CONNECTION='Host=localhost;Port=55432;Database=foundgine_e2e;Username=foundgine;Password=foundgine'
-dotnet test tests/Foundgine.Security.Authority.Tests/Foundgine.Security.Authority.Tests.csproj -c Release --no-build --filter 'FullyQualifiedName~TransferFundsPenetrationTests'
+dotnet test src/csharp/tests/Foundgine.Security.Authority.Tests/Foundgine.Security.Authority.Tests.csproj -c Release --no-build --filter 'FullyQualifiedName~TransferFundsPenetrationTests'
 ```
 
 Adversarial semantic-input coverage:
 
 ```powershell
-dotnet test tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj -c Release --no-build --filter 'FullyQualifiedName~ModelProviderReplayTests.Hostile_model_corpus_is_replayed_through_the_real_engine'
-dotnet test tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj -c Release --no-build --filter 'FullyQualifiedName~BlackBoxAdversarialEngineTests'
+dotnet test src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj -c Release --no-build --filter 'FullyQualifiedName~ModelProviderReplayTests.Hostile_model_corpus_is_replayed_through_the_real_engine'
+dotnet test src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj -c Release --no-build --filter 'FullyQualifiedName~BlackBoxAdversarialEngineTests'
 ```
 
 The full performance smoke test is defined in `.github/workflows/build.yml`; the larger CoffeeBeanery performance matrices remain benchmark workloads rather than release-gate tests.

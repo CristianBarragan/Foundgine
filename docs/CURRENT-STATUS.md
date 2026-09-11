@@ -90,7 +90,7 @@ The planner currently provides:
 
 ### InMemory
 
-`Foundgine.Providers.Storage.InMemory` is a deliberately limited provider used to validate provider independence and support deterministic tests/examples.
+`Foundgine.Providers.Storage.InMemory` is a deliberately limited provider used to validate provider independence and support deterministic src/csharp/tests/examples.
 
 ## Current adapters
 

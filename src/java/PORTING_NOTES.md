@@ -18,7 +18,7 @@ src/Foundgine.Core            → foundgine-core               IN PROGRESS
 src/Foundgine.Extensions      → foundgine-extensions          not started
 src/Foundgine.Providers       → foundgine-providers           not started
 src/Foundgine.Runtime         → foundgine-runtime             not started
-tests/Foundgine.*.Tests       → */src/test/java               not started (6 test classes ported so far)
+src/csharp/tests/Foundgine.*.Tests       → */src/test/java               not started (6 test classes ported so far)
 src/csharp/samples/Foundgine.SupplyChain*→ foundgine-samples-*           not started
 src/csharp/benchmarks/*                  → foundgine-benchmarks-*        not started
 src/csharp/security/Foundgine.RedTeam    → foundgine-redteam             not started
@@ -622,3 +622,24 @@ Continued the Java Advanced SupplyChain port beyond the fixture/security shell a
 This pass deliberately keeps semantic truth in Core and SupplyChain-specific policy/data in the sample, matching the .NET architecture rather than implementing authorization directly in the Java fixture/scenario layer.
 
 The next Advanced stage is the executable high-assurance path: `PlaceOrder` mutation intent/schema + authorization + inventory/price ownership checks + transaction/idempotency/evidence semantics, followed by MCP/HTTP wiring and the Advanced benchmark/security gates.
+
+## Advanced SupplyChain — MCP boundary and pricing correctness
+
+The Java Advanced sample now exposes a transport-neutral MCP facade through the existing provider MCP contracts. `AdvancedMcpFacade` maps `place_order` and `cancel_order` JSON tool calls into the Runtime mutation pipeline and exposes bounded capability discovery without leaking MCP concepts into the domain services.
+
+The product fixture now separates `SafetyStock` from `UnitPrice`. `PlaceOrderService` resolves and records the server-side product unit price, so callers cannot supply or influence pricing through the mutation request. Product 4 is seeded at 34.00 and a two-unit order therefore totals 68.00.
+
+
+## Advanced SupplyChain — PostgreSQL mutation path
+The Java Advanced sample now has a real JDBC/PostgreSQL high-assurance mutation boundary. `PostgresSupplyChainStore` owns the physical transaction, PostgreSQL advisory idempotency lock, server-side product pricing, tenant/warehouse checks, `FOR UPDATE SKIP LOCKED` inventory selection, exact lot allocation, atomic order creation, cancellation and inventory restoration. `PostgresAdvancedMutationProvider` adapts that physical store behind the Runtime `IMutationBatchExecutionProvider` boundary. The sample includes `database/schema.sql`, deterministic `database/seed.sql`, and a PostgreSQL 16 Docker Compose fixture.
+
+## Test parity — semantic unit tests
+
+The Java port is now actively mirroring the C# semantic unit-test surface rather than only testing Java-specific implementations. Added parity coverage for entity/field/relationship aliases, protocol-neutral query and relationship filters, and semantic mutation intent dependencies/conflict/filter semantics. Continue porting tests by subsystem until the Java suite tracks the C# unit and integration suites.
+
+## Test parity — security authority and warrant boundaries
+
+The Java test pass now mirrors the C# security contract around capability composition,
+tenant-bounded authority, warrant replay/revocation, revocation snapshots, and execution
+authorization revalidation. These tests intentionally validate the language-neutral
+security invariant rather than reproducing C# transport/framework details.

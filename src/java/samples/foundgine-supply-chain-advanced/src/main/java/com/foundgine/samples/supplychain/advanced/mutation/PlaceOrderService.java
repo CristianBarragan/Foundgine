@@ -31,7 +31,7 @@ public final class PlaceOrderService {
         for(var e:requested.entrySet()){
           var product=data.products.stream().filter(x->x.id()==e.getKey()).findFirst().orElseThrow(()->new IllegalArgumentException("Product "+e.getKey()+" not found."));int qty=e.getValue();
           var lot=data.inventory.stream().filter(x->x.productId()==product.id()).filter(x->auth.allowedWarehouses().contains(x.warehouseId())).filter(x->x.onHand().subtract(x.reserved()).subtract(x.quarantined()).compareTo(BigDecimal.valueOf(qty))>=0).max(Comparator.comparing(InventoryLot::onHand).thenComparing(InventoryLot::warehouseId)).orElseThrow(()->new IllegalStateException("Insufficient inventory for product "+product.id()+"."));
-          resolved.add(new Resolved(product.id(),qty,product.safetyStock(),lot.warehouseId(),lot.id()));total=total.add(product.safetyStock().multiply(BigDecimal.valueOf(qty)));
+          resolved.add(new Resolved(product.id(),qty,product.unitPrice(),lot.warehouseId(),lot.id()));total=total.add(product.unitPrice().multiply(BigDecimal.valueOf(qty)));
         }
         int orderId=nextOrderId++;data.orders.add(new Order(orderId,customerId,"Pending",total,LocalDate.now()));
         for(var r:resolved){int itemId=nextItemId++;data.orderItems.add(new OrderItem(itemId,orderId,r.productId(),r.quantity(),r.unitPrice()));data.orderAllocations.add(new OrderAllocation(itemId,r.lotId(),r.quantity()));var lot=data.inventory.stream().filter(x->x.id()==r.lotId()).findFirst().orElseThrow();data.inventory.set(data.inventory.indexOf(lot),new InventoryLot(lot.id(),lot.warehouseId(),lot.productId(),lot.onHand().subtract(BigDecimal.valueOf(r.quantity)),lot.reserved(),lot.quarantined(),lot.receivedOn()));}

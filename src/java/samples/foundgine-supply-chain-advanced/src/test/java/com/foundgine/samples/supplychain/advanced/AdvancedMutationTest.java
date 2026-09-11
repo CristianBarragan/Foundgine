@@ -56,4 +56,30 @@ class AdvancedMutationTest {
                 java.util.List.of(new PlaceOrderService.OrderLine(4, 1)), "place-cross");
         assertThrows(SecurityException.class, () -> new CancelOrderService(data).cancelOrder("alice", auth, order.orderId(), "cancel-cross"));
     }
+    @Test void placeOrderUsesServerSideProductPriceNotSafetyStock() {
+        var data = SupplyChainData.seed();
+        var auth = new Authorization.Context("tenant-a", java.util.Set.of(1,2), Authorization.Role.CUSTOMER, false);
+        var result = new PlaceOrderService(data).placeOrder("alice", auth, 1,
+                java.util.List.of(new PlaceOrderService.OrderLine(4, 2)), "price-1");
+        assertEquals(new java.math.BigDecimal("68.00"), result.total());
+        var item = data.orderItems.stream().filter(x -> x.orderId() == result.orderId()).findFirst().orElseThrow();
+        assertEquals(new java.math.BigDecimal("34.00"), item.unitPrice());
+    }
+
+    @Test void mcpMutationFacadeRoutesThroughRuntimeBoundary() throws Exception {
+        var data = SupplyChainData.seed();
+        var auth = new Authorization.Context("tenant-a", java.util.Set.of(1,2), Authorization.Role.CUSTOMER, false);
+        var facade = new com.foundgine.samples.supplychain.advanced.mutation.AdvancedMcpFacade(data, auth);
+        var response = facade.mutationTools().foundgineMutation(
+                "{\"tool\":\"place_order\",\"actor\":\"alice\",\"customerId\":1,\"productId\":4,\"quantity\":2,\"idempotencyKey\":\"mcp-place-1\"}")
+                .toCompletableFuture().join();
+        var json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(response);
+        assertTrue(json.contains("planFingerprint"));
+        assertTrue(json.contains("resultFingerprint"));
+        var capabilities = facade.queryTools().foundgineQuery(
+                "{\"tool\":\"capabilities\"}").toCompletableFuture().join();
+        assertTrue(capabilities.contains("place_order"));
+        assertTrue(capabilities.contains("cancel_order"));
+    }
+
 }

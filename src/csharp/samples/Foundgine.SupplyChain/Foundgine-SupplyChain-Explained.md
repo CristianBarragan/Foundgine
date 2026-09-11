@@ -237,7 +237,7 @@ confirm you see a `Relationships` nested class with the expected members.
 Also run:
 
 ```bash
-dotnet test tests/Foundgine.Aot.Tests
+dotnet test src/csharp/tests/Foundgine.Aot.Tests
 ```
 
 ---

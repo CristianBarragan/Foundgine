@@ -1,0 +1,36 @@
+operation,target,concurrency,batch_size,requests_per_second,logical_requests_per_second,p50_ms,p95_ms,p99_ms,cpu_avg_percent,cpu_max_percent,memory_avg_mb,memory_max_mb,memory_end_mb,errors,successful
+"Query top 50 graph","Foundgine - no cache",1,1,223.60,223.60,3.91,6.75,9.76,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Foundgine - no cache",8,1,1234.70,1234.70,5.65,10.48,14.74,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Foundgine - no cache",16,1,1599.50,1599.50,8.87,16.53,21.22,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Foundgine - no cache",32,1,1786.40,1786.40,16.13,30.90,40.22,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Foundgine - no cache",64,1,2019.70,2019.70,28.48,53.83,69.14,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",1,1,192.40,192.40,4.65,6.73,8.94,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",8,1,590.80,590.80,13.15,16.85,19.66,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",16,1,485.00,485.00,30.08,45.92,64.61,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",32,1,171.00,171.00,63.14,122.47,205910.97,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",64,1,458.70,458.70,114.73,258.00,468.61,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",1,10,133.10,1331.00,6.64,9.72,12.70,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",8,10,366.00,3660.00,20.41,26.31,32.37,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",16,10,375.10,3751.00,39.68,54.43,86.12,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",32,10,389.20,3892.00,77.30,101.31,125.86,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",64,10,389.50,3895.00,156.48,198.04,227.67,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",1,50,15.70,785.00,73.74,86.44,92.78,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",8,50,133.50,6675.00,51.89,92.91,124.36,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",16,50,142.20,7110.00,98.97,164.63,191.43,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",32,50,155.70,7785.00,195.26,245.55,282.81,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Foundgine - no cache",64,50,150.70,7535.00,419.53,493.81,552.76,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",1,1,80.80,80.80,9.69,21.63,38.14,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",8,1,372.30,372.30,16.76,44.11,49.52,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",16,1,372.60,372.60,33.45,78.27,126.36,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",32,1,267.00,267.00,89.61,198.24,427.29,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",64,1,415.80,415.80,127.68,301.33,402.41,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",1,10,86.80,868.00,10.26,14.77,20.06,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",8,10,314.20,3142.00,24.13,31.67,38.70,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",16,10,317.70,3177.00,47.74,60.27,69.09,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",32,10,318.30,3183.00,95.93,121.56,129.78,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",64,10,326.30,3263.00,185.26,256.37,302.74,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",1,50,13.90,695.00,67.83,86.77,101.10,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",8,50,113.90,5695.00,61.92,80.83,129.36,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",16,50,131.70,6585.00,111.51,178.66,224.44,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",32,50,148.00,7400.00,208.19,282.71,309.95,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Foundgine - no cache",64,50,148.70,7435.00,425.45,550.33,582.80,0.00,0.00,0.00,0.00,0.00,0,True
