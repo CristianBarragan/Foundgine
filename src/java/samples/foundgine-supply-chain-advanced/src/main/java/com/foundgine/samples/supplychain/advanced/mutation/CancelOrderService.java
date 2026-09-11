@@ -29,9 +29,11 @@ public final class CancelOrderService {
         if (auth.readOnly() || (auth.role() != Authorization.Role.CUSTOMER && auth.role() != Authorization.Role.SUPPLY_CHAIN_MANAGER))
             throw new SecurityException("Caller is not authorized to cancel orders.");
 
+        var requestFingerprint = requestFingerprint(actor, orderId);
         synchronized (lockFor(key)) {
             var prior = data.cancellationIdempotency.stream().filter(x -> x.key().equals(key)).findFirst().orElse(null);
             if (prior != null) {
+                if (!prior.requestFingerprint().equals(requestFingerprint)) throw new IllegalStateException("Idempotency key is bound to a different request.");
                 return new Result(prior.orderId(), true, prior.restoredQuantity(), planFingerprint(),
                         evidence(actor, prior.orderId(), key, prior.restoredQuantity()));
             }
@@ -68,7 +70,7 @@ public final class CancelOrderService {
                 }
                 data.orders.set(data.orders.indexOf(order),
                         new Order(order.id(), order.customerId(), "Cancelled", order.totalAmount(), order.placedOn()));
-                data.cancellationIdempotency.add(new CancellationIdempotencyRecord(key, actor, orderId, restored, LocalDate.now()));
+                data.cancellationIdempotency.add(new CancellationIdempotencyRecord(key, actor, orderId, requestFingerprint, restored, LocalDate.now()));
                 return new Result(orderId, false, restored, planFingerprint(), evidence(actor, orderId, key, restored));
             } catch (RuntimeException ex) {
                 data.orders.clear(); data.orders.addAll(orders);
@@ -84,6 +86,7 @@ public final class CancelOrderService {
                 || (actor.equalsIgnoreCase("alice") && id == 1) || (actor.equalsIgnoreCase("bob") && id == 2);
     }
     private Object lockFor(String key) { return locks.computeIfAbsent(key, k -> new Object()); }
+    private static String requestFingerprint(String actor, int orderId) { return sha256("cancel_order|" + actor + "|" + orderId); }
     private String planFingerprint() {
         return sha256("cancel_order|" + SupplyChainSemanticModel.MODEL.contractFingerprint() + "|Order|OrderItem|OrderAllocation|InventoryLot").substring(0, 24);
     }

@@ -35,8 +35,13 @@ public final class PostgresSupplyChainStore {
             try (PreparedStatement lock = connection.prepareStatement("SELECT pg_advisory_xact_lock(hashtext(?))")) {
                 lock.setString(1, idempotencyKey); lock.execute();
             }
-            Integer existing = scalarInt("SELECT order_id FROM supply_chain_idempotency WHERE idempotency_key=? FOR SHARE", idempotencyKey);
-            if (existing != null) { connection.commit(); return new PlaceOrderResult(existing, true, orderTotal(existing)); }
+            String requestFingerprint = requestFingerprint(actor, customerId, productId, quantity);
+            String existingFingerprint = scalarString("SELECT request_fingerprint FROM supply_chain_idempotency WHERE idempotency_key=? FOR SHARE", idempotencyKey);
+            if (existingFingerprint != null) {
+                if (!existingFingerprint.equals(requestFingerprint)) throw new IllegalStateException("Idempotency key is bound to a different request.");
+                Integer existing = scalarInt("SELECT order_id FROM supply_chain_idempotency WHERE idempotency_key=?", idempotencyKey);
+                connection.commit(); return new PlaceOrderResult(existing, true, orderTotal(existing));
+            }
 
             String tenant = scalarString("SELECT tenant_id FROM customers WHERE customer_id=?", customerId);
             if (tenant == null) throw new IllegalArgumentException("Customer not found.");
@@ -66,7 +71,7 @@ public final class PostgresSupplyChainStore {
             }
             try (PreparedStatement ps=connection.prepareStatement("INSERT INTO order_allocations(order_item_id,lot_id,quantity) VALUES(?,?,?)")) {ps.setInt(1,itemId);ps.setInt(2,lotId);ps.setInt(3,quantity);ps.executeUpdate();}
             try (PreparedStatement ps=connection.prepareStatement("UPDATE inventory_lots SET on_hand=on_hand-? WHERE lot_id=? AND (on_hand-reserved-quarantined)>=?")) {ps.setInt(1,quantity);ps.setInt(2,lotId);ps.setInt(3,quantity);if(ps.executeUpdate()!=1)throw new IllegalStateException("Inventory changed before reservation could be committed.");}
-            try (PreparedStatement ps=connection.prepareStatement("INSERT INTO supply_chain_idempotency(idempotency_key,actor,customer_id,order_id) VALUES(?,?,?,?)")) {ps.setString(1,idempotencyKey);ps.setString(2,actor);ps.setInt(3,customerId);ps.setInt(4,orderId);ps.executeUpdate();}
+            try (PreparedStatement ps=connection.prepareStatement("INSERT INTO supply_chain_idempotency(idempotency_key,actor,customer_id,order_id,request_fingerprint) VALUES(?,?,?,?,?)")) {ps.setString(1,idempotencyKey);ps.setString(2,actor);ps.setInt(3,customerId);ps.setInt(4,orderId);ps.setString(5,requestFingerprint);ps.executeUpdate();}
             connection.commit(); return new PlaceOrderResult(orderId,false,total);
         } catch (RuntimeException|SQLException e) { rollbackQuietly(); if(e instanceof RuntimeException r)throw r; throw new IllegalStateException("PostgreSQL place_order failed",e); }
         finally { restoreAutoCommit(oldAuto); }
@@ -77,8 +82,13 @@ public final class PostgresSupplyChainStore {
         ensureWritable(auth); boolean oldAuto=true;
         try {
             oldAuto=connection.getAutoCommit(); if(oldAuto)connection.setAutoCommit(false);
-            Integer replay=scalarInt("SELECT order_id FROM supply_chain_cancellation_idempotency WHERE idempotency_key=? FOR SHARE",idempotencyKey);
-            if(replay!=null){connection.commit();return new CancelOrderResult(replay,true,0);}
+            String requestFingerprint = requestFingerprint(actor, orderId);
+            String existingFingerprint = scalarString("SELECT request_fingerprint FROM supply_chain_cancellation_idempotency WHERE idempotency_key=? FOR SHARE",idempotencyKey);
+            if(existingFingerprint!=null){
+                if(!existingFingerprint.equals(requestFingerprint)) throw new IllegalStateException("Idempotency key is bound to a different request.");
+                Integer replay=scalarInt("SELECT order_id FROM supply_chain_cancellation_idempotency WHERE idempotency_key=?",idempotencyKey);
+                connection.commit();return new CancelOrderResult(replay,true,0);
+            }
             Integer customerId=scalarInt("SELECT customer_id FROM orders WHERE order_id=? FOR UPDATE",orderId);
             String status=scalarString("SELECT status FROM orders WHERE order_id=?",orderId);
             if(customerId==null||status==null||!"Pending".equals(status))throw new SecurityException("Order is not owned by the customer or is not cancellable.");
@@ -88,11 +98,14 @@ public final class PostgresSupplyChainStore {
             int restored=0;
             try(PreparedStatement ps=connection.prepareStatement("SELECT a.lot_id,a.quantity FROM order_allocations a JOIN order_items i ON i.order_item_id=a.order_item_id WHERE i.order_id=?")){ps.setInt(1,orderId);try(ResultSet rs=ps.executeQuery()){while(rs.next()){int lot=rs.getInt(1),qty=rs.getInt(2);try(PreparedStatement up=connection.prepareStatement("UPDATE inventory_lots SET on_hand=on_hand+? WHERE lot_id=?")){up.setInt(1,qty);up.setInt(2,lot);up.executeUpdate();}restored+=qty;}}}
             try(PreparedStatement ps=connection.prepareStatement("UPDATE orders SET status='Cancelled' WHERE order_id=? AND status='Pending'")){ps.setInt(1,orderId);if(ps.executeUpdate()!=1)throw new IllegalStateException("Order changed before cancellation could be committed.");}
-            try(PreparedStatement ps=connection.prepareStatement("INSERT INTO supply_chain_cancellation_idempotency(idempotency_key,actor,order_id,restored_quantity,cancelled_on) VALUES(?,?,?,?,CURRENT_DATE)")){ps.setString(1,idempotencyKey);ps.setString(2,actor);ps.setInt(3,orderId);ps.setInt(4,restored);ps.executeUpdate();}
+            try(PreparedStatement ps=connection.prepareStatement("INSERT INTO supply_chain_cancellation_idempotency(idempotency_key,actor,order_id,request_fingerprint,restored_quantity,cancelled_on) VALUES(?,?,?,?,?,CURRENT_DATE)")){ps.setString(1,idempotencyKey);ps.setString(2,actor);ps.setInt(3,orderId);ps.setString(4,requestFingerprint);ps.setInt(5,restored);ps.executeUpdate();}
             connection.commit();return new CancelOrderResult(orderId,false,restored);
         } catch(RuntimeException|SQLException e){rollbackQuietly();if(e instanceof RuntimeException r)throw r;throw new IllegalStateException("PostgreSQL cancel_order failed",e);} finally{restoreAutoCommit(oldAuto);}
     }
 
+    private static String requestFingerprint(String actor,int customerId,int productId,int quantity){return sha256(actor+"|"+customerId+"|"+productId+"|"+quantity);}
+    private static String requestFingerprint(String actor,int orderId){return sha256("cancel_order|"+actor+"|"+orderId);}
+    private static String sha256(String value){try{var md=java.security.MessageDigest.getInstance("SHA-256");var out=new StringBuilder();for(byte b:md.digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8)))out.append(String.format("%02x",b));return out.toString();}catch(Exception e){throw new IllegalStateException(e);}}
     private BigDecimal orderTotal(int id){try{try(PreparedStatement ps=connection.prepareStatement("SELECT total_amount FROM orders WHERE order_id=?")){ps.setInt(1,id);try(ResultSet rs=ps.executeQuery()){return rs.next()?rs.getBigDecimal(1):BigDecimal.ZERO;}}}catch(SQLException e){throw new IllegalStateException(e);}}
     private Integer scalarInt(String sql,Object arg){try(PreparedStatement ps=connection.prepareStatement(sql)){ps.setObject(1,arg);try(ResultSet rs=ps.executeQuery()){return rs.next()?rs.getInt(1):null;}}catch(SQLException e){throw new IllegalStateException(e);}}
     private String scalarString(String sql,Object arg){try(PreparedStatement ps=connection.prepareStatement(sql)){ps.setObject(1,arg);try(ResultSet rs=ps.executeQuery()){return rs.next()?rs.getString(1):null;}}catch(SQLException e){throw new IllegalStateException(e);}}

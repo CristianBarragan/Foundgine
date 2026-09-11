@@ -82,4 +82,52 @@ class AdvancedMutationTest {
         assertTrue(capabilities.contains("cancel_order"));
     }
 
+    @Test void reusing_place_order_idempotency_key_for_different_request_is_rejected() {
+        var data = SupplyChainData.seed();
+        var auth = new Authorization.Context("tenant-a", java.util.Set.of(1,2), Authorization.Role.CUSTOMER, false);
+        var service = new PlaceOrderService(data);
+        service.placeOrder("alice", auth, 1, java.util.List.of(new PlaceOrderService.OrderLine(4, 1)), "bound-place");
+        var ex = assertThrows(IllegalStateException.class, () -> service.placeOrder("alice", auth, 1,
+                java.util.List.of(new PlaceOrderService.OrderLine(4, 2)), "bound-place"));
+        assertTrue(ex.getMessage().contains("bound to a different"));
+    }
+
+    @Test void reusing_cancel_idempotency_key_for_different_order_is_rejected() {
+        var data = SupplyChainData.seed();
+        var auth = new Authorization.Context("tenant-a", java.util.Set.of(1,2), Authorization.Role.CUSTOMER, false);
+        var place = new PlaceOrderService(data);
+        var first = place.placeOrder("alice", auth, 1, java.util.List.of(new PlaceOrderService.OrderLine(4, 1)), "place-a");
+        var second = place.placeOrder("alice", auth, 1, java.util.List.of(new PlaceOrderService.OrderLine(4, 1)), "place-b");
+        var cancel = new CancelOrderService(data);
+        cancel.cancelOrder("alice", auth, first.orderId(), "bound-cancel");
+        var ex = assertThrows(IllegalStateException.class, () -> cancel.cancelOrder("alice", auth, second.orderId(), "bound-cancel"));
+        assertTrue(ex.getMessage().contains("bound to a different"));
+    }
+
+    @Test void concurrent_same_place_order_key_is_applied_once() throws Exception {
+        var data = SupplyChainData.seed();
+        var auth = new Authorization.Context("tenant-a", java.util.Set.of(1,2), Authorization.Role.CUSTOMER, false);
+        var service = new PlaceOrderService(data);
+        var task = java.util.concurrent.Executors.newFixedThreadPool(4);
+        try {
+            var futures = java.util.stream.IntStream.range(0, 4).mapToObj(i -> task.submit(() ->
+                    service.placeOrder("alice", auth, 1, java.util.List.of(new PlaceOrderService.OrderLine(4, 2)), "concurrent-place"))).toList();
+            var results = new java.util.ArrayList<PlaceOrderService.Result>();
+            for (var f : futures) results.add(f.get());
+            assertEquals(1, results.stream().map(PlaceOrderService.Result::orderId).distinct().count());
+            assertEquals(1, data.orders.size());
+            assertEquals(1, data.idempotency.size());
+        } finally { task.shutdownNow(); }
+    }
+
+    @Test void replay_still_requires_current_authorization() {
+        var data = SupplyChainData.seed();
+        var allowed = new Authorization.Context("tenant-a", java.util.Set.of(1,2), Authorization.Role.CUSTOMER, false);
+        var service = new PlaceOrderService(data);
+        service.placeOrder("alice", allowed, 1, java.util.List.of(new PlaceOrderService.OrderLine(4, 1)), "auth-replay");
+        var denied = new Authorization.Context("tenant-a", java.util.Set.of(1,2), Authorization.Role.CUSTOMER, true);
+        assertThrows(SecurityException.class, () -> service.placeOrder("alice", denied, 1,
+                java.util.List.of(new PlaceOrderService.OrderLine(4, 1)), "auth-replay"));
+    }
+
 }

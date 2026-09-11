@@ -1,0 +1,103 @@
+name: Update NuGet Downloads
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-nuget-downloads:
+    name: Calculate aggregate Foundgine NuGet downloads
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Calculate aggregate downloads
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          # Discover all official Foundgine package IDs published on NuGet.
+          # The exact prefix match prevents unrelated packages from being counted.
+          $url = "https://azuresearch-usnc.nuget.org/query?q=Foundgine&prerelease=false&take=100"
+          $response = Invoke-RestMethod -Uri $url -Method Get
+
+          $packages = @(
+            $response.data |
+              Where-Object {
+                $_.id -eq "Foundgine" -or $_.id -like "Foundgine.*"
+              } |
+              Sort-Object id
+          )
+
+          if ($packages.Count -eq 0) {
+            throw "No Foundgine packages were found on NuGet."
+          }
+
+          $total = [long]0
+          $packageData = @()
+
+          Write-Host ""
+          Write-Host "Foundgine NuGet packages"
+          Write-Host "========================"
+
+          foreach ($package in $packages) {
+            $downloads = [long]$package.totalDownloads
+            $total += $downloads
+
+            Write-Host ("{0,-60} {1,15:N0}" -f $package.id, $downloads)
+
+            $packageData += [ordered]@{
+              id        = $package.id
+              downloads = $downloads
+            }
+          }
+
+          $generatedAt = (Get-Date).ToUniversalTime().ToString("o")
+
+          Write-Host ""
+          Write-Host "========================"
+          Write-Host ("TOTAL: {0:N0}" -f $total)
+          Write-Host ("PACKAGES: {0}" -f $packages.Count)
+
+          $outputDirectory = "docs-site/assets"
+          New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
+
+          # Shields endpoint badge + transparent audit data.
+          $output = [ordered]@{
+            schemaVersion  = 1
+            label          = "NuGet Downloads"
+            message        = $total.ToString("N0")
+            color          = "blue"
+            generatedAt    = $generatedAt
+            totalDownloads = $total
+            packageCount   = $packages.Count
+            packages       = $packageData
+          }
+
+          $output |
+            ConvertTo-Json -Depth 10 |
+            Set-Content "$outputDirectory/foundgine-nuget-downloads.json" -Encoding utf8
+
+      - name: Commit updated badge data
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs-site/assets/foundgine-nuget-downloads.json
+
+          if (git diff --cached --quiet) {
+            Write-Host "No change in NuGet download count."
+            exit 0
+          }
+
+          git commit -m "chore: update aggregate NuGet downloads"
+          git push

@@ -51,12 +51,14 @@ CREATE TABLE IF NOT EXISTS supply_chain_idempotency (
   actor VARCHAR(200) NOT NULL,
   customer_id INT NOT NULL REFERENCES customers(customer_id),
   order_id INT NOT NULL REFERENCES orders(order_id),
+  request_fingerprint CHAR(64) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS supply_chain_cancellation_idempotency (
   idempotency_key VARCHAR(200) PRIMARY KEY,
   actor VARCHAR(200) NOT NULL,
   order_id INT NOT NULL REFERENCES orders(order_id),
+  request_fingerprint CHAR(64) NOT NULL,
   restored_quantity INT NOT NULL,
   cancelled_on DATE NOT NULL
 );

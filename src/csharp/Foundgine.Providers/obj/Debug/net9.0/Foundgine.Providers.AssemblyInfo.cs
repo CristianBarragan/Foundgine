@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2026 Foundgine")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"Foundgine.Providers contains the concrete provider and integration implementations for Foundgine v2. It includes storage providers and adapters, AI/model and MCP tooling integrations, and Elasticsearch and vector-store support. It also carries the Foundgine AOT source generator as a build-time analyzer inside the NuGet package, so consumers do not install a separate generator package and the generator is not a runtime dependency. Foundgine.Providers depends only on Foundgine.Core and Foundgine.Runtime; secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers are expected to choose and configure the provider(s) matching their application and supply the semantic model and runtime configuration required by Foundgine.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("2.1.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+74fd64e7591a0a73dbb17b1e0d61a2173bf8ecef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+dfb1fed13c50561dd2e71da83c0d9c712e8ba636")]
 [assembly: System.Reflection.AssemblyProductAttribute("Foundgine.Providers")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Foundgine.Providers")]
 [assembly: System.Reflection.AssemblyVersionAttribute("2.1.0.0")]

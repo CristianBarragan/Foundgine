@@ -1,0 +1,88 @@
+# =====================
+# .NET / Visual Studio build output
+# =====================
+[Bb]in/
+[Oo]bj/
+[Bb]in/**
+[Oo]bj/**
+out/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# MSBuild / NuGet caches and generated files
+*.dll
+*.pdb
+*.exe
+*.cache
+*.nupkg
+*.snupkg
+project.assets.json
+project.nuget.cache
+*.nuget.dgspec.json
+*.nuget.props
+*.nuget.targets
+*.AssemblyReference.cache
+*.AssemblyInfoInputs.cache
+*.GeneratedMSBuildEditorConfig.editorconfig
+*.csproj.FileListAbsolute.txt
+*.sourcelink.json
+*.GenerateFileListAbsolute.txt
+*.CoreCompileInputs.cache
+*.CopyComplete
+*.dll.config
+*.exe.config
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+BenchmarkDotNet.Artifacts/
+
+# Rider
+*.sln.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+# Benchmark generated artifacts
+benchmarks/AgentEndToEnd/*/artifacts/
+
+# Benchmark generated output
+benchmarks/**/artifacts/
+benchmarks/**/results/
+benchmarks/**/reports/
+
+# Microsoft Office temporary/lock files
+~$*
+**/~$*
+
+# Microsoft Office temporary lock files
+~$*
+**/~$*
+# Local/editor temporary files
+*.tmp
+**/*.tmp
+# .NET build output
+**/bin/
+**/obj/
+# Generated benchmark artifacts
