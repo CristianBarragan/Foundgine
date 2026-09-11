@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs-site/assets/logo/foundgine-logo-dark.png">
-  <img src="docs-site/assets/logo/foundgine-logo.png" alt="Foundgine" width="360">
+  <source media="(prefers-color-scheme: dark)" src="docs-site/assets/logo/foundgine-logo.svg">
+  <img src="docs-site/assets/logo/foundgine-logo.svg" alt="Foundgine" width="360">
 </picture>
 
 [![NuGet Version](https://img.shields.io/nuget/v/Foundgine.Core?label=NuGet%20Version)](https://www.nuget.org/packages/Foundgine.Core/)
