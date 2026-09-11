@@ -38,7 +38,7 @@ services:
     restart: "no"           
   graphql-ef:
     build:
-      context: ../../..
+      context: ../../../../..
       dockerfile: src/csharp/benchmarks/AgentEndToEnd/Run4/GraphQL.EF/Dockerfile
 
     depends_on:
@@ -61,7 +61,7 @@ services:
 
   mcp-foundgine:
     build:
-      context: ../../..
+      context: ../../../../..
       dockerfile: src/csharp/benchmarks/AgentEndToEnd/Run4/MCP.Foundgine/Dockerfile
 
     depends_on:

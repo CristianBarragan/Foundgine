@@ -17,7 +17,7 @@ services:
 
   database:
     build:
-      context: ../../..
+      context: ../../../../../
       dockerfile: src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/Dockerfile
     depends_on:
       postgres:
@@ -39,7 +39,7 @@ services:
 
   hotchocolate:
     build:
-      context: ../../..
+      context: ../../../../../
       dockerfile: src/csharp/benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/Dockerfile
     depends_on:
       database:
@@ -57,7 +57,7 @@ services:
 
   foundgine-cold:
     build:
-      context: ../../..
+      context: ../../../../../
       dockerfile: src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Dockerfile
     depends_on:
       database:
@@ -75,7 +75,7 @@ services:
 
   foundgine-warm:
     build:
-      context: ../../..
+      context: ../../../../../
       dockerfile: src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Dockerfile
     depends_on:
       database:
@@ -93,7 +93,7 @@ services:
 
   loader:
     build:
-      context: ../../..
+      context: ../../../../../
       dockerfile: src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/Dockerfile
     depends_on:
       hotchocolate:

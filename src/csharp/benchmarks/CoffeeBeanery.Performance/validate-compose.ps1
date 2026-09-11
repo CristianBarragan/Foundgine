@@ -1,11 +1,11 @@
 ﻿$ErrorActionPreference = "Stop"
 
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "../../../../")).Path
 
 Write-Host "Repository root: $repoRoot"
 
 foreach ($suite in @("query", "mutation", "update")) {
-    $compose = Join-Path $PSScriptRoot "compose\$suite.yml"
+    $compose = Join-Path $PSScriptRoot "compose/$suite.yml"
 
     if (-not (Test-Path $compose)) {
         throw "Missing compose file: $compose"

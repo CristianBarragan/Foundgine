@@ -14,7 +14,7 @@ services:
       retries: 30
   mcp-efcore:
     build:
-      context: ../../../
+      context: ../../../../..
       dockerfile: src/csharp/benchmarks/AgentEndToEnd/Run5/MCP.EfCore/Dockerfile
     environment:
       BankingConnectionString: Host=postgres;Port=5432;Database=foundgine_benchmark;Username=benchmark;Password=benchmark
@@ -23,7 +23,7 @@ services:
     ports: ["4411:8080"]
   mcp-foundgine:
     build:
-      context: ../../../
+      context: ../../../../..
       dockerfile: src/csharp/benchmarks/AgentEndToEnd/Run5/MCP.Foundgine/Dockerfile
     environment:
       BankingConnectionString: Host=postgres;Port=5432;Database=foundgine_benchmark;Username=benchmark;Password=benchmark

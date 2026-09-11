@@ -2,9 +2,9 @@
 Set-StrictMode -Version Latest
 
 $BenchmarkRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot "..\..")).Path
+$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot "../../../../")).Path
 
-$ComposeFile = Join-Path $BenchmarkRoot "compose\postgres.yml"
+$ComposeFile = Join-Path $BenchmarkRoot "compose/postgres.yml"
 # The query pipeline owns its Docker project. Never reuse the compose project's
 # default name/network/volume because another benchmark process (or a stale
 # process from a previous run) could otherwise share PostgreSQL state.
@@ -22,7 +22,7 @@ $HcContainer = "${ProjectName}-hotchocolate"
 $FgColdContainer = "${ProjectName}-foundgine-cold"
 $FgWarmContainer = "${ProjectName}-foundgine-warm"
 
-$ReportRoot = Join-Path $BenchmarkRoot "reports\query"
+$ReportRoot = Join-Path $BenchmarkRoot "reports/query"
 New-Item -ItemType Directory -Force -Path $ReportRoot | Out-Null
 
 $ConnectionString = "Host=postgres;Port=5432;Database=foundgine_benchmark;Username=benchmark;Password=benchmark"
@@ -194,7 +194,7 @@ function Run-LoadTest {
     Invoke-Checked dotnet @(
         "run",
         "--project",
-        (Join-Path $BenchmarkRoot "CoffeeBeanery.LoadTest\CoffeeBeanery.LoadTest.csproj"),
+        (Join-Path $BenchmarkRoot "CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"),
         "--configuration",
         "Release",
         "--no-launch-profile"

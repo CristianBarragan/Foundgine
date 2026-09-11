@@ -10,7 +10,7 @@ $ErrorActionPreference='Stop'
 # promotion off so only actual non-zero exit codes are treated as failures.
 $PSNativeCommandUseErrorActionPreference = $false
 Set-StrictMode -Version Latest
-$RepoRoot=Resolve-Path (Join-Path $PSScriptRoot '../../..')
+$RepoRoot=Resolve-Path (Join-Path $PSScriptRoot '../../../../..')
 $ComposeFile=Join-Path $PSScriptRoot 'docker-compose.yml'; $Project='foundgine-run4'
 $DbProject=Join-Path $RepoRoot 'src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj'
 $MetricsScript=Join-Path $RepoRoot 'src/csharp/benchmarks/AgentEndToEnd/scripts/docker-metrics.ps1'

@@ -19,9 +19,9 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $BenchmarkRoot = $PSScriptRoot
-$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '..\..')).Path
-if ([string]::IsNullOrWhiteSpace($Run4Root)) { $Run4Root = Join-Path $BenchmarkRoot 'Run4\artifacts' }
-if ([string]::IsNullOrWhiteSpace($Destination)) { $Destination = Join-Path $RepoRoot 'docs-site\assets\agent-benchmark\run4-aggregate.json' }
+$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '../../../../')).Path
+if ([string]::IsNullOrWhiteSpace($Run4Root)) { $Run4Root = Join-Path $BenchmarkRoot 'Run4/artifacts' }
+if ([string]::IsNullOrWhiteSpace($Destination)) { $Destination = Join-Path $RepoRoot 'docs-site/assets/agent-benchmark/run4-aggregate.json' }
 
 if (-not (Test-Path -LiteralPath $Run4Root -PathType Container)) { throw "Run 4 artifact directory not found: $Run4Root" }
 

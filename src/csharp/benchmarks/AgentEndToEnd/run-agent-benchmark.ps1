@@ -11,11 +11,11 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $BenchmarkRoot = $PSScriptRoot
-$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '..\..')).Path
-$ComposeFile = Join-Path $RepoRoot 'benchmarks\CoffeeBeanery.Performance\docker-compose.benchmark.yml'
+$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '../..')).Path
+$ComposeFile = Join-Path $RepoRoot 'benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml'
 $ProjectFile = Join-Path $BenchmarkRoot 'Foundgine.AgentEndToEnd.Benchmark.csproj'
 $PublishScript = Join-Path $BenchmarkRoot 'publish-report.ps1'
-$ReportDirectory = Join-Path $BenchmarkRoot 'artifacts\agent-benchmark'
+$ReportDirectory = Join-Path $BenchmarkRoot 'artifacts/agent-benchmark'
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
     throw 'dotnet was not found on PATH. Install the .NET 9 SDK and reopen PowerShell.'

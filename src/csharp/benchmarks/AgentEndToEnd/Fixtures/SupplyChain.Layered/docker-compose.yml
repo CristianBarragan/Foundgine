@@ -13,7 +13,7 @@ services:
       retries: 30
   supply-chain-mcp:
     build:
-      context: ../../../
+      context: ../../../../../../
       dockerfile: src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Api/Dockerfile
     environment:
       SupplyChainConnectionString: Host=postgres;Port=5432;Database=foundgine_supply_chain;Username=benchmark;Password=benchmark

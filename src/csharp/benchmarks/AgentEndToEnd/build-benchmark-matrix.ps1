@@ -3,9 +3,9 @@ param([string]$Destination)
 
 $ErrorActionPreference = 'Stop'
 $BenchmarkRoot = $PSScriptRoot
-$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '..\..')).Path
+$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '../../../../')).Path
 if ([string]::IsNullOrWhiteSpace($Destination)) {
-    $Destination = Join-Path $RepoRoot 'docs-site\assets\agent-benchmark\benchmark-matrix.json'
+    $Destination = Join-Path $RepoRoot 'docs-site/assets/agent-benchmark/benchmark-matrix.json'
 }
 
 # This file is a derived index over the authoritative per-run aggregate files.
@@ -21,7 +21,7 @@ $definitions = @(
     [pscustomobject]@{ Name='Run5SameClient'; File='run5b-aggregate.json'; Variant='same-client' }
 )
 
-$aggregateRoot = Join-Path $RepoRoot 'docs-site\assets\agent-benchmark'
+$aggregateRoot = Join-Path $RepoRoot 'docs-site/assets/agent-benchmark'
 $includedRuns = @()
 $rows = @()
 foreach ($definition in $definitions) {

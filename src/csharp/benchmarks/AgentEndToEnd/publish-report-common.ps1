@@ -6,23 +6,23 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $BenchmarkRoot = $PSScriptRoot
-$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '..\..')).Path
+$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '../../../../')).Path
 if ([string]::IsNullOrWhiteSpace($DestinationRoot)) {
-    $DestinationRoot = Join-Path $RepoRoot 'docs-site\assets\agent-benchmark'
+    $DestinationRoot = Join-Path $RepoRoot 'docs-site/assets/agent-benchmark'
 }
 $source = if ([string]::IsNullOrWhiteSpace($ReportRoot)) {
     switch ($Run) {
         # NOTE: Run1's runner (run-agent-benchmark.ps1) writes tier folders
-        # directly under 'Run1\artifacts\<tier>\concurrency-XXX\' - there is
+        # directly under 'Run1/artifacts\<tier>\concurrency-XXX\' - there is
         # no 'agent-benchmark' subfolder in that layout. The previous mapping
-        # here ('Run1\artifacts\agent-benchmark') didn't match reality and
+        # here ('Run1/artifacts\agent-benchmark') didn't match reality and
         # made every Run1 publish fail with a path-not-found error.
-        'Run1' { Join-Path $BenchmarkRoot 'Run1\artifacts' }
-        'Run2' { Join-Path $BenchmarkRoot 'Run2\artifacts' }
-        'Run3' { Join-Path $BenchmarkRoot 'Run3\artifacts' }
-        'Run4' { Join-Path $BenchmarkRoot 'Run4\artifacts' }
-        'Run5' { Join-Path $BenchmarkRoot 'Run5\artifacts' }
-        'Run5SameClient' { Join-Path $BenchmarkRoot 'Run5SameClient\artifacts' }
+        'Run1' { Join-Path $BenchmarkRoot 'Run1/artifacts' }
+        'Run2' { Join-Path $BenchmarkRoot 'Run2/artifacts' }
+        'Run3' { Join-Path $BenchmarkRoot 'Run3/artifacts' }
+        'Run4' { Join-Path $BenchmarkRoot 'Run4/artifacts' }
+        'Run5' { Join-Path $BenchmarkRoot 'Run5/artifacts' }
+        'Run5SameClient' { Join-Path $BenchmarkRoot 'Run5SameClient/artifacts' }
     }
 } else { (Resolve-Path $ReportRoot).Path }
 if (-not (Test-Path -LiteralPath $source -PathType Container)) {
