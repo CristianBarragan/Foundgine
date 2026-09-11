@@ -35,8 +35,8 @@ public final class Domain {
   @FoundgineEntity(name="Order") public record Order(int id,int customerId,String status,BigDecimal totalAmount,LocalDate placedOn) {}
   @FoundgineEntity(name="OrderItem") public record OrderItem(int id,int orderId,int productId,int quantity,BigDecimal unitPrice) {}
   public record OrderAllocation(int orderItemId,int lotId,int quantity) {}
-  public record CancellationIdempotencyRecord(String key,String actor,int orderId,BigDecimal restoredQuantity,LocalDate cancelledOn) {}
-  public record IdempotencyRecord(String key,String actor,int customerId,int orderId) {}
+  public record CancellationIdempotencyRecord(String key,String actor,int orderId,String requestFingerprint,BigDecimal restoredQuantity,LocalDate cancelledOn) {}
+  public record IdempotencyRecord(String key,String actor,int customerId,int orderId,String requestFingerprint) {}
   public record CustomerOrder(int id,int businessUnitId,LocalDate placedOn,String status) {}
   @FoundgineEntity(name="CustomerOrderLine") public record CustomerOrderLine(int id,int customerOrderId,int productId,BigDecimal quantity) {}
   @FoundgineEntity(name="InventoryMovement") @FoundgineEvent(occurredAtField="OccurredAt") public record InventoryMovement(int id,int lotId,BigDecimal quantity,String reason,OffsetDateTime occurredAt) {}

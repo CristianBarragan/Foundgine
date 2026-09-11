@@ -18,9 +18,13 @@ public final class PlaceOrderService {
     if(lines.stream().anyMatch(x->x.quantity()<=0))throw new IllegalArgumentException("Quantity must be positive.");
     if(key==null||key.isBlank())throw new IllegalArgumentException("Idempotency key is required.");
     if(auth.readOnly()||(auth.role()!=Authorization.Role.CUSTOMER&&auth.role()!=Authorization.Role.SUPPLY_CHAIN_MANAGER))throw new SecurityException("Caller is not authorized to place orders.");
+    var requestFingerprint = requestFingerprint(actor, customerId, lines);
     synchronized(lockFor(key)){
       var prior=data.idempotency.stream().filter(x->x.key().equals(key)).findFirst().orElse(null);
-      if(prior!=null)return new Result(prior.orderId(),true,data.orders.stream().filter(x->x.id()==prior.orderId()).map(Order::totalAmount).findFirst().orElse(BigDecimal.ZERO),planFingerprint(),evidence(actor,customerId,prior.orderId(),key));
+      if(prior!=null){
+        if(!prior.requestFingerprint().equals(requestFingerprint)) throw new IllegalStateException("Idempotency key is bound to a different request.");
+        return new Result(prior.orderId(),true,data.orders.stream().filter(x->x.id()==prior.orderId()).map(Order::totalAmount).findFirst().orElse(BigDecimal.ZERO),planFingerprint(),evidence(actor,customerId,prior.orderId(),key));
+      }
       var customer=data.customers.stream().filter(x->x.id()==customerId).findFirst().orElseThrow(()->new IllegalArgumentException("Customer not found."));
       if(!customer.tenantId().equals(auth.tenantId()))throw new SecurityException("Customer belongs to another tenant.");
       if(auth.role()==Authorization.Role.CUSTOMER&&!actorCustomer(actor,customerId))throw new SecurityException("Customer ownership check failed.");
@@ -35,12 +39,16 @@ public final class PlaceOrderService {
         }
         int orderId=nextOrderId++;data.orders.add(new Order(orderId,customerId,"Pending",total,LocalDate.now()));
         for(var r:resolved){int itemId=nextItemId++;data.orderItems.add(new OrderItem(itemId,orderId,r.productId(),r.quantity(),r.unitPrice()));data.orderAllocations.add(new OrderAllocation(itemId,r.lotId(),r.quantity()));var lot=data.inventory.stream().filter(x->x.id()==r.lotId()).findFirst().orElseThrow();data.inventory.set(data.inventory.indexOf(lot),new InventoryLot(lot.id(),lot.warehouseId(),lot.productId(),lot.onHand().subtract(BigDecimal.valueOf(r.quantity)),lot.reserved(),lot.quarantined(),lot.receivedOn()));}
-        data.idempotency.add(new IdempotencyRecord(key,actor,customerId,orderId));return new Result(orderId,false,total,planFingerprint(),evidence(actor,customerId,orderId,key));
+        data.idempotency.add(new IdempotencyRecord(key,actor,customerId,orderId,requestFingerprint));return new Result(orderId,false,total,planFingerprint(),evidence(actor,customerId,orderId,key));
       }catch(RuntimeException ex){data.orders.clear();data.orders.addAll(orders);data.orderItems.clear();data.orderItems.addAll(items);data.orderAllocations.clear();data.orderAllocations.addAll(allocations);data.inventory.clear();data.inventory.addAll(inventory);data.idempotency.clear();data.idempotency.addAll(idem);throw ex;}
     }
   }
   private boolean actorCustomer(String actor,int id){return actor.equalsIgnoreCase("customer"+id)||actor.equalsIgnoreCase("customer-"+id)||(actor.equalsIgnoreCase("alice")&&id==1)||(actor.equalsIgnoreCase("bob")&&id==2);}
   private Object lockFor(String key){return locks.computeIfAbsent(key,k->new Object());}
+  private static String requestFingerprint(String actor,int customerId,List<OrderLine> lines){
+    var canonical=lines.stream().map(x->x.productId()+":"+x.quantity()).sorted().reduce(actor+"|"+customerId+"|",(a,b)->a+b+";");
+    return sha256(canonical);
+  }
   private String planFingerprint(){return sha256("place_order|"+SupplyChainSemanticModel.MODEL.contractFingerprint()+"|Customer|Order|OrderItem|InventoryLot").substring(0,24);}
   private static String evidence(String actor,int customer,int order,String key){return sha256("place_order|"+actor+"|"+customer+"|"+order+"|"+key);}
   private static String sha256(String s){try{var md=MessageDigest.getInstance("SHA-256");var b=md.digest(s.getBytes(StandardCharsets.UTF_8));var o=new StringBuilder();for(byte x:b)o.append(String.format("%02x",x));return o.toString();}catch(Exception e){throw new IllegalStateException(e);}}

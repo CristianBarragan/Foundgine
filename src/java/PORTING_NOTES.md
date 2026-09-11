@@ -643,3 +643,15 @@ The Java test pass now mirrors the C# security contract around capability compos
 tenant-bounded authority, warrant replay/revocation, revocation snapshots, and execution
 authorization revalidation. These tests intentionally validate the language-neutral
 security invariant rather than reproducing C# transport/framework details.
+
+## Test parity — execution/E2E boundary
+
+Mirrored the C# E2E execution-boundary coverage into Java for semantic-plan lowering, canonical mutation execution IR, security invariant attestation, and deterministic execution evidence. These tests intentionally validate the provider-neutral execution boundary rather than transport-specific C# frameworks.
+
+## Test parity — execution/result boundaries
+
+The Java test suite now mirrors additional C# E2E contracts around result materialization, nested mutation result accounting, and connection traversal planning. These tests target semantic/provider-neutral behavior rather than transport-specific implementation details.
+
+
+## Test parity — semantic identity and contract boundaries
+The Java suite now mirrors additional C# semantic contract tests for stable identity namespaces, reserved zero identities, protocol-neutral query/relationship filters, and semantic contract fingerprint attestation. These tests use the Java Core APIs directly while preserving the C# behavioral contract.

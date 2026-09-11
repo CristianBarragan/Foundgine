@@ -11,7 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
-    <None Include="../../LICENSE" Pack="true" PackagePath="LICENSE" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
     <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
     <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
     <PackageReference Include="HotChocolate.Language" Version="16.6.4" />

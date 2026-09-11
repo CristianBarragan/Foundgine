@@ -1,6 +1,0 @@
-C:\Foundgine\src\csharp\Foundgine.Providers\bin\Debug\net9.0\Foundgine.Core.dll
-C:\Foundgine\src\csharp\Foundgine.Providers\bin\Debug\net9.0\Foundgine.Runtime.dll
-C:\Foundgine\src\csharp\Foundgine.Providers\obj\Debug\net9.0\Foundgine.Providers.csproj.AssemblyReference.cache
-C:\Foundgine\src\csharp\Foundgine.Providers\obj\Debug\net9.0\Foundgine.Providers.GeneratedMSBuildEditorConfig.editorconfig
-C:\Foundgine\src\csharp\Foundgine.Providers\obj\Debug\net9.0\Foundgine.Providers.AssemblyInfoInputs.cache
-C:\Foundgine\src\csharp\Foundgine.Providers\obj\Debug\net9.0\Foundgine.Providers.AssemblyInfo.cs

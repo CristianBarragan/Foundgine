@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2026 Foundgine")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"Foundgine.Extensions contains optional framework integrations for Foundgine v2. The current package provides the Hot Chocolate GraphQL integration: translating GraphQL operations into Foundgine semantic intent, and the secure query/mutation executors that run that intent through the Foundgine authorization/execution boundary. It does not replace the Foundgine execution/runtime layer and does not provide storage providers. Consumers are expected to have Foundgine.Core and Foundgine.Runtime installed and to configure their GraphQL server and semantic model; concrete storage/AI/MCP provider execution is supplied separately by Foundgine.Providers.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("2.1.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+74fd64e7591a0a73dbb17b1e0d61a2173bf8ecef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+2f737030324e892bbe766ed69ccaf8348c19d023")]
 [assembly: System.Reflection.AssemblyProductAttribute("Foundgine.Extensions")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Foundgine.Extensions")]
 [assembly: System.Reflection.AssemblyVersionAttribute("2.1.0.0")]

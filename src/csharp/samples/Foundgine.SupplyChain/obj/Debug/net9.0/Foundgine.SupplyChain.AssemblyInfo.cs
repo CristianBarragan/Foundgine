@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2026 Foundgine")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("2.1.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+74fd64e7591a0a73dbb17b1e0d61a2173bf8ecef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+2f737030324e892bbe766ed69ccaf8348c19d023")]
 [assembly: System.Reflection.AssemblyProductAttribute("Foundgine.SupplyChain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Foundgine.SupplyChain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("2.1.0.0")]

@@ -101,3 +101,5 @@
 - Version: `2.0.1`
 - Target framework: `.NET 9`
 - License: MIT
+
+- Java parity: added Runtime plan-approval E2E tests covering successful approved execution, semantic-version tampering, and plan-fingerprint tampering.

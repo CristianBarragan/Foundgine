@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2026 Foundgine")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"Foundgine.Core is the foundational, provider-independent semantic layer for Foundgine v2. It defines the semantic model, metadata, intent contracts and serialization, intermediate representation, provider-neutral execution contracts, planning primitives, identifiers, and core abstractions used by the rest of the platform. Use it when building semantic models, authoring or resolving intents, implementing integrations, or creating your own providers. It does not execute database operations, host GraphQL or MCP, provide an LLM client, or perform application runtime orchestration. Consumers are expected to supply their own provider and runtime composition when execution is required.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("2.1.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+74fd64e7591a0a73dbb17b1e0d61a2173bf8ecef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+2f737030324e892bbe766ed69ccaf8348c19d023")]
 [assembly: System.Reflection.AssemblyProductAttribute("Foundgine.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Foundgine.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("2.1.0.0")]
