@@ -9,17 +9,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Placeholder port of {@code System.Threading.CancellationTokenSource}.
+ * Java analogue of {@code System.Threading.CancellationTokenSource}.
  *
- * <p>Supports what {@link com.foundgine.core.execution.ExecutionContext#createDeadlineCancellationSource}
- * needs: {@link #cancel()}, {@link #cancelAfter(Duration)}, and
- * {@link #createLinkedTokenSource(CancellationToken)}. As with
- * {@link CancellationToken}, this is a placeholder: because {@code CancellationToken}
- * has no callback-registration mechanism yet, a linked source does not
- * observe a cancellation requested on the caller token *after* the link was
- * created — only a caller token already cancelled at link time is honored.
- * Revisit together with {@link CancellationToken} if live propagation is
- * needed.
+ * <p>Supports cancellation, scheduled cancellation, and live linked-token
+ * propagation. Providers can register callbacks on the exposed token to
+ * interrupt blocking physical operations.
  */
 public final class CancellationTokenSource implements AutoCloseable {
 
@@ -38,7 +32,7 @@ public final class CancellationTokenSource implements AutoCloseable {
     }
 
     public void cancel() {
-        cancelled.set(true);
+        token.cancel();
         cancelPending();
     }
 
@@ -57,11 +51,13 @@ public final class CancellationTokenSource implements AutoCloseable {
     /** Port of {@code CancellationTokenSource.CreateLinkedTokenSource(CancellationToken)}. See class caveat above. */
     public static CancellationTokenSource createLinkedTokenSource(CancellationToken callerToken) {
         CancellationTokenSource source = new CancellationTokenSource();
-        if (callerToken != null && callerToken.isCancellationRequested()) {
-            source.cancel();
+        if (callerToken != null) {
+            source.linkedRegistration = callerToken.register(source::cancel);
         }
         return source;
     }
+
+    private AutoCloseable linkedRegistration;
 
     private void cancelPending() {
         ScheduledFuture<?> future = pendingCancel;
@@ -73,6 +69,11 @@ public final class CancellationTokenSource implements AutoCloseable {
     @Override
     public void close() {
         cancelPending();
+        AutoCloseable registration = linkedRegistration;
+        linkedRegistration = null;
+        if (registration != null) {
+            try { registration.close(); } catch (Exception ignored) { }
+        }
     }
 
     private static ThreadFactory daemonThreadFactory() {

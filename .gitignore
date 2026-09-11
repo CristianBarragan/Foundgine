@@ -29,6 +29,7 @@ bld/
 *.userosscache
 *.sln.docstates
 *.suo
+*.sln.iml
 
 # MSBuild / NuGet caches and generated files
 *.dll
@@ -58,31 +59,21 @@ project.nuget.cache
 [Bb]uild[Ll]og.*
 BenchmarkDotNet.Artifacts/
 
-# Rider
-*.sln.iml
-
 # OS files
 .DS_Store
 Thumbs.db
-# Benchmark generated artifacts
-benchmarks/AgentEndToEnd/*/artifacts/
 
 # Benchmark generated output
-benchmarks/**/artifacts/
-benchmarks/**/results/
-benchmarks/**/reports/
+# (benchmarks now live under src/csharp/benchmarks — keep this in sync with
+# that layout or these rules silently stop matching)
+src/csharp/benchmarks/**/artifacts/
+src/csharp/benchmarks/**/results/
+src/csharp/benchmarks/**/reports/
 
 # Microsoft Office temporary/lock files
 ~$*
 **/~$*
 
-# Microsoft Office temporary lock files
-~$*
-**/~$*
 # Local/editor temporary files
 *.tmp
 **/*.tmp
-# .NET build output
-**/bin/
-**/obj/
-# Generated benchmark artifacts

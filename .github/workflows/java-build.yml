@@ -1,0 +1,73 @@
+name: Java Port — Build & Test
+
+on:
+  push:
+    branches: [ main, java ]
+  pull_request:
+    branches: [ main, java ]
+  workflow_dispatch:
+    inputs:
+      postgres_e2e:
+        description: Run opt-in PostgreSQL integration tests
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  java-build:
+    name: Java 21 Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build and test Java port
+        working-directory: src/java
+        run: mvn -B -ntp verify
+
+  java-postgres-e2e:
+    name: Java PostgreSQL E2E
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.postgres_e2e }}
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: foundgine
+          POSTGRES_DB: foundgine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d foundgine"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Run PostgreSQL E2E tests
+        working-directory: src/java
+        env:
+          FOUNDGINE_POSTGRES_CONNECTION_STRING: jdbc:postgresql://localhost:5432/foundgine?user=postgres&password=foundgine
+        run: >-
+          mvn -B -ntp
+          -Dtest='*Postgres*E2ETest,*Postgres*ParityTest'
+          test
