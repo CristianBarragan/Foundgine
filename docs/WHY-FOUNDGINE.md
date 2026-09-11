@@ -95,7 +95,7 @@ This makes AI a consumer of the execution layer rather than a dependency of the 
 
 ## Why mutations raise the stakes
 
-Reads are useful; writes are where a wrong authorization decision is expensive. `benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Banking` demonstrates this with a `TransferFunds` mutation: the execution boundary revalidates tenant, ownership, account state, and daily limits, holds deterministic locks across both accounts, applies debit and credit together, and produces an audit entry and execution receipt. The sample deliberately stops short of claiming Foundgine can infer financial business policy from natural language — it proves the boundary holds under a consequential mutation, nothing more.
+Reads are useful; writes are where a wrong authorization decision is expensive. `src/csharp/benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Banking` demonstrates this with a `TransferFunds` mutation: the execution boundary revalidates tenant, ownership, account state, and daily limits, holds deterministic locks across both accounts, applies debit and credit together, and produces an audit entry and execution receipt. The sample deliberately stops short of claiming Foundgine can infer financial business policy from natural language — it proves the boundary holds under a consequential mutation, nothing more.
 
 ## What Foundgine currently proves
 

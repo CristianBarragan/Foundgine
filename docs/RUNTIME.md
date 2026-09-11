@@ -90,7 +90,7 @@ Adapters such as GraphQL can then shape the result for their own transport.
 
 ## Evidence
 
-Execution evidence/receipts can record the execution outcome and relevant security/plan context.
+Execution evidence/receipts can record the execution outcome and relevant src/csharp/security/plan context.
 
 Evidence is diagnostic/audit information. It is not an authorization grant.
 

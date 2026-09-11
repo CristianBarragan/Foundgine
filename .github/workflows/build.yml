@@ -188,13 +188,13 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore sample
-        run: dotnet restore benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln
+        run: dotnet restore src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln
 
       - name: Build sample
-        run: dotnet build benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln --no-restore --configuration Release
 
       - name: Run SupplyChain tests
-        run: dotnet test benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
+        run: dotnet test src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
   supplychain-semantic-sample-tests:
     name: SupplyChain EndToEnd — Semantic Cases
@@ -214,13 +214,13 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore sample
-        run: dotnet restore samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln
+        run: dotnet restore src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln
 
       - name: Build sample
-        run: dotnet build samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln --no-restore --configuration Release
 
       - name: Run semantic SupplyChain tests
-        run: dotnet test samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
+        run: dotnet test src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
   integration-tests:
     needs:

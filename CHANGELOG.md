@@ -1,39 +1,32 @@
 # Changelog
 
-All notable changes to Foundgine are documented here.
+## Unreleased
 
-## [2.1.1] — 2026-09-09
+### Security
 
-### Added
-
-- Added generated-metadata-backed open-intent support to the Advanced Supply Chain MCP sample.
-- Added semantic overlays on top of generated metadata for natural-language entity aliases.
-- Added generated metadata identity lookup for the open-intent compatibility layer.
-- Added direct consumption of AOT-generated metadata by the Supply Chain SQL plan compiler.
-
-### Changed
-
-- Supply Chain semantic setup now uses the generated metadata catalog as the structural source of truth.
-- SQL plan compilation no longer requires a manually reconstructed storage metadata registry.
-- Open-intent semantic configuration now layers application meaning over generated structural metadata rather than duplicating entity, field, relationship, or storage definitions.
-- Supply Chain relationship metadata now correctly maps `Product.Inventory` from `Product.Id` to `Inventory.ProductId`.
-- The Advanced Supply Chain MCP sample now follows the generated metadata → semantic overlay → planning → SQL compilation pipeline.
-
-### Validation
-
-- `Foundgine.E2E.Tests` passes.
-- Advanced Supply Chain MCP compilation succeeds after the generated metadata and semantic overlay fixes.
+- Resolved the open question in `docs/SECURITY.md` ("the semantic API's
+  response verbosity"): `SupplyChainMcpTools.PolicyProbe` (the sample
+  `policy_probe` MCP tool under `src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp`)
+  now only returns its full `kind`/predicate/named-claim decision detail
+  when the host is running in a development environment
+  (`IHostEnvironment.IsDevelopment()`). In every other environment it logs
+  the full decision server-side via `ILogger`, keyed by a short opaque
+  correlation id, and returns only `{ allowed: false, reference: <id> }` —
+  matching the correlation-id pattern `MCP.Foundgine/Program.cs`'s `Execute`
+  helper already used for the execution API, so a caller probing many
+  `attack` variants can no longer use the response shape to map policy
+  boundaries.
 
 ## 2.1.0 — September 8, 2026
 
 ### Samples
 
-- Added a generic, authorization-focused MCP server (`Foundgine.SupplyChain.Advanced.Mcp.Api` under `samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp`) exposing `describe_capabilities`, `read_entity`, `read_relationship`, `write_entity`, and `policy_probe` tools directly against the sample's composed semantic model. This is additive: it runs standalone and is not wired into the Supply Chain E2E harness.
+- Added a generic, authorization-focused MCP server (`Foundgine.SupplyChain.Advanced.Mcp.Api` under `src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp`) exposing `describe_capabilities`, `read_entity`, `read_relationship`, `write_entity`, and `policy_probe` tools directly against the sample's composed semantic model. This is additive: it runs standalone and is not wired into the Supply Chain E2E harness.
 
 ### Fixed
 
-- The commit that added the generic MCP server also deleted `samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine` (the Postgres-backed MCP server the Supply Chain E2E `Agent` and `run-supply-chain.ps1` actually depend on — `get_order`, `get_inventory`, `list_suppliers`, and the rest of the Agent's tool contract) along with its `docker-compose.yml` service and solution entries, without updating the harness. This broke `run-supply-chain.ps1` at step 3/8 with `no such service: mcp-foundgine`. Restored the `MCP.Foundgine` project, its `docker-compose.yml` service, and its `Foundgine.sln` entries so the Supply Chain E2E + PenTest harness runs again.
-- Reverted an unrelated, uncommitted in-progress edit to `benchmarks/AgentEndToEnd/Run5/docker-compose.yml` that had stripped its `mcp-foundgine` service block while the project files were left in place, which would have broken Run5 the same way.
+- The commit that added the generic MCP server also deleted `src/csharp/samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine` (the Postgres-backed MCP server the Supply Chain E2E `Agent` and `run-supply-chain.ps1` actually depend on — `get_order`, `get_inventory`, `list_suppliers`, and the rest of the Agent's tool contract) along with its `docker-compose.yml` service and solution entries, without updating the harness. This broke `run-supply-chain.ps1` at step 3/8 with `no such service: mcp-foundgine`. Restored the `MCP.Foundgine` project, its `docker-compose.yml` service, and its `Foundgine.sln` entries so the Supply Chain E2E + PenTest harness runs again.
+- Reverted an unrelated, uncommitted in-progress edit to `src/csharp/benchmarks/AgentEndToEnd/Run5/docker-compose.yml` that had stripped its `mcp-foundgine` service block while the project files were left in place, which would have broken Run5 the same way.
 
 ### Release
 
@@ -108,3 +101,5 @@ All notable changes to Foundgine are documented here.
 - Version: `2.0.1`
 - Target framework: `.NET 9`
 - License: MIT
+
+- Java parity: added Runtime plan-approval E2E tests covering successful approved execution, semantic-version tampering, and plan-fingerprint tampering.

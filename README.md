@@ -60,11 +60,11 @@ Retrieval can discover candidates and evidence, but **retrieval is not authoriza
 
 The fastest path is the Supply Chain sample pair:
 
-- **Starter:** [`samples/Foundgine.SupplyChain`](samples/Foundgine.SupplyChain) — the smallest realistic application boundary.
-  - [Build it step by step](samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md)
-  - [Understand why it is structured this way](samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
-- **Advanced:** [`samples/Foundgine.SupplyChain.Advanced`](samples/Foundgine.SupplyChain.Advanced) — richer semantics, grounding, retrieval, authorization and adversarial testing.
-  - Start at [`docs/00-Overview-And-Setup.md`](samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) and follow 01–05.
+- **Starter:** [`src/csharp/samples/Foundgine.SupplyChain`](src/csharp/samples/Foundgine.SupplyChain) — the smallest realistic application boundary.
+  - [Build it step by step](src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md)
+  - [Understand why it is structured this way](src/csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
+- **Advanced:** [`src/csharp/samples/Foundgine.SupplyChain.Advanced`](src/csharp/samples/Foundgine.SupplyChain.Advanced) — richer semantics, grounding, retrieval, authorization and adversarial testing.
+  - Start at [`docs/00-Overview-And-Setup.md`](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) and follow 01–05.
 
 For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://cristianbarragan.github.io/Foundgine/docs-site/).
 
@@ -77,7 +77,7 @@ Two callers can ask for the same thing in different words:
 
 Foundgine does not treat the paraphrase as a fuzzy guess at a *different* operation. In the Supply Chain semantic contract, `Buy`/`Buys` are declared aliases of `PurchaseOrder`, and `Seller` is a declared alias of `Supplier`. Both sentences are grounded onto the **same canonical semantic identities** before authorization or planning ever runs — the diagram below follows one request all the way from words to a database call.
 
-*Tests:* [`SupplyChainGroundingAliasTests.cs`](samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics).
+*Tests:* [`SupplyChainGroundingAliasTests.cs`](src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](src/csharp/tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics).
 
 <p align="center"><img src="docs/assets/overdue-purchase-orders-alias-flow.svg" alt="Foundgine alias-matched Supply Chain request from caller intent through semantic resolution, authorization, planning, PostgreSQL execution and evidence." width="100%"></p>
 
@@ -162,7 +162,7 @@ The repository contains controlled benchmarks and deterministic security tests. 
 - [Agent benchmark explorer](https://cristianbarragan.github.io/Foundgine/docs-site/agent-benchmark/)
 - [Supply Chain E2E](https://cristianbarragan.github.io/Foundgine/docs-site/agent-benchmark/supply-chain/)
 - [Security PenTest](https://cristianbarragan.github.io/Foundgine/docs-site/samples/pentest/)
-- [`benchmarks/AgentEndToEnd/README.md`](benchmarks/AgentEndToEnd/README.md)
+- [`src/csharp/benchmarks/AgentEndToEnd/README.md`](src/csharp/benchmarks/AgentEndToEnd/README.md)
 
 Benchmark results are workload-specific and should not be generalized beyond the published experiment.
 
@@ -194,4 +194,4 @@ The 2.0.3 release adds candidate truncation diagnostics to semantic lexical grou
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the release notes.
 
-Foundgine is licensed under the MIT license.
+Foundgine is licensed under the Apache License 2.0.

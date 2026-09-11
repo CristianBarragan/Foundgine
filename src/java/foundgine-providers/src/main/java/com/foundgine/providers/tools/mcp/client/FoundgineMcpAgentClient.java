@@ -1,0 +1,4 @@
+package com.foundgine.providers.tools.mcp.client;
+import java.net.*;import java.net.http.*;import java.util.*;import java.util.concurrent.*;
+/** HTTP MCP client for hosts exposing the Foundgine MCP endpoint. */
+public final class FoundgineMcpAgentClient {private final HttpClient client;private final URI endpoint;public FoundgineMcpAgentClient(HttpClient c,URI e){client=Objects.requireNonNull(c);endpoint=Objects.requireNonNull(e);}public CompletionStage<String> call(String intentJson){HttpRequest r=HttpRequest.newBuilder(endpoint).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(intentJson)).build();return client.sendAsync(r,HttpResponse.BodyHandlers.ofString()).thenCompose(x->x.statusCode()/100==2?CompletableFuture.completedFuture(x.body()):CompletableFuture.failedFuture(new IllegalStateException("MCP returned "+x.statusCode())));}}

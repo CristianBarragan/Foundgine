@@ -3,7 +3,7 @@ start
 :SemanticMutationOperationGraph;
 :MutationPlan;
 :dependency levels;
-:security/conformance checks;
+:src/csharp/security/conformance checks;
 :provider execution;
 :MutationResult;
 stop

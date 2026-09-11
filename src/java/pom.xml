@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Foundgine — Java port
+
+  Mirrors the .NET solution layout 1:1 at the module level:
+
+    .NET project                    -> Java/Maven module
+    =============================================================
+    src/Foundgine.Core               -> foundgine-core          [IN PROGRESS]
+    src/Foundgine.Extensions         -> foundgine-extensions     [not started]
+    src/Foundgine.Providers          -> foundgine-providers      [not started]
+    src/Foundgine.Runtime            -> foundgine-runtime        [not started]
+    src/csharp/tests/Foundgine.*.Tests -> src/java/**/src/test/java [parity in progress]
+    src/csharp/samples/Foundgine.SupplyChain* -> src/java/samples/* [parity in progress]
+    src/csharp/benchmarks/* -> src/java/benchmarks/* [parity in progress]
+    src/csharp/security/Foundgine.RedTeam -> src/java/security/foundgine-redteam [parity in progress]
+
+  Modules are added to this parent as each one is ported, in dependency
+  order (Core first, since everything else depends on it).
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.foundgine</groupId>
+  <artifactId>foundgine-parent</artifactId>
+  <version>${revision}</version>
+  <packaging>pom</packaging>
+
+  <name>Foundgine (Java port)</name>
+  <description>
+    Java port of Foundgine: an application-controlled semantic execution
+    boundary for AI agents and other callers. Ported module-by-module from
+    the original .NET/C# implementation, preserving package layout,
+    class/method names (in camelCase), and behavior.
+  </description>
+
+  <properties>
+    <revision>2.0.0-SNAPSHOT</revision>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <jackson.version>2.17.2</jackson.version>
+    <junit.version>5.10.3</junit.version>
+    <postgresql.version>42.7.4</postgresql.version>
+  </properties>
+
+  <modules>
+    <module>foundgine-core</module>
+    <module>foundgine-runtime</module>
+    <module>foundgine-providers</module>
+    <module>samples/foundgine-supply-chain</module>
+    <module>samples/foundgine-supply-chain-advanced</module>
+    <module>benchmarks/foundgine-agent</module>
+    <module>security/foundgine-redteam</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.13.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

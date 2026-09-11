@@ -42,7 +42,7 @@ Static limits alone are insufficient. The future standard needs **adaptive cost 
 
 ## 4. Acceptance criteria
 
-Every executable operation MUST have a bounded resource envelope or an explicit administrative profile permitting unbounded behavior. Exceeding a security/resource budget MUST stop expansion safely.
+Every executable operation MUST have a bounded resource envelope or an explicit administrative profile permitting unbounded behavior. Exceeding a src/csharp/security/resource budget MUST stop expansion safely.
 
 ---
 

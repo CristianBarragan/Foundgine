@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Foundgine.Providers</PackageId>
+    <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine v2. It includes storage providers and adapters, AI/model and MCP tooling integrations, and Elasticsearch and vector-store support. It also carries the Foundgine AOT source generator as a build-time analyzer inside the NuGet package, so consumers do not install a separate generator package and the generator is not a runtime dependency. Foundgine.Providers depends only on Foundgine.Core and Foundgine.Runtime; secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers are expected to choose and configure the provider(s) matching their application and supply the semantic model and runtime configuration required by Foundgine.</Description>
+    <PackageTags>providers;storage;ai;mcp;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RootNamespace>Foundgine.Providers</RootNamespace>
+    <AssemblyName>Foundgine.Providers</AssemblyName>
+    <IsPackable>true</IsPackable>
+    <PackageReleaseNotes>2.0.0: v2 package restructuring. Consolidates the former Foundgine.AI, Foundgine.MCP, Foundgine.Sql, Foundgine.InMemory, Foundgine.Elasticsearch, and Foundgine.Postgres.Vector packages.</PackageReleaseNotes>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Foundgine.Providers.Aot.Generator/**" />
+    <EmbeddedResource Remove="Foundgine.Providers.Aot.Generator/**" />
+    <None Remove="Foundgine.Providers.Aot.Generator/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <!-- The AOT generator is a build-time analyzer, never a runtime dependency. -->
+    <ProjectReference Include="Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all"
+                      SkipGetTargetFrameworkProperties="true"
+                      UndefineProperties="TargetFramework" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
+    <PackageReference Include="Microsoft.Extensions.AI.Abstractions" Version="10.9.0" />
+    <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="Pgvector" Version="0.3.2" />
+  </ItemGroup>
+  <!-- Ship the generator inside this package as an analyzer; do not create a separate runtime package. -->
+  <Target Name="PackAotGenerator" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_FoundgineAotGenerator Include="$(MSBuildProjectDirectory)/Foundgine.Providers.Aot.Generator/bin/$(Configuration)/netstandard2.0/Foundgine.Providers.Aot.Generator.dll" />
+      <None Include="@(_FoundgineAotGenerator)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    </ItemGroup>
+  </Target>
+
+</Project>

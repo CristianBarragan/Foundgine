@@ -46,7 +46,7 @@ This separation allows Foundgine to evolve rapidly without forcing every experim
 
 ## 5. Reference implementation matrix (2026-09-07 audit)
 
-Built from `src/` and `tests/` in the Foundgine repository, following the §2 schema (`SES requirement → Foundgine implementation candidate → Foundgine test evidence → status`). The full machine-readable version, including a `deviation` field per row, is [`conformance/foundgine-mapping.json`](conformance/foundgine-mapping.json). Status values follow §3: fully demonstrated, partially demonstrated, experimental, not implemented, provider-specific, not applicable.
+Built from `src/` and `src/csharp/tests/` in the Foundgine repository, following the §2 schema (`SES requirement → Foundgine implementation candidate → Foundgine test evidence → status`). The full machine-readable version, including a `deviation` field per row, is [`conformance/foundgine-mapping.json`](conformance/foundgine-mapping.json). Status values follow §3: fully demonstrated, partially demonstrated, experimental, not implemented, provider-specific, not applicable.
 
 | SES | Topic | Implementation candidate | Test evidence | Status |
 |---|---|---|---|---|
@@ -82,13 +82,13 @@ Built from `src/` and `tests/` in the Foundgine repository, following the §2 sc
 | [SES-102](SES-102-conformance-matrix.md) | Conformance matrix | `conformance/requirements.json`, `conformance/known-gaps.json` | — | Partially demonstrated (seed registry only, not full traceability) |
 | [SES-103](SES-103-security-conformance.md) | Security conformance | — | Security.Tests/Penetration (11 files), Security.Authority.Tests (17 files) | Partially demonstrated |
 | [SES-104](SES-104-foundgine-test-mapping.md) | Future implementation gap matrix | `conformance/known-gaps.json` | — | Fully demonstrated |
-| [SES-105](SES-105-conformance-vectors.md) | Portable conformance vectors | — | — (benchmarks/ directories are performance benchmarks, not conformance vectors) | Not implemented |
+| [SES-105](SES-105-conformance-vectors.md) | Portable conformance vectors | — | — (src/csharp/benchmarks/ directories are performance benchmarks, not conformance vectors) | Not implemented |
 
 **Cross-cutting notes:**
 
 - Provider coverage is concentrated on PostgreSQL, an in-memory provider, and (for retrieval only) Elasticsearch/pgvector. Every "provider-specific" row above reflects this — the standard's provider-neutrality goal is not yet demonstrated across materially different provider kinds.
-- The security/adversarial test surface is the deepest and most mature part of the implementation; the least mature areas are the cross-implementation/interoperability layers (SES-020, SES-022, SES-023, SES-101, SES-105), which by nature require more than one implementation to demonstrate.
-- Four stray `*.migration-backup` files exist alongside their live counterparts under `tests/Foundgine.Semantics.Tests`, `tests/Foundgine.Planning.Tests`, and `tests/Foundgine.Aot.Tests`. Repository hygiene, not a conformance gap.
+- The src/csharp/security/adversarial test surface is the deepest and most mature part of the implementation; the least mature areas are the cross-implementation/interoperability layers (SES-020, SES-022, SES-023, SES-101, SES-105), which by nature require more than one implementation to demonstrate.
+- Four stray `*.migration-backup` files exist alongside their live counterparts under `src/csharp/tests/Foundgine.Semantics.Tests`, `src/csharp/tests/Foundgine.Planning.Tests`, and `src/csharp/tests/Foundgine.Aot.Tests`. Repository hygiene, not a conformance gap.
 
 ---
 

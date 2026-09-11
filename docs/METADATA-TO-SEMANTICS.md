@@ -57,7 +57,7 @@ Configure meaning that structural metadata cannot infer:
 The canonical Supply Chain sample intentionally keeps this enrichment in:
 
 ```text
-samples/Foundgine.SupplyChain/Application/SupplyChainSemanticConfiguration.cs
+src/csharp/samples/Foundgine.SupplyChain/Application/SupplyChainSemanticConfiguration.cs
 ```
 
 It no longer has a separate `SupplyChain.Semantics` project. This is an architectural acceptance criterion: ordinary structural discovery must continue to work without an application-owned semantic framework.

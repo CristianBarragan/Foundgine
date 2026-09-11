@@ -151,7 +151,7 @@ It is a controlled AI tool integration.
 
 ## Related source package
 
-See `src/Foundgine.Providers/Foundgine.Providers.Models/README.md` for the package-level API and security contract.
+See `src/csharp/Foundgine.Providers/Foundgine.Providers.Models/README.md` for the package-level API and security contract.
 
 ---
 

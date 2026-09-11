@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Foundgine.Core</PackageId>
+    <Description>Foundgine.Core is the foundational, provider-independent semantic layer for Foundgine v2. It defines the semantic model, metadata, intent contracts and serialization, intermediate representation, provider-neutral execution contracts, planning primitives, identifiers, and core abstractions used by the rest of the platform. Use it when building semantic models, authoring or resolving intents, implementing integrations, or creating your own providers. It does not execute database operations, host GraphQL or MCP, provide an LLM client, or perform application runtime orchestration. Consumers are expected to supply their own provider and runtime composition when execution is required.</Description>
+    <PackageTags>semantic-model;abstractions;serialization;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RootNamespace>Foundgine.Core</RootNamespace>
+    <AssemblyName>Foundgine.Core</AssemblyName>
+    <IsPackable>true</IsPackable>
+    <PackageReleaseNotes>2.0.0: v2 package restructuring. Consolidates the former Foundgine (root orchestrator types moved to Foundgine.Runtime; semantic primitives retained here), Foundgine.Abstractions, Foundgine.Semantics, Foundgine.Metadata, Foundgine.Planning, and Foundgine.Intent.Json packages into a single foundational package.</PackageReleaseNotes>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+  </ItemGroup>
+</Project>
