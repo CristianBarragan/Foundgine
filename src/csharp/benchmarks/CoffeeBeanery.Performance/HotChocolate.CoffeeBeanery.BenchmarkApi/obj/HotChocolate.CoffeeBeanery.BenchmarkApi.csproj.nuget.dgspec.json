@@ -1,0 +1,185 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\HotChocolate.CoffeeBeanery.BenchmarkApi\\HotChocolate.CoffeeBeanery.BenchmarkApi.csproj": {}
+  },
+  "projects": {
+    "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\CoffeeBeanery.Database\\CoffeeBeanery.Database.csproj": {
+      "version": "2.1.0",
+      "restore": {
+        "projectUniqueName": "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\CoffeeBeanery.Database\\CoffeeBeanery.Database.csproj",
+        "projectName": "CoffeeBeanery.Database",
+        "projectPath": "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\CoffeeBeanery.Database\\CoffeeBeanery.Database.csproj",
+        "packagesPath": "C:\\Users\\clbp_\\.nuget\\packages\\",
+        "outputPath": "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\CoffeeBeanery.Database\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\clbp_\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.19, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.19, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\HotChocolate.CoffeeBeanery.BenchmarkApi\\HotChocolate.CoffeeBeanery.BenchmarkApi.csproj": {
+      "version": "2.1.0",
+      "restore": {
+        "projectUniqueName": "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\HotChocolate.CoffeeBeanery.BenchmarkApi\\HotChocolate.CoffeeBeanery.BenchmarkApi.csproj",
+        "projectName": "HotChocolate.CoffeeBeanery.BenchmarkApi",
+        "projectPath": "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\HotChocolate.CoffeeBeanery.BenchmarkApi\\HotChocolate.CoffeeBeanery.BenchmarkApi.csproj",
+        "packagesPath": "C:\\Users\\clbp_\\.nuget\\packages\\",
+        "outputPath": "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\HotChocolate.CoffeeBeanery.BenchmarkApi\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\clbp_\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\CoffeeBeanery.Database\\CoffeeBeanery.Database.csproj": {
+                "projectPath": "C:\\Foundgine\\src\\csharp\\benchmarks\\CoffeeBeanery.Performance\\CoffeeBeanery.Database\\CoffeeBeanery.Database.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "HotChocolate.AspNetCore": {
+              "target": "Package",
+              "version": "[14.3.2, )"
+            },
+            "HotChocolate.Data.EntityFramework": {
+              "target": "Package",
+              "version": "[14.3.2, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.19, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.19, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

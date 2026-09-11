@@ -1,0 +1,490 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "HotChocolate.Language/16.6.4": {
+        "type": "package",
+        "dependencies": {
+          "HotChocolate.Language.SyntaxTree": "16.6.4",
+          "HotChocolate.Language.Utf8": "16.6.4",
+          "HotChocolate.Language.Visitors": "16.6.4",
+          "HotChocolate.Language.Web": "16.6.4"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.Language.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Language.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "HotChocolate.Language.SyntaxTree/16.6.4": {
+        "type": "package",
+        "dependencies": {
+          "HotChocolate.Utilities.Buffers": "16.6.4",
+          "Microsoft.Extensions.ObjectPool": "9.0.2"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.Language.SyntaxTree.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Language.SyntaxTree.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "HotChocolate.Language.Utf8/16.6.4": {
+        "type": "package",
+        "dependencies": {
+          "HotChocolate.Language.SyntaxTree": "16.6.4",
+          "HotChocolate.Language.Utf8.SyntaxTree": "16.6.4",
+          "HotChocolate.Utilities.Buffers": "16.6.4"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.Language.Utf8.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Language.Utf8.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "HotChocolate.Language.Utf8.SyntaxTree/16.6.4": {
+        "type": "package",
+        "dependencies": {
+          "HotChocolate.Language.SyntaxTree": "16.6.4",
+          "HotChocolate.Utilities.Buffers": "16.6.4"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.Language.Utf8.SyntaxTree.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Language.Utf8.SyntaxTree.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "HotChocolate.Language.Visitors/16.6.4": {
+        "type": "package",
+        "dependencies": {
+          "HotChocolate.Language.SyntaxTree": "16.6.4"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.Language.Visitors.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Language.Visitors.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "HotChocolate.Language.Web/16.6.4": {
+        "type": "package",
+        "dependencies": {
+          "HotChocolate.Language.Utf8": "16.6.4",
+          "HotChocolate.Language.Visitors": "16.6.4"
+        },
+        "compile": {
+          "lib/net9.0/HotChocolate.Language.Web.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Language.Web.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "HotChocolate.Utilities.Buffers/16.6.4": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/HotChocolate.Buffers.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/HotChocolate.Buffers.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/10.0.11": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.ObjectPool/9.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Microsoft.Extensions.ObjectPool.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.Extensions.ObjectPool.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Foundgine.Core/2.1.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/Foundgine.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Foundgine.Core.dll": {}
+        }
+      },
+      "Foundgine.Runtime/2.1.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "Foundgine.Core": "2.1.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.11"
+        },
+        "compile": {
+          "bin/placeholder/Foundgine.Runtime.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Foundgine.Runtime.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "HotChocolate.Language/16.6.4": {
+      "sha512": "oLEo6gvXVcKN/sDOSKxB0pFYBId1OSdKB+yxVRzg88M3q8N2uq89Q0P7fnpwUuiobay511gvXXihYaBxNt3xVA==",
+      "type": "package",
+      "path": "hotchocolate.language/16.6.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "hotchocolate-icon.png",
+        "hotchocolate.language.16.6.4.nupkg.sha512",
+        "hotchocolate.language.nuspec",
+        "lib/net10.0/HotChocolate.Language.dll",
+        "lib/net10.0/HotChocolate.Language.xml",
+        "lib/net11.0/HotChocolate.Language.dll",
+        "lib/net11.0/HotChocolate.Language.xml",
+        "lib/net8.0/HotChocolate.Language.dll",
+        "lib/net8.0/HotChocolate.Language.xml",
+        "lib/net9.0/HotChocolate.Language.dll",
+        "lib/net9.0/HotChocolate.Language.xml",
+        "lib/netstandard2.0/HotChocolate.Language.dll",
+        "lib/netstandard2.0/HotChocolate.Language.xml"
+      ]
+    },
+    "HotChocolate.Language.SyntaxTree/16.6.4": {
+      "sha512": "BDsJMdv6LjYEfGVQiAVhSf50xbAIrigoZUzjUoncbXGXzrfAJaVsGkZs6mR1z0UcTWrlSNoFRosxbtY07iPnCg==",
+      "type": "package",
+      "path": "hotchocolate.language.syntaxtree/16.6.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "hotchocolate-icon.png",
+        "hotchocolate.language.syntaxtree.16.6.4.nupkg.sha512",
+        "hotchocolate.language.syntaxtree.nuspec",
+        "lib/net10.0/HotChocolate.Language.SyntaxTree.dll",
+        "lib/net10.0/HotChocolate.Language.SyntaxTree.xml",
+        "lib/net11.0/HotChocolate.Language.SyntaxTree.dll",
+        "lib/net11.0/HotChocolate.Language.SyntaxTree.xml",
+        "lib/net8.0/HotChocolate.Language.SyntaxTree.dll",
+        "lib/net8.0/HotChocolate.Language.SyntaxTree.xml",
+        "lib/net9.0/HotChocolate.Language.SyntaxTree.dll",
+        "lib/net9.0/HotChocolate.Language.SyntaxTree.xml",
+        "lib/netstandard2.0/HotChocolate.Language.SyntaxTree.dll",
+        "lib/netstandard2.0/HotChocolate.Language.SyntaxTree.xml"
+      ]
+    },
+    "HotChocolate.Language.Utf8/16.6.4": {
+      "sha512": "Ria0zRrpy4nXVvuczx14Vbe+8jdVPPryUlKjfUVUZCmU9Ntif/XhaFmVYo3HtS+FVkFHSRA1o0DeTXEoDnzX9Q==",
+      "type": "package",
+      "path": "hotchocolate.language.utf8/16.6.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "hotchocolate-icon.png",
+        "hotchocolate.language.utf8.16.6.4.nupkg.sha512",
+        "hotchocolate.language.utf8.nuspec",
+        "lib/net10.0/HotChocolate.Language.Utf8.dll",
+        "lib/net10.0/HotChocolate.Language.Utf8.xml",
+        "lib/net11.0/HotChocolate.Language.Utf8.dll",
+        "lib/net11.0/HotChocolate.Language.Utf8.xml",
+        "lib/net8.0/HotChocolate.Language.Utf8.dll",
+        "lib/net8.0/HotChocolate.Language.Utf8.xml",
+        "lib/net9.0/HotChocolate.Language.Utf8.dll",
+        "lib/net9.0/HotChocolate.Language.Utf8.xml",
+        "lib/netstandard2.0/HotChocolate.Language.Utf8.dll",
+        "lib/netstandard2.0/HotChocolate.Language.Utf8.xml"
+      ]
+    },
+    "HotChocolate.Language.Utf8.SyntaxTree/16.6.4": {
+      "sha512": "2nnk9e2GT4N8HlVXvtYYOEJysPUiZMQnjtSnLSltW9YC1VW/E4IGnxxJ2Gt7Mj+4yUSlQ+61DnzOD+UtSF09Kg==",
+      "type": "package",
+      "path": "hotchocolate.language.utf8.syntaxtree/16.6.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "hotchocolate-icon.png",
+        "hotchocolate.language.utf8.syntaxtree.16.6.4.nupkg.sha512",
+        "hotchocolate.language.utf8.syntaxtree.nuspec",
+        "lib/net10.0/HotChocolate.Language.Utf8.SyntaxTree.dll",
+        "lib/net10.0/HotChocolate.Language.Utf8.SyntaxTree.xml",
+        "lib/net11.0/HotChocolate.Language.Utf8.SyntaxTree.dll",
+        "lib/net11.0/HotChocolate.Language.Utf8.SyntaxTree.xml",
+        "lib/net8.0/HotChocolate.Language.Utf8.SyntaxTree.dll",
+        "lib/net8.0/HotChocolate.Language.Utf8.SyntaxTree.xml",
+        "lib/net9.0/HotChocolate.Language.Utf8.SyntaxTree.dll",
+        "lib/net9.0/HotChocolate.Language.Utf8.SyntaxTree.xml",
+        "lib/netstandard2.0/HotChocolate.Language.Utf8.SyntaxTree.dll",
+        "lib/netstandard2.0/HotChocolate.Language.Utf8.SyntaxTree.xml"
+      ]
+    },
+    "HotChocolate.Language.Visitors/16.6.4": {
+      "sha512": "MWHB8709Ho2bQkIXuzTGKw91L9z675poWJ1lg6BGmdg3/ZnfsXGAv8cdP/cA4UzB1rOtYJTqrh2YP7xywHvwCQ==",
+      "type": "package",
+      "path": "hotchocolate.language.visitors/16.6.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "hotchocolate-icon.png",
+        "hotchocolate.language.visitors.16.6.4.nupkg.sha512",
+        "hotchocolate.language.visitors.nuspec",
+        "lib/net10.0/HotChocolate.Language.Visitors.dll",
+        "lib/net10.0/HotChocolate.Language.Visitors.xml",
+        "lib/net11.0/HotChocolate.Language.Visitors.dll",
+        "lib/net11.0/HotChocolate.Language.Visitors.xml",
+        "lib/net8.0/HotChocolate.Language.Visitors.dll",
+        "lib/net8.0/HotChocolate.Language.Visitors.xml",
+        "lib/net9.0/HotChocolate.Language.Visitors.dll",
+        "lib/net9.0/HotChocolate.Language.Visitors.xml",
+        "lib/netstandard2.0/HotChocolate.Language.Visitors.dll",
+        "lib/netstandard2.0/HotChocolate.Language.Visitors.xml"
+      ]
+    },
+    "HotChocolate.Language.Web/16.6.4": {
+      "sha512": "7GWlN019RYlbGJ88j9gw34exwD562PsiJ49zs8RALAzJnmC000KgH5vHikUbPVU5eeO8nUunyCEQafdgypY68A==",
+      "type": "package",
+      "path": "hotchocolate.language.web/16.6.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "hotchocolate-icon.png",
+        "hotchocolate.language.web.16.6.4.nupkg.sha512",
+        "hotchocolate.language.web.nuspec",
+        "lib/net10.0/HotChocolate.Language.Web.dll",
+        "lib/net10.0/HotChocolate.Language.Web.xml",
+        "lib/net11.0/HotChocolate.Language.Web.dll",
+        "lib/net11.0/HotChocolate.Language.Web.xml",
+        "lib/net8.0/HotChocolate.Language.Web.dll",
+        "lib/net8.0/HotChocolate.Language.Web.xml",
+        "lib/net9.0/HotChocolate.Language.Web.dll",
+        "lib/net9.0/HotChocolate.Language.Web.xml",
+        "lib/netstandard2.0/HotChocolate.Language.Web.dll",
+        "lib/netstandard2.0/HotChocolate.Language.Web.xml"
+      ]
+    },
+    "HotChocolate.Utilities.Buffers/16.6.4": {
+      "sha512": "oeadDwUfn3oF97oNwF3QD3gEoOPOxl/sKwFGKj9BXNwgQnm9ho4DRFZrY0v4Gk78sGEsSxzfK8YlUz7pl5aAXA==",
+      "type": "package",
+      "path": "hotchocolate.utilities.buffers/16.6.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "hotchocolate-icon.png",
+        "hotchocolate.utilities.buffers.16.6.4.nupkg.sha512",
+        "hotchocolate.utilities.buffers.nuspec",
+        "lib/net10.0/HotChocolate.Buffers.dll",
+        "lib/net10.0/HotChocolate.Buffers.xml",
+        "lib/net11.0/HotChocolate.Buffers.dll",
+        "lib/net11.0/HotChocolate.Buffers.xml",
+        "lib/net8.0/HotChocolate.Buffers.dll",
+        "lib/net8.0/HotChocolate.Buffers.xml",
+        "lib/net9.0/HotChocolate.Buffers.dll",
+        "lib/net9.0/HotChocolate.Buffers.xml",
+        "lib/netstandard2.0/HotChocolate.Buffers.dll",
+        "lib/netstandard2.0/HotChocolate.Buffers.xml"
+      ]
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/10.0.11": {
+      "sha512": "/a1aJz4m7ylhEDf25ugQChLQoN5XwoGjWw/BoR/ZWWKsO1v4DdJElS1uyngahz4B/eOzjFk1KNTkarRLE5wsIg==",
+      "type": "package",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/10.0.11",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/Microsoft.Extensions.DependencyInjection.Abstractions.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/Microsoft.Extensions.DependencyInjection.Abstractions.targets",
+        "lib/net10.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/net10.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/net462/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/net462/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "microsoft.extensions.dependencyinjection.abstractions.10.0.11.nupkg.sha512",
+        "microsoft.extensions.dependencyinjection.abstractions.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "Microsoft.Extensions.ObjectPool/9.0.2": {
+      "sha512": "nWx7uY6lfkmtpyC2dGc0IxtrZZs/LnLCQHw3YYQucbqWj8a27U/dZ+eh72O3ZiolqLzzLkVzoC+w/M8dZwxRTw==",
+      "type": "package",
+      "path": "microsoft.extensions.objectpool/9.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net462/Microsoft.Extensions.ObjectPool.dll",
+        "lib/net462/Microsoft.Extensions.ObjectPool.xml",
+        "lib/net9.0/Microsoft.Extensions.ObjectPool.dll",
+        "lib/net9.0/Microsoft.Extensions.ObjectPool.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.ObjectPool.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.ObjectPool.xml",
+        "microsoft.extensions.objectpool.9.0.2.nupkg.sha512",
+        "microsoft.extensions.objectpool.nuspec"
+      ]
+    },
+    "Foundgine.Core/2.1.0": {
+      "type": "project",
+      "path": "../Foundgine.Core/Foundgine.Core.csproj",
+      "msbuildProject": "../Foundgine.Core/Foundgine.Core.csproj"
+    },
+    "Foundgine.Runtime/2.1.0": {
+      "type": "project",
+      "path": "../Foundgine.Runtime/Foundgine.Runtime.csproj",
+      "msbuildProject": "../Foundgine.Runtime/Foundgine.Runtime.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "Foundgine.Core >= 2.1.0",
+      "Foundgine.Runtime >= 2.1.0",
+      "HotChocolate.Language >= 16.6.4"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\clbp_\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "2.1.0",
+    "restore": {
+      "projectUniqueName": "C:\\Foundgine\\src\\csharp\\Foundgine.Extensions\\Foundgine.Extensions.csproj",
+      "projectName": "Foundgine.Extensions",
+      "projectPath": "C:\\Foundgine\\src\\csharp\\Foundgine.Extensions\\Foundgine.Extensions.csproj",
+      "packagesPath": "C:\\Users\\clbp_\\.nuget\\packages\\",
+      "outputPath": "C:\\Foundgine\\src\\csharp\\Foundgine.Extensions\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\clbp_\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {
+            "C:\\Foundgine\\src\\csharp\\Foundgine.Core\\Foundgine.Core.csproj": {
+              "projectPath": "C:\\Foundgine\\src\\csharp\\Foundgine.Core\\Foundgine.Core.csproj"
+            },
+            "C:\\Foundgine\\src\\csharp\\Foundgine.Runtime\\Foundgine.Runtime.csproj": {
+              "projectPath": "C:\\Foundgine\\src\\csharp\\Foundgine.Runtime\\Foundgine.Runtime.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "allWarningsAsErrors": true,
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.300"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "dependencies": {
+          "HotChocolate.Language": {
+            "target": "Package",
+            "version": "[16.6.4, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

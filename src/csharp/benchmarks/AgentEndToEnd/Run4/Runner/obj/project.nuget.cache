@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "fhqQ4MQdXlY=",
+  "success": true,
+  "projectFilePath": "C:\\Foundgine\\src\\csharp\\benchmarks\\AgentEndToEnd\\Run4\\Runner\\Runner.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\clbp_\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.0\\microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512",
+    "C:\\Users\\clbp_\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.0\\microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512",
+    "C:\\Users\\clbp_\\.nuget\\packages\\npgsql\\10.0.3\\npgsql.10.0.3.nupkg.sha512",
+    "C:\\Users\\clbp_\\.nuget\\packages\\system.io.pipelines\\10.0.11\\system.io.pipelines.10.0.11.nupkg.sha512",
+    "C:\\Users\\clbp_\\.nuget\\packages\\system.text.encodings.web\\10.0.11\\system.text.encodings.web.10.0.11.nupkg.sha512",
+    "C:\\Users\\clbp_\\.nuget\\packages\\system.text.json\\10.0.11\\system.text.json.10.0.11.nupkg.sha512"
+  ],
+  "logs": []
+}
