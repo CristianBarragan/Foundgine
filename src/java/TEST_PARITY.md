@@ -18,7 +18,7 @@ The Java port is being aligned to the C# test suite by behavior and boundary, no
 | Foundgine.Semantics.Tests | 52 | In progress: identity, aliases, grounding, mutation, planning, model lifecycle and query contracts mirrored |
 | Foundgine.Sql.Tests | 1 | Partial: SQL mutation normalization coverage exists |
 
-The Java suite currently contains **68 test classes**. New parity tests are named `*ParityTest` where the purpose is to make the C# source test being mirrored explicit.
+The Java suite currently contains **83 test classes**. New parity tests are named `*ParityTest` where the purpose is to make the C# source test being mirrored explicit.
 
 ## Porting order
 
@@ -128,6 +128,13 @@ Added parity coverage for:
 
 
 ### Latest planning parity additions
+- `Foundgine.Planning.Tests/PredicatePushdownRuleTests.cs` → `PredicatePushdownRuleParityTest` — bounded AND/OR distribution, semantic-equivalence proof, security-invariant preservation, and expansion budget.
+- `Foundgine.Planning.Tests/ConnectionPlanningTests.cs` → `ConnectionPlanningParityTest` — connection traversal lowering, root-edge rejection, edge separation, and authorization preservation.
+- `Foundgine.Planning.Tests/ExecutionAlgebraInvariantTests.cs` → `ExecutionAlgebraInvariantParityTest` — structural execution operations, query-clause preservation, and logical relationship/connection traversal.
+- `Foundgine.Planning.Tests/SemanticPlanAuthorizationBindingProofTests.cs` → `SemanticPlanAuthorizationBindingProofParityTest` — binding preservation/replacement rejection and unbound-plan optimization.
+- `Foundgine.Planning.Tests/SemanticEquivalenceProofTests.cs` → `SemanticEquivalenceProofParityTest` — optimizer proof, authorization commutativity, meaningful field/pagination rejection, and security-contract rejection.
+- `Foundgine.Planning.Tests/ProviderAwareCostSelectionTests.cs` → `ProviderAwareCostSelectionParityTest` — provider-aware rule ranking, proof-gated advisory cost, and selection-history provenance.
+
 - Aggregate rewrite/cardinality semantics
 - Relationship aggregate-filter pushdown
 - Rewrite-rule composer budgets and deterministic application

@@ -140,9 +140,9 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Restore pentest suite
-        run: dotnet restore benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj
+        run: dotnet restore src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj
       - name: Build pentest suite
-        run: dotnet build benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj --no-restore --configuration Release
+        run: dotnet build src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj --no-restore --configuration Release
       - name: Start isolated PostgreSQL 17
         run: docker compose -f benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml up -d --wait postgres
       - name: Seed isolated pentest database
@@ -152,7 +152,7 @@ jobs:
           SupplyChainConnectionString: Host=localhost;Port=4431;Database=foundgine_supply_chain_pentest;Username=benchmark;Password=benchmark
         run: |
           set -euo pipefail
-          dotnet test benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj \
+          dotnet test src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj \
             --no-build \
             --configuration Release \
             --filter 'FullyQualifiedName~GraphPenetrationTests' \
@@ -291,9 +291,9 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Restore pentest suite
-        run: dotnet restore benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj
+        run: dotnet restore src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj
       - name: Build pentest suite
-        run: dotnet build benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj --no-restore --configuration Release
+        run: dotnet build src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj --no-restore --configuration Release
       - name: Start isolated PostgreSQL 17
         run: docker compose -f benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/docker-compose.yml up -d --wait postgres
       - name: Seed isolated pentest database
@@ -303,7 +303,7 @@ jobs:
           SupplyChainConnectionString: Host=localhost;Port=4431;Database=foundgine_supply_chain_pentest;Username=benchmark;Password=benchmark
         run: |
           set -euo pipefail
-          dotnet test benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj \
+          dotnet test src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj \
             --no-build \
             --configuration Release \
             --filter 'FullyQualifiedName~McpPenetrationTests' \

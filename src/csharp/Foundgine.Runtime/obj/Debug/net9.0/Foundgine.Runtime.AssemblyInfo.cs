@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2026 Foundgine")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute(@"Foundgine.Runtime is the application-facing execution layer for Foundgine v2. It coordinates intent handling, semantic resolution, authorization and plan approval, provider dispatch, mutation execution, dependency-injection composition, task routing, resource/security controls, and the agent/tool governance control plane. It depends on Foundgine.Core but does not itself provide a database provider, GraphQL server, MCP transport, or LLM client. Consumers are expected to register the runtime with dependency injection and provide an appropriate semantic model and provider implementation.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("2.1.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+0de9a2749a6f5a91d4120b63a4872f13ae3cf0c2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.1.0+881185b8d51331d16358a1166bd9229b1bb0cc98")]
 [assembly: System.Reflection.AssemblyProductAttribute("Foundgine.Runtime")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Foundgine.Runtime")]
 [assembly: System.Reflection.AssemblyVersionAttribute("2.1.0.0")]
