@@ -655,3 +655,352 @@ The Java test suite now mirrors additional C# E2E contracts around result materi
 
 ## Test parity — semantic identity and contract boundaries
 The Java suite now mirrors additional C# semantic contract tests for stable identity namespaces, reserved zero identities, protocol-neutral query/relationship filters, and semantic contract fingerprint attestation. These tests use the Java Core APIs directly while preserving the C# behavioral contract.
+
+## Continuation — 2026-09-12 (semantic aggregate + lexicon projection parity)
+
+Continued the semantic parity pass from the remaining untouched C# test surface.
+
+- Ported `SemanticAggregateSemanticsTests.cs` as
+  `SemanticAggregateSemanticsParityTest`, covering COUNT/MIN/MAX empty-collection
+  behavior, NULL-input behavior, duplicate sensitivity, catalog completeness,
+  fail-closed lookup, `TryGet`/`For` equivalence, and cardinality-proof defaults.
+- Hardened `SemanticAggregateSemanticsCatalog.tryGet(null)` to return an empty
+  result rather than leaking the JDK `Map.of` null-key `NullPointerException`.
+  `forAggregate(null)` now fails through the same explicit unsupported-aggregate
+  boundary as other unregistered values.
+- Ported `SemanticLexiconProjectionTests.cs` as
+  `SemanticLexiconProjectionParityTest`, covering entity/node projection,
+  field ownership and aliases, relationship source/target grounding, logical
+  traversal endpoint names, and the bare-entity entity/node-only boundary.
+
+Verification:
+- Both new parity test sources syntax-compiled against the existing Java Core
+  classes with lightweight JUnit API stubs.
+- A direct JDK 21 smoke execution exercised the aggregate catalog and entity/node
+  lexicon projection and passed.
+- Full Maven/Surefire verification remains unavailable in this sandbox because
+  Maven and external dependency artifacts are not installed.
+
+## Continuation — 2026-09-12 (delegation state / chain parity)
+
+Added the next security-warrant parity tranche:
+
+- `SecurityWarrantDelegationStateMachineParityTest`
+  - registration creates an ACTIVE snapshot
+  - revoked warrants cannot delegate
+  - compromised warrants cannot rotate keys back into authority
+  - active key rotation advances the sequence without changing authority state
+  - duplicate registration is rejected
+- `SecurityWarrantDelegationChainParityTest`
+  - single-root chain validation
+  - expected-root digest binding
+  - empty-chain rejection
+  - root ancestry tampering rejection
+  - deterministic chain digest
+
+Verification:
+- Both new test sources syntax-compile against the existing Core classes using lightweight JUnit API stubs.
+- The complete `semantic.security.warrants` main-source subtree compiles cleanly with JDK `javac`.
+- Maven/Surefire remains unavailable in this sandbox (`mvn` is not installed), so no claim of a full Maven test run is made.
+
+## Continuation — 2026-09-12 (security penetration + provider conformance parity)
+
+Ported the next security-boundary tranche from `Foundgine.Security.Tests`:
+
+- `SemanticBoundaryPenetrationParityTest` covers denied root entities, field pruning before planning, descendant removal through denied relationships, authorization-predicate preservation, and plan-fingerprint isolation.
+- `MutationAuthorizationPenetrationParityTest` covers unauthorized mutation fields, return fields, filters, and both orderings of a mixed authorized/unauthorized semantic mutation batch. Authorization failure is verified to return no partially authorized plan.
+- `ProviderExecutableConformanceParityTest` covers concrete provider conformance evaluation, missing-invariant certification, exact provider-plan binding, exact Execution IR binding, provider identity mismatch, and hostile provider-plan evidence.
+- `ProviderSecurityConformanceMatrixParityTest` covers the in-memory/SQL query profile, the high-assurance PostgreSQL transfer profile, generic SQL failing high-assurance mutation requirements, unknown-provider fail-closed behavior, and rejection of invented provider invariants.
+
+Also fixed two concrete Java-port compilation gaps found while validating the Core source tree:
+
+- `FieldMetadata.effectiveAliases()` now mirrors the C# null-as-empty alias behavior used by `SemanticModelDiscovery`.
+- `StorageEntityId.KeyDeserializer` now explicitly extends Jackson's `com.fasterxml.jackson.databind.KeyDeserializer`; the nested class name previously shadowed the imported base type and caused a Java compilation cycle.
+
+Verification in this sandbox:
+- All `foundgine-core/src/main/java` sources syntax-compile with JDK 21 against lightweight Jackson API stubs.
+- The four new parity test classes syntax-compile against the compiled Core sources and lightweight JUnit/Jackson stubs.
+- Full Maven/Surefire execution remains unavailable because Maven and external dependency artifacts are not installed in this sandbox.
+
+## Continuation — 2026-09-12 (in-memory provider execution parity)
+
+Completed the first concrete provider-execution parity step for the Java port.
+
+Ported the C# in-memory provider surface into Java:
+
+- `InMemoryRow` — entity-scoped backing row with `FieldId`-keyed values.
+- `InMemoryDataSet` — deterministic entity-partitioned backing store.
+- `InMemoryPlan` — provider-specific `ProviderPlan` carrying the exact `ExecutionIR`.
+- `InMemoryCompiler` — provider-neutral execution, relationship traversal, root filtering,
+  ordering, offset/limit pagination, authorization predicates, projection/cell shaping,
+  and provider security-conformance evaluation.
+- `InMemoryExecutionProvider` — `IExecutionProvider` integration.
+
+The previous Java `InMemoryProvider` shell was removed in favor of the same five-part
+provider surface used by the C# implementation.
+
+Added behavioral parity coverage for provider-specific planning, projection boundaries,
+backing-value leakage, filtering/order/pagination, relationship traversal, authorization,
+security conformance, and execution refusal without authorization provenance.
+
+Verification:
+- All six in-memory Java production/test sources compile with JDK 21 against the existing
+  Java Core/runtime classes and lightweight dependency stubs.
+- A direct JDK 21 behavior smoke test exercised filtering, relationship traversal, projection
+  boundaries, and provider security conformance successfully.
+- Full Maven/Surefire execution remains unavailable because Maven and external dependency
+  artifacts are not installed in this sandbox.
+
+Next provider step: implement PostgreSQL batched mutation compilation/execution parity.
+
+## Continuation — 2026-09-12 (PostgreSQL batched mutation parity)
+
+Completed the next provider step by replacing the Java PostgreSQL batch compiler
+placeholder with the concrete correlation-aware lowering used by the C# provider.
+
+Implemented:
+
+- `PostgresBatchedMutationCompiler.compile(ExecutionMutationIR)` and the legacy
+  `MutationBatchPlan` entry point.
+- dependency-level computation and cycle detection.
+- physical grouping of same-level Create/Upsert operations by mutation shape.
+- typed PostgreSQL array parameter generation for `unnest(...)` batch inputs.
+- compiler-owned `__fg_corr` ordinals; user-visible keys are never used as a
+  correlation surrogate for generated identities.
+- cross-level reference propagation through ord-map CTEs.
+- PostgreSQL 17 `MERGE ... RETURNING` for batched Create operations.
+- ON CONFLICT handling, duplicate literal-key detection, and key-based recovery
+  for batched Upsert operations.
+- Update/Delete folding into the same statement where safely representable.
+- safe `tryCompile(...)` fallback for unsupported/unsafe shapes.
+- explicit row/group correlation metadata on `SqlBatchedMutationPlan`.
+
+Also ported `PostgresBatchedMutationExecutionProvider`:
+
+- executes the complete compiled batch as one JDBC statement;
+- binds PostgreSQL array parameters through `Connection.createArrayOf(...)`;
+- reconstructs logical `MutationResult` values from `__fg_corr` rather than
+  assuming database result order;
+- rejects unknown groups, invalid ordinals, missing correlation values, and
+  missing results for ordinal-addressable operations;
+- converts returned JSON values using the declared semantic field CLR/Java type;
+- falls back to the sequential SQL mutation provider when batched compilation is
+  unavailable;
+- exposes concrete mutation security-conformance evidence for parameterization
+  and atomic mutation execution.
+
+Added `PostgresBatchedMutationCompilerParityTest` covering the Execution IR
+entry point, explicit compiler-owned correlation, generated-identity correlation,
+duplicate-key fallback, and cross-dependency-level correlation metadata.
+
+Verification:
+- Source inspection against `PostgresBatchedMutationCompiler.cs` and
+  `PostgresBatchedMutationExecutionProvider.cs` was used as the behavioral reference.
+- The changed Java sources were checked with JDK 21; full Maven/Surefire execution
+  remains unavailable in this sandbox because Maven/dependency artifacts are not
+  installed.
+
+Next provider step: complete the remaining PostgreSQL provider parity, especially
+real JDBC/PostgreSQL E2E execution, transaction/cancellation behavior, and any
+remaining provider-specific mutation result/conformance cases before moving on to
+Java AOT annotation processing.
+
+## Pass 11 — PostgreSQL physical execution and cancellation parity
+
+This pass closes the PostgreSQL execution boundary rather than adding another
+compiler-only surface. `PostgresBatchedMutationExecutionProvider` now has explicit
+transaction ownership semantics: provider-owned batches start, commit, and roll
+back a JDBC transaction, while callers can pass `ownsTransaction=false` to
+participate in an existing transaction without taking ownership of commit or
+rollback. The sequential `SqlMutationExecutionProvider` fallback follows the same
+ownership model.
+
+JDBC command execution now registers cancellation callbacks and invokes
+`PreparedStatement.cancel()` when a live `CancellationToken` is cancelled.
+`CancellationToken` therefore supports live callback registration, and linked
+`CancellationTokenSource` instances propagate cancellation after link creation.
+
+A real PostgreSQL JUnit E2E suite was added for the batched provider. It is opt-in
+via `FOUNDGINE_POSTGRES_CONNECTION_STRING` and verifies generated identity
+propagation across dependency levels, caller-controlled transaction rollback,
+provider-owned commit behavior, and fail-fast cancellation.
+
+The PostgreSQL driver and JUnit dependencies were added explicitly to the Java
+providers module so these tests are first-class Maven tests rather than custom
+compile-only fixtures.
+
+Verification:
+- JDK 21 is available in the sandbox.
+- Maven is not installed in the sandbox, so Maven/Surefire and live PostgreSQL
+  execution cannot be run here.
+- The new tests and production changes were structurally checked against the
+  corresponding C# provider transaction/cancellation contract.
+
+Next provider step: complete the remaining PostgreSQL provider parity, especially
+real JDBC/PostgreSQL E2E execution, transaction/cancellation behavior, and any
+remaining provider-specific mutation result/conformance cases before moving on
+to Java AOT annotation processing.
+
+## Pass 16 — PostgreSQL retrieval + JDBC SQL boundary parity
+
+Compared the Java PostgreSQL/SQL provider surface against the current C# provider. The C# SQL provider exposes SQL query writing, SQL execution, PostgreSQL retrieval, and separate retrieval strategies including Fuzzy, FullText, Search, GraphSimilarity, with Vector delegated to the pgvector provider.
+
+Ported the remaining Java gaps:
+
+- PostgreSQL retrieval now fails closed when an optional strategy is disabled instead of silently returning an empty candidate set.
+- `GraphSimilarity` now mirrors the C# Apache AGE path: relationship/reference validation, `LOAD 'age'`, Cypher construction, graph execution, graph-similarity evidence and score handling.
+- PostgreSQL full-text retrieval now uses the configured PostgreSQL text-search configuration as a SQL literal, matching the C# provider contract.
+- Retrieval field resolution now supports an omitted field by selecting the first non-sensitive/string storage field, matching the C# fallback behavior.
+- `Vector` remains explicitly delegated to the pgvector semantic lexical provider rather than being implemented in the relational retrieval boundary.
+- Added `JdbcSqlPlaceholderRewriter` so the deterministic `@pN`, `@authN`, and execution-context placeholders emitted by the SQL compiler are converted to JDBC positional `?` placeholders only at the physical execution boundary. This preserves provider-plan diagnostics while making `PreparedStatement` execution valid.
+- Mutation execution now uses the same placeholder rewriter instead of a mutation-only `@pN` conversion.
+- Added regression tests for placeholder rewriting and SQL-literal safety.
+
+The C# retrieval provider intentionally keeps retrieval advisory: authorization and final relational execution remain owned by Foundgine's semantic/execution pipeline.
+
+## Pass 17 — SQL execution boundary and cancellation parity
+
+Compared the Java `SqlExecutionProvider` against the current C# SQL execution provider. The
+C# boundary opens the provider connection when necessary, binds runtime execution-context values,
+fetches one extra row for forward pagination, materializes cells from column bindings, and emits
+execution evidence. The Java implementation already mirrored the binding, pagination, materialization,
+and provenance checks, but its physical statement boundary did not register a live cancellation
+callback.
+
+The Java SQL execution provider now registers `CancellationToken` against the live
+`PreparedStatement` and calls `PreparedStatement.cancel()` on cancellation. Cancellation is also
+checked before binding, before execution, during row materialization, and after result/page
+construction. This brings ordinary SQL query execution in line with the cancellation behavior
+already present in the PostgreSQL mutation provider.
+
+The provider also supports explicit transaction ownership for callers that need a provider-owned
+JDBC transaction, while the default constructor remains caller-transaction-neutral. Existing
+caller-owned transactions are never committed or rolled back by the default read provider.
+
+Verification:
+- JDK 21 syntax/compilation checks were performed on the changed provider source.
+- Full Maven/Surefire execution remains unavailable because Maven and external dependency artifacts
+  are not installed in this sandbox.
+- The C# `SqlExecutionProvider.cs` remains the behavioral reference for execution/result semantics.
+
+Next provider step: add/finish SQL compiler regression coverage for cursor pagination, relationship
+joins, aggregate filters/order, authorization predicates, and execution evidence, followed by
+opt-in real PostgreSQL E2E coverage for the complete read path.
+
+## Pass 18 — SQL compiler regression parity
+
+Ported the first concrete SQL compiler regression layer from the C# E2E suite into the Java
+provider tests. `SqlCompilerParityTest` now locks the provider boundary for:
+
+- aggregate Count filters remaining `COUNT(*)` when no optimizer strategy is present;
+- optimized `COUNT > 0` lowering to `EXISTS` without retaining `COUNT(*)`;
+- exact-count comparisons such as `COUNT > 1` remaining count-based;
+- relationship `SOME` filters lowering to correlated `EXISTS` rather than a top-level join;
+- relationship `ALL` filters lowering to `NOT EXISTS` with a negated predicate;
+- schema-qualified storage names being quoted as separate SQL identifiers;
+- limit/offset values remaining execution-context parameters rather than SQL literals.
+
+This is intentionally provider-level coverage: it verifies that the semantic planning artifact is
+lowered correctly without requiring a live database. The next step is to extend the same parity
+layer to compound cursor seek predicates, aggregate ordering, authorization predicate rendering,
+projection bindings, and then exercise the resulting plans against real PostgreSQL.
+
+## Pass 19 — SQL cursor and authorization boundary parity
+
+Continued SQL provider parity from the C# implementation. Added provider-level regression coverage for compound keyset pagination and the AOT authorization predicate SQL boundary. The new tests verify primary-key cursor tie-breaking, lexicographic seek predicates for ascending/descending order, cursor arity fail-closed behavior, resource/context authorization parameterization, boolean predicate parentheses, and temporal/decimal cursor conversion. No live PostgreSQL dependency is required for these contracts.
+
+## Pass 20 — PostgreSQL read-path E2E parity
+
+Added an opt-in real PostgreSQL read-path suite at `foundgine-providers/src/test/java/com/foundgine/providers/storage/sql/SqlExecutionPostgresE2ETest.java`.
+
+The suite exercises the complete provider boundary rather than only inspecting SQL strings:
+
+- semantic plan -> Execution IR -> `SqlCompiler` -> `SqlPlan` -> JDBC execution;
+- authorization provenance remains attached to the provider plan;
+- resource/context authorization values are parameterized and supplied only through `ExecutionContext`;
+- relationship `SOME` filtering executes as PostgreSQL `EXISTS`;
+- actual PostgreSQL rows are materialized into `ExecutionRow` values and semantic cells;
+- execution evidence is emitted by the SQL provider;
+- cursor pagination performs a real first-page/end-cursor/second-page round trip;
+- cursor ordering retains the primary-key tie-breaker;
+- tests create and drop isolated schemas and remain skipped unless `FOUNDGINE_POSTGRES_CONNECTION_STRING` is configured.
+
+This closes the gap between SQL compiler regression tests and real PostgreSQL read execution while keeping the provider boundary provider-independent until the SQL/JDBC stage.
+
+## Pass 21 — PostgreSQL nested relationship / quantifier E2E parity
+
+- Extended `SqlExecutionPostgresE2ETest` with real PostgreSQL coverage for nested relationship projections.
+- Verifies provider execution of root + child `INNER JOIN` materialization while root authorization remains parameterized.
+- Added real PostgreSQL `SOME` + `NONE` composition coverage and verifies both `EXISTS` and `NOT EXISTS` are emitted.
+- Added `ALL` relationship quantifier execution coverage and aggregate `COUNT` relationship filtering coverage.
+- The tests deliberately assert that semantic comparison values are not embedded in generated SQL.
+- Seed data now includes multiple child rows for one parent so nested projection and quantifier semantics are exercised against one-to-many cardinality rather than only one-to-one samples.
+- Full Maven execution remains environment-dependent; tests are opt-in through `FOUNDGINE_POSTGRES_CONNECTION_STRING`.
+
+## Pass 22 — PostgreSQL aggregate ordering and cursor parity — 2026-09-12
+
+Added real PostgreSQL E2E coverage for aggregate relationship ordering combined with cursor pagination.
+
+- `COUNT(*)` over a one-to-many relationship can be used as the primary ordering term.
+- Cursor ordering automatically retains the root primary key as a deterministic tie-breaker.
+- Aggregate cursor values are materialized as hidden SQL selections and encoded into the page cursor.
+- The cursor seek predicate preserves mixed directions (`COUNT DESC`, root primary key `ASC`).
+- Authorization remains parameterized and is applied before the aggregate ordering result is paged.
+- A zero-count relationship remains a valid cursor value because PostgreSQL `COUNT(*)` is non-null.
+
+This closes the next concrete PostgreSQL read-path gap after nested relationship projection, relationship quantifiers, and aggregate filtering.
+
+
+### Pass 23 — PostgreSQL high-assurance mutation security contract parity
+
+- Added the Java `PostgresMutationSecurityConformance` contract for the high-assurance TransferFunds fixture.
+- Mirrored the C# fail-closed contract: transaction atomicity, deterministic row locking, execution-time authorization, idempotency serialization/persistence, replay protection, audit persistence, execution receipt, ownership, daily limit, and tenant isolation.
+- Added `PostgresMutationSecurityConformanceParityTest` covering the complete required invariant set and removal of each obligation.
+- Expanded the shipped `postgres-transfer-funds` security profile with row-locking, ownership, daily-limit and read-committed transaction invariants.
+- This pass deliberately does not claim that a security profile grants runtime authority; the concrete PostgreSQL executor must still prove the guarantees through its execution path and E2E tests.
+
+## Pass 24 — PostgreSQL high-assurance physical TransferFunds executor
+
+- Ported the actual PostgreSQL `TransferFunds` execution adapter into the Java benchmark fixture instead of stopping at a security-profile declaration.
+- Added JDBC `READ COMMITTED` transaction ownership, PostgreSQL advisory transaction locks for idempotency keys, deterministic `FOR UPDATE` account locking, replay binding, tenant/ownership/frozen/daily-limit/available-funds validation, authorization-context locking, authorization evidence binding, commit-gate revalidation, atomic debit/credit/idempotency/audit CTE mutation, rollback-on-fault behavior, and execution receipts.
+- Added opt-in real PostgreSQL E2E coverage for successful transfer, idempotent replay, injected post-mutation rollback, and authorization revocation at the commit gate.
+- Kept the physical adapter below the application-facing service boundary; semantic authorization remains execution-time evidence rather than plan authority.
+- Full Maven/live PostgreSQL execution remains environment-dependent on `FOUNDGINE_POSTGRES_CONNECTION_STRING` and Maven/dependency availability.
+
+## Pass 26 — PostgreSQL batch mutation conformance hardening
+
+- Extended the Java `PostgresBatchedMutationCompilerParityTest` with the remaining C# batch-safety guards: mixed insert/update mutation shapes for one entity must fall back to sequential execution; a DELETE operation cannot act as a generated-identity dependency source; and an empty mutation batch is rejected rather than silently producing a physical statement.
+- This keeps the Java `tryCompile` contract fail-closed: the PostgreSQL one-statement optimization is used only when the compiler can preserve dependency/correlation semantics safely.
+
+## Pass 27 — authorization authority / execution-binding parity
+
+Mirrored the next high-assurance authority boundary from C#:
+
+- Added `AuthorizationExecutionBinding` to the Java HighAssurance PostgreSQL execution fixture.
+- Binding now covers actor, tenant, operation, source/destination resources, amount, idempotency key, authorization version and authorization fingerprint.
+- Denied or fingerprint-less authorization evidence cannot be bound.
+- Execution-time validation recomputes the binding and fails closed on request/evidence drift.
+- `PostgresTransferFundsExecutor` now uses the typed binding rather than a private ad-hoc fingerprint helper.
+- Added eight execution-binding parity tests covering exact binding, amount/key/resource/actor/tenant drift, authorization version/fingerprint drift, and denied evidence.
+- Added ten runtime authorization-integrity lifecycle parity tests covering rotation, verification-only state, retirement, persisted-evidence protection, monotonic/replay-safe rotation, retired-key reactivation, operator authorization, concurrent rotation, atomic snapshots and invalid provenance.
+
+This closes an important gap identified by the C# `Foundgine.Security.Authority.Tests` surface: authorization evidence is now explicitly bound to the exact physical mutation request instead of being represented only by a free-form fingerprint at the executor boundary.
+
+## Pass 28 — Extensions boundary and Java CI parity
+
+- Added `foundgine-extensions` as the Java counterpart to `Foundgine.Extensions`.
+- Kept the boundary optional: Core and Runtime remain transport/framework independent.
+- Added deterministic `FoundgineExtensionRegistry` and `TransportExtension` SPI.
+- Added duplicate-id and fail-closed lookup tests.
+- Added `.github/workflows/java-build.yml` for Java 21 Maven verification on `main`/`java`, with an explicit opt-in PostgreSQL E2E workflow dispatch flag.
+- This pass deliberately does not pull GraphQL framework dependencies into Core/Runtime; concrete transport adapters remain optional extensions.
+
+## Pass 30 — MCP agent-client parity
+
+Ported the missing provider-neutral MCP agent-client workflow from C#:
+capability discovery, dynamic intent construction, canonical `tools/call` JSON-RPC,
+SSE payload extraction, MCP error/result handling, and transport-only security
+boundary. The Java client deliberately removes the `security` member from the
+serialized `ReadIntent` so host authorization context cannot be manufactured by
+the agent client. Added three parity tests covering discovery/execution, SSE
+unwrapping, and JSON-RPC errors.

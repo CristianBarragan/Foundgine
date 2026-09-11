@@ -39,10 +39,14 @@ public final class FoundgineProviderSecurityProfiles {
                 SecurityInvariantIds.PARAMETERIZED_VALUES,
                 SecurityInvariantIds.PLAN_CACHE_CONTEXT_ISOLATION,
                 SecurityInvariantIds.ATOMIC_MUTATION,
+                SecurityInvariantIds.MUTATION_ROW_LOCKING,
+                SecurityInvariantIds.AUTHORIZATION_OWNERSHIP,
+                SecurityInvariantIds.MUTATION_DAILY_LIMIT,
                 SecurityInvariantIds.IDEMPOTENCY,
                 SecurityInvariantIds.REPLAY_PROTECTION,
                 SecurityInvariantIds.AUDIT_REQUIRED,
-                SecurityInvariantIds.EXECUTION_EVIDENCE_REQUIRED),
+                SecurityInvariantIds.EXECUTION_EVIDENCE_REQUIRED,
+                SecurityInvariantIds.TRANSACTION_READ_COMMITTED_ISOLATION),
                 List.of("High-assurance TransferFunds provider; transaction and concurrency guarantees are backed by PostgreSQL integration tests."));
     }
 }

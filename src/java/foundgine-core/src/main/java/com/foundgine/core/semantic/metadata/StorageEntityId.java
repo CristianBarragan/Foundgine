@@ -38,7 +38,7 @@ public record StorageEntityId(long value) {
             UnsignedLongJson.writeFieldName(g, id.value());
         }
     }
-    public static final class KeyDeserializer extends KeyDeserializer {
+    public static final class KeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
         @Override public StorageEntityId deserializeKey(String key, DeserializationContext c) {
             return new StorageEntityId(UnsignedLongJson.parseUnsigned(key));
         }

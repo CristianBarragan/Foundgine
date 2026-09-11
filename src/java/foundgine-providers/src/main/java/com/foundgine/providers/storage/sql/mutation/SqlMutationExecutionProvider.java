@@ -99,7 +99,11 @@ public class SqlMutationExecutionProvider implements IMutationExecutionProvider 
         token.throwIfCancellationRequested();
         try (PreparedStatement statement = connection.prepareStatement(toJdbcSql(plan.commandText()))) {
             bind(statement, plan.parameters());
-            boolean hasResultSet = statement.execute();
+            AutoCloseable registration = token.register(() -> {
+                try { statement.cancel(); } catch (SQLException ignored) { }
+            });
+            try {
+                boolean hasResultSet = statement.execute();
             int affected = statement.getUpdateCount();
             if (affected < 0) affected = 0;
 
@@ -122,7 +126,11 @@ public class SqlMutationExecutionProvider implements IMutationExecutionProvider 
                     }
                 }
             }
-            return new MutationResult(affected, values.isEmpty() ? null : values);
+                token.throwIfCancellationRequested();
+                return new MutationResult(affected, values.isEmpty() ? null : values);
+            } finally {
+                try { registration.close(); } catch (Exception ignored) { }
+            }
         } catch (SQLException e) {
             throw new IllegalStateException("SQL mutation execution failed", e);
         }
@@ -135,22 +143,7 @@ public class SqlMutationExecutionProvider implements IMutationExecutionProvider 
      * to '?'. The parameter list is already emitted in the same ordinal order.
      */
     static String toJdbcSql(String sql) {
-        if (sql == null || sql.isEmpty()) return sql;
-        StringBuilder result = new StringBuilder(sql.length());
-        for (int i = 0; i < sql.length(); i++) {
-            char c = sql.charAt(i);
-            if (c == '@' && i + 2 < sql.length() && sql.charAt(i + 1) == 'p') {
-                int j = i + 2;
-                if (Character.isDigit(sql.charAt(j))) {
-                    while (j < sql.length() && Character.isDigit(sql.charAt(j))) j++;
-                    result.append('?');
-                    i = j - 1;
-                    continue;
-                }
-            }
-            result.append(c);
-        }
-        return result.toString();
+        return com.foundgine.providers.storage.sql.JdbcSqlPlaceholderRewriter.rewrite(sql);
     }
 
     private static void bind(PreparedStatement statement,

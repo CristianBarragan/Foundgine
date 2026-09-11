@@ -45,3 +45,32 @@ Mirrored aggregate cardinality, aggregate relationship-filter pushdown, rewrite-
 - Added semantic contract planning tests for unknown entities, fields, and relationship targets.
 - Added mutation planning boundary tests for narrow schemas, unfiltered updates, and invalid return fields.
 - Added proof-carrying rewrite-rule contract tests, including unknown security obligations failing closed.
+
+\n## PostgreSQL vector provider parity — latest
+The Java pgvector provider now mirrors the C# retrieval/indexing contract more closely. `PgVectorOptions` supports the documented defaults and safe qualified identifiers; `PgVectorSemanticLexicalCandidateSource` now maps all distance modes, converts distance into provider relevance, applies candidate-kind/context retrieval hints, and uses schema-qualified vector SQL. `PgVectorSemanticLexiconIndexClient` now creates the vector table and indexes, preserves aliases, validates embedding cardinality, rolls back failed contract reindexing, and supports single-entry indexing. `PgVectorParityTest` mirrors the provider-neutral unit contracts without requiring a live database.
+
+
+### Pass 25 — PostgreSQL High-Assurance concurrency and visibility parity
+
+Added opt-in Java PostgreSQL parity tests mirroring the C# HighAssurance concurrency/visibility suite:
+
+- eight concurrent requests sharing one idempotency key serialize through `pg_advisory_xact_lock` and commit exactly once;
+- opposing transfers acquire account locks in deterministic UUID order and complete without deadlock;
+- a failed same-key transaction releases its advisory lock so a waiting request can execute the transfer exactly once;
+- a failed opposing transfer releases row locks and rolls back completely so the waiting transfer can commit;
+- ownership changes queued before transfer lock acquisition are visible to post-lock authorization;
+- frozen-state changes committed before lock acquisition are observed by the transfer;
+- tenant reassignment and account deletion races fail closed after authoritative row locking;
+- authorization revocation while the transfer waits is observed by the execution-time authorization decision.
+
+The tests remain opt-in via `FOUNDGINE_POSTGRES_CONNECTION_STRING` and are designed to exercise the same PostgreSQL `READ COMMITTED` lock/visibility model as the C# tests.
+
+## Pass 29 — security parity audit: authority partitions and resource gates
+
+- Audited the C# `Foundgine.Security.Tests` / `Foundgine.Security.Authority.Tests` surface against Java after the PostgreSQL work.
+- Added `SecurityAuthorityPartitionRailsParityTest` covering subject, audience, tenant, resource scope, warrant digest, null-vs-explicit values, delimiter collision resistance, and deterministic reuse of the same authority context.
+- Added `SecurityResourceLimitParityTest` covering non-JSON selection-depth limits, page-size limits, relationship order-path limits, filter-node limits, and cursor-length limits.
+- Added `MutationSecurityResourceLimitParityTest` covering mutation count, fields per operation, return fields, and dependency-count limits.
+- Added `MutationExecutionSecurityGateParityTest` covering exact IR/provider binding, provider-owned invariant evaluator requirements, and composition of upstream authorization evidence with provider conformance.
+- Existing Java implementations already had the corresponding production rails; this pass closes the test-parity gap rather than introducing parallel security mechanisms.
+- The remaining C#-only security fixtures should be treated as the next audit targets: transport/adversarial end-to-end composition and PostgreSQL authority lifecycle/recovery coverage where Java does not yet have a one-to-one named parity fixture.
