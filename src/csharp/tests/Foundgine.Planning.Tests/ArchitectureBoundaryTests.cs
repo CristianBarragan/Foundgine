@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using Xunit;
 
@@ -31,10 +32,15 @@ public sealed class ArchitectureBoundaryTests
     {
         var root = FindRepositoryRoot();
         var source = Path.Combine(root, "src");
+        var selfPath = Path.GetFullPath(GetThisFilePath());
 
         var offenders = Directory.EnumerateFiles(source, "*.*", SearchOption.AllDirectories)
             .Where(path => path.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)
                            || path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+            // This test file itself necessarily contains the literal string "Graphgine" (it's the
+            // term being searched for, in the search call, the assertion message, and this comment),
+            // so it must be excluded from the scan to avoid perpetually flagging itself.
+            .Where(path => !string.Equals(Path.GetFullPath(path), selfPath, StringComparison.OrdinalIgnoreCase))
             .Where(path => File.ReadAllText(path).Contains("Graphgine", StringComparison.OrdinalIgnoreCase))
             .Select(path => Path.GetRelativePath(root, path))
             .ToArray();
@@ -43,6 +49,8 @@ public sealed class ArchitectureBoundaryTests
             "Active src/ must not depend on historical Graphgine material. Offenders: " +
             string.Join(", ", offenders));
     }
+
+    private static string GetThisFilePath([CallerFilePath] string path = "") => path;
 
     private static void AssertProjectReferencesDoNotContain(string root, string relativeProject,
         params string[] forbidden)
