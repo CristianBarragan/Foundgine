@@ -2,6 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent><groupId>com.foundgine</groupId><artifactId>foundgine-parent</artifactId><version>${revision}</version></parent>
   <artifactId>foundgine-runtime</artifactId>
+  <name>Foundgine Runtime</name>
   <dependencies>
   <dependency>
     <groupId>org.junit.jupiter</groupId>
