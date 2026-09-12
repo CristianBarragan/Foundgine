@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Mirrors Foundgine.Semantics.Tests/AliasWeightEvidenceGateTests.cs. */
 class AliasWeightEvidenceGateParityTest {
     private static SemanticModel model(java.util.function.Consumer<com.foundgine.core.semantic.SemanticEntityBuilder> c) {
-        return new SemanticModelBuilder().entity(EntityId.create("Supplier"), "Supplier", e -> {
+        return new SemanticModelBuilder().entity(new EntityId(1), "Supplier", e -> {
             e.identity(FieldId.create("Supplier", "Id"), "Id");
             e.field(FieldId.create("Supplier", "State"), "State", String.class);
             c.accept(e);

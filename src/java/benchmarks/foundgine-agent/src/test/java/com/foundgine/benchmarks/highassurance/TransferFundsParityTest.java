@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TransferFundsParityTest {
     private static final UUID ACTOR = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     private static final int TENANT = 42;
-    private static UUID id(int n) { return UUID.fromString("00000000-0000-0000-0000-0000000000" + String.format("%012d", n)); }
+    private static UUID id(int n) { return UUID.fromString("00000000-0000-0000-0000-" + String.format("%012d", n)); }
     private static TransferFunds.BankAccount account(int n, String balance, String daily, boolean frozen) {
         return new TransferFunds.BankAccount(id(n), TENANT, ACTOR, new BigDecimal(balance), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new BigDecimal(daily), frozen);
     }

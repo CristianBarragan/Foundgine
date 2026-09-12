@@ -20,12 +20,13 @@ class SecurityExecutionContextTest {
 
     @Test
     void authorityCachePartitionEscapesDelimiters() {
-        var context = new SecurityExecutionContext(warrant(), "agent|a", "aud\\x", "tenant", "scope|x");
+        var w = warrant();
+        var context = new SecurityExecutionContext(w, "agent|a", "aud\\x", "tenant", "scope|x");
         String partition = context.authorityCachePartition();
         assertTrue(partition.contains("agent\\|a"));
         assertTrue(partition.contains("aud\\\\x"));
         assertTrue(partition.contains("scope\\|x"));
-        assertTrue(partition.endsWith(warrant().digest()));
+        assertTrue(partition.endsWith(w.digest()));
     }
 
     @Test

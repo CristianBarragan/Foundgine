@@ -7,6 +7,7 @@ import com.foundgine.core.execution.mutation.*;
 import com.foundgine.core.semantic.SemanticModel;
 import com.foundgine.core.semantic.SemanticEntity;
 import com.foundgine.core.semantic.mutation.*;
+import com.foundgine.core.semantic.security.SecurityInvariantIds;
 import com.foundgine.runtime.*;
 import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import com.foundgine.samples.supplychain.advanced.authorization.SupplyChainAuthorization;
@@ -92,9 +93,22 @@ public final class AdvancedMutationPipeline {
         };
     }
 
-    private static final class DomainMutationProvider implements IMutationBatchExecutionProvider {
+    private static final class DomainMutationProvider implements IMutationBatchExecutionProvider, IMutationSecurityConformanceEvaluator {
         private final SupplyChainData data; private final Authorization.Context auth;
         DomainMutationProvider(SupplyChainData data, Authorization.Context auth) { this.data = data; this.auth = auth; }
+
+
+        @Override public MutationSecurityConformanceResult evaluate(ExecutionMutationIR ir) {
+            // This provider passes already-typed values directly into the domain
+            // mutation services; it never interpolates or reparses executable text.
+            // Therefore parameterized-values is a concrete property of this exact
+            // execution path. Atomicity/idempotency remain domain-service concerns
+            // and are not claimed unless required by this IR.
+            return new MutationSecurityConformanceResult(
+                    getClass().getName(),
+                    List.of(SecurityInvariantIds.PARAMETERIZED_VALUES),
+                    List.of());
+        }
 
         @Override public MutationBatchResult executeBatch(ExecutionMutationIR ir, ExecutionContext context) {
             var results = new ArrayList<MutationResult>();

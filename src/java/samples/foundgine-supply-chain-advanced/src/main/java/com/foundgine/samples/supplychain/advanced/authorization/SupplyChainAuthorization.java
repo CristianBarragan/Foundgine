@@ -13,7 +13,7 @@ public final class SupplyChainAuthorization {
         var context = new SemanticAuthorizationContext(tenantId, role.name(), claims);
         var config = new SemanticAuthorizationConfiguration()
                 .addEntityRule((ctx, id, op) -> op == AuthorizationOperation.READ
-                        ? canReadEntity(id, role) : canWriteEntity(role, ctx.safeClaims()))
+                        ? canReadEntity(id, role) : canWriteEntity(id, role, ctx.safeClaims()))
                 .addFieldRule((ctx, entity, field, op) -> op == AuthorizationOperation.READ
                         ? canReadField(entity, field, role) : canWriteField(entity, field, role, ctx.safeClaims()))
                 .addRelationshipRule((ctx, entity, relationship, op) -> op == AuthorizationOperation.READ
@@ -54,11 +54,21 @@ public final class SupplyChainAuthorization {
         return true;
     }
 
-    private static boolean canWriteEntity(Role role, Map<String,String> claims) {
-        return !readOnly(claims) && (role == Role.WAREHOUSE_OPERATOR || role == Role.SUPPLY_CHAIN_MANAGER);
+    private static boolean canWriteEntity(EntityId entity, Role role, Map<String,String> claims) {
+        if (readOnly(claims)) return false;
+        // Command entities are semantic capabilities backed by domain services.
+        // The domain service remains the final enforcement point for actor/tenant
+        // ownership; the semantic boundary must therefore allow the command itself.
+        if (entity.equals(EntityId.create("PlaceOrderCommand"))
+                || entity.equals(EntityId.create("CancelOrderCommand")))
+            return true;
+        return role == Role.WAREHOUSE_OPERATOR || role == Role.SUPPLY_CHAIN_MANAGER;
     }
     private static boolean canWriteField(EntityId entity, FieldId field, Role role, Map<String,String> claims) {
         if (readOnly(claims)) return false;
+        if (entity.equals(EntityId.create("PlaceOrderCommand"))
+                || entity.equals(EntityId.create("CancelOrderCommand")))
+            return true;
         if (entity.equals(SupplyChainSemanticModel.INVENTORY_LOT))
             return field.equals(field("InventoryLot", "OnHand")) || field.equals(field("InventoryLot", "Reserved"));
         return role == Role.SUPPLY_CHAIN_MANAGER;
@@ -66,7 +76,9 @@ public final class SupplyChainAuthorization {
 
     private static AuthorizationPredicate predicate(SemanticAuthorizationContext context, EntityId entity, AuthorizationOperation op) {
         AuthorizationPredicate result = null;
-        if (op == AuthorizationOperation.READ && (entity.equals(SupplyChainSemanticModel.SUPPLIER) || entity.equals(SupplyChainSemanticModel.WAREHOUSE)))
+        if (op == AuthorizationOperation.READ && (entity.equals(SupplyChainSemanticModel.SUPPLIER)
+                || entity.equals(SupplyChainSemanticModel.WAREHOUSE)
+                || entity.equals(SupplyChainSemanticModel.INVENTORY_LOT)))
             result = tenantPredicate("TenantId");
         String warehouse = context.safeClaims().get("warehouse");
         if (op == AuthorizationOperation.READ && warehouse != null) {

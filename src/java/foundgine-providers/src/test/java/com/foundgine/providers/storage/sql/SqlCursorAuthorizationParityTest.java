@@ -61,7 +61,7 @@ class SqlCursorAuthorizationParityTest {
 
         assertTrue(plan.commandText().contains("\"t1\".\"Name\" < @"), plan.commandText());
         assertTrue(plan.commandText().contains("\"t1\".\"Name\" = @"), plan.commandText());
-        assertTrue(plan.commandText().contains("\"t1\".\"Id\" < @"), plan.commandText());
+        assertTrue(plan.commandText().contains("\"t1\".\"Id\" > @"), plan.commandText());
         assertTrue(plan.commandText().contains("ORDER BY \"t1\".\"Name\" DESC, \"t1\".\"Id\" ASC"), plan.commandText());
     }
 

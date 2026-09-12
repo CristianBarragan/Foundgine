@@ -93,8 +93,10 @@ class PlanApprovalParityE2ETest {
         final AtomicInteger count = new AtomicInteger();
         @Override public java.util.concurrent.CompletionStage<ExecutionResult> executeAsync(ProviderPlan plan, ExecutionContext context, CancellationToken cancellationToken) {
             count.incrementAndGet();
+            var evidence = com.foundgine.core.execution.ExecutionEvidenceFactory.create(
+                    "test", "placeholder", List.of(1), 1, 0, null);
             return java.util.concurrent.CompletableFuture.completedFuture(new ExecutionResult(List.of(
-                    new ExecutionRow(java.util.Map.of("Id", 1)))));
+                    new ExecutionRow(java.util.Map.of("Id", 1))), null, evidence, null));
         }
     }
 }
