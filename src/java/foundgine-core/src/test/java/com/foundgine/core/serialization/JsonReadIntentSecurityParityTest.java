@@ -55,10 +55,12 @@ class JsonReadIntentSecurityParityTest {
                       {"kind":"or","expressions":[
                         {"kind":"or","expressions":[
                           {"kind":"or","expressions":[
-                            	{"kind":"field","field":"Id","operator":"EQ","value":1}
-                          	]}
-                    	]}]]}
-                	}
+                            {"kind":"field","field":"Id","operator":"EQ","value":1}
+                          ]}
+                        ]}
+                      ]}
+                    ]
+                  }
                 }
                 """;
 

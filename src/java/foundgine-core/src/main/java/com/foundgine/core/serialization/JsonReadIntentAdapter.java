@@ -106,7 +106,7 @@ public final class JsonReadIntentAdapter {
         Integer limit = intOrNull(dto, "limit");
         Integer offset = intOrNull(dto, "offset");
         if ((limit != null && limit < 0) || (offset != null && offset < 0))
-            throw invalid("'limit' and 'offset' cannot be negative.");
+            throw invalidArgument("'limit' and 'offset' cannot be negative.");
 
         String after = text(dto, "after");
 
@@ -123,7 +123,7 @@ public final class JsonReadIntentAdapter {
         boolean hasField = field != null && !field.isBlank();
         boolean hasRelationship = relationship != null && !relationship.isBlank();
         if (hasField == hasRelationship)
-            throw invalid("Each selection must specify exactly one of 'field' or 'relationship'.");
+            throw invalidArgument("Each selection must specify exactly one of 'field' or 'relationship'.");
 
         List<ReadSelection> children = List.of();
         JsonNode childrenNode = dto.get("children");
@@ -171,14 +171,14 @@ public final class JsonReadIntentAdapter {
 
             case "or" -> new ReadOrFilter(requireExpressions(dto, depth, nodes, "OR"));
 
-            default -> throw invalid("Unsupported filter kind '" + kind + "'.");
+            default -> throw invalidArgument("Unsupported filter kind '" + kind + "'.");
         };
     }
 
     private List<ReadFilter> requireExpressions(ObjectNode dto, int depth, int[] nodes, String kindLabel) {
         JsonNode expressionsNode = dto.get("expressions");
         if (expressionsNode == null || !expressionsNode.isArray() || expressionsNode.isEmpty())
-            throw invalid(kindLabel + " filters require at least one expression.");
+            throw invalidArgument(kindLabel + " filters require at least one expression.");
 
         List<ReadFilter> result = new ArrayList<>();
         for (JsonNode expression : expressionsNode)
@@ -192,7 +192,7 @@ public final class JsonReadIntentAdapter {
 
     private Object normalize(JsonNode value, int depth) {
         if (depth > limits.maxJsonValueDepth())
-            throw invalid("JSON value depth exceeds the configured maximum of " + limits.maxJsonValueDepth() + ".");
+            throw invalidArgument("JSON value depth exceeds the configured maximum of " + limits.maxJsonValueDepth() + ".");
 
         switch (value.getNodeType()) {
             case NULL:
@@ -314,12 +314,29 @@ public final class JsonReadIntentAdapter {
         try {
             return Enum.valueOf(type, value.trim().toUpperCase(java.util.Locale.ROOT));
         } catch (IllegalArgumentException e) {
-            throw invalid("Unsupported value '" + value + "' for " + type.getSimpleName() + ".");
+            throw invalidArgument("Unsupported value '" + value + "' for " + type.getSimpleName() + ".");
         }
     }
 
     private static IllegalStateException invalid(String message) {
         return new IllegalStateException(message);
+    }
+
+    /**
+     * Thrown for malformed-shape violations of the read intent itself (the
+     * caller's JSON does not describe a structurally valid intent) — mirrors
+     * this port's convention of using {@link IllegalArgumentException} for
+     * argument-shape validation, matching the exception domain records such
+     * as {@link com.foundgine.core.semantic.intent.ReadSelection} already
+     * throw for the same class of violation. This is distinct from
+     * {@link #invalid(String)}, which is reserved for untrusted-transport
+     * security-boundary rejections (e.g. unrecognized/security-authority
+     * properties) and resource-limit enforcement, both ported from this
+     * codebase's {@code InvalidOperationException} → {@code IllegalStateException}
+     * mapping.
+     */
+    private static IllegalArgumentException invalidArgument(String message) {
+        return new IllegalArgumentException(message);
     }
 
     private static IllegalStateException invalid(String message, Throwable inner) {

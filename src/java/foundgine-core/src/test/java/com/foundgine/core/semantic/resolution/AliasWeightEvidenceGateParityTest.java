@@ -21,7 +21,7 @@ class AliasWeightEvidenceGateParityTest {
             e.identity(FieldId.create("Supplier", "Id"), "Id");
             e.field(FieldId.create("Supplier", "State"), "State", String.class);
             c.accept(e);
-        }).build();
+        }).build().freeze();
     }
     private static SemanticLexicalResolution entityResolution(String token, EntityId id, double score) {
         return new SemanticLexicalResolution(SemanticLexicalResolutionOutcome.RESOLVED,
@@ -63,7 +63,7 @@ class AliasWeightEvidenceGateParityTest {
     @Test void relationshipWeightIsScopedToRelationship() {
         var rid = new RelationshipId(12); var m = new SemanticModelBuilder()
             .entity(EntityId.create("Supplier"), "Supplier", e -> { e.identity(FieldId.create("Supplier","Id"),"Id"); e.relationship(rid,"Orders",new EntityId(2),RelationshipCardinality.MANY); e.relationshipAlias(rid,"orders",60); })
-            .entity(new EntityId(2), "Order", e -> e.identity(FieldId.create("Order","Id"),"Id")).build();
+            .entity(new EntityId(2), "Order", e -> e.identity(FieldId.create("Order","Id"),"Id")).build().freeze();
         var c = new SemanticLexicalCandidate("orders", SemanticLexicalCandidateKind.RELATIONSHIP, "Orders", .9, null, rid, null, new EntityId(1), new EntityId(2), null, List.of());
         var rsl = new SemanticLexicalResolution(SemanticLexicalResolutionOutcome.RESOLVED,List.of(new SemanticLexicalStep("orders",c,.9,List.of())),.9,new EntityId(1),null);
         var r = AliasWeightEvidenceGate.evaluate(m,80,rsl,false);

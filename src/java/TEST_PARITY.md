@@ -1,6 +1,6 @@
 # Java test parity tracker
 
-The Java port is being aligned to the C# test suite by behavior and boundary, not by mechanically translating syntax.
+The project is being aligned to the C# test suite by behavior and boundary, not by mechanically translating syntax.
 
 | C# test project | C# test files | Java status |
 |---|---:|---|

@@ -15,10 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SecurityCapabilityCompositionParityTest {
     private static SemanticCapability capability(String id, String operation) {
+        boolean hasSideEffects = operation.equals("write");
+        List<String> invariants = hasSideEffects
+                ? List.of(SecurityInvariantIds.RUNTIME_AUTHORIZATION, SecurityInvariantIds.AUTHORIZATION_REQUIRED)
+                : List.of(SecurityInvariantIds.AUTHORIZATION_REQUIRED);
         return new SemanticCapability(id, id, EntityId.create(id), AuthorizationDecision.ALLOWED,
                 List.of(), List.of(), List.of(), List.of(), List.of(), operation,
-                operation.equals("write"), operation.equals("write"), 1,
-                List.of(SecurityInvariantIds.AUTHORIZATION_REQUIRED));
+                hasSideEffects, hasSideEffects, 1,
+                invariants);
     }
 
     private static SecurityWarrant warrant() {

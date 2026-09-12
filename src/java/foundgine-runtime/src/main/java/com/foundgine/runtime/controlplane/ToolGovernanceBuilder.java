@@ -25,7 +25,7 @@ import java.util.Objects;
  * <p><b>Porting decision:</b> the C# source wires the governance pipeline
  * through {@code Microsoft.Extensions.DependencyInjection}'s
  * {@code IServiceCollection} (singleton registrations, with the last
- * registration winning so a host can override any default). This Java port
+ * registration winning so a host can override any default). This
  * has no DI container dependency, so the same fluent shape is preserved but
  * retargeted at a plain builder that assembles the object graph directly:
  * {@link #addRiskRule}, {@link #addPolicyRule}, {@link #addRoutingRule}, and

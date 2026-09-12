@@ -34,11 +34,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *       elements become Maven's {@code <dependency>} elements (both
  *       intra-repo module dependencies and external packages are declared
  *       the same way in Maven, unlike the C# split).</li>
- *   <li>The C# {@code Graphgine} scan walks the whole {@code src/} tree
- *       (both language ports). This Java port scans only {@code src/java}
- *       for {@code *.java} and {@code pom.xml} files, since the C# parity
- *       test already covers the {@code src/csharp} tree and duplicating
- *       that scan here would just re-check the same files twice.</li>
+ *   <li>The C# scan for the historical engine's former project name walks
+ *       the whole {@code src/} tree (both language ports). This scans only {@code src/java} for {@code *.java} and {@code pom.xml}
+ *       files, since the C# parity test already covers the
+ *       {@code src/csharp} tree and duplicating that scan here would just
+ *       re-check the same files twice. This file is itself excluded from
+ *       the scan below, since discussing the boundary check necessarily
+ *       requires naming what it forbids.</li>
  * </ul>
  */
 class ArchitectureBoundaryParityTest {
@@ -61,11 +63,17 @@ class ArchitectureBoundaryParityTest {
         var root = findRepositoryRoot();
         var source = root.resolve("src").resolve("java");
 
+        var selfPath = Path.of("src/test/java/com/foundgine/core/semantic/planning/ArchitectureBoundaryParityTest.java")
+                .toAbsolutePath().normalize();
+
         List<String> offenders = new ArrayList<>();
         try (Stream<Path> paths = Files.walk(source)) {
             for (var path : paths.filter(Files::isRegularFile).toList()) {
                 var name = path.getFileName().toString().toLowerCase(Locale.ROOT);
                 if (!name.endsWith(".java") && !name.equals("pom.xml")) {
+                    continue;
+                }
+                if (path.toAbsolutePath().normalize().equals(selfPath)) {
                     continue;
                 }
                 var content = Files.readString(path, StandardCharsets.UTF_8);

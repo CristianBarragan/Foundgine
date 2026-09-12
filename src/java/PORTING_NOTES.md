@@ -1,4 +1,4 @@
-# Foundgine — Java port: notes & progress
+# Foundgine — Java: notes & progress
 
 ## Build tool: Maven
 
@@ -536,7 +536,7 @@ selector:
 For normal tag releases, the persistent repository variable
 `FOUNDGINE_DEPLOY_TARGET` controls the same switch (`dotnet`, `java`, `both`, or
 anything else for no deployment). Java CI remains opt-in through
-`FOUNDGINE_JAVA_PIPELINE=true` so an incomplete Java port cannot accidentally
+`FOUNDGINE_JAVA_PIPELINE=true` so an incomplete Java cannot accidentally
 block or replace the production .NET release.
 
 Java Maven POMs now use the Maven CI-friendly `${revision}` property, allowing a
@@ -603,7 +603,7 @@ Closed a concrete provider parity gap in the Java SQL mutation path.
   that ordinary `@` characters are not rewritten.
 
 The PostgreSQL multi-operation CTE/unnest optimizer remains intentionally
-conservative. It must not be treated as complete until the Java port preserves
+conservative. It must not be treated as complete until the Java preserves
 operation correlation, generated-value propagation, conflict-collapse detection,
 and dependency-level ordering from the C# implementation. The executable Java
 path therefore uses the sequential SQL compiler/batch provider until that
@@ -635,7 +635,7 @@ The Java Advanced sample now has a real JDBC/PostgreSQL high-assurance mutation 
 
 ## Test parity — semantic unit tests
 
-The Java port is now actively mirroring the C# semantic unit-test surface rather than only testing Java-specific implementations. Added parity coverage for entity/field/relationship aliases, protocol-neutral query and relationship filters, and semantic mutation intent dependencies/conflict/filter semantics. Continue porting tests by subsystem until the Java suite tracks the C# unit and integration suites.
+The Java is now actively mirroring the C# semantic unit-test surface rather than only testing Java-specific implementations. Added parity coverage for entity/field/relationship aliases, protocol-neutral query and relationship filters, and semantic mutation intent dependencies/conflict/filter semantics. Continue porting tests by subsystem until the Java suite tracks the C# unit and integration suites.
 
 ## Test parity — security authority and warrant boundaries
 
@@ -724,7 +724,7 @@ Verification in this sandbox:
 
 ## Continuation — 2026-09-12 (in-memory provider execution parity)
 
-Completed the first concrete provider-execution parity step for the Java port.
+Completed the first concrete provider-execution parity step for the Java.
 
 Ported the C# in-memory provider surface into Java:
 

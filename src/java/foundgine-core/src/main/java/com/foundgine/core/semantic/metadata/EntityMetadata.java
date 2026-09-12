@@ -11,4 +11,5 @@ public record EntityMetadata(EntityId entityId, String name, List<ColumnMetadata
     }
     public String effectiveStorageName() { return storageName != null ? storageName : name; }
     public List<FieldMetadata> effectiveFields() { return fields != null ? fields : List.of(); }
+    public List<AliasDeclaration> effectiveAliases() { return aliases == null ? List.of() : List.copyOf(aliases); }
 }

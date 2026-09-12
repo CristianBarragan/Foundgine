@@ -9,4 +9,9 @@ public record RelationshipMetadata(RelationshipId id, EntityId source, EntityId 
                                 ColumnReference sourceKey, ColumnReference targetKey) {
         this(id,source,target,name,sourceKey,targetKey,true,null);
     }
+
+    /** Returns declared aliases, matching the C# metadata's null-as-empty semantics. */
+    public List<AliasDeclaration> effectiveAliases() {
+        return aliases == null ? List.of() : List.copyOf(aliases);
+    }
 }
