@@ -1,4 +1,4 @@
-name: Java Port — Build & Test
+name: Java — Build & Test
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Build and test Java port
+      - name: Build and test Java
         working-directory: src/java
         run: mvn -B -ntp verify
 

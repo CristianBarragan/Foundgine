@@ -16,8 +16,7 @@ import java.util.Set;
 public final class MutationDependencyGraph {
 
     /**
-     * C# represents an edge as the value-tuple {@code (int SourceOperationIndex, int TargetOperationIndex)};
-     * Java has no built-in tuple type, so this is ported as a small nested record.
+     * A directed edge between two operation indexes in the mutation dependency graph.
      */
     public record Edge(int sourceOperationIndex, int targetOperationIndex) {
     }

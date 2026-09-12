@@ -2,6 +2,7 @@ package com.foundgine.runtime.api;
 import com.foundgine.core.execution.ExecutionResult;
 import com.foundgine.core.execution.ExecutionContext;
 import com.foundgine.core.semantic.*;
+import com.foundgine.core.semantic.authorization.SemanticAuthorizationCapabilities;
 import com.foundgine.core.semantic.capabilities.*;
 import com.foundgine.core.semantic.security.execution.SecurityExecutionContext;
 import java.util.concurrent.CompletableFuture;

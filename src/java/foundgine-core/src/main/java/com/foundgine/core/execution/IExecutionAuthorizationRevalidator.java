@@ -4,16 +4,14 @@ import com.foundgine.core.semantic.SemanticContractSnapshot;
 import com.foundgine.core.semantic.authorization.SemanticAuthorizationEvidence;
 
 /**
- * Port of {@code Foundgine.Core.Execution.IExecutionAuthorizationRevalidator}.
  *
  * <p>Revalidates authorization at the final execution boundary. Implementations
  * may consult a database, distributed authority, cache, or another trusted
  * control plane.
  *
- * <p>C#'s {@code CancellationToken cancellationToken = default} optional
- * parameter is ported as a two-overload pair: the full method plus a default
- * method that forwards {@link CancellationToken#NONE}, matching this port's
- * established convention for optional-parameter C# methods.
+ * <p>Provided as a two-overload pair: the full method plus a default
+ * method that forwards {@link CancellationToken#NONE}, for callers that
+ * don't need cancellation.
  */
 public interface IExecutionAuthorizationRevalidator {
     void validate(SemanticContractSnapshot contract, SemanticAuthorizationEvidence evidence,

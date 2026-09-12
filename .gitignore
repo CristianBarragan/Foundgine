@@ -1,3 +1,115 @@
+# =========================
+# Java / Maven
+# =========================
+
+# Maven build output
+target/
+*/target/
+**/target/
+
+# Compiled Java classes
+*.class
+
+# Maven generated files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# =========================
+# IDEs
+# =========================
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# VS Code
+.vscode/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# =========================
+# Java tooling
+# =========================
+
+# Gradle (if ever used)
+.gradle/
+build/
+
+# Java crash logs
+hs_err_pid*
+replay_pid*
+
+# =========================
+# OS
+# =========================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# =========================
+# Logs / temporary files
+# =========================
+
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# =========================
+# Environment / local config
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# Local Maven repository if accidentally created in repo
+.m2/
+
+# =========================
+# Foundgine generated output
+# =========================
+
+# Annotation-processor generated sources
+generated/
+generated-sources/
+
+# Java compiler generated output
+classes/
+
+# Test reports
+surefire-reports/
+failsafe-reports/
+
+# Coverage
+.jacoco/
+*.exec
+
 # =====================
 # .NET / Visual Studio build output
 # =====================

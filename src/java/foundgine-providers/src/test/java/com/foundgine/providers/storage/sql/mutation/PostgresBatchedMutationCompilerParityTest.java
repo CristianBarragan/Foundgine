@@ -3,6 +3,8 @@ package com.foundgine.providers.storage.sql.mutation;
 import com.foundgine.core.abstractions.*;
 import com.foundgine.core.semantic.metadata.*;
 import com.foundgine.core.semantic.planning.mutation.*;
+import com.foundgine.core.semantic.query.SemanticFieldFilter;
+import com.foundgine.core.semantic.query.SemanticFilterOperator;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -136,7 +138,7 @@ public class PostgresBatchedMutationCompilerParityTest {
                 null, null, List.of(idField, nameField));
         MutationOperation update = new MutationOperation(entity, MutationKind.UPDATE,
                 List.of(new MutationFieldValue(name, "updated")),
-                List.of(id), null, List.of(nameField));
+                new SemanticFieldFilter(idField, SemanticFilterOperator.EQ, 1L), null, List.of(nameField));
 
         assertNull(new PostgresBatchedMutationCompiler(metadata).tryCompile(
                 new MutationBatchPlan(List.of(create, update), List.of())));
@@ -165,7 +167,7 @@ public class PostgresBatchedMutationCompilerParityTest {
         MutationEntitySchema child = new MutationEntitySchema(childId, "Child",
                 Set.of(childPk, childParent), Map.of(childPkField, childPk, childParentField, childParent), childPk);
         MutationOperation delete = new MutationOperation(parent, MutationKind.DELETE,
-                List.of(), List.of(parentPk), null, List.of(parentPkField));
+                List.of(), new SemanticFieldFilter(parentPkField, SemanticFilterOperator.EQ, 1L), null, List.of(parentPkField));
         MutationOperation createChild = new MutationOperation(child, MutationKind.CREATE,
                 List.of(MutationFieldValue.fromPrevious(childParent, 0, parentPkField)), null, null, List.of(childPkField, childParentField));
         MutationDependency dependency = new MutationDependency(0, 1, parentPkField, childParent);

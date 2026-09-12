@@ -13,16 +13,27 @@ import java.util.stream.Collectors;
  */
 public final class EntityResolver {
     private final SemanticModel model;
-    private final ICandidateSource candidates;
+    private final Object candidates;
 
     public EntityResolver(SemanticModel model, ICandidateSource candidates) {
         this.model = Objects.requireNonNull(model);
         this.candidates = Objects.requireNonNull(candidates);
     }
 
+    public EntityResolver(SemanticModel model, IApproximateCandidateSource candidates) {
+        this.model = Objects.requireNonNull(model);
+        this.candidates = Objects.requireNonNull(candidates);
+    }
+
+    private ICandidateSource requireCandidateSource() {
+        if (!(candidates instanceof ICandidateSource source))
+            throw new UnsupportedOperationException("The configured candidate source does not support identity resolution.");
+        return source;
+    }
+
     public ResolutionResult resolveByIdentity(EntityId entityType, String identityLiteral) {
         var entity = model.get(entityType);
-        var matches = candidates.findByIdentity(entityType, identityLiteral);
+        var matches = requireCandidateSource().findByIdentity(entityType, identityLiteral);
         var evidence = List.of(new ResolutionEvidence(
             "Looked up " + entity.name() + "." + entity.identity().name() + " = '" +
             identityLiteral + "': " + matches.size() + " match(es)."));
@@ -41,7 +52,7 @@ public final class EntityResolver {
         if (relationship == null) return ResolutionResult.notFound(
             sourceEntity.name() + " has no relationship named '" + relationshipName + "'.",
             List.of(new ResolutionEvidence("No relationship '" + relationshipName + "' declared on " + sourceEntity.name() + ".")));
-        var matches = candidates.findByRelationship(relationship.id(), source.identityValue());
+        var matches = requireCandidateSource().findByRelationship(relationship.id(), source.identityValue());
         var target = model.get(relationship.target());
         var evidence = List.of(new ResolutionEvidence(
             "Traversed " + sourceEntity.name() + "." + relationship.name() + ": " + matches.size() + " candidate(s)."));

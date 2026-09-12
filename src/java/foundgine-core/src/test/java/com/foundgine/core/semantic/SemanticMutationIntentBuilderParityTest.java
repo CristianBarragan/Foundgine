@@ -2,7 +2,6 @@ package com.foundgine.core.semantic;
 
 import com.foundgine.core.abstractions.*;
 import com.foundgine.core.semantic.mutation.*;
-import com.foundgine.core.semantic.planning.mutation.SemanticMutationPlanner;
 import com.foundgine.core.semantic.query.SemanticFilterOperator;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

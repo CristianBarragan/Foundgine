@@ -58,7 +58,7 @@ public final class SemanticQuerySqlWriter {
             }
             String name = "p" + counters[0]++;
             parameters.add(new SqlParameterBinding(name, field.value(), null, null, fm.clrType()));
-            return ref + (field.operator() == SemanticFilterOperator.NEQ ? " <> " : " = ") + "@" + name;
+            return ref + comparisonOperatorSql(field.operator()) + "@" + name;
         }
         if (expression instanceof SemanticRelationshipFilter rf)
             return writeRelationshipFilter(rf, entity, alias, parameters, metadata, aggregateStrategy, counters);
@@ -130,6 +130,17 @@ public final class SemanticQuerySqlWriter {
 
     private static String renderAggregateOperator(SemanticAggregateFilterOperator op) {
         return switch (op) { case EQ -> " = "; case NEQ -> " <> "; case GT -> " > "; case GTE -> " >= "; case LT -> " < "; case LTE -> " <= "; };
+    }
+
+    private static String comparisonOperatorSql(SemanticFilterOperator operator) {
+        return switch (operator) {
+            case NEQ -> " <> ";
+            case GT -> " > ";
+            case GTE -> " >= ";
+            case LT -> " < ";
+            case LTE -> " <= ";
+            default -> " = ";
+        };
     }
 
     private static String renderJoinCondition(ColumnReference sourceRef, ColumnReference targetRef, EntityMetadata source, String sourceAlias, EntityMetadata target, String targetAlias) {

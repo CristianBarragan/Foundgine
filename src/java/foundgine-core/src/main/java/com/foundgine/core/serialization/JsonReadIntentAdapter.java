@@ -30,15 +30,11 @@ import java.util.Set;
  * provider-neutral {@link ReadIntent}. It performs no semantic resolution,
  * authorization, planning, or provider work.
  *
- * <p>C# binds the untrusted JSON to private DTO classes via
- * {@code System.Text.Json} (with {@code UnmappedMemberHandling} controlling
- * whether unknown properties are rejected), then converts the DTOs into the
- * domain read-intent types. Java has no direct analogue of per-call
- * {@code UnmappedMemberHandling}, so this port walks the parsed Jackson
- * {@link JsonNode} tree directly — {@link #rejectUnknown} performs the same
- * unknown-property check the C# {@code UnmappedMemberHandling.Disallow}
- * option would have performed at bind time, applied per object node against
- * that node's known property names.
+ * <p>This walks the parsed Jackson {@link JsonNode} tree directly and
+ * converts it into the domain read-intent types — {@link #rejectUnknown}
+ * performs an unknown-property check applied per object node against
+ * that node's known property names, rejecting untrusted JSON that contains
+ * unexpected fields.
  */
 public final class JsonReadIntentAdapter {
 

@@ -120,7 +120,7 @@ class PostgresBatchedMutationExecutionPostgresE2ETest {
                 source.cancel();
                 assertThrows(java.util.concurrent.CancellationException.class, () ->
                         new PostgresBatchedMutationExecutionProvider(connection, metadata(), true)
-                                .executeBatch(dependencyBatch(), ExecutionContext.EMPTY, source.token()));
+                                .executeBatch(ExecutionMutationIR.from(dependencyBatch()), ExecutionContext.EMPTY, source.token()));
             }
             assertEquals(before, count(connection, "fg_correlation", "Customer"));
         }

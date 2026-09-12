@@ -148,7 +148,7 @@ public final class FoundgineEngine implements IFoundgine {
         this.compiler = Objects.requireNonNull(compiler, "compiler");
         this.provider = Objects.requireNonNull(provider, "provider");
         this.planCache = options.planCache() != null ? options.planCache() : new MemoryProviderPlanCache();
-        this.versions = SemanticVersionSet.of(this.model);
+        this.versions = SemanticVersionSet.forModel(this.model);
         this.securityContract = SemanticCapabilityContractDiscovery.describe(this.model, this.authorizationPolicy);
         SecurityInvariantContractValidator.ensureContractValid(this.securityContract);
         this.warrantKeyResolver = options.warrantKeyResolver();
@@ -201,7 +201,7 @@ public final class FoundgineEngine implements IFoundgine {
         this.compiler = Objects.requireNonNull(compiler, "compiler");
         this.provider = Objects.requireNonNull(provider, "provider");
         this.planCache = planCache != null ? planCache : new MemoryProviderPlanCache();
-        this.versions = SemanticVersionSet.of(this.model);
+        this.versions = SemanticVersionSet.forModel(this.model);
         this.securityContract = SemanticCapabilityContractDiscovery.describe(this.model, this.authorizationPolicy);
         SecurityInvariantContractValidator.ensureContractValid(this.securityContract);
         this.warrantKeyResolver = null;
