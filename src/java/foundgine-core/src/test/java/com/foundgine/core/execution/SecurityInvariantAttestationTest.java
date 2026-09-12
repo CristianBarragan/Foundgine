@@ -10,31 +10,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SecurityInvariantAttestationTest {
 
-    @Test
-    void satisfiedWhenNothingIsMissing() {
-        SecurityInvariantAttestation attestation = SecurityInvariantAttestation.create(
-                "postgres", List.of("a", "b"), List.of("b", "a"));
+	@Test
+	void satisfiedWhenNothingIsMissing() {
+		SecurityInvariantAttestation attestation = SecurityInvariantAttestation.create("postgres", List.of("a", "b"),
+				List.of("b", "a"));
 
-        assertTrue(attestation.isSatisfied());
-        attestation.ensureSatisfied(); // should not throw
-        assertEquals(List.of("a", "b"), attestation.required());
-    }
+		assertTrue(attestation.isSatisfied());
+		attestation.ensureSatisfied(); // should not throw
+		assertEquals(List.of("a", "b"), attestation.required());
+	}
 
-    @Test
-    void missingInvariantsAreReportedAndSortedOrdinal() {
-        SecurityInvariantAttestation attestation = SecurityInvariantAttestation.create(
-                "postgres", List.of("z", "a", "m"), List.of("a"));
+	@Test
+	void missingInvariantsAreReportedAndSortedOrdinal() {
+		SecurityInvariantAttestation attestation = SecurityInvariantAttestation.create("postgres",
+				List.of("z", "a", "m"), List.of("a"));
 
-        assertEquals(List.of("m", "z"), attestation.missing());
-        assertThrows(IllegalStateException.class, attestation::ensureSatisfied);
-    }
+		assertEquals(List.of("m", "z"), attestation.missing());
+		assertThrows(IllegalStateException.class, attestation::ensureSatisfied);
+	}
 
-    @Test
-    void hashIsDeterministicAndHex() {
-        String h1 = ExecutionEvidenceFactory.hash("select 1");
-        String h2 = ExecutionEvidenceFactory.hash("select 1");
+	@Test
+	void hashIsDeterministicAndHex() {
+		String h1 = ExecutionEvidenceFactory.hash("select 1");
+		String h2 = ExecutionEvidenceFactory.hash("select 1");
 
-        assertEquals(h1, h2);
-        assertEquals(64, h1.length()); // SHA-256 -> 32 bytes -> 64 hex chars
-    }
+		assertEquals(h1, h2);
+		assertEquals(64, h1.length()); // SHA-256 -> 32 bytes -> 64 hex chars
+	}
 }
