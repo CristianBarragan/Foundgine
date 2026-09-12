@@ -21,17 +21,17 @@ class AliasWeightEvidenceGateParityTest {
             e.identity(FieldId.create("Supplier", "Id"), "Id");
             e.field(FieldId.create("Supplier", "State"), "State", String.class);
             c.accept(e);
-        }).build();
+        }).build().freeze();
     }
     private static SemanticLexicalResolution entityResolution(String token, EntityId id, double score) {
         return new SemanticLexicalResolution(SemanticLexicalResolutionOutcome.RESOLVED,
             List.of(new SemanticLexicalStep(token, new SemanticLexicalCandidate(token, SemanticLexicalCandidateKind.ENTITY,
-                "Supplier", score, id, null, null, null, null, null, null, List.of()), score, List.of())), score, id, null);
+                "Supplier", score, id, null, null, null, null, null, List.of()), score, List.of())), score, id, null);
     }
     private static SemanticLexicalResolution fieldResolution(String token, EntityId entity, FieldId field, double score) {
         return new SemanticLexicalResolution(SemanticLexicalResolutionOutcome.RESOLVED,
             List.of(new SemanticLexicalStep(token, new SemanticLexicalCandidate(token, SemanticLexicalCandidateKind.FIELD,
-                "State", score, entity, null, field, null, null, null, null, List.of()), score, List.of())), score, entity, null);
+                "State", score, entity, null, field, null, null, null, List.of()), score, List.of())), score, entity, null);
     }
     @Test void weightIsInertWithoutLexicalGrounding() {
         var m = model(e -> e.alias("Vendor", 50));
@@ -63,7 +63,7 @@ class AliasWeightEvidenceGateParityTest {
     @Test void relationshipWeightIsScopedToRelationship() {
         var rid = new RelationshipId(12); var m = new SemanticModelBuilder()
             .entity(EntityId.create("Supplier"), "Supplier", e -> { e.identity(FieldId.create("Supplier","Id"),"Id"); e.relationship(rid,"Orders",new EntityId(2),RelationshipCardinality.MANY); e.relationshipAlias(rid,"orders",60); })
-            .entity(new EntityId(2), "Order", e -> e.identity(FieldId.create("Order","Id"),"Id")).build();
+            .entity(new EntityId(2), "Order", e -> e.identity(FieldId.create("Order","Id"),"Id")).build().freeze();
         var c = new SemanticLexicalCandidate("orders", SemanticLexicalCandidateKind.RELATIONSHIP, "Orders", .9, null, rid, null, new EntityId(1), new EntityId(2), null, List.of());
         var rsl = new SemanticLexicalResolution(SemanticLexicalResolutionOutcome.RESOLVED,List.of(new SemanticLexicalStep("orders",c,.9,List.of())),.9,new EntityId(1),null);
         var r = AliasWeightEvidenceGate.evaluate(m,80,rsl,false);
@@ -74,8 +74,8 @@ class AliasWeightEvidenceGateParityTest {
     @Test void strongestEvidenceWinsForSameIdentity() {
         var id=new EntityId(1); var m=model(e->e.alias("Vendor",95).alias("Seller",40));
         var steps=List.of(
-            new SemanticLexicalStep("Vendor",new SemanticLexicalCandidate("Vendor",SemanticLexicalCandidateKind.ENTITY,"Supplier",.81,id,null,null,null,null,null,null,List.of()),.81,List.of()),
-            new SemanticLexicalStep("Seller",new SemanticLexicalCandidate("Seller",SemanticLexicalCandidateKind.ENTITY,"Supplier",.97,id,null,null,null,null,null,null,List.of()),.97,List.of()));
+            new SemanticLexicalStep("Vendor",new SemanticLexicalCandidate("Vendor",SemanticLexicalCandidateKind.ENTITY,"Supplier",.81,id,null,null,null,null,null,List.of()),.81,List.of()),
+            new SemanticLexicalStep("Seller",new SemanticLexicalCandidate("Seller",SemanticLexicalCandidateKind.ENTITY,"Supplier",.97,id,null,null,null,null,null,List.of()),.97,List.of()));
         var r=AliasWeightEvidenceGate.evaluate(m,90,new SemanticLexicalResolution(SemanticLexicalResolutionOutcome.RESOLVED,steps,.89,id,null),false);
         assertEquals(AliasWeightEvidenceGate.AliasEvidenceStatus.SUFFICIENT,r.status()); assertEquals(95,r.entityWeights().get(id));
     }
@@ -85,13 +85,13 @@ class AliasWeightEvidenceGateParityTest {
     }
     @Test void weightedAndUnweightedOnlyWeightedContributes() {
         var id=new EntityId(1); var m=model(e->e.alias("Vendor").alias("Seller",60));
-        var steps=List.of(new SemanticLexicalStep("Vendor",new SemanticLexicalCandidate("Vendor",SemanticLexicalCandidateKind.ENTITY,"Supplier",.81,id,null,null,null,null,null,null,List.of()),.81,List.of()),new SemanticLexicalStep("Seller",new SemanticLexicalCandidate("Seller",SemanticLexicalCandidateKind.ENTITY,"Supplier",.70,id,null,null,null,null,null,null,List.of()),.70,List.of()));
+        var steps=List.of(new SemanticLexicalStep("Vendor",new SemanticLexicalCandidate("Vendor",SemanticLexicalCandidateKind.ENTITY,"Supplier",.81,id,null,null,null,null,null,List.of()),.81,List.of()),new SemanticLexicalStep("Seller",new SemanticLexicalCandidate("Seller",SemanticLexicalCandidateKind.ENTITY,"Supplier",.70,id,null,null,null,null,null,List.of()),.70,List.of()));
         var r=AliasWeightEvidenceGate.evaluate(m,50,new SemanticLexicalResolution(SemanticLexicalResolutionOutcome.RESOLVED,steps,.75,id,null),false);
         assertEquals(AliasWeightEvidenceGate.AliasEvidenceStatus.SUFFICIENT,r.status()); assertEquals(60,r.entityWeights().get(id));
     }
     @Test void canonicalNameDoesNotContributeAliasEvidence() {
         var id=new EntityId(1); var m=model(e->e.alias("Vendor",70));
-        var steps=List.of(new SemanticLexicalStep("Supplier",new SemanticLexicalCandidate("Supplier",SemanticLexicalCandidateKind.ENTITY,"Supplier",.99,id,null,null,null,null,null,null,List.of()),.99,List.of()),new SemanticLexicalStep("Vendor",new SemanticLexicalCandidate("Vendor",SemanticLexicalCandidateKind.ENTITY,"Supplier",.81,id,null,null,null,null,null,null,List.of()),.81,List.of()));
+        var steps=List.of(new SemanticLexicalStep("Supplier",new SemanticLexicalCandidate("Supplier",SemanticLexicalCandidateKind.ENTITY,"Supplier",.99,id,null,null,null,null,null,List.of()),.99,List.of()),new SemanticLexicalStep("Vendor",new SemanticLexicalCandidate("Vendor",SemanticLexicalCandidateKind.ENTITY,"Supplier",.81,id,null,null,null,null,null,List.of()),.81,List.of()));
         var r=AliasWeightEvidenceGate.evaluate(m,60,new SemanticLexicalResolution(SemanticLexicalResolutionOutcome.RESOLVED,steps,.90,id,null),false);
         assertEquals(AliasWeightEvidenceGate.AliasEvidenceStatus.SUFFICIENT,r.status()); assertEquals(70,r.entityWeights().get(id));
     }

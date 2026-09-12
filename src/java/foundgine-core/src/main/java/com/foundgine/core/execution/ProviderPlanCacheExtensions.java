@@ -4,9 +4,8 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * C# exposes this as an extension method on {@code IProviderPlanCache}; Java
- * has no extension methods, so it is ported as a static helper taking the
- * cache as its first parameter.
+ * Static helper methods for {@link IProviderPlanCache}, taking the cache
+ * as their first parameter.
  */
 public final class ProviderPlanCacheExtensions {
 

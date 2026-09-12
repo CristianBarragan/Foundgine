@@ -17,7 +17,7 @@ class SemanticMutationPlannerParityTest {
         var model = new SemanticModel(Map.of(customer, entity), List.of()).freeze();
         var builder = new SemanticMutationIntentBuilder(model);
         builder.create("Customer", "first").set("Name", "Ada").returns("Id");
-        builder.create("Customer", "second").set("Name", "Bob").returns("Id");
+        builder.create("Customer", "second").setFrom("Name", "first", "Id");
         var graph = builder.build();
         var op = graph.operations().get(1);
         var bad = new SemanticMutationOperationGraph(List.of(
@@ -36,6 +36,7 @@ class SemanticMutationPlannerParityTest {
         var builder = new SemanticMutationIntentBuilder(model);
         builder.create("Customer", "first").set("Name", "Ada");
         builder.create("Customer", "second").setFrom("Name", "first", "Id");
-        assertThrows(IllegalStateException.class, builder::build);
+        var graph = builder.build();
+        assertThrows(IllegalStateException.class, () -> new SemanticMutationPlanner().plan(graph));
     }
 }

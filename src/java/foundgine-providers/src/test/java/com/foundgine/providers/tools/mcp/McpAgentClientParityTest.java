@@ -25,7 +25,7 @@ class McpAgentClientParityTest {
             String body = read(exchange);
             int call = calls.incrementAndGet();
             if (body.contains("foundgine_capabilities")) {
-                reply(exchange, rpc("{\"version\":1,\"capabilities\":[{\"id\":\"Customer.read\",\"name\":\"Read Customer\",\"targetEntityId\":1,\"access\":\"ALLOWED\",\"inputs\":[],\"constraints\":[],\"effects\":[],\"fields\":[\"Id\",\"Name\"],\"relationships\":[\"Transactions\"],\"operation\":\"read\",\"hasSideEffects\":false,\"isIdempotent\":false,\"version\":1,\"requiredSecurityInvariants\":[]}]}));
+                reply(exchange, rpc("{\"version\":1,\"capabilities\":[{\"id\":\"Customer.read\",\"name\":\"Read Customer\",\"targetEntityId\":1,\"access\":\"ALLOWED\",\"inputs\":[],\"constraints\":[],\"effects\":[],\"fields\":[\"Id\",\"Name\"],\"relationships\":[\"Transactions\"],\"operation\":\"read\",\"hasSideEffects\":false,\"isIdempotent\":false,\"version\":1,\"requiredSecurityInvariants\":[]}]}"));
             } else {
                 assertTrue(body.contains("foundgine_query"));
                 assertTrue(body.contains("Customer"));

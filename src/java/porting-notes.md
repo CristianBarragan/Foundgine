@@ -19,7 +19,7 @@ The Java suite now mirrors additional C# security and boundary contracts: plan s
 Added four Java parity suites covering approximate retrieval, reference grounding, lexical grounding budgets/ambiguity/cancellation, and mutation dependency planning. Java test classes: 37.
 
 ## Test parity — hostile JSON intent boundary
-The Java port now mirrors the C# malicious MCP/JSON intent invariants at `JsonReadIntentAdapter`: unknown security/provider authority properties are rejected, tenant-like filters do not populate trusted security context, and nested predicate structures are bounded before planning.
+The Java now mirrors the C# malicious MCP/JSON intent invariants at `JsonReadIntentAdapter`: unknown security/provider authority properties are rejected, tenant-like filters do not populate trusted security context, and nested predicate structures are bounded before planning.
 
 ## Test parity — Runtime approval boundary
 The Java Runtime now mirrors the C# plan-approval E2E contract: an approved plan executes only when the semantic version set and current plan fingerprint still match; tampered approvals fail closed before provider execution.

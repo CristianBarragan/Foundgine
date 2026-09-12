@@ -1,6 +1,7 @@
 package com.foundgine.core.execution.e2e;
 
 import com.foundgine.core.abstractions.EntityId;
+import com.foundgine.core.execution.ExecutionIRCompiler;
 import com.foundgine.core.abstractions.RelationshipId;
 import com.foundgine.core.semantic.planning.ExecutionOperation;
 import com.foundgine.core.semantic.planning.SemanticPlan;
@@ -23,7 +24,7 @@ class ExecutionIRParityE2ETest {
 
         var plan = new SemanticPlan(root, List.of("authorization.required"),
                 new SemanticPlanAuthorizationBinding("contract", "authorization"));
-        var ir = ExecutionIR.compile(plan);
+        var ir = ExecutionIRCompiler.compile(plan);
 
         assertEquals(1, ir.root().id());
         assertEquals(EntityId.create("Order"), ir.root().entityId());
@@ -37,6 +38,6 @@ class ExecutionIRParityE2ETest {
     void executionBoundaryRejectsPlansWithoutAuthorizationBinding() {
         var plan = new SemanticPlan(new SemanticPlanNode(1, ExecutionOperation.SCAN,
                 EntityId.create("Customer"), List.of(), null, null, List.of()));
-        assertThrows(IllegalStateException.class, () -> ExecutionIR.compile(plan));
+        assertThrows(IllegalStateException.class, () -> ExecutionIRCompiler.compile(plan));
     }
 }

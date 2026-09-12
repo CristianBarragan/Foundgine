@@ -13,17 +13,16 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Port of {@code Foundgine.Core.Semantic.Security.SecurityCapabilityComposition}.
  *
  * <p>Validates composition of multiple capabilities as a single security contract.
  * Composition never unions authority: every component must be independently
  * authorized and the resulting authority is bounded by the intersection of
  * the active warrant constraints.
  *
- * <p>C#'s three trailing optional parameters ({@code requestedFields},
+ * <p>The three trailing parameters ({@code requestedFields},
  * {@code requestedResults}, {@code requestedAmount}, all defaulting to
- * {@code null}) are ported as a 6-arg overload (matching every call site that
- * relies on the C# defaults) plus the full 9-arg method.
+ * {@code null}) are also available as a 6-arg overload (matching call sites
+ * that rely on the defaults) plus the full 9-arg method.
  */
 public final class SecurityCapabilityComposition {
 

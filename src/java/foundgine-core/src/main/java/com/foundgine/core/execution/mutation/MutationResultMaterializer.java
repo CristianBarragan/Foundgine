@@ -22,10 +22,8 @@ import java.util.Objects;
 public final class MutationResultMaterializer {
 
     /**
-     * C# represents a batch item as the value-tuple {@code (string Key, NestedMutationIntent Intent)}
-     * and the batch output as {@code (string Key, MutationMaterializedResult Result)}; Java has no
-     * built-in tuple type, so both are ported as small nested records (same treatment as
-     * {@code MutationDependencyGraph.Edge}).
+     * Small nested records pairing a key with its intent/result value,
+     * used for batch items and batch output entries.
      */
     public record Item(String key, NestedMutationIntent intent) {
     }

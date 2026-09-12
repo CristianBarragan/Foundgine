@@ -1,7 +1,6 @@
 package com.foundgine.core.semantic.planning;
 
 import com.foundgine.core.abstractions.EntityId;
-import com.foundgine.core.abstractions.ExecutionOperation;
 import com.foundgine.core.semantic.security.SecurityInvariantIds;
 import org.junit.jupiter.api.Test;
 import java.util.List;

@@ -20,7 +20,8 @@ class SemanticModelFingerprintParityTest {
                 .entity(EntityId.create("Product"), "Product", e -> e
                         .identity(FieldId.create("Product", "Id"), "Id")
                         .field(FieldId.create("Product", "Name"), "Name", String.class)
-                        .field(FieldId.create("Product", "Price"), "Price", Double.class))
+                        .field(FieldId.create("Product", "Price"), "Price", Double.class)
+                        .field(FieldId.create("Product", "Sku"), "Sku", String.class))
                 .build();
         assertNotEquals(first.contractFingerprint(), changed.contractFingerprint());
     }

@@ -12,9 +12,8 @@ public record SemanticLexicalResolution(
     }
 
     /**
-     * C#'s {@code RootCandidates = null} is an optional trailing parameter;
-     * ported as a five-argument overload defaulting it to {@code null} (then
-     * normalized to an empty list by the canonical constructor above).
+     * Convenience five-argument overload defaulting {@code rootCandidates} to {@code null}
+     * (then normalized to an empty list by the canonical constructor above).
      */
     public SemanticLexicalResolution(SemanticLexicalResolutionOutcome outcome, List<SemanticLexicalStep> steps,
             double confidence, EntityId rootEntity, String reason) {

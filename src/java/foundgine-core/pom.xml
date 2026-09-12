@@ -13,7 +13,7 @@
   <artifactId>foundgine-core</artifactId>
   <packaging>jar</packaging>
 
-  <name>Foundgine Core (Java port)</name>
+  <name>Foundgine Core</name>
   <description>
     Port of Foundgine.Core: the foundational, provider-independent semantic
     layer. Defines the semantic model, metadata, intent contracts and

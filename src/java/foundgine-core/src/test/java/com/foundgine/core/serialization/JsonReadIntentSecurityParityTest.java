@@ -58,7 +58,7 @@ class JsonReadIntentSecurityParityTest {
                             {"kind":"field","field":"Id","operator":"EQ","value":1}
                           ]}
                         ]}
-                      ]
+                      ]}
                     ]
                   }
                 }

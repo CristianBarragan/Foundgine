@@ -15,7 +15,6 @@ class SemanticReferenceGroundingParityTest {
         return new SemanticModelBuilder()
             .entity(CUSTOMER, "Customer", e -> e.identity("Id").relationship(ORDERS, "orders", ORDER, RelationshipCardinality.MANY))
             .entity(ORDER, "Order", e -> e.identity("Id"))
-            .traversal("Customer", "orders", "orders")
             .build().freeze();
     }
 

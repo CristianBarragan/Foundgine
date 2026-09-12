@@ -17,7 +17,6 @@ class EntityResolverTest {
             .entity(CUSTOMER, "Customer", e -> e.identity(CUSTOMER_ID, "Id").field(CUSTOMER_ID, "Id", String.class)
                 .relationship(ORDERS, "orders", ORDER, RelationshipCardinality.MANY))
             .entity(ORDER, "Order", e -> e.identity("Id").field("Id".hashCode() == 0 ? FieldId.create("Order","Id") : FieldId.create("Order","Id"), "Id", String.class))
-            .traversal("Customer", "orders", "orders")
             .build();
     }
 

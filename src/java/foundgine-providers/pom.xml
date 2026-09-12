@@ -4,7 +4,7 @@
   <parent><groupId>com.foundgine</groupId><artifactId>foundgine-parent</artifactId><version>${revision}</version></parent>
   <artifactId>foundgine-providers</artifactId>
   <packaging>jar</packaging>
-  <name>Foundgine Providers (Java port)</name>
+  <name>Foundgine Providers</name>
   <dependencies>
     <dependency><groupId>com.foundgine</groupId><artifactId>foundgine-core</artifactId><version>${revision}</version></dependency>
     <dependency><groupId>com.foundgine</groupId><artifactId>foundgine-runtime</artifactId><version>${revision}</version></dependency>
