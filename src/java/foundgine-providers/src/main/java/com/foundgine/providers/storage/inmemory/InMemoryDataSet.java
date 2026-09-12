@@ -11,16 +11,16 @@ import java.util.Objects;
 
 /** Mutable builder for deterministic entity-partitioned in-memory data. */
 public final class InMemoryDataSet {
-    private final Map<EntityId, List<InMemoryRow>> rows = new LinkedHashMap<>();
+	private final Map<EntityId, List<InMemoryRow>> rows = new LinkedHashMap<>();
 
-    public InMemoryDataSet add(InMemoryRow row) {
-        Objects.requireNonNull(row, "row");
-        rows.computeIfAbsent(row.entityId(), ignored -> new ArrayList<>()).add(row);
-        return this;
-    }
+	public InMemoryDataSet add(InMemoryRow row) {
+		Objects.requireNonNull(row, "row");
+		rows.computeIfAbsent(row.entityId(), ignored -> new ArrayList<>()).add(row);
+		return this;
+	}
 
-    public List<InMemoryRow> get(EntityId entityId) {
-        var result = rows.get(entityId);
-        return result == null ? List.of() : Collections.unmodifiableList(result);
-    }
+	public List<InMemoryRow> get(EntityId entityId) {
+		var result = rows.get(entityId);
+		return result == null ? List.of() : Collections.unmodifiableList(result);
+	}
 }

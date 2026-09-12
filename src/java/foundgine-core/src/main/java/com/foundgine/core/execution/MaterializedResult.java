@@ -11,21 +11,20 @@ import java.util.List;
  * Compatibility name for the semantic result tree. New code should consume
  * {@link SemanticResult} directly.
  *
- * <p>C# exposes an implicit conversion operator to {@code SemanticResult}; Java
+ * <p>
+ * C# exposes an implicit conversion operator to {@code SemanticResult}; Java
  * has no implicit user-defined conversions, so {@link #toSemanticResult()} is
  * the explicit equivalent callers must invoke.
  */
 @Deprecated
-public record MaterializedResult(
-        List<SemanticResultNode> roots,
-        SemanticResultPageInfo pageInfo,
-        SemanticResultEvidence evidence) {
+public record MaterializedResult(List<SemanticResultNode> roots, SemanticResultPageInfo pageInfo,
+		SemanticResultEvidence evidence) {
 
-    public MaterializedResult(List<SemanticResultNode> roots) {
-        this(roots, null, null);
-    }
+	public MaterializedResult(List<SemanticResultNode> roots) {
+		this(roots, null, null);
+	}
 
-    public SemanticResult toSemanticResult() {
-        return new SemanticResult(roots, pageInfo, evidence);
-    }
+	public SemanticResult toSemanticResult() {
+		return new SemanticResult(roots, pageInfo, evidence);
+	}
 }

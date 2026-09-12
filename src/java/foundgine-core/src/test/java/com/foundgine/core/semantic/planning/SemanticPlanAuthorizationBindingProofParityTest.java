@@ -8,39 +8,40 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Port of {@code SemanticPlanAuthorizationBindingProofTests} (Foundgine.Planning.Tests). */
+/**
+ * Port of {@code SemanticPlanAuthorizationBindingProofTests}
+ * (Foundgine.Planning.Tests).
+ */
 class SemanticPlanAuthorizationBindingProofParityTest {
 
-    @Test
-    void rewriteMustPreserveAuthorizationBinding() {
-        var before = plan(new SemanticPlanAuthorizationBinding("contract-a", "authorization-a"));
-        var after = plan(null);
+	@Test
+	void rewriteMustPreserveAuthorizationBinding() {
+		var before = plan(new SemanticPlanAuthorizationBinding("contract-a", "authorization-a"));
+		var after = plan(null);
 
-        assertThrows(IllegalStateException.class, () ->
-            SemanticPlanAuthorizationBindingProof.create(before, after));
-    }
+		assertThrows(IllegalStateException.class, () -> SemanticPlanAuthorizationBindingProof.create(before, after));
+	}
 
-    @Test
-    void rewriteCannotReplaceAuthorizationBinding() {
-        var before = plan(new SemanticPlanAuthorizationBinding("contract-a", "authorization-a"));
-        var after = plan(new SemanticPlanAuthorizationBinding("contract-b", "authorization-b"));
+	@Test
+	void rewriteCannotReplaceAuthorizationBinding() {
+		var before = plan(new SemanticPlanAuthorizationBinding("contract-a", "authorization-a"));
+		var after = plan(new SemanticPlanAuthorizationBinding("contract-b", "authorization-b"));
 
-        assertThrows(IllegalStateException.class, () ->
-            SemanticPlanAuthorizationBindingProof.create(before, after));
-    }
+		assertThrows(IllegalStateException.class, () -> SemanticPlanAuthorizationBindingProof.create(before, after));
+	}
 
-    @Test
-    void unboundPlansRemainUnboundDuringOptimization() {
-        var source = plan(null);
-        var result = new SemanticPlanOptimizer().optimize(source);
+	@Test
+	void unboundPlansRemainUnboundDuringOptimization() {
+		var source = plan(null);
+		var result = new SemanticPlanOptimizer().optimize(source);
 
-        assertTrue(result.authorizationBindingProof().isSatisfied());
-        assertNull(result.plan().authorizationBinding());
-    }
+		assertTrue(result.authorizationBindingProof().isSatisfied());
+		assertNull(result.plan().authorizationBinding());
+	}
 
-    private static SemanticPlan plan(SemanticPlanAuthorizationBinding binding) {
-        var node = new SemanticPlanNode(1, ExecutionOperation.SCAN, new EntityId(1),
-            List.of(new FieldId(1)), null, null, List.of());
-        return new SemanticPlan(node, List.of(SecurityInvariantIds.AUTHORIZATION_REQUIRED), binding);
-    }
+	private static SemanticPlan plan(SemanticPlanAuthorizationBinding binding) {
+		var node = new SemanticPlanNode(1, ExecutionOperation.SCAN, new EntityId(1), List.of(new FieldId(1)), null,
+				null, List.of());
+		return new SemanticPlan(node, List.of(SecurityInvariantIds.AUTHORIZATION_REQUIRED), binding);
+	}
 }
