@@ -64,6 +64,24 @@ public final class SecurityCapabilityComposition {
             return SecurityCapabilityCompositionResult.rejected(
                     "A security composition must contain at least one capability.");
 
+        // A composed operation may only use one caller/tenant/resource authority.
+        // There is deliberately no union operation here: incompatible components
+        // fail closed rather than producing a broader synthetic authority. These
+        // boundary checks run before per-capability authorization so a
+        // tenant/resource mismatch is reported with its specific reason rather
+        // than the generic "not independently authorized" message.
+        List<String> allowedTenants = warrant.constraints().allowedTenants();
+        if (tenant != null && !allowedTenants.isEmpty() && !allowedTenants.contains(tenant)) {
+            return SecurityCapabilityCompositionResult.rejected(
+                    "Capability composition crosses the warrant tenant boundary.");
+        }
+
+        List<String> resourceScopes = warrant.constraints().resourceScopes();
+        if (resourceScope != null && !resourceScopes.isEmpty() && !resourceScopes.contains(resourceScope)) {
+            return SecurityCapabilityCompositionResult.rejected(
+                    "Capability composition crosses the warrant resource boundary.");
+        }
+
         for (SemanticCapability capability : components) {
             SecurityInvariantContractValidator.ensureValid(capability);
 
@@ -107,21 +125,6 @@ public final class SecurityCapabilityComposition {
                             "Capability composition requests a field outside the warrant's allowed field set.");
                 }
             }
-        }
-
-        // A composed operation may only use one caller/tenant/resource authority.
-        // There is deliberately no union operation here: incompatible components
-        // fail closed rather than producing a broader synthetic authority.
-        List<String> allowedTenants = warrant.constraints().allowedTenants();
-        if (tenant != null && !allowedTenants.isEmpty() && !allowedTenants.contains(tenant)) {
-            return SecurityCapabilityCompositionResult.rejected(
-                    "Capability composition crosses the warrant tenant boundary.");
-        }
-
-        List<String> resourceScopes = warrant.constraints().resourceScopes();
-        if (resourceScope != null && !resourceScopes.isEmpty() && !resourceScopes.contains(resourceScope)) {
-            return SecurityCapabilityCompositionResult.rejected(
-                    "Capability composition crosses the warrant resource boundary.");
         }
 
         List<String> invariants = new ArrayList<>();

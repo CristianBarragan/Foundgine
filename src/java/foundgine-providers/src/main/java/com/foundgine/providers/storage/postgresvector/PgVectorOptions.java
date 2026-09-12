@@ -9,6 +9,6 @@ public record PgVectorOptions(String tableName, int dimensions, PgVectorDistance
         if (distance == null) throw new NullPointerException("distance");
         if (schema == null || schema.isBlank()) throw new IllegalArgumentException("schema");
     }
-    public String qualifiedTableName() { return "\\\"" + quote(schema) + "\\\".\\\"" + quote(tableName) + "\\\""; }
-    private static String quote(String value) { return value.replace("\\\"", "\\\"\\\""); }
+    public String qualifiedTableName() { return "\"" + quote(schema) + "\".\"" + quote(tableName) + "\""; }
+    private static String quote(String value) { return value.replace("\"", "\"\""); }
 }

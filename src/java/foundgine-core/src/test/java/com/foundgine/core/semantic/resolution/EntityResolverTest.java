@@ -43,7 +43,7 @@ class EntityResolverTest {
             public List<IdentityCandidate> findByRelationship(RelationshipId relationship, String source) { return List.of(); }
         };
         assertEquals(ResolutionOutcome.AMBIGUOUS,
-            new EntityResolver(model(), source).resolveByIdentity(CUSTOMER, "C"));
+            new EntityResolver(model(), source).resolveByIdentity(CUSTOMER, "C").outcome());
     }
 
     @Test

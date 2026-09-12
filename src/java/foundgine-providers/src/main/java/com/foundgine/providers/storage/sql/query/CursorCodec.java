@@ -58,7 +58,7 @@ public final class CursorCodec {
         if (type == Long.class) return value.asLong();
         if (type == Float.class) return (float)value.asDouble();
         if (type == Double.class) return value.asDouble();
-        if (type == BigDecimal.class) return value.decimalValue();
+        if (type == BigDecimal.class) return value.isTextual() ? new BigDecimal(value.asText()) : value.decimalValue();
         if (type == Instant.class) return Instant.parse(value.asText());
         if (type == OffsetDateTime.class) return OffsetDateTime.parse(value.asText());
         if (type == ZonedDateTime.class) return ZonedDateTime.parse(value.asText());

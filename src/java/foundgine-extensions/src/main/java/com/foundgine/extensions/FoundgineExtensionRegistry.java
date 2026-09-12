@@ -7,7 +7,7 @@ public final class FoundgineExtensionRegistry {
     private final Map<String, FoundgineExtension> extensions;
 
     private FoundgineExtensionRegistry(Map<String, FoundgineExtension> extensions) {
-        this.extensions = Map.copyOf(extensions);
+        this.extensions = Collections.unmodifiableMap(new LinkedHashMap<>(extensions));
     }
 
     public static Builder builder() { return new Builder(); }
