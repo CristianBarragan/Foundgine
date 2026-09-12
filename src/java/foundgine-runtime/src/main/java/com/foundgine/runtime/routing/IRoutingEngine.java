@@ -1,2 +1,5 @@
 package com.foundgine.runtime.routing;
-public interface IRoutingEngine { TaskContract route(RoutingContext context); }
+
+public interface IRoutingEngine {
+	TaskContract route(RoutingContext context);
+}

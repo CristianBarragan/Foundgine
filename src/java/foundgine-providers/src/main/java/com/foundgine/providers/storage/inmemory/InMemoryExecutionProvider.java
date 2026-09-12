@@ -16,17 +16,15 @@ import java.util.concurrent.CompletionStage;
  * No SQL representation or SQL parser is involved.
  */
 public final class InMemoryExecutionProvider implements IExecutionProvider {
-    private final InMemoryCompiler compiler;
+	private final InMemoryCompiler compiler;
 
-    public InMemoryExecutionProvider(IMetadataProvider metadata, InMemoryDataSet data) {
-        this.compiler = new InMemoryCompiler(metadata, data);
-    }
+	public InMemoryExecutionProvider(IMetadataProvider metadata, InMemoryDataSet data) {
+		this.compiler = new InMemoryCompiler(metadata, data);
+	}
 
-    @Override
-    public CompletionStage<ExecutionResult> executeAsync(
-            ProviderPlan plan,
-            ExecutionContext context,
-            CancellationToken cancellationToken) {
-        return compiler.executeAsync(plan, context, cancellationToken);
-    }
+	@Override
+	public CompletionStage<ExecutionResult> executeAsync(ProviderPlan plan, ExecutionContext context,
+			CancellationToken cancellationToken) {
+		return compiler.executeAsync(plan, context, cancellationToken);
+	}
 }

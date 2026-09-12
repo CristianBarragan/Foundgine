@@ -8,14 +8,16 @@ import com.foundgine.runtime.*;
  * framework-neutral service registry.
  */
 public final class Grounding implements IFoundgineCapability {
-    @Override
-    public void configure(FoundgineCapabilityContext context) {
-        var services = context.services();
-        services.addSingleton(SemanticLexicalResolver.class, () -> new SemanticLexicalResolver(
-                services.getRequiredService(com.foundgine.core.semantic.SemanticContractSnapshot.class),
-                services.getRequiredService(ISemanticLexicalCandidateSource.class)));
-        services.addSingleton(SemanticLexicalReadIntentGrounder.class, () -> new SemanticLexicalReadIntentGrounder(
-                services.getRequiredService(com.foundgine.core.semantic.SemanticContractSnapshot.class),
-                services.getRequiredService(SemanticLexicalResolver.class)));
-    }
+	@Override
+	public void configure(FoundgineCapabilityContext context) {
+		var services = context.services();
+		services.addSingleton(SemanticLexicalResolver.class,
+				() -> new SemanticLexicalResolver(
+						services.getRequiredService(com.foundgine.core.semantic.SemanticContractSnapshot.class),
+						services.getRequiredService(ISemanticLexicalCandidateSource.class)));
+		services.addSingleton(SemanticLexicalReadIntentGrounder.class,
+				() -> new SemanticLexicalReadIntentGrounder(
+						services.getRequiredService(com.foundgine.core.semantic.SemanticContractSnapshot.class),
+						services.getRequiredService(SemanticLexicalResolver.class)));
+	}
 }

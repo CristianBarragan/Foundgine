@@ -1,81 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0">
-<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.foundgine</groupId>
+		<artifactId>foundgine-parent</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
 
-<parent>
-    <groupId>com.foundgine</groupId>
-    <artifactId>foundgine-parent</artifactId>
-    <version>${revision}</version>
-    <relativePath>../../pom.xml</relativePath>
-</parent>
+	<artifactId>foundgine-sample-supply-chain-advanced</artifactId>
 
-<artifactId>foundgine-sample-supply-chain-advanced</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>com.foundgine</groupId>
+			<artifactId>foundgine-core</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
 
-<dependencies>
+		<dependency>
+			<groupId>com.foundgine</groupId>
+			<artifactId>foundgine-runtime</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
 
-    <dependency>
-        <groupId>com.foundgine</groupId>
-        <artifactId>foundgine-core</artifactId>
-        <version>${revision}</version>
-    </dependency>
+		<dependency>
+			<groupId>com.foundgine</groupId>
+			<artifactId>foundgine-providers</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-    <dependency>
-        <groupId>com.foundgine</groupId>
-        <artifactId>foundgine-runtime</artifactId>
-        <version>${revision}</version>
-    </dependency>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgs>
+						<arg>
+							-Afoundgine.generated.package=com.foundgine.samples.supplychain.advanced.generated</arg>
+						<arg>
+							-Afoundgine.generated.name=GeneratedFoundgineMetadata</arg>
+					</compilerArgs>
 
-    <dependency>
-        <groupId>com.foundgine</groupId>
-        <artifactId>foundgine-providers</artifactId>
-        <version>${revision}</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.postgresql</groupId>
-        <artifactId>postgresql</artifactId>
-    </dependency>
-
-    <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <scope>test</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>com.foundgine</groupId>
-        <artifactId>foundgine-aot-generator</artifactId>
-        <version>${revision}</version>
-    </dependency>
-
-</dependencies>
-
-<build>
-    <plugins>
-
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-
-            <configuration>
-
-                <compilerArgs>
-                    <arg>-Afoundgine.generated.package=com.foundgine.samples.supplychain.advanced.generated</arg>
-                    <arg>-Afoundgine.generated.name=GeneratedFoundgineMetadata</arg>
-                </compilerArgs>
-
-                <annotationProcessorPaths>
-                    <path>
-                        <groupId>com.foundgine</groupId>
-                        <artifactId>foundgine-aot-generator</artifactId>
-                        <version>${revision}</version>
-                    </path>
-                </annotationProcessorPaths>
-
-            </configuration>
-        </plugin>
-
-    </plugins>
-</build>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>com.foundgine</groupId>
+							<artifactId>foundgine-aot-generator</artifactId>
+							<version>${revision}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

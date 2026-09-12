@@ -5,11 +5,22 @@ import com.foundgine.core.semantic.*;
 import com.foundgine.core.semantic.query.SemanticQueryOptions;
 import java.util.*;
 
-/** Canonical provider-neutral representation of one resolved semantic operation. */
+/**
+ * Canonical provider-neutral representation of one resolved semantic operation.
+ */
 public record SemanticOperation(SemanticReadNode root) {
-    public SemanticOperation { Objects.requireNonNull(root); }
-    public boolean isReadOnly() { return true; }
+	public SemanticOperation {
+		Objects.requireNonNull(root);
+	}
+
+	public boolean isReadOnly() {
+		return true;
+	}
 }
 
-/** Semantic read node: domain traversal and selected fields, never provider instructions. */
-record SemanticReadNodeData() {}
+/**
+ * Semantic read node: domain traversal and selected fields, never provider
+ * instructions.
+ */
+record SemanticReadNodeData() {
+}

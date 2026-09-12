@@ -6,14 +6,15 @@ import java.util.Optional;
 /**
  * Port of {@code Foundgine.Runtime.ControlPlane.ToolRegistry.IToolRegistry}.
  *
- * <p><b>Porting decision:</b> {@code bool TryGet(string, out ToolDescriptor?)}
- * is ported as {@link #tryGet(String)} returning {@code Optional<ToolDescriptor>},
+ * <p>
+ * <b>Porting decision:</b> {@code bool TryGet(string, out ToolDescriptor?)} is
+ * ported as {@link #tryGet(String)} returning {@code Optional<ToolDescriptor>},
  * the same substitution used for {@code IApprovalStore.TryGet}.
  */
 public interface IToolRegistry {
-    Optional<ToolDescriptor> tryGet(String toolName);
+	Optional<ToolDescriptor> tryGet(String toolName);
 
-    Collection<ToolDescriptor> listActive();
+	Collection<ToolDescriptor> listActive();
 
-    void register(ToolDescriptor descriptor);
+	void register(ToolDescriptor descriptor);
 }

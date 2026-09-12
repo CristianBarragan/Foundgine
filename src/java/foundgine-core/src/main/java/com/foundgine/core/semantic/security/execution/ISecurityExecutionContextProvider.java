@@ -7,6 +7,6 @@ package com.foundgine.core.semantic.security.execution;
  */
 @FunctionalInterface
 public interface ISecurityExecutionContextProvider {
-    /** Returns the current trusted context, or {@code null} when none exists. */
-    SecurityExecutionContext getSecurityExecutionContext();
+	/** Returns the current trusted context, or {@code null} when none exists. */
+	SecurityExecutionContext getSecurityExecutionContext();
 }

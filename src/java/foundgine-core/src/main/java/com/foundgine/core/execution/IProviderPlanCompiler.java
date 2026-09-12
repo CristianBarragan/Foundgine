@@ -6,5 +6,5 @@ package com.foundgine.core.execution;
  * this boundary.
  */
 public interface IProviderPlanCompiler {
-    ProviderPlan compile(ExecutionIR ir);
+	ProviderPlan compile(ExecutionIR ir);
 }

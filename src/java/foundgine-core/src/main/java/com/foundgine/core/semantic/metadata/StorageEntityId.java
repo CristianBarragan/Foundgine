@@ -17,30 +17,47 @@ import java.io.IOException;
 @JsonSerialize(using = StorageEntityId.Serializer.class, keyUsing = StorageEntityId.KeySerializer.class)
 @JsonDeserialize(using = StorageEntityId.Deserializer.class, keyUsing = StorageEntityId.KeyDeserializer.class)
 public record StorageEntityId(long value) {
-    public static StorageEntityId create(String storageName) {
-        return new StorageEntityId(SemanticIdentity.hash(SemanticIdentity.tableKey(storageName)));
-    }
-    public static final class Serializer extends StdSerializer<StorageEntityId> {
-        public Serializer() { super(StorageEntityId.class); }
-        @Override public void serialize(StorageEntityId id, JsonGenerator g, SerializerProvider p) throws IOException {
-            UnsignedLongJson.writeNumber(g, id.value());
-        }
-    }
-    public static final class Deserializer extends StdDeserializer<StorageEntityId> {
-        public Deserializer() { super(StorageEntityId.class); }
-        @Override public StorageEntityId deserialize(JsonParser p, DeserializationContext c) throws IOException {
-            return new StorageEntityId(UnsignedLongJson.read(p, "StorageEntityId"));
-        }
-    }
-    public static final class KeySerializer extends StdSerializer<StorageEntityId> {
-        public KeySerializer() { super(StorageEntityId.class); }
-        @Override public void serialize(StorageEntityId id, JsonGenerator g, SerializerProvider p) throws IOException {
-            UnsignedLongJson.writeFieldName(g, id.value());
-        }
-    }
-    public static final class KeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
-        @Override public StorageEntityId deserializeKey(String key, DeserializationContext c) {
-            return new StorageEntityId(UnsignedLongJson.parseUnsigned(key));
-        }
-    }
+	public static StorageEntityId create(String storageName) {
+		return new StorageEntityId(SemanticIdentity.hash(SemanticIdentity.tableKey(storageName)));
+	}
+
+	public static final class Serializer extends StdSerializer<StorageEntityId> {
+		public Serializer() {
+			super(StorageEntityId.class);
+		}
+
+		@Override
+		public void serialize(StorageEntityId id, JsonGenerator g, SerializerProvider p) throws IOException {
+			UnsignedLongJson.writeNumber(g, id.value());
+		}
+	}
+
+	public static final class Deserializer extends StdDeserializer<StorageEntityId> {
+		public Deserializer() {
+			super(StorageEntityId.class);
+		}
+
+		@Override
+		public StorageEntityId deserialize(JsonParser p, DeserializationContext c) throws IOException {
+			return new StorageEntityId(UnsignedLongJson.read(p, "StorageEntityId"));
+		}
+	}
+
+	public static final class KeySerializer extends StdSerializer<StorageEntityId> {
+		public KeySerializer() {
+			super(StorageEntityId.class);
+		}
+
+		@Override
+		public void serialize(StorageEntityId id, JsonGenerator g, SerializerProvider p) throws IOException {
+			UnsignedLongJson.writeFieldName(g, id.value());
+		}
+	}
+
+	public static final class KeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
+		@Override
+		public StorageEntityId deserializeKey(String key, DeserializationContext c) {
+			return new StorageEntityId(UnsignedLongJson.parseUnsigned(key));
+		}
+	}
 }

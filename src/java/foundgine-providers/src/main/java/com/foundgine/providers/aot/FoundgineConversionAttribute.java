@@ -1,1 +1,11 @@
-package com.foundgine.providers.aot; import java.lang.annotation.*; @Retention(RetentionPolicy.RUNTIME) @Target({ElementType.FIELD,ElementType.METHOD,ElementType.TYPE}) public @interface FoundgineConversionAttribute {Class<?> source() default Object.class; Class<?> target() default Object.class;}
+package com.foundgine.providers.aot;
+
+import java.lang.annotation.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
+public @interface FoundgineConversionAttribute {
+	Class<?> source() default Object.class;
+
+	Class<?> target() default Object.class;
+}
