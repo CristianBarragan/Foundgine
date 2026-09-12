@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: [ main, java ]
   workflow_dispatch:
-    inputs:
-      postgres_e2e:
-        description: Run opt-in PostgreSQL integration tests
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -39,35 +33,53 @@ jobs:
 
   java-postgres-e2e:
     name: Java PostgreSQL E2E
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.postgres_e2e }}
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
+          POSTGRES_USER: foundgine
           POSTGRES_PASSWORD: foundgine
-          POSTGRES_DB: foundgine
+          POSTGRES_DB: foundgine_e2e
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d foundgine"
-          --health-interval 10s
+          --health-cmd "pg_isready -U foundgine -d foundgine_e2e"
+          --health-interval 5s
           --health-timeout 5s
-          --health-retries 10
+          --health-retries 20
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Run PostgreSQL E2E tests
+
+      - name: Wait for PostgreSQL
+        env:
+          PGPASSWORD: foundgine
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h 127.0.0.1 -p 5432 -U foundgine -d foundgine_e2e; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "PostgreSQL did not become ready in time."
+          exit 1
+
+      - name: Run Java E2E tests
         working-directory: src/java
         env:
-          FOUNDGINE_POSTGRES_CONNECTION_STRING: jdbc:postgresql://localhost:5432/foundgine?user=postgres&password=foundgine
+          FOUNDGINE_POSTGRES_CONNECTION_STRING: jdbc:postgresql://localhost:5432/foundgine_e2e?user=foundgine&password=foundgine
         run: >-
           mvn -B -ntp
-          -Dtest='*Postgres*E2ETest,*Postgres*ParityTest'
+          -Dsurefire.failIfNoSpecifiedTests=false
+          -Dtest='*E2ETest,*Postgres*E2ETest,*Postgres*ParityTest'
           test

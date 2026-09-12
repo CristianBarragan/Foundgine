@@ -144,7 +144,7 @@ public final class PostgresBatchedMutationCompiler {
                     .append(meta.ordinalAddressable && meta.ordMapCteName != null ? meta.ordMapCteName : meta.resultCteName)
                     .append(" f");
         }
-        sql.append("\n) __all ORDER BY __grp, CASE WHEN __row ? '__fg_corr' THEN ((__row ->> '__fg_corr')::bigint) END");
+        sql.append("\n) __all ORDER BY __grp, CASE WHEN jsonb_exists(__row, '__fg_corr') THEN ((__row ->> '__fg_corr')::bigint) END");
 
         List<SqlBatchedMutationPlan.RowKey> rowKeys = new ArrayList<>(ops.size());
         for (int opIndex = 0; opIndex < ops.size(); opIndex++) {
@@ -158,9 +158,61 @@ public final class PostgresBatchedMutationCompiler {
                     meta.groupId, meta.ordinalAddressable, meta.operationIndexes, meta.returnedFieldTypes));
         }
 
-        return new SqlBatchedMutationPlan(sql.toString(), parameters, groupMetas, rowKeys, ops.size(),
+        String commandText = sql.toString();
+        validatePlaceholderParity(commandText, parameters);
+
+        return new SqlBatchedMutationPlan(commandText, parameters, groupMetas, rowKeys, ops.size(),
                 dummyOperations(ops.size()), plan.dependencies());
     }
+
+    /**
+     * Guards against a batched statement whose declared parameters and physical
+     * JDBC placeholders have fallen out of sync. Every declared parameter must
+     * appear in the SQL exactly once as a named {@code @pN} placeholder, and the
+     * physical (JDBC-rewritten) SQL must contain exactly one {@code ?} per
+     * declared parameter. A mismatch here would otherwise surface much later,
+     * and much less clearly, as a driver-level
+     * {@code PSQLException: No value specified for parameter N} - or worse,
+     * silently bind the wrong value to the wrong position. Failing fast here,
+     * with the offending SQL in hand, is far cheaper to diagnose.
+     */
+    private static void validatePlaceholderParity(String commandText, List<SqlParameterBinding> parameters) {
+        Matcher matcher = NAMED_PLACEHOLDER_PATTERN.matcher(commandText);
+        Map<String, Integer> occurrences = new LinkedHashMap<>();
+        while (matcher.find()) {
+            occurrences.merge(matcher.group(1), 1, Integer::sum);
+        }
+
+        Set<String> declared = new LinkedHashSet<>();
+        for (SqlParameterBinding parameter : parameters) declared.add(parameter.name());
+
+        List<String> missing = new ArrayList<>();
+        for (String name : declared) if (!occurrences.containsKey(name)) missing.add(name);
+        List<String> duplicated = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : occurrences.entrySet()) if (entry.getValue() > 1) duplicated.add(entry.getKey());
+        List<String> undeclared = new ArrayList<>();
+        for (String name : occurrences.keySet()) if (!declared.contains(name)) undeclared.add(name);
+
+        if (!missing.isEmpty() || !duplicated.isEmpty() || !undeclared.isEmpty()) {
+            throw new IllegalStateException("Batched mutation compiler produced a SQL/parameter mismatch. "
+                    + "Declared parameters not referenced in SQL: " + missing
+                    + "; parameters referenced more than once: " + duplicated
+                    + "; SQL placeholders with no declared parameter: " + undeclared + ".");
+        }
+
+        String jdbcSql = com.foundgine.providers.storage.sql.JdbcSqlPlaceholderRewriter.rewrite(commandText);
+        long jdbcPlaceholderCount = jdbcSql.chars().filter(c -> c == '?').count();
+        if (jdbcPlaceholderCount != parameters.size()) {
+            throw new IllegalStateException("Batched mutation compiler declared " + parameters.size()
+                    + " parameter(s) but the JDBC-rewritten SQL contains " + jdbcPlaceholderCount
+                    + " '?' placeholder(s). This usually means a raw '?' character (for example a jsonb "
+                    + "'?' / '?|' / '?&' operator) slipped into the generated SQL outside of a named "
+                    + "@pN placeholder, which would otherwise fail at the driver with "
+                    + "'No value specified for parameter " + (jdbcPlaceholderCount) + "'.");
+        }
+    }
+
+    private static final java.util.regex.Pattern NAMED_PLACEHOLDER_PATTERN = java.util.regex.Pattern.compile("@(p[0-9]+)");
 
     /** Safe compilation path; {@code null} means use the sequential provider. */
     public SqlBatchedMutationPlan tryCompile(ExecutionMutationIR ir) {

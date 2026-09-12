@@ -136,7 +136,16 @@ public final class SqlCompiler implements IProviderPlanCompiler, ISecurityInvari
     private String buildAggregateReference(SemanticOrderTerm term,ExecutionIRNode sourceNode,EntityMetadata sourceEntity,FieldMetadata field,Map<Integer,String> aliases){
         if(term.effectivePath().isEmpty()) throw new IllegalArgumentException("Aggregate ordering requires a relationship path."); if(term.effectivePath().size()!=1) throw new UnsupportedOperationException("Collection aggregation currently supports one relationship hop.");
         var relationship=metadata.getRelationship(term.effectivePath().get(0)); var target=metadata.getEntity(relationship.target()); String targetAlias="a"+sourceNode.id()+"_agg";
-        var targetColumn=target.columns().stream().filter(c->c.id().equals(relationship.targetKey().columnId())).findFirst().orElseThrow(); var sourceColumn=sourceEntity.columns().stream().filter(c->c.id().equals(relationship.sourceKey().columnId())).findFirst().orElseThrow();
+        // Resolve relationship columns from their declared endpoint entities rather than
+        // assuming the relationship metadata's source/target entity objects are the
+        // only authority. This keeps aggregate ordering correct for metadata where
+        // endpoint references carry the physical column identity.
+        var targetKeyEntity=metadata.getEntity(relationship.targetKey().entityId());
+        var sourceKeyEntity=metadata.getEntity(relationship.sourceKey().entityId());
+        var targetColumn=targetKeyEntity.columns().stream().filter(c->c.id().equals(relationship.targetKey().columnId())).findFirst()
+                .orElseThrow(()->new IllegalStateException("Aggregate relationship target key column '"+relationship.targetKey().columnId()+"' is not mapped on '"+targetKeyEntity.name()+"'."));
+        var sourceColumn=sourceKeyEntity.columns().stream().filter(c->c.id().equals(relationship.sourceKey().columnId())).findFirst()
+                .orElseThrow(()->new IllegalStateException("Aggregate relationship source key column '"+relationship.sourceKey().columnId()+"' is not mapped on '"+sourceKeyEntity.name()+"'."));
         String correlation=quoteIdentifier(targetAlias)+"."+quoteIdentifier(targetColumn.effectiveStorageName())+" = "+quoteIdentifier(aliases.get(sourceNode.id()))+"."+quoteIdentifier(sourceColumn.effectiveStorageName()); String aggregate;
         if(term.aggregate()==SemanticOrderAggregate.COUNT) aggregate="COUNT(*)"; else { if(field.column()==null) throw new IllegalArgumentException("Aggregate field '"+target.name()+"."+field.name()+"' has no storage column mapping."); var valueColumn=target.columns().stream().filter(c->c.id().equals(field.column().columnId())).findFirst().orElseThrow(); aggregate=(term.aggregate()==SemanticOrderAggregate.MIN?"MIN":"MAX")+"("+quoteIdentifier(targetAlias)+"."+quoteIdentifier(valueColumn.effectiveStorageName())+")"; }
         return "(SELECT "+aggregate+" FROM "+quoteStorageName(target.effectiveStorageName())+" "+quoteIdentifier(targetAlias)+" WHERE "+correlation+")";

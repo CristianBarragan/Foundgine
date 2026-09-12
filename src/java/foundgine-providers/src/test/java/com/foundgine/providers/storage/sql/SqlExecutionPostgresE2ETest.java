@@ -226,6 +226,7 @@ class SqlExecutionPostgresE2ETest {
 
             SqlPlan firstPlan = compiler.compile(cursorPlan(null));
             ExecutionContext context = new ExecutionContext(Map.of(
+                    "tenant.id", "tenant-a",
                     ExecutionContextKeys.PAGINATION_LIMIT, 2));
             ExecutionResult first = new SqlExecutionProvider(connection).executeAsync(
                     firstPlan, context, CancellationToken.NONE).toCompletableFuture().join();
@@ -267,6 +268,7 @@ class SqlExecutionPostgresE2ETest {
             assertTrue(firstSql.commandText().contains("ASC"), firstSql.commandText());
 
             ExecutionContext context = new ExecutionContext(Map.of(
+                    "tenant.id", "tenant-a",
                     ExecutionContextKeys.PAGINATION_LIMIT, 2));
             ExecutionResult first = new SqlExecutionProvider(connection).executeAsync(
                     firstSql, context, CancellationToken.NONE).toCompletableFuture().join();

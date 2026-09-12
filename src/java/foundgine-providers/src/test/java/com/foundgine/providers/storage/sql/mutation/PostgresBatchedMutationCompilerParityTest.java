@@ -47,6 +47,7 @@ public class PostgresBatchedMutationCompilerParityTest {
         assertTrue(sql.contains("USING g0_input r ON FALSE"));
         assertTrue(sql.contains("RETURNING r.__fg_corr"));
         assertTrue(sql.contains("jsonb_build_object('__fg_corr', f.__fg_corr)"));
+        assertTrue(sql.contains("jsonb_exists(__row, '__fg_corr')"));
     }
 
     @Test
@@ -174,6 +175,51 @@ public class PostgresBatchedMutationCompilerParityTest {
 
         assertNull(new PostgresBatchedMutationCompiler(metadata).tryCompile(
                 new MutationBatchPlan(List.of(delete, createChild), List.of(dependency))));
+    }
+
+    @Test
+    void compiledPlanHasOneJdbcPlaceholderPerDeclaredParameter() {
+        // Regression test for a class of bug where the compiler's declared
+        // SqlParameterBinding count silently drifted from the number of
+        // physical JDBC '?' placeholders in the generated SQL (e.g. a stray
+        // '?' character, or a named @pN placeholder referenced zero or twice).
+        // Such a mismatch doesn't fail at compile time - it fails much later,
+        // and much less clearly, as a driver-level
+        // "PSQLException: No value specified for parameter N".
+        EntityId customer = new EntityId(41), account = new EntityId(42);
+        ColumnId cId = new ColumnId(1), cName = new ColumnId(2);
+        ColumnId aId = new ColumnId(3), aCustomer = new ColumnId(4), aName = new ColumnId(5);
+        FieldId cIdField = new FieldId(1), cNameField = new FieldId(2);
+        FieldId aIdField = new FieldId(3), aCustomerField = new FieldId(4), aNameField = new FieldId(5);
+        MetadataRegistry metadata = new MetadataRegistry();
+        metadata.register(new EntityMetadata(customer, "Customer",
+                List.of(new ColumnMetadata(cId, "Id"), new ColumnMetadata(cName, "Name")), null,
+                List.of(new FieldMetadata(cIdField, "Id", Long.class, new ColumnReference(customer, cId)),
+                        new FieldMetadata(cNameField, "Name", String.class, new ColumnReference(customer, cName))),
+                new ColumnReference(customer, cId), null, false, null, null));
+        metadata.register(new EntityMetadata(account, "Account",
+                List.of(new ColumnMetadata(aId, "Id"), new ColumnMetadata(aCustomer, "CustomerId"), new ColumnMetadata(aName, "Name")), null,
+                List.of(new FieldMetadata(aIdField, "Id", Long.class, new ColumnReference(account, aId)),
+                        new FieldMetadata(aCustomerField, "CustomerId", Long.class, new ColumnReference(account, aCustomer)),
+                        new FieldMetadata(aNameField, "Name", String.class, new ColumnReference(account, aName))),
+                new ColumnReference(account, aId), null, false, null, null));
+        MutationEntitySchema c = new MutationEntitySchema(customer, "Customer", Set.of(cId, cName), Map.of(cIdField, cId, cNameField, cName), cId);
+        MutationEntitySchema a = new MutationEntitySchema(account, "Account", Set.of(aId, aCustomer, aName), Map.of(aIdField, aId, aCustomerField, aCustomer, aNameField, aName), aId);
+        MutationOperation alice = new MutationOperation(c, MutationKind.CREATE, List.of(new MutationFieldValue(cName, "Alice")), null, null, List.of(cIdField, cNameField));
+        MutationOperation bob = new MutationOperation(c, MutationKind.CREATE, List.of(new MutationFieldValue(cName, "Bob")), null, null, List.of(cIdField, cNameField));
+        MutationOperation accountForBob = new MutationOperation(a, MutationKind.CREATE,
+                List.of(MutationFieldValue.fromPrevious(aCustomer, 1, cIdField), new MutationFieldValue(aName, "Primary")),
+                null, null, List.of(aIdField, aCustomerField, aNameField));
+        MutationDependency dependency = new MutationDependency(1, 2, cIdField, aCustomer);
+
+        SqlBatchedMutationPlan compiled = new PostgresBatchedMutationCompiler(metadata)
+                .compile(new MutationBatchPlan(List.of(alice, bob, accountForBob), List.of(dependency)));
+
+        assertEquals(3, compiled.parameters().size());
+        String jdbcSql = com.foundgine.providers.storage.sql.JdbcSqlPlaceholderRewriter.rewrite(compiled.commandText());
+        long placeholderCount = jdbcSql.chars().filter(ch -> ch == '?').count();
+        assertEquals(compiled.parameters().size(), placeholderCount,
+                "Declared parameter count must match the number of JDBC '?' placeholders in the rewritten SQL");
     }
 
     @Test

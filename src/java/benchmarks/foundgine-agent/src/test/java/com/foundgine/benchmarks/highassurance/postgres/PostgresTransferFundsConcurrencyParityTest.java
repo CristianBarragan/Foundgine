@@ -292,8 +292,8 @@ class PostgresTransferFundsConcurrencyParityTest {
     private static void account(PreparedStatement ps, UUID id, int tenant, UUID owner, double balance, double pending,
                                 double hold, double limit, boolean frozen) throws SQLException {
         ps.setObject(1,id); ps.setInt(2,tenant); ps.setObject(3,owner); ps.setBigDecimal(4,bd(Double.toString(balance)));
-        ps.setBigDecimal(5,bd(Double.toString(pending))); ps.setBigDecimal(6,bd(Double.toString(hold))); ps.setBigDecimal(7,bd("0"));
-        ps.setBigDecimal(8,bd(Double.toString(limit))); ps.setBoolean(9,frozen); ps.executeUpdate();
+        ps.setBigDecimal(5,bd(Double.toString(pending))); ps.setBigDecimal(6,bd(Double.toString(hold)));
+        ps.setBigDecimal(7,bd(Double.toString(limit))); ps.setBoolean(8,frozen); ps.executeUpdate();
     }
 
     private static void lockAccounts(Connection c, UUID source, UUID destination) {
