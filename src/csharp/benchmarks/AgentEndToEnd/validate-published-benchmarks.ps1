@@ -3,9 +3,9 @@ param([string]$AssetsRoot)
 
 $ErrorActionPreference = 'Stop'
 $BenchmarkRoot = $PSScriptRoot
-$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '..\..')).Path
+$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '../../../../')).Path
 if ([string]::IsNullOrWhiteSpace($AssetsRoot)) {
-    $AssetsRoot = Join-Path $RepoRoot 'docs-site\assets\agent-benchmark'
+    $AssetsRoot = Join-Path $RepoRoot 'docs-site/assets/agent-benchmark'
 }
 
 function Read-Aggregate([string]$name) {
@@ -61,16 +61,16 @@ Assert-FoundgineWins $run5b 'Run5b'
 
 if (@($run5b.aggregate | Where-Object { [int]$_.failed -ne 0 }).Count -ne 0) { throw 'Run5b: published aggregate contains failures.' }
 
-$index = Join-Path $RepoRoot 'docs-site\agent-benchmark\index.html'
+$index = Join-Path $RepoRoot 'docs-site/agent-benchmark/index.html'
 $indexText = Get-Content -LiteralPath $index -Raw
 if ($indexText -notmatch 'run-4/index\.html') { throw 'Benchmark landing page does not link to Run 4.' }
 if ($indexText -notmatch 'aggregateFile') { throw 'Benchmark landing page does not use the explicit aggregate-file mapping.' }
-$runsJson = Get-Content -LiteralPath (Join-Path $RepoRoot 'docs-site\assets\agent-benchmark\runs.json') -Raw | ConvertFrom-Json
+$runsJson = Get-Content -LiteralPath (Join-Path $RepoRoot 'docs-site/assets/agent-benchmark/runs.json') -Raw | ConvertFrom-Json
 $run4Manifest = @($runsJson.runs | Where-Object { $_.id -eq '4' })[0]
 $run5bManifest = @($runsJson.runs | Where-Object { $_.id -eq '5b' })[0]
 if ($null -eq $run4Manifest -or $run4Manifest.aggregateFile -ne 'run4-aggregate.json') { throw 'runs.json does not map Run 4 to run4-aggregate.json.' }
 if ($null -eq $run5bManifest -or $run5bManifest.aggregateFile -ne 'run5b-aggregate.json') { throw 'runs.json does not map Run 5b to run5b-aggregate.json.' }
-$matrixText = Get-Content -LiteralPath (Join-Path $RepoRoot 'docs-site\assets\agent-benchmark\benchmark-matrix.json') -Raw
+$matrixText = Get-Content -LiteralPath (Join-Path $RepoRoot 'docs-site/assets/agent-benchmark/benchmark-matrix.json') -Raw
 if ($matrixText -notmatch '"run"\s*:\s*"Run4"') { throw 'Benchmark matrix does not contain Run 4 rows.' }
 if ($matrixText -notmatch '"run"\s*:\s*"Run5SameClient"') { throw 'Benchmark matrix does not contain Run 5b rows.' }
 

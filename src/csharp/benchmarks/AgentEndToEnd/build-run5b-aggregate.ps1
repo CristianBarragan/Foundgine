@@ -17,9 +17,9 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $BenchmarkRoot = $PSScriptRoot
-$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '..\..')).Path
-if ([string]::IsNullOrWhiteSpace($Run5bRoot)) { $Run5bRoot = Join-Path $BenchmarkRoot 'Run5SameClient\artifacts' }
-if ([string]::IsNullOrWhiteSpace($Destination)) { $Destination = Join-Path $RepoRoot 'docs-site\assets\agent-benchmark\run5b-aggregate.json' }
+$RepoRoot = (Resolve-Path (Join-Path $BenchmarkRoot '../../../../')).Path
+if ([string]::IsNullOrWhiteSpace($Run5bRoot)) { $Run5bRoot = Join-Path $BenchmarkRoot 'Run5SameClient/artifacts' }
+if ([string]::IsNullOrWhiteSpace($Destination)) { $Destination = Join-Path $RepoRoot 'docs-site/assets/agent-benchmark/run5b-aggregate.json' }
 
 if (-not (Test-Path -LiteralPath $Run5bRoot -PathType Container)) { throw "Run 5b artifact directory not found: $Run5bRoot" }
 $metadataFiles = @(Get-ChildItem -LiteralPath $Run5bRoot -Recurse -Filter 'run5-same-client-metadata.json' -File)

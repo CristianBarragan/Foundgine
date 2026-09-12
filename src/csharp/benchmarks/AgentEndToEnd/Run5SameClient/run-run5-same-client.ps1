@@ -13,7 +13,7 @@ $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 Set-StrictMode -Version Latest
 
-$RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '../../..')
+$RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '../../../../..')
 $ComposeFile = Join-Path $PSScriptRoot 'docker-compose.yml'
 $Project = 'foundgine-run5-same-client'
 $DbProject = Join-Path $PSScriptRoot 'Database/Database.csproj'

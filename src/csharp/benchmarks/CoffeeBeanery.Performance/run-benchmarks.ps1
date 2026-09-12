@@ -4,9 +4,9 @@ $PipelineRoot = $PSScriptRoot
 
 function Stop-AllBenchmarkEnvironments {
     foreach ($entry in @(
-        @{ Project = "coffeebeanery-query";    Compose = (Join-Path $PipelineRoot "compose\postgres.yml") },
-        @{ Project = "coffeebeanery-mutation"; Compose = (Join-Path $PipelineRoot "compose\mutation.yml") },
-        @{ Project = "coffeebeanery-update";   Compose = (Join-Path $PipelineRoot "compose\update.yml") }
+        @{ Project = "coffeebeanery-query";    Compose = (Join-Path $PipelineRoot "compose/postgres.yml") },
+        @{ Project = "coffeebeanery-mutation"; Compose = (Join-Path $PipelineRoot "compose/mutation.yml") },
+        @{ Project = "coffeebeanery-update";   Compose = (Join-Path $PipelineRoot "compose/update.yml") }
     )) {
         # Docker may emit harmless removal messages on stderr. Cleanup must be
         # best-effort and must not mask the actual benchmark result.
@@ -28,7 +28,7 @@ try {
     )
 
     foreach ($suite in $Suites) {
-        $script = Join-Path $PipelineRoot "pipelines\$suite.ps1"
+        $script = Join-Path $PipelineRoot "pipelines/$suite.ps1"
 
         Write-Host ""
         Write-Host ">>> STARTING $suite"

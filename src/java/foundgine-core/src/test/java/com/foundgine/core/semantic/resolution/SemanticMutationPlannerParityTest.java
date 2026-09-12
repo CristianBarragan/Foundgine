@@ -1,4 +1,4 @@
-package com.foundgine.core.semantic.mutation;
+package com.foundgine.core.semantic.resolution;
 
 import com.foundgine.core.abstractions.*;
 import com.foundgine.core.semantic.*;

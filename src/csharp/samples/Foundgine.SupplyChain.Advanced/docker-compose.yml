@@ -13,7 +13,7 @@ services:
       retries: 30
   mcp-foundgine:
     build:
-      context: ../../
+      context: ../../../../
       dockerfile: src/csharp/samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine/Dockerfile
     environment:
       SupplyChainConnectionString: Host=postgres;Port=5432;Database=foundgine_supply_chain;Username=benchmark;Password=benchmark

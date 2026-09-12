@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Foundgine.Core.Abstractions;
 using Foundgine.Core.Semantic;
 using Foundgine.Core.Semantic.Metadata;
@@ -62,7 +63,24 @@ public static class OpenIntentSemanticModel
             entity.Name,
             e =>
             {
+                e.Identity(IdSelector<T>());
                 e.Aliases(aliases);
             });
+    }
+
+    /// <summary>
+    /// Builds a property selector for the "Id" property declared on every
+    /// open-intent domain model, so the overlay can declare an identity
+    /// without hand-writing a typed lambda per entity. The overlay's identity
+    /// only needs to agree on the field *name* with the generated metadata
+    /// (see <see cref="SemanticModelBuilder.Overlay"/>); the existing
+    /// generated identity is what's actually retained.
+    /// </summary>
+    private static Expression<Func<T, object?>> IdSelector<T>()
+    {
+        var parameter = Expression.Parameter(typeof(T), "x");
+        var property = Expression.PropertyOrField(parameter, "Id");
+        var convert = Expression.Convert(property, typeof(object));
+        return Expression.Lambda<Func<T, object?>>(convert, parameter);
     }
 }

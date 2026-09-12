@@ -47,7 +47,7 @@ class SqlCompilerParityTest {
         var node = new SemanticPlanNode(
                 1, ExecutionOperation.SCAN, CUSTOMER,
                 List.of(CUSTOMER_ID), null, null, List.of(),
-                new SemanticQueryOptions(filter), null, null, null, -1,
+                new SemanticQueryOptions(filter, null, null, null, null), null, null, null, -1,
                 AggregateExecutionStrategy.COUNT_EXISTS_SHORT_CIRCUIT);
 
         var sql = new SqlCompiler(metadata()).compile(
@@ -88,7 +88,7 @@ class SqlCompilerParityTest {
         var filter = new SemanticRelationshipFilter(
                 CUSTOMER_ACCOUNTS,
                 SemanticRelationshipQuantifier.ALL,
-                new SemanticFieldFilter(ACCOUNT_BALANCE, SemanticFilterOperator.GTE, 0));
+                new SemanticFieldFilter(ACCOUNT_BALANCE, SemanticFilterOperator.NEQ, 0));
 
         var sql = compile(new SemanticQueryOptions(filter, List.of(), null, null, null)).commandText();
 
@@ -102,7 +102,7 @@ class SqlCompilerParityTest {
         var node = new SemanticPlanNode(
                 1, ExecutionOperation.SCAN, CUSTOMER,
                 List.of(CUSTOMER_ID, CUSTOMER_NAME), null, null, List.of(),
-                new SemanticQueryOptions());
+                new SemanticQueryOptions(), null, null, null, 0, null);
 
         var sql = new SqlCompiler(metadata).compile(
                 new SemanticPlan(node, List.of(), new SemanticPlanAuthorizationBinding("test-contract", "test-authorization"))).commandText();
@@ -116,7 +116,7 @@ class SqlCompilerParityTest {
         var options = new SemanticQueryOptions(null, List.of(), 25, 10, null);
         var plan = new SemanticPlan(
                 new SemanticPlanNode(1, ExecutionOperation.SCAN, CUSTOMER,
-                        List.of(CUSTOMER_ID), null, null, List.of(), options),
+                        List.of(CUSTOMER_ID), null, null, List.of(), options, null, null, null, 0, null),
                 List.of(), new SemanticPlanAuthorizationBinding("test-contract", "test-authorization"));
 
         var compiled = new SqlCompiler(metadata()).compile(plan);
@@ -130,7 +130,7 @@ class SqlCompilerParityTest {
     private static SqlPlan compile(SemanticQueryOptions options) {
         var node = new SemanticPlanNode(
                 1, ExecutionOperation.SCAN, CUSTOMER,
-                List.of(CUSTOMER_ID), null, null, List.of(), options);
+                List.of(CUSTOMER_ID), null, null, List.of(), options, null, null, null, 0, null);
         return new SqlCompiler(metadata()).compile(
                 new SemanticPlan(node, List.of(), new SemanticPlanAuthorizationBinding("test-contract", "test-authorization")));
     }

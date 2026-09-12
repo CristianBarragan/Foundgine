@@ -38,7 +38,7 @@ services:
 
   foundgine-warm:
     build:
-      context: ../../..
+      context: ../../../../..
       dockerfile: src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Dockerfile
 
     depends_on:

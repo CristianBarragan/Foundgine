@@ -1,5 +1,5 @@
 ﻿$ErrorActionPreference = "Stop"
-$ComposeFile = Join-Path $PSScriptRoot "..\compose\mutation.yml"
+$ComposeFile = Join-Path $PSScriptRoot "../compose/mutation.yml"
 $RunId = "{0}-{1}" -f $PID, ([Guid]::NewGuid().ToString("N").Substring(0, 8))
 $ProjectName = "coffeebeanery-mutation-$RunId"
 

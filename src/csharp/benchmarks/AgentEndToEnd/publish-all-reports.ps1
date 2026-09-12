@@ -13,7 +13,7 @@ foreach ($run in @(
     'Run5',
     'Run5SameClient'
 )) {
-    $script = Join-Path $PSScriptRoot "$run\publish-report.ps1"
+    $script = Join-Path $PSScriptRoot "$run/publish-report.ps1"
 
     if (-not (Test-Path -LiteralPath $script -PathType Leaf)) {
         throw "Publish script not found for $run`: $script"
@@ -31,11 +31,11 @@ foreach ($run in @(
     }
 }
 
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '../../../../')).Path
 
 $matrixDestination = Join-Path `
     $repoRoot `
-    'docs-site\assets\agent-benchmark\benchmark-matrix.json'
+    'docs-site/assets/agent-benchmark/benchmark-matrix.json'
 
 & (Join-Path $PSScriptRoot 'build-benchmark-matrix.ps1') `
     -Destination $matrixDestination

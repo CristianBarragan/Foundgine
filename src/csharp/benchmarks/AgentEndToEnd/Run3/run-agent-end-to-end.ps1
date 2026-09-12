@@ -72,7 +72,7 @@ $Concurrency = @($Concurrency) |
         }
     }
 
-$RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '../../..')
+$RepoRoot = Resolve-Path (Join-Path $PSScriptRoot '../../../../..')
 $ComposeFile = Join-Path $PSScriptRoot 'docker-compose.yml'
 $DatabaseProject = Join-Path $RepoRoot 'src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj'
 $BenchmarkProject = Join-Path $RepoRoot 'src/csharp/benchmarks/AgentEndToEnd/Run3/Foundgine.AgentEndToEnd.Run3.csproj'

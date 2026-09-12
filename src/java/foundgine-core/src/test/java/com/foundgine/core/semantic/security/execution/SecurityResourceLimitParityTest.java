@@ -18,7 +18,7 @@ class SecurityResourceLimitParityTest {
 
     @Test void nonJsonCallersCannotBypassSelectionDepth() {
         var request = new SemanticRequest(CUSTOMER,
-                List.of(new SemanticSelection(ID, null, List.of(new SemanticSelection(ID, null, List.of())))));
+                List.of(new SemanticSelection(ID, null, List.of(new SemanticSelection(ID, null, List.of())))), null, null);
         var d = SecurityResourceLimits.defaults();
         var limits = limits(1, d.maxOperationGraphNodes(), d.maxOperationGraphDepth(), d.maxOperationGraphEdges(),
                 d.maxOperationGraphFields(), d.maxSelectionNodes(), d.maxFilterDepth(), d.maxFilterNodes(),
@@ -31,7 +31,7 @@ class SecurityResourceLimitParityTest {
 
     @Test void pageSizeIsBoundedBeforePlanning() {
         var request = new SemanticRequest(CUSTOMER, List.of(new SemanticSelection(ID, null, List.of())),
-                new SemanticQueryOptions(null, List.of(), 10, null, null));
+                new SemanticQueryOptions(null, List.of(), 10, null, null), null);
         var d = SecurityResourceLimits.defaults();
         var limits = withPageSize(d, 5);
         var ex = assertThrows(IllegalStateException.class, () -> SecurityResourceLimitValidator.validate(request, limits));
@@ -39,9 +39,9 @@ class SecurityResourceLimitParityTest {
     }
 
     @Test void orderPathDepthIsBounded() {
-        var order = new SemanticOrderTerm(ID, SemanticSortDirection.ASC, List.of(ORDERS, ORDERS));
+        var order = new SemanticOrderTerm(ID, SemanticSortDirection.ASC, List.of(ORDERS, ORDERS), null);
         var request = new SemanticRequest(CUSTOMER, List.of(new SemanticSelection(ID, null, List.of())),
-                new SemanticQueryOptions(null, List.of(order), null, null, null));
+                new SemanticQueryOptions(null, List.of(order), null, null, null), null);
         var d = SecurityResourceLimits.defaults();
         var limits = withOrderPathDepth(d, 1);
         var ex = assertThrows(IllegalStateException.class, () -> SecurityResourceLimitValidator.validate(request, limits));
@@ -54,7 +54,7 @@ class SecurityResourceLimitParityTest {
                 new SemanticFieldFilter(ID, SemanticFilterOperator.EQ, 2),
                 new SemanticFieldFilter(ID, SemanticFilterOperator.EQ, 3)));
         var request = new SemanticRequest(CUSTOMER, List.of(new SemanticSelection(ID, null, List.of())),
-                new SemanticQueryOptions(filter, List.of(), null, null, null));
+                new SemanticQueryOptions(filter, List.of(), null, null, null), null);
         var d = SecurityResourceLimits.defaults();
         var limits = withFilterNodes(d, 2);
         var ex = assertThrows(IllegalStateException.class, () -> SecurityResourceLimitValidator.validate(request, limits));
@@ -63,7 +63,7 @@ class SecurityResourceLimitParityTest {
 
     @Test void cursorLengthIsBounded() {
         var request = new SemanticRequest(CUSTOMER, List.of(new SemanticSelection(ID, null, List.of())),
-                new SemanticQueryOptions(null, List.of(), null, null, "123456"));
+                new SemanticQueryOptions(null, List.of(), null, null, "123456"), null);
         var d = SecurityResourceLimits.defaults();
         var limits = withCursorLength(d, 5);
         var ex = assertThrows(IllegalStateException.class, () -> SecurityResourceLimitValidator.validate(request, limits));
