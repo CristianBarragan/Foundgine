@@ -13,7 +13,6 @@ src/
 │
 └── java/                   # Java implementation
     ├── pom.xml
-    ├── PORTING_NOTES.md
     └── foundgine-core/
         ├── pom.xml
         └── src/
