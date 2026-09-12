@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Port of {@code Foundgine.Core.Execution.Mutation.MutationExecutionSecurityCertificate}.
  *
  * <p>In-process execution certificate bound to one exact mutation IR and one
  * exact provider instance. It is deliberately non-serializable/non-transferable.
  *
- * <p>C#'s {@code internal} factory method and bind check are ported as
- * package-private ({@link #create} and {@link #isBoundTo}), matching this
- * port's established C#-{@code internal}-to-Java-package-private mapping.
+ * <p>The factory method and bind check are package-private
+ * ({@link #create} and {@link #isBoundTo}) rather than public, since this
+ * certificate is only meant to be constructed and checked from within this
+ * package.
  */
 public final class MutationExecutionSecurityCertificate {
 

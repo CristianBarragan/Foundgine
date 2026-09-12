@@ -5,11 +5,8 @@ package com.foundgine.core.semantic.security.execution;
  * planning. These limits protect the semantic engine even when an adapter
  * other than JSON is used.
  *
- * <p>C# exposes these as {@code init}-only properties, each with its own
- * default, so any subset can be overridden via {@code with}-expressions at a
- * call site. Java records have a single canonical constructor, so this is
- * ported as the full canonical constructor (all 18 values) plus a no-arg
- * convenience constructor carrying the same defaults as the C# original for
+ * <p>Provided as the full canonical constructor (all 18 values) plus a no-arg
+ * convenience constructor carrying sensible defaults for
  * callers that want the defaults untouched. A caller that needs to override
  * a subset must go through the canonical constructor with the remaining
  * values copied from {@link #defaults()}.

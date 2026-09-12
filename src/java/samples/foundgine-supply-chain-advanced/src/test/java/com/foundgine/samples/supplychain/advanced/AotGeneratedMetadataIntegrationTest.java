@@ -1,7 +1,7 @@
 package com.foundgine.samples.supplychain.advanced;
 
 import com.foundgine.core.semantic.metadata.EntityMetadata;
-import com.foundgine.generated.GeneratedFoundgineMetadata;
+import com.foundgine.samples.supplychain.advanced.generated.GeneratedFoundgineMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.StreamSupport;
@@ -36,7 +36,8 @@ class AotGeneratedMetadataIntegrationTest {
                 .findFirst()
                 .orElseThrow();
 
-        assertTrue(supplier.aliases().stream().anyMatch(a -> a.value().equals("Vendor") && a.weight() == 95));
+        assertTrue(supplier.aliases().stream()
+                .anyMatch(a -> a.name().equals("Vendor") && a.weight() == 95));
 
         var movement = StreamSupport.stream(registry.entities().spliterator(), false)
                 .filter(e -> e.name().equals("InventoryMovement"))

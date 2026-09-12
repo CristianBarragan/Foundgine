@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Port of {@code Foundgine.Core.Semantic.Planning.SemanticPlanFingerprint}.
  *
  * <p>Produces a deterministic key for an execution plan. The complete authorized plan is
  * represented, including authorization predicates and request values. This intentionally keys
@@ -199,8 +198,7 @@ public final class SemanticPlanFingerprint {
 
     /**
      * Appends a canonical, type-discriminated representation of an arbitrary filter/predicate
-     * value. The C# original prefixes with {@code Type.AssemblyQualifiedName}; the Java port
-     * prefixes with the runtime class's fully-qualified name, which serves the same purpose of
+     * value, prefixed with the runtime class's fully-qualified name, which serves the purpose of
      * preventing values of different types from colliding under the same textual form.
      */
     private static void appendValue(StringBuilder builder, Object value) {

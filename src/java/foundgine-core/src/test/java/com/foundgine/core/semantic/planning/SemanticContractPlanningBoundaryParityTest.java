@@ -48,7 +48,7 @@ class SemanticContractPlanningBoundaryParityTest {
     @Test void plannerRejectsRelationshipTargetThatDisagreesWithContract() {
         var graph = new SemanticGraph();
         var root = graph.addRoot(new EntityId(1));
-        graph.add(new EntityId(3), new RelationshipId(1), root);
+        graph.add(new EntityId(3), new RelationshipId(1), root, List.of());
         var operation = SemanticOperationCompiler.compile(graph);
         var ex = assertThrows(IllegalStateException.class, () -> new Planner().plan(contract(), operation));
         assertTrue(ex.getMessage().toLowerCase(Locale.ROOT).contains("targets"));

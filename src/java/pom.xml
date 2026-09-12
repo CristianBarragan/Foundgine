@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Foundgine — Java port
+  Foundgine — Java implementation
 
-  Mirrors the .NET solution layout 1:1 at the module level:
+  Module layout:
 
-    .NET project                    -> Java/Maven module
-    =============================================================
-    src/Foundgine.Core               -> foundgine-core          [IN PROGRESS]
-    src/Foundgine.Extensions         -> foundgine-extensions     [structural parity; transport adapters can be layered independently]
-    src/Foundgine.Providers          -> foundgine-providers      [ported; parity in progress]
-    src/Foundgine.Runtime            -> foundgine-runtime        [ported; parity in progress]
-    src/csharp/tests/Foundgine.*.Tests -> src/java/**/src/test/java [parity in progress]
-    src/csharp/samples/Foundgine.SupplyChain* -> src/java/samples/* [parity in progress]
-    src/csharp/benchmarks/* -> src/java/benchmarks/* [parity in progress]
-    src/csharp/security/Foundgine.RedTeam -> src/java/security/foundgine-redteam [parity in progress]
+    foundgine-core          [core semantic execution boundary]
+    foundgine-extensions    [transport adapters, layered independently]
+    foundgine-providers     [storage/execution providers]
+    foundgine-runtime       [application-facing runtime]
+    */src/test/java         [test suites]
+    samples/*               [sample applications]
+    benchmarks/*            [performance benchmarks]
+    security/foundgine-redteam [security test suite]
 
-  Modules are added to this parent as each one is ported, in dependency
-  order (Core first, since everything else depends on it).
+  Modules are added to this parent in dependency order (Core first, since
+  everything else depends on it).
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -28,12 +26,10 @@
   <version>${revision}</version>
   <packaging>pom</packaging>
 
-  <name>Foundgine (Java port)</name>
+  <name>Foundgine</name>
   <description>
-    Java port of Foundgine: an application-controlled semantic execution
-    boundary for AI agents and other callers. Ported module-by-module from
-    the original .NET/C# implementation, preserving package layout,
-    class/method names (in camelCase), and behavior.
+    Foundgine: an application-controlled semantic execution boundary for AI
+    agents and other callers.
   </description>
 
   <properties>

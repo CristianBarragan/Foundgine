@@ -18,7 +18,7 @@ class ExecutionIRBoundaryTests {
     void executionIrRequiresAuthorizationBinding() {
         var node = new SemanticPlanNode(1, ExecutionOperation.SCAN, EntityId.create("Customer"), List.of(), null, null, List.of());
         var plan = new SemanticPlan(node);
-        assertThrows(IllegalStateException.class, () -> ExecutionIR.compile(plan));
+        assertThrows(IllegalStateException.class, () -> ExecutionIRCompiler.compile(plan));
     }
 
     @Test
@@ -28,7 +28,7 @@ class ExecutionIRBoundaryTests {
         var binding = new SemanticPlanAuthorizationBinding("contract", "authorization");
         var plan = new SemanticPlan(node, List.of("authorization.required", "visibility.field"), binding);
 
-        var ir = ExecutionIR.compile(plan);
+        var ir = ExecutionIRCompiler.compile(plan);
         assertEquals(1, ir.root().id());
         assertEquals(entity, ir.root().entityId());
         assertEquals(List.of("authorization.required", "visibility.field"), ir.requiredSecurityInvariants());

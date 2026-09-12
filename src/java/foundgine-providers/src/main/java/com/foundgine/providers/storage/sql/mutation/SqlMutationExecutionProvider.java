@@ -69,8 +69,8 @@ public class SqlMutationExecutionProvider implements IMutationExecutionProvider 
             oldAutoCommit = connection.getAutoCommit();
             if (ownsTransaction && oldAutoCommit) connection.setAutoCommit(false);
 
-            List<MutationResult> results = new ArrayList<>(batch.operations().size());
-            for (SqlMutationPlan mutation : batch.operations()) {
+            List<MutationResult> results = new ArrayList<>(batch.sqlOperations().size());
+            for (SqlMutationPlan mutation : batch.sqlOperations()) {
                 cancellation.throwIfCancellationRequested();
                 results.add(executeOne(mutation, cancellation));
             }

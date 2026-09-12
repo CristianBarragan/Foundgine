@@ -119,7 +119,7 @@ class SqlExecutionPostgresE2ETest {
 
             SemanticPlanNode child = new SemanticPlanNode(
                     2, ExecutionOperation.SCAN, ACCOUNT,
-                    List.of(ACCOUNT_ID, ACCOUNT_BALANCE), null, ACCOUNTS, List.of(),
+                    List.of(ACCOUNT_ID, ACCOUNT_BALANCE), ACCOUNTS, null, List.of(),
                     new SemanticQueryOptions(null, List.of(), null, null, null),
                     null, null, RelationshipTraversalMode.DEFAULT, 1, AggregateExecutionStrategy.DEFAULT);
             SemanticPlanNode root = new SemanticPlanNode(

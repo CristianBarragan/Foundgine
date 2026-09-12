@@ -264,7 +264,19 @@ public final class InMemoryCompiler implements IProviderPlanCompiler,
                 }
                 yield false;
             }
+            case GT -> compareNumeric(actual, expected) > 0;
+            case GTE -> compareNumeric(actual, expected) >= 0;
+            case LT -> compareNumeric(actual, expected) < 0;
+            case LTE -> compareNumeric(actual, expected) <= 0;
         };
+    }
+
+    private int compareNumeric(Object actual, Object expected) {
+        if (!(actual instanceof Number actualNumber) || !(expected instanceof Number expectedNumber)) {
+            throw new IllegalArgumentException(
+                    "Comparison operators require numeric operands, got '" + actual + "' and '" + expected + "'.");
+        }
+        return Double.compare(actualNumber.doubleValue(), expectedNumber.doubleValue());
     }
 
     private boolean evaluateAuthorization(

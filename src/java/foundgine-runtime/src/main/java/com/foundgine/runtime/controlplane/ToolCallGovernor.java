@@ -93,7 +93,7 @@ public final class ToolCallGovernor {
                         null, approval);
             }
             case ALLOW -> {
-                var routingContext = new RoutingContext(toolName, security, riskScore);
+                var routingContext = new RoutingContext(toolName, security, riskScore, null);
                 var contract = routing.route(routingContext);
                 audit(AuditEvent.AuditCategory.ROUTED, toolName, security, security.authorityCachePartition(),
                         "Routed as " + contract.mode() + "/" + contract.runtime() + "/" + contract.worker()
@@ -133,7 +133,7 @@ public final class ToolCallGovernor {
         }
 
         var riskScore = riskScorer.score(toolName, security);
-        var routingContext = new RoutingContext(toolName, security, riskScore);
+        var routingContext = new RoutingContext(toolName, security, riskScore, null);
         var contract = routing.route(routingContext);
         audit(AuditEvent.AuditCategory.ROUTED, toolName, security, security.authorityCachePartition(),
                 "Routed after approval as " + contract.mode() + "/" + contract.runtime() + "/" + contract.worker()

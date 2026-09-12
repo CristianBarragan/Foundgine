@@ -6,7 +6,6 @@ import com.foundgine.core.semantic.query.SemanticFilterAggregate;
 import java.util.Objects;
 
 /**
- * Port of {@code Foundgine.Core.Semantic.Planning.AggregateExecutionStrategyResolver}.
  *
  * <p>Single source of truth for whether a bare COUNT aggregate comparison (no target field,
  * no predicate) reduces to an emptiness/existence test — i.e. whether its truth value depends
@@ -73,10 +72,9 @@ public final class AggregateExecutionStrategyResolver {
     /**
      * Returns the value as a {@code long}, or {@code null} if it cannot be interpreted as one.
      *
-     * <p>The C# original also matches {@code uint}/{@code ushort}/{@code sbyte} and a
-     * {@code ulong} bounded by {@code long.MaxValue}; Java has no unsigned integer types, so
-     * those cases collapse into the signed {@code Byte}/{@code Short}/{@code Integer}/{@code Long}
-     * cases here — callers on this port's boundary only ever produce signed boxed values.
+     * <p>Java has no unsigned integer types, so unsigned values collapse into the signed
+     * {@code Byte}/{@code Short}/{@code Integer}/{@code Long} cases here — callers at this
+     * boundary only ever produce signed boxed values.
      */
     public static Long tryGetIntegral(Object value) {
         return switch (value) {
