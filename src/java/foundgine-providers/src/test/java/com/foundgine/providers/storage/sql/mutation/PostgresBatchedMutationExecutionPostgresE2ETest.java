@@ -46,6 +46,7 @@ class PostgresBatchedMutationExecutionPostgresE2ETest {
         Assumptions.assumeTrue(url != null, "Set FOUNDGINE_POSTGRES_CONNECTION_STRING to run PostgreSQL E2E tests.");
 
         try (Connection connection = DriverManager.getConnection(url)) {
+            ensureCorrelationSchema(connection);
             // The test controls the transaction so the provider must participate
             // without committing or rolling it back.
             connection.setAutoCommit(false);
@@ -85,6 +86,7 @@ class PostgresBatchedMutationExecutionPostgresE2ETest {
         Assumptions.assumeTrue(url != null, "Set FOUNDGINE_POSTGRES_CONNECTION_STRING to run PostgreSQL E2E tests.");
 
         try (Connection connection = DriverManager.getConnection(url)) {
+            ensureCorrelationSchema(connection);
             connection.setAutoCommit(true);
             long before = count(connection, "fg_correlation", "Customer");
 
@@ -114,6 +116,7 @@ class PostgresBatchedMutationExecutionPostgresE2ETest {
         Assumptions.assumeTrue(url != null, "Set FOUNDGINE_POSTGRES_CONNECTION_STRING to run PostgreSQL E2E tests.");
 
         try (Connection connection = DriverManager.getConnection(url)) {
+            ensureCorrelationSchema(connection);
             connection.setAutoCommit(true);
             long before = count(connection, "fg_correlation", "Customer");
             try (CancellationTokenSource source = new CancellationTokenSource()) {
@@ -169,6 +172,14 @@ class PostgresBatchedMutationExecutionPostgresE2ETest {
                         new FieldMetadata(ACCOUNT_NAME_FIELD, "Name", String.class, new ColumnReference(ACCOUNT, ACCOUNT_NAME))),
                 new ColumnReference(ACCOUNT, ACCOUNT_ID), null, false, null, null));
         return registry;
+    }
+
+    private static void ensureCorrelationSchema(Connection connection) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("CREATE SCHEMA IF NOT EXISTS \"fg_correlation\"");
+            statement.execute("CREATE TABLE IF NOT EXISTS \"fg_correlation\".\"Customer\" (\"Id\" BIGSERIAL PRIMARY KEY, \"Name\" TEXT NOT NULL)");
+            statement.execute("CREATE TABLE IF NOT EXISTS \"fg_correlation\".\"Account\" (\"Id\" BIGSERIAL PRIMARY KEY, \"CustomerId\" BIGINT NOT NULL REFERENCES \"fg_correlation\".\"Customer\"(\"Id\"), \"Name\" TEXT NOT NULL)");
+        }
     }
 
     private static long count(Connection connection, String schema, String table) throws SQLException {
