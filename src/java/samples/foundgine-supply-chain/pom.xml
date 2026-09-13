@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.foundgine</groupId>
+		<groupId>io.github.CristianBarragan</groupId>
 		<artifactId>foundgine-parent</artifactId>
 		<version>${revision}</version>
 		<relativePath>../../pom.xml</relativePath>
@@ -16,7 +16,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.foundgine</groupId>
+			<groupId>io.github.CristianBarragan</groupId>
 			<artifactId>foundgine-core</artifactId>
 			<version>${revision}</version>
 		</dependency>
@@ -31,13 +31,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.foundgine</groupId>
+			<groupId>io.github.CristianBarragan</groupId>
 			<artifactId>foundgine-runtime</artifactId>
 			<version>${revision}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>com.foundgine</groupId>
+			<groupId>io.github.CristianBarragan</groupId>
 			<artifactId>foundgine-providers</artifactId>
 			<version>${revision}</version>
 		</dependency>
@@ -59,7 +59,7 @@
 
 					<annotationProcessorPaths>
 						<path>
-							<groupId>com.foundgine</groupId>
+							<groupId>io.github.CristianBarragan</groupId>
 							<artifactId>foundgine-aot-generator</artifactId>
 							<version>${revision}</version>
 						</path>

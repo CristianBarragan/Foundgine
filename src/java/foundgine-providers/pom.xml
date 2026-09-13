@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.foundgine</groupId>
+		<groupId>io.github.CristianBarragan</groupId>
 		<artifactId>foundgine-parent</artifactId>
 		<version>${revision}</version> 
 		<relativePath>../pom.xml</relativePath>
@@ -21,12 +21,12 @@
 	</description>
 	<dependencies>
 		<dependency>
-			<groupId>com.foundgine</groupId>
+			<groupId>io.github.CristianBarragan</groupId>
 			<artifactId>foundgine-core</artifactId>
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.foundgine</groupId>
+			<groupId>io.github.CristianBarragan</groupId>
 			<artifactId>foundgine-runtime</artifactId>
 			<version>${revision}</version>
 		</dependency>

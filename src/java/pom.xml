@@ -21,7 +21,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.foundgine</groupId>
+  <groupId>io.github.CristianBarragan</groupId>
   <artifactId>foundgine-parent</artifactId>
   <version>${revision}</version>
   <packaging>pom</packaging>
@@ -220,7 +220,17 @@
         <artifactId>flatten-maven-plugin</artifactId>
         <configuration>
           <updatePomFile>true</updatePomFile>
-          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          <!--
+            "oss" (not "resolveCiFriendliesOnly") is required for Central
+            publishing: it expands name/description/url/scm/developers
+            (which only exist on the parent POM, inherited by children)
+            into each module's flattened POM, and fully resolves dependency
+            versions that come from a BOM import (e.g. junit-bom) rather
+            than leaving them blank. resolveCiFriendliesOnly only resolves
+            the ${revision} placeholder and left both of those missing,
+            which is what Central's validator rejected the deployment for.
+          -->
+          <flattenMode>oss</flattenMode>
         </configuration>
         <executions>
           <execution>
