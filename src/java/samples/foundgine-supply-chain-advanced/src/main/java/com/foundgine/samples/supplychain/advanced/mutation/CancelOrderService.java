@@ -17,7 +17,7 @@ public final class CancelOrderService {
                          String planFingerprint, String evidence) {}
 
     private final SupplyChainData data;
-    private final Map<String, Object> locks = new HashMap<>();
+    private final Map<String, Object> locks = new java.util.concurrent.ConcurrentHashMap<>();
 
     public CancelOrderService(SupplyChainData data) { this.data = Objects.requireNonNull(data); }
 

@@ -10,7 +10,7 @@ import java.math.BigDecimal; import java.nio.charset.StandardCharsets; import ja
 public final class PlaceOrderService {
   public record OrderLine(int productId,int quantity) {}
   public record Result(int orderId,boolean replay,BigDecimal total,String planFingerprint,String evidence) {}
-  private final SupplyChainData data; private final Map<String,Object> locks=new HashMap<>(); private int nextOrderId=1,nextItemId=1;
+  private final SupplyChainData data; private final Map<String,Object> locks=new java.util.concurrent.ConcurrentHashMap<>(); private int nextOrderId=1,nextItemId=1;
   public PlaceOrderService(SupplyChainData data){this.data=Objects.requireNonNull(data);}
   public Result placeOrder(String actor,Authorization.Context auth,int customerId,List<OrderLine> lines,String key){
     Objects.requireNonNull(actor); Objects.requireNonNull(auth); Objects.requireNonNull(lines);

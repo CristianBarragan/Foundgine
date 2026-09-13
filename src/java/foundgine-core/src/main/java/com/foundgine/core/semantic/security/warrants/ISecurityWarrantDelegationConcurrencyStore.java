@@ -1,6 +1,10 @@
 package com.foundgine.core.semantic.security.warrants;
+
 public interface ISecurityWarrantDelegationConcurrencyStore {
- SecurityWarrantDelegationConcurrencySnapshot capture(SecurityWarrant parent);
- SecurityWarrantDelegationReservation commitChild(SecurityWarrant parent,SecurityWarrant child,SecurityWarrantDelegationConcurrencySnapshot expected);
- boolean isCommitted(SecurityWarrant child);
+	SecurityWarrantDelegationConcurrencySnapshot capture(SecurityWarrant parent);
+
+	SecurityWarrantDelegationReservation commitChild(SecurityWarrant parent, SecurityWarrant child,
+			SecurityWarrantDelegationConcurrencySnapshot expected);
+
+	boolean isCommitted(SecurityWarrant child);
 }
