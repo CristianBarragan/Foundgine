@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.CristianBarragan</groupId>
+        <groupId>io.github.cristianbarragan</groupId>
         <artifactId>foundgine-parent</artifactId>
         <version>${revision}</version>
     </parent>
@@ -17,13 +17,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.github.CristianBarragan</groupId>
+            <groupId>io.github.cristianbarragan</groupId>
             <artifactId>foundgine-core</artifactId>
             <version>${revision}</version>
         </dependency>
 
         <dependency>
-            <groupId>io.github.CristianBarragan</groupId>
+            <groupId>io.github.cristianbarragan</groupId>
             <artifactId>foundgine-providers</artifactId>
             <version>${revision}</version>
         </dependency>

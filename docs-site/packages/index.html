@@ -29,13 +29,13 @@ Foundgine.Extensions  (optional framework integrations)</pre></section>
 <section><h2 id="current-publishable-packages">Current publishable packages</h2><div class="table-wrap"><table><thead><tr><th>Package</th><th>Role</th><th>Use it when</th></tr></thead><tbody><tr><td><strong>Foundgine.Core</strong></td><td>Provider-independent semantic model, metadata, intent, planning and execution contracts.</td><td>You build semantic models, integrations or custom providers.</td></tr><tr><td><strong>Foundgine.Runtime</strong></td><td>Application-facing orchestration, authorization, plan approval, routing and execution.</td><td>You are building a normal Foundgine application.</td></tr><tr><td><strong>Foundgine.Providers</strong></td><td>Concrete storage, AI/model, MCP, AOT and other provider integrations.</td><td>You need physical infrastructure or agent/tool integrations.</td></tr><tr><td><strong>Foundgine.Extensions</strong></td><td>Optional framework adapters, currently including Hot Chocolate GraphQL integration.</td><td>You need GraphQL/Hot Chocolate integration.</td></tr></tbody></table></div></section>
 <section><h2 id="install-the-normal-application-stack">Install the normal application stack</h2><pre>dotnet add package Foundgine.Runtime --version 2.0.1
 dotnet add package Foundgine.Providers --version 2.0.1</pre><p><code>Foundgine.Core</code> is the provider-independent foundation and is brought in by the higher-level packages. Add it directly when your code intentionally targets its contracts.</p></section>
-<section><h2 id="java-maven">Java / Maven</h2><p>A Java port of the same four packages is published to Maven Central under the <code>io.github.CristianBarragan</code> namespace.</p><pre>&lt;dependency&gt;
-  &lt;groupId&gt;io.github.CristianBarragan&lt;/groupId&gt;
+<section><h2 id="java-maven">Java / Maven</h2><p>A Java port of the same four packages is published to Maven Central under the <code>io.github.cristianbarragan</code> namespace.</p><pre>&lt;dependency&gt;
+  &lt;groupId&gt;io.github.cristianbarragan&lt;/groupId&gt;
   &lt;artifactId&gt;foundgine-runtime&lt;/artifactId&gt;
   &lt;version&gt;2.2.0&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
-  &lt;groupId&gt;io.github.CristianBarragan&lt;/groupId&gt;
+  &lt;groupId&gt;io.github.cristianbarragan&lt;/groupId&gt;
   &lt;artifactId&gt;foundgine-providers&lt;/artifactId&gt;
   &lt;version&gt;2.2.0&lt;/version&gt;
 &lt;/dependency&gt;</pre><p><code>foundgine-core</code> is the provider-independent foundation and is brought in transitively by the higher-level artifacts. Add it directly when your code intentionally targets its contracts. <code>foundgine-extensions</code> is available the same way for optional framework integrations.</p></section>

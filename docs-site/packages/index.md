@@ -9,16 +9,16 @@ The current package surface is organized as four publishable packages:
 | `Foundgine.Providers` | Concrete storage, AI/model, MCP, AOT and other integrations |
 | `Foundgine.Extensions` | Optional framework integrations such as Hot Chocolate GraphQL |
 
-A Java port of the same four packages is published to Maven Central under the `io.github.CristianBarragan` namespace:
+A Java port of the same four packages is published to Maven Central under the `io.github.cristianbarragan` namespace:
 
 ```xml
 <dependency>
-  <groupId>io.github.CristianBarragan</groupId>
+  <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-runtime</artifactId>
   <version>2.2.0</version>
 </dependency>
 <dependency>
-  <groupId>io.github.CristianBarragan</groupId>
+  <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-providers</artifactId>
   <version>2.2.0</version>
 </dependency>
