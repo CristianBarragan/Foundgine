@@ -3,6 +3,8 @@ name: Java — Build & Test
 on:
   push:
     branches: [ main, java ]
+    tags:
+      - v*
   pull_request:
     branches: [ main, java ]
   workflow_dispatch:
@@ -83,3 +85,54 @@ jobs:
           -Dsurefire.failIfNoSpecifiedTests=false
           -Dtest='*E2ETest,*Postgres*E2ETest,*Postgres*ParityTest'
           test
+
+  publish-maven:
+    name: Publish Maven Central packages
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - java-build
+      - java-postgres-e2e
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          # Writes ~/.m2/settings.xml with a <server id="central"> block whose
+          # username/password are read from these env var names at deploy
+          # time — the actual values never appear in this file or in git.
+          # Add them under Settings → Secrets and variables → Actions,
+          # scoped to the "production" environment above, using the
+          # username/password pair (a Central Portal user token, generated
+          # at https://central.sonatype.com/account) rather than a Sonatype
+          # account password.
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+
+      - name: Publish Foundgine.Core / Foundgine.Runtime / Foundgine.Providers / Foundgine.Extensions
+        working-directory: src/java
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: >-
+          mvn -B -ntp
+          -Prelease
+          -pl foundgine-core,foundgine-runtime,foundgine-providers,foundgine-extensions
+          -am
+          -DskipTests
+          deploy

@@ -9,6 +9,10 @@ import java.util.*;
 public final class SupplyChainAuthorization {
     public enum Role { CUSTOMER, ANALYST, WAREHOUSE_OPERATOR, SUPPLY_CHAIN_MANAGER }
 
+    public static ConfiguredSemanticAuthorizationPolicy create(String tenantId, Role role) {
+        return create(tenantId, role, Map.of());
+    }
+
     public static ConfiguredSemanticAuthorizationPolicy create(String tenantId, Role role, Map<String,String> claims) {
         var context = new SemanticAuthorizationContext(tenantId, role.name(), claims);
         var config = new SemanticAuthorizationConfiguration()
@@ -77,8 +81,7 @@ public final class SupplyChainAuthorization {
     private static AuthorizationPredicate predicate(SemanticAuthorizationContext context, EntityId entity, AuthorizationOperation op) {
         AuthorizationPredicate result = null;
         if (op == AuthorizationOperation.READ && (entity.equals(SupplyChainSemanticModel.SUPPLIER)
-                || entity.equals(SupplyChainSemanticModel.WAREHOUSE)
-                || entity.equals(SupplyChainSemanticModel.INVENTORY_LOT)))
+                || entity.equals(SupplyChainSemanticModel.WAREHOUSE)))
             result = tenantPredicate("TenantId");
         String warehouse = context.safeClaims().get("warehouse");
         if (op == AuthorizationOperation.READ && warehouse != null) {

@@ -48,7 +48,13 @@ public final class Claims {
     return new ValidationResult(Map.copyOf(accepted),List.copyOf(rejected),Severity.NONE,Map.copyOf(typed));
   }
   private static Validator val(String key,Function<String,Parsed> f){return new Validator(){public String key(){return key;} public Parsed parse(String raw){return f.apply(raw);}};}
-  private static boolean positiveInt(String x){return x.matches("[0-9]+")&&Integer.parseInt(x)>0;}
-  private static boolean intRange(String x,int a,int b){return x.matches("[0-9]+")&&Integer.parseInt(x)>=a&&Integer.parseInt(x)<=b;}
+  private static boolean positiveInt(String x){
+    try { return x.matches("[0-9]+") && Integer.parseInt(x) > 0; }
+    catch (NumberFormatException e) { return false; }
+  }
+  private static boolean intRange(String x,int a,int b){
+    try { return x.matches("[0-9]+") && Integer.parseInt(x) >= a && Integer.parseInt(x) <= b; }
+    catch (NumberFormatException e) { return false; }
+  }
   private static Instant toInstant(Object o){if(o instanceof Instant i)return i;if(o instanceof OffsetDateTime d)return d.toInstant();return null;}
 }

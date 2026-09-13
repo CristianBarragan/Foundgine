@@ -27,18 +27,30 @@ public final class SupplyChainSemanticModel {
     public static SemanticModel build() {
         var b = new SemanticModelBuilder();
         entity(b, "Supplier", Domain.Supplier.class, "id", e -> {
+            e.alias("Vendor", 95);
+            e.alias("Seller", 90);
+            e.fieldAlias(FieldId.create("Supplier", "Country"), "State", 85);
             e.relationship("certifications", CERTIFICATION, RelationshipCardinality.MANY);
             e.relationship("incidents", COMPLIANCE_INCIDENT, RelationshipCardinality.MANY);
+            e.relationship("purchaseOrders", PURCHASE_ORDER, RelationshipCardinality.MANY);
         });
+        entity(b, "Company", Domain.Company.class, "id", e -> {});
+        entity(b, "InventoryMovement", Domain.InventoryMovement.class, "id", e -> {});
         entity(b, "SupplierCertification", Domain.SupplierCertification.class, "id", e -> {});
         entity(b, "ComplianceIncident", Domain.ComplianceIncident.class, "id", e -> {});
         entity(b, "Warehouse", Domain.Warehouse.class, "id", e ->
             e.relationship("inventory", INVENTORY_LOT, RelationshipCardinality.MANY));
         entity(b, "BusinessUnit", Domain.BusinessUnit.class, "id", e -> {});
         entity(b, "PurchaseOrder", Domain.PurchaseOrder.class, "id", e -> {
+            e.alias("PO", 100);
+            e.alias("POs", 95);
+            e.alias("Buy", 90);
+            e.alias("Buys", 85);
+            e.fieldAlias(FieldId.create("PurchaseOrder", "ExpectedArrival"), "DueDate", 90);
             e.relationship("lines", PURCHASE_ORDER_LINE, RelationshipCardinality.MANY);
             e.relationship("shipments", SHIPMENT, RelationshipCardinality.MANY);
             e.relationship("supplier", SUPPLIER, RelationshipCardinality.ONE);
+            e.relationshipAlias(RelationshipId.create("PurchaseOrder", "supplier"), "vendor", 85);
         });
         entity(b, "PurchaseOrderLine", Domain.PurchaseOrderLine.class, "id", e -> {
             e.relationship("purchaseOrder", PURCHASE_ORDER, RelationshipCardinality.ONE);
@@ -52,10 +64,7 @@ public final class SupplyChainSemanticModel {
         });
         entity(b, "CustomerOrder", Domain.CustomerOrder.class, "id", e ->
             e.relationship("lines", CUSTOMER_ORDER_LINE, RelationshipCardinality.MANY));
-        entity(b, "CustomerOrderLine", Domain.CustomerOrderLine.class, "id", e -> {
-            e.relationship("customerOrder", CUSTOMER_ORDER, RelationshipCardinality.ONE);
-            e.relationship("product", PRODUCT, RelationshipCardinality.ONE);
-        });
+        entity(b, "CustomerOrderLine", Domain.CustomerOrderLine.class, "id", e -> {});
         entity(b, "Product", Domain.Product.class, "id", e ->
             e.relationship("components", COMPONENT, RelationshipCardinality.MANY));
         entity(b, "ProductComponent", Domain.ProductComponent.class, "parentProductId", e ->

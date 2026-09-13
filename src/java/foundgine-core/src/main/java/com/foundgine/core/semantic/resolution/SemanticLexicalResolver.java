@@ -5,6 +5,7 @@ import com.foundgine.core.semantic.AliasWeightEvidenceGate;
 import com.foundgine.core.semantic.AliasWeightEvidenceGate.AliasEvidenceStatus;
 import com.foundgine.core.semantic.AliasWeightEvidenceGate.AliasInterpretationEvidence;
 import com.foundgine.core.semantic.SemanticContractSnapshot;
+import java.time.Duration;
 import java.util.*;
 
 /** Resolves lexical tokens into graph-constrained semantic interpretations. */
@@ -13,7 +14,7 @@ public final class SemanticLexicalResolver {
 	private final ISemanticLexicalCandidateSource source;
 	private final int candidateLimit, maxBridgeHops, maxTokens, maxPathsExplored;
 	private final double ambiguityThreshold;
-	private final long timeoutMillis, retrievalTimeoutMillis;
+	private final long timeoutNanos, retrievalTimeoutNanos;
 	private final Integer minimumAliasWeight;
 
 	public SemanticLexicalResolver(SemanticContractSnapshot contract, ISemanticLexicalCandidateSource source) {
@@ -23,6 +24,14 @@ public final class SemanticLexicalResolver {
 	public SemanticLexicalResolver(SemanticContractSnapshot contract, ISemanticLexicalCandidateSource source,
 			int candidateLimit, int maxBridgeHops, double ambiguityThreshold, int maxTokens, int maxPathsExplored,
 			long timeoutMillis, long retrievalTimeoutMillis, Integer minimumAliasWeight) {
+		this(contract, source, candidateLimit, maxBridgeHops, ambiguityThreshold, maxTokens, maxPathsExplored,
+				Duration.ofMillis(timeoutMillis), Duration.ofMillis(retrievalTimeoutMillis), minimumAliasWeight);
+	}
+
+	/** Duration-precision constructor used where parity tests need sub-millisecond budgets. */
+	public SemanticLexicalResolver(SemanticContractSnapshot contract, ISemanticLexicalCandidateSource source,
+			int candidateLimit, int maxBridgeHops, double ambiguityThreshold, int maxTokens, int maxPathsExplored,
+			Duration timeout, Duration retrievalTimeout, Integer minimumAliasWeight) {
 		this.contract = Objects.requireNonNull(contract);
 		this.source = Objects.requireNonNull(source);
 		if (candidateLimit < 1 || candidateLimit > 1000)
@@ -35,7 +44,8 @@ public final class SemanticLexicalResolver {
 			throw new IllegalArgumentException("maxTokens out of range");
 		if (maxPathsExplored < 1 || maxPathsExplored > 1_000_000)
 			throw new IllegalArgumentException("maxPathsExplored out of range");
-		if (timeoutMillis <= 0 || retrievalTimeoutMillis <= 0)
+		if (timeout == null || retrievalTimeout == null || timeout.isZero() || timeout.isNegative()
+				|| retrievalTimeout.isZero() || retrievalTimeout.isNegative())
 			throw new IllegalArgumentException("timeouts must be positive");
 		if (minimumAliasWeight != null && (minimumAliasWeight < 1 || minimumAliasWeight > 100))
 			throw new IllegalArgumentException("minimumAliasWeight out of range");
@@ -44,8 +54,8 @@ public final class SemanticLexicalResolver {
 		this.ambiguityThreshold = ambiguityThreshold;
 		this.maxTokens = maxTokens;
 		this.maxPathsExplored = maxPathsExplored;
-		this.timeoutMillis = timeoutMillis;
-		this.retrievalTimeoutMillis = retrievalTimeoutMillis;
+		this.timeoutNanos = timeout.toNanos();
+		this.retrievalTimeoutNanos = retrievalTimeout.toNanos();
 		this.minimumAliasWeight = minimumAliasWeight;
 	}
 
@@ -125,7 +135,7 @@ public final class SemanticLexicalResolver {
 						"No lexical candidate was returned for token '" + t + "'.", List.of());
 		var roots = new ArrayList<>(sets.get(tokens[0]));
 		roots.sort(candidateComparator());
-		var budget = new SearchBudget(maxPathsExplored, timeoutMillis, cancellation);
+		var budget = new SearchBudget(maxPathsExplored, timeoutNanos, cancellation);
 		var raw = new ArrayList<SemanticLexicalResolution>();
 		for (var root : roots) {
 			if (budget.exceeded)
@@ -215,7 +225,7 @@ public final class SemanticLexicalResolver {
 	private void checkRetrieval(String token, long start, ISemanticLexicalCandidateSource.CancellationToken c) {
 		if (c != null && c.isCancellationRequested())
 			throw new Cancelled();
-		if (elapsed(start) >= retrievalTimeoutMillis)
+		if (System.nanoTime() - start >= retrievalTimeoutNanos)
 			throw new GroundingRetrievalTimeoutException(token, elapsed(start));
 	}
 
@@ -398,7 +408,7 @@ public final class SemanticLexicalResolver {
 
 	private static final class SearchBudget {
 		final int max;
-		final long timeout;
+		final long timeoutNanos;
 		final ISemanticLexicalCandidateSource.CancellationToken cancellation;
 		final long start = System.nanoTime();
 		int nodes;
@@ -407,7 +417,7 @@ public final class SemanticLexicalResolver {
 
 		SearchBudget(int m, long t, ISemanticLexicalCandidateSource.CancellationToken c) {
 			max = m;
-			timeout = t;
+			timeoutNanos = t;
 			cancellation = c;
 		}
 
@@ -424,7 +434,7 @@ public final class SemanticLexicalResolver {
 				limitHit = GroundingBudgetLimit.MAX_PATHS_EXPLORED;
 				return true;
 			}
-			if ((System.nanoTime() - start) / 1_000_000 > timeout) {
+			if (System.nanoTime() - start > timeoutNanos) {
 				exceeded = true;
 				limitHit = GroundingBudgetLimit.TIMEOUT;
 				return true;

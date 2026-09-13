@@ -34,7 +34,7 @@ class AdvancedSemanticModelTest {
                 Map.of("warehouse", "2"));
         var predicate = policy.getPredicate(SupplyChainSemanticModel.INVENTORY_LOT, AuthorizationOperation.READ);
         assertNotNull(predicate);
-        assertEquals(AuthorizationPredicateKind.AND, predicate.kind());
+        assertEquals(AuthorizationPredicateKind.EQUAL, predicate.kind());
     }
 
     @Test void sensitiveFieldsRemainRoleBound() {

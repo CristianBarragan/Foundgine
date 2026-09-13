@@ -247,7 +247,7 @@ class SqlExecutionPostgresE2ETest {
 			assertTrue(firstSql.commandText().contains("COUNT(*)"), firstSql.commandText());
 			assertTrue(firstSql.commandText().contains("ORDER BY"), firstSql.commandText());
 			assertTrue(firstSql.commandText().contains("ASC"), firstSql.commandText());
-			// CollectionOrderingTests.Count_orders_parent_entities_without_joining_the_collection:
+			// Port of C# CollectionOrderingTests.Count_orders_parent_entities_without_joining_the_collection:
 			// ordering by a COUNT over a to-many relationship must stay a correlated subquery, never a JOIN
 			// that would multiply parent rows.
 			assertFalse(firstSql.commandText().contains("INNER JOIN"), firstSql.commandText());

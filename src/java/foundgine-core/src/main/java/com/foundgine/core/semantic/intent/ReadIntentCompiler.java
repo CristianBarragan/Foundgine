@@ -6,6 +6,8 @@ import com.foundgine.core.semantic.ir.*;
 import com.foundgine.core.semantic.ir.graph.SemanticOperationGraph;
 import com.foundgine.core.semantic.query.*;
 import com.foundgine.core.semantic.resolution.SemanticRequestResolver;
+import com.foundgine.core.semantic.security.execution.SecurityResourceLimits;
+import com.foundgine.core.semantic.ir.graph.SemanticOperationGraphSafetyValidator;
 import java.util.*;
 
 /**
@@ -51,9 +53,22 @@ public final class ReadIntentCompiler {
 	}
 
 	public SemanticOperationGraph compileOperationGraph(ReadIntent intent) {
+		return compileOperationGraph(intent, SecurityResourceLimits.defaults());
+	}
+
+	/**
+	 * Compiles and validates a dynamic intent against provider-neutral operation
+	 * graph resource limits before the graph can reach planning or execution.
+	 * This mirrors the C# overload and keeps security bounds inside Core rather
+	 * than relying on a particular JSON/MCP adapter.
+	 */
+	public SemanticOperationGraph compileOperationGraph(ReadIntent intent, SecurityResourceLimits limits) {
+		Objects.requireNonNull(intent, "intent");
+		Objects.requireNonNull(limits, "limits");
 		var request = compile(intent);
-		var graph = new SemanticRequestResolver(snapshot()).resolve(request);
-		return SemanticOperationGraph.create(SemanticOperationCompiler.compile(graph));
+		var graph = SemanticOperationGraph.create(SemanticOperationCompiler.compile(new SemanticRequestResolver(snapshot()).resolve(request)));
+		SemanticOperationGraphSafetyValidator.validate(graph, limits);
+		return graph;
 	}
 
 	public SemanticIntentDocument createDocument(ReadIntent intent) {

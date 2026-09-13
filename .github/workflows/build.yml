@@ -33,10 +33,10 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
 
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
 
       - name: Pack NuGet packages
         shell: bash
@@ -54,7 +54,7 @@ jobs:
           rm -rf artifacts/nuget
           mkdir -p artifacts/nuget
 
-          dotnet pack Foundgine.sln \
+          dotnet pack src/csharp/Foundgine.sln \
             --no-restore \
             --configuration Release \
             --output artifacts/nuget \
@@ -157,10 +157,10 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
 
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
 
       - name: Run unit tests
         shell: bash
@@ -276,10 +276,10 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
 
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
 
       - name: Start PostgreSQL 17
         env:
