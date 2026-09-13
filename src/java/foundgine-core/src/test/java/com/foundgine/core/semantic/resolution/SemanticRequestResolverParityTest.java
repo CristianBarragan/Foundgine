@@ -61,7 +61,7 @@ class SemanticRequestResolverParityTest {
 	}
 
 	/**
-	 * Port of C# {@code Foundgine.E2E.Tests.CollectionOrderingTests
+	 * {@code Foundgine.E2E.Tests.CollectionOrderingTests
 	 * .Min_requires_a_collection_path_and_target_field}. The C# original only
 	 * asserts {@code Assert.NotNull(resolved)} (i.e. that resolution accepts a
 	 * well-formed MIN order term); no Java test previously exercised
