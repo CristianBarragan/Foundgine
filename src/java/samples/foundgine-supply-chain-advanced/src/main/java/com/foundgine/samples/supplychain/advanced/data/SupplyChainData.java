@@ -33,5 +33,5 @@ public final class SupplyChainData {
   }
   private static ProductComponent pc(int p,int c,String q){return new ProductComponent(p,c,bd(q),null,null,"1",false,bd("0"),bd("0"));}
   private static BigDecimal bd(String s){return new BigDecimal(s);} private static LocalDate date(String s){return LocalDate.parse(s);}
-  private SupplyChainData(){}
+  public SupplyChainData(){}
 }

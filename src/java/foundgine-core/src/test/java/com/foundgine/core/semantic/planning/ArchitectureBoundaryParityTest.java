@@ -26,12 +26,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <b>Porting decisions:</b>
  * <ul>
  * <li>The C# test locates the repo root by walking up from the test assembly's
- * {@code AppContext.BaseDirectory} looking for {@code Foundgine.sln}.
+ * {@code AppContext.BaseDirectory} looking for a repo-root marker file.
  * Maven/Surefire runs tests with the module directory (e.g.
  * {@code src/java/foundgine-core}) as the working directory, so
- * {@link #findRepositoryRoot()} walks up from there instead, using the same
- * {@code Foundgine.sln} marker (it lives at the single repo root shared by both
- * the C# and Java trees).</li>
+ * {@link #findRepositoryRoot()} walks up from there instead. Both ports use
+ * {@code Directory.Build.props} as the marker rather than {@code Foundgine.sln},
+ * since the solution file lives inside {@code src/csharp/} and is therefore not
+ * an ancestor of either the Java or C# module directories, while
+ * {@code Directory.Build.props} sits at the true repo root shared by both
+ * trees.</li>
  * <li>C# {@code .csproj}'s {@code ProjectReference}/{@code PackageReference}
  * elements become Maven's {@code <dependency>} elements (both intra-repo module
  * dependencies and external packages are declared the same way in Maven, unlike
@@ -122,7 +125,7 @@ class ArchitectureBoundaryParityTest {
 		var directory = Path.of("").toAbsolutePath();
 
 		while (directory != null) {
-			if (Files.exists(directory.resolve("Foundgine.sln"))) {
+			if (Files.exists(directory.resolve("Directory.Build.props"))) {
 				return directory;
 			}
 			directory = directory.getParent();

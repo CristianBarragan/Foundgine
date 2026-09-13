@@ -3,6 +3,12 @@ package com.foundgine.core.semantic.security.warrants;
 import java.util.*;
 
 public record CapabilityGrant(String capability, String operation, List<String> resourceScopes) {
+	public CapabilityGrant {
+		capability = require(capability, "capability");
+		operation = require(operation, "operation");
+		resourceScopes = normalize(resourceScopes);
+	}
+
 	public CapabilityGrant(String capability, String operation, Collection<String> scopes) {
 		this(require(capability, "capability"), require(operation, "operation"), normalize(scopes));
 	}

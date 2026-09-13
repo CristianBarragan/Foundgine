@@ -29,19 +29,20 @@ public final class SemanticAuthorizationCapabilityDiscovery {
 		var fields = e.fields().stream()
 				.sorted(Comparator.comparing(SemanticField::name, String.CASE_INSENSITIVE_ORDER))
 				.map(f -> new SemanticFieldAuthorizationCapability(f.id(), f.name(),
-						effective(read, p.getFieldAccess(e.id(), f.id(), AuthorizationOperation.READ)),
-						effective(write, p.getFieldAccess(e.id(), f.id(), AuthorizationOperation.WRITE))))
+						describeDecision(effective(read, p.getFieldAccess(e.id(), f.id(), AuthorizationOperation.READ))),
+						describeDecision(effective(write, p.getFieldAccess(e.id(), f.id(), AuthorizationOperation.WRITE)))))
 				.toList();
 		var rels = e.relationships().stream()
 				.sorted(Comparator.comparing(SemanticRelationship::name, String.CASE_INSENSITIVE_ORDER)).map(r -> {
 					var target = m.get(r.target());
 					return new SemanticRelationshipAuthorizationCapability(r.id(), r.name(), r.target(),
-							effective(read, p.getEntityAccess(target.id(), AuthorizationOperation.READ),
-									p.getRelationshipAccess(e.id(), r.id(), AuthorizationOperation.READ)),
-							effective(write, p.getEntityAccess(target.id(), AuthorizationOperation.WRITE),
-									p.getRelationshipAccess(e.id(), r.id(), AuthorizationOperation.WRITE)));
+							describeDecision(effective(read, p.getEntityAccess(target.id(), AuthorizationOperation.READ),
+									p.getRelationshipAccess(e.id(), r.id(), AuthorizationOperation.READ))),
+							describeDecision(effective(write, p.getEntityAccess(target.id(), AuthorizationOperation.WRITE),
+									p.getRelationshipAccess(e.id(), r.id(), AuthorizationOperation.WRITE))));
 				}).toList();
-		return new SemanticAuthorizationCapability(e.id(), e.name(), read, write, fields, rels);
+		return new SemanticAuthorizationCapability(e.id(), e.name(), describeDecision(read), describeDecision(write),
+				fields, rels);
 	}
 
 	private static AuthorizationDecision predicateDecision(AuthorizationPredicate p) {
@@ -50,5 +51,9 @@ public final class SemanticAuthorizationCapabilityDiscovery {
 
 	private static AuthorizationDecision effective(AuthorizationDecision... d) {
 		return SemanticAuthorizationCapabilityComposition.compose(d);
+	}
+
+	private static AuthorizationDecision describeDecision(AuthorizationDecision decision) {
+		return new AuthorizationDecision(decision.access());
 	}
 }

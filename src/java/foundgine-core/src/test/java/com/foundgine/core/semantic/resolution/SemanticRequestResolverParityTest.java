@@ -2,6 +2,10 @@ package com.foundgine.core.semantic.resolution;
 
 import com.foundgine.core.abstractions.*;
 import com.foundgine.core.semantic.*;
+import com.foundgine.core.semantic.query.SemanticOrderAggregate;
+import com.foundgine.core.semantic.query.SemanticOrderTerm;
+import com.foundgine.core.semantic.query.SemanticQueryOptions;
+import com.foundgine.core.semantic.query.SemanticSortDirection;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,5 +58,37 @@ class SemanticRequestResolverParityTest {
 		var ex = assertThrows(IllegalStateException.class,
 				() -> new SemanticRequestResolver(new SemanticContractSnapshot(model.freeze())).resolve(request));
 		assertTrue(ex.getMessage().contains("does not declare relationship"));
+	}
+
+	/**
+	 * Port of C# {@code Foundgine.E2E.Tests.CollectionOrderingTests
+	 * .Min_requires_a_collection_path_and_target_field}. The C# original only
+	 * asserts {@code Assert.NotNull(resolved)} (i.e. that resolution accepts a
+	 * well-formed MIN order term); no Java test previously exercised
+	 * {@code SemanticOrderAggregate.MIN} through the resolver at all.
+	 */
+	@Test
+	void requestResolvesWithAMinCollectionOrderTerm() {
+		var customer = new EntityId(1);
+		var account = new EntityId(2);
+		var accounts = new RelationshipId(1);
+		var model = new SemanticModelBuilder()
+				.entity(customer, "Customer",
+						e -> e.identity(new FieldId(1), "Id").relationship(accounts, "Accounts", account,
+								RelationshipCardinality.MANY))
+				.entity(account, "Account", e -> e.identity(new FieldId(1), "Id")
+						.field(new FieldId(3), "Balance", java.math.BigDecimal.class))
+				.build();
+
+		var order = new SemanticOrderTerm(new FieldId(3), SemanticSortDirection.ASC, List.of(accounts),
+				SemanticOrderAggregate.MIN);
+		var options = new SemanticQueryOptions(null, List.of(order), null, null, null);
+		var request = new SemanticRequest(customer, List.of(new SemanticSelection(new FieldId(1), null, List.of())),
+				options, null);
+
+		var graph = new SemanticRequestResolver(new SemanticContractSnapshot(model.freeze())).resolve(request);
+
+		assertNotNull(graph);
+		assertEquals(1, graph.nodes().size());
 	}
 }

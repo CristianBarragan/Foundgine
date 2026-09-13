@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.2.0 — September 14, 2026
+
 ### Security
 
 - Resolved the open question in `docs/SECURITY.md` ("the semantic API's
@@ -16,6 +18,40 @@
   helper already used for the execution API, so a caller probing many
   `attack` variants can no longer use the response shape to map policy
   boundaries.
+
+### Release
+
+- The C# NuGet packages and Java Maven artifacts now ship as aligned,
+  same-numbered releases: `Foundgine.Core`/`foundgine-core`,
+  `Foundgine.Runtime`/`foundgine-runtime`,
+  `Foundgine.Providers`/`foundgine-providers`, and
+  `Foundgine.Extensions`/`foundgine-extensions`.
+- Corrected the NuGet package metadata's license expression from `MIT` to
+  `Apache-2.0`. The packaged `LICENSE` file was always the Apache License,
+  2.0 text; only the `PackageLicenseExpression` in `Directory.Build.props`
+  disagreed with it. Added an equivalent `<licenses>` declaration to the
+  Java `src/java/pom.xml` parent so both ecosystems advertise the same
+  license.
+- The Java build previously hardcoded `2.0.0-SNAPSHOT` as a literal string
+  in ten separate `pom.xml` files (the parent's own `<version>`, every
+  module's `<parent>` reference, and most intra-repo `<dependency>`
+  versions), even though a `<revision>` property already existed and was
+  already used correctly in a few places (e.g. the sample projects'
+  annotation-processor path). That property was otherwise dead — nothing
+  read it. `src/java/pom.xml` now sets `<version>${revision}</version>` on
+  the parent itself, every module and intra-repo dependency below it
+  references `${revision}`, and `flatten-maven-plugin` resolves that
+  property into a concrete version in any installed/deployed POM. This
+  makes `revision` the single source of truth for the Java release version,
+  the equivalent of `VersionPrefix` in `../../Directory.Build.props` for
+  the C# tree.
+- Added missing `<description>` elements to the `foundgine-runtime` and
+  `foundgine-providers` POMs (mirroring `Foundgine.Runtime` and
+  `Foundgine.Providers` on the C# side); `foundgine-core` and
+  `foundgine-extensions` already had one.
+- Version: `2.2.0`
+- Target framework: `.NET 9` / Java 21
+- License: Apache License, Version 2.0
 
 ## 2.1.0 — September 8, 2026
 

@@ -33,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Restoring with NuGetAuditMode=all (checks transitive packages too)..."
-          output="$(dotnet restore Foundgine.sln -p:NuGetAuditMode=all 2>&1)" || true
+          output="$(dotnet restore src/csharp/Foundgine.sln -p:NuGetAuditMode=all 2>&1)" || true
           echo "$output"
           if echo "$output" | grep -qE "warning NU190[1-4]"; then
             echo "ERROR: Unsuppressed vulnerability warnings (NU1901-NU1904) detected."
@@ -44,12 +44,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          dotnet list Foundgine.sln package --vulnerable --include-transitive || true
+          dotnet list src/csharp/Foundgine.sln package --vulnerable --include-transitive || true
       - name: Check for deprecated packages
         shell: bash
         run: |
           set -euo pipefail
-          dotnet list Foundgine.sln package --deprecated --include-transitive || true
+          dotnet list src/csharp/Foundgine.sln package --deprecated --include-transitive || true
 
   sbom:
     name: Generate SBOM
@@ -62,7 +62,7 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
       - name: Install CycloneDX SBOM tool
         run: dotnet tool install --global CycloneDX
       - name: Generate SBOM
@@ -71,7 +71,7 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts/sbom
           export PATH="$PATH:$HOME/.dotnet/tools"
-          dotnet-CycloneDX Foundgine.sln -o artifacts/sbom -F Json -fn foundgine-sbom.json
+          dotnet-CycloneDX src/csharp/Foundgine.sln -o artifacts/sbom -F Json -fn foundgine-sbom.json
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v7
         with:
@@ -92,7 +92,7 @@ jobs:
           dotnet-version: 9.0.x
       - name: Start PostgreSQL + SupplyChain API
         run: |
-          cd src/csharp/samples/Foundgine.SupplyChain
+          cd src/csharp/samples/Foundgine.SupplyChain.Advanced
           docker compose up -d --build
       - name: Wait for API readiness
         run: |
@@ -109,7 +109,7 @@ jobs:
         shell: pwsh
         env:
           FOUNDGINE_TARGET_URL: http://localhost:4422/mcp
-        run: ./security/pentest/mcp-protocol-fuzz.ps1
+        run: ./src/csharp/security/pentest/mcp-protocol-fuzz.ps1
       - name: ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.15.0
         with:
@@ -126,7 +126,7 @@ jobs:
       - name: Stop stack
         if: always()
         run: |
-          cd src/csharp/samples/Foundgine.SupplyChain
+          cd src/csharp/samples/Foundgine.SupplyChain.Advanced
           docker compose down --volumes --remove-orphans
 
   security-penetration-graph:
@@ -172,9 +172,9 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
       - name: Start PostgreSQL 17
         env:
           POSTGRES_HOST_PORT: "55435"
@@ -223,9 +223,9 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
       - name: Run hostile model corpus
         run: |
           set -euo pipefail
@@ -258,9 +258,9 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
       - name: Run Foundgine penetration tests
         run: |
           set -euo pipefail
@@ -277,7 +277,7 @@ jobs:
           name: foundgine-security-penetration-results
           path: |
             src/csharp/tests/Foundgine.Security.Tests/TestResults/*.trx
-            security/pentest/*.md
+            src/csharp/security/pentest/*.md
           if-no-files-found: warn
 
   security-penetration-mcp:

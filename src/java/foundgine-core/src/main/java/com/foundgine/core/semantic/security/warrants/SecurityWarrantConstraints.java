@@ -5,6 +5,15 @@ import java.util.*;
 
 public record SecurityWarrantConstraints(List<String> allowedTenants, List<String> allowedFields,
 		List<String> resourceScopes, List<String> allowedOperations, Long maxResults, BigDecimal maxAmount) {
+	public SecurityWarrantConstraints {
+		allowedTenants = norm(allowedTenants);
+		allowedFields = norm(allowedFields);
+		resourceScopes = norm(resourceScopes);
+		allowedOperations = norm(allowedOperations);
+		maxResults = nonNeg(maxResults, "maxResults");
+		maxAmount = nonNeg(maxAmount, "maxAmount");
+	}
+
 	public static final SecurityWarrantConstraints UNRESTRICTED = new SecurityWarrantConstraints(List.of(), List.of(),
 			List.of(), List.of(), null, null);
 

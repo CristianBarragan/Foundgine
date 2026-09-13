@@ -11,7 +11,7 @@ public final class Main {
   public static void main(String[] args){
     var data=SupplyChainData.seed(); var identity=new Authorization.Context("tenant-a",Set.of(1,2),Authorization.Role.SUPPLY_CHAIN_MANAGER,false);
     var claims=Claims.validate(Map.of("warehouse","1","scope","read-only","max_rows","100"),Instant.now()); var effective=Authorization.applyClaims(identity,claims);
-    var cycles=Scenarios.recursiveSupplierRisk(data,1,16); System.out.println("Foundgine Advanced Supply Chain Java sample"); System.out.println("accepted claims="+claims.accepted().keySet()+", effective warehouses="+effective.allowedWarehouses()); System.out.println("BOM cycles detected="+cycles.stream().filter(Scenarios.SupplierRisk::cycleDetected).count()); System.out.println("fulfillment rows="+Scenarios.fulfillment(data,effective).size());
+    var cycles=Scenarios.recursiveSupplierRisk(data,1,16,effective); System.out.println("Foundgine Advanced Supply Chain Java sample"); System.out.println("accepted claims="+claims.accepted().keySet()+", effective warehouses="+effective.allowedWarehouses()); System.out.println("BOM cycles detected="+cycles.stream().filter(Scenarios.SupplierRisk::cycleDetected).count()); System.out.println("fulfillment rows="+Scenarios.fulfillment(data,effective).size());
     var orderAuth=new Authorization.Context("tenant-a",Set.of(1,2),Authorization.Role.SUPPLY_CHAIN_MANAGER,false);
     var pipeline=new com.foundgine.samples.supplychain.advanced.mutation.AdvancedMutationPipeline(data,orderAuth);
     var placed=pipeline.placeOrder("alice",1,4,2,"demo-place-order-1").toCompletableFuture().join();

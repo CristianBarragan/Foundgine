@@ -94,7 +94,7 @@ public final class SemanticGraphValidator {
 			if (node.viaRelationship() != null && node.viaConnection() != null)
 				throw new IllegalStateException(
 						"Semantic node " + node.id() + " cannot specify both relationship and connection edges.");
-			if (node.viaRelationship() != null && parent != null && entity != null)
+			if (node.viaRelationship() != null && parent != null)
 				validateRelationship(parent.entityId(), node.viaRelationship(), node.entityId(), model, mode,
 						node.id());
 		} else if (node.viaRelationship() != null || node.viaConnection() != null)
@@ -127,7 +127,7 @@ public final class SemanticGraphValidator {
 			if (node.viaRelationship() != null && node.viaConnection() != null)
 				throw new IllegalStateException(
 						"Semantic node " + node.id() + " cannot specify both relationship and connection edges.");
-			if (node.viaRelationship() != null && parent != null && entity != null)
+			if (node.viaRelationship() != null && parent != null)
 				validateRelationship(parent.entityId(), node.viaRelationship(), node.entityId(), contract, mode,
 						node.id());
 		} else if (node.viaRelationship() != null || node.viaConnection() != null)

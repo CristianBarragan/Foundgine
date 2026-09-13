@@ -23,7 +23,7 @@
 
   <groupId>com.foundgine</groupId>
   <artifactId>foundgine-parent</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>${revision}</version>
   <packaging>pom</packaging>
 
   <name>Foundgine</name>
@@ -32,10 +32,60 @@
     agents and other callers.
   </description>
 
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <!--
+    url/scm/developers below are required by Maven Central for every
+    published artifact. Values mirror RepositoryUrl/Authors/Company in
+    ../../Directory.Build.props on the C# side.
+  -->
+  <url>https://github.com/CristianBarragan/Foundgine</url>
+
+  <scm>
+    <connection>scm:git:https://github.com/CristianBarragan/Foundgine.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/CristianBarragan/Foundgine.git</developerConnection>
+    <url>https://github.com/CristianBarragan/Foundgine</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Foundgine</name>
+      <organization>Foundgine</organization>
+      <organizationUrl>https://github.com/CristianBarragan/Foundgine</organizationUrl>
+    </developer>
+  </developers>
+
   <properties>
-    <revision>2.0.0-SNAPSHOT</revision>
+    <!--
+      Single source of truth for the release version across every module in
+      this reactor (the Java equivalent of VersionPrefix in
+      ../../Directory.Build.props for src/csharp). Every module's <parent>
+      version and every intra-repo <dependency> version below reference this
+      property instead of a hardcoded literal, so a release only requires
+      changing it here. flatten-maven-plugin (below) resolves it to a
+      concrete version in the installed/deployed POM.
+    -->
+    <revision>2.2.0</revision>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!--
+      GPG signing is only meaningful (and only has a key available) during an
+      actual Central release. It defaults to skipped so that a plain
+      `mvn verify`/`mvn install` — run locally or in the java-build CI job on
+      every push/PR — never shells out to gpg. The tag-triggered
+      publish-maven CI job flips this back on via `-Prelease` (see the
+      "release" profile below), at which point GPG_PRIVATE_KEY /
+      GPG_PASSPHRASE are present.
+    -->
+    <gpg.skip>true</gpg.skip>
 
     <jackson.version>2.17.2</jackson.version>
     <junit.version>5.10.3</junit.version>
@@ -88,7 +138,123 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.3.1</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>1.6.0</version>
+        </plugin>
+        <!--
+          Declared here (managed, not activated) so only foundgine-core,
+          foundgine-runtime, foundgine-providers, and foundgine-extensions
+          opt in below with an empty <plugin> block. Every other module
+          (samples, benchmarks, the AOT generator, the red-team suite) has
+          no distributionManagement and never references these plugins, so
+          a plain `mvn deploy` run against them does nothing — publishing
+          only happens for the 4 modules that explicitly enable it.
+        -->
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.8.0</version>
+          <extensions>true</extensions>
+          <configuration>
+            <!-- Server id whose credentials are supplied via settings.xml (see java-build.yml). -->
+            <publishingServerId>central</publishingServerId>
+            <autoPublish>true</autoPublish>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>3.2.7</version>
+          <configuration>
+            <skip>${gpg.skip}</skip>
+          </configuration>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.3.1</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar-no-fork</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.10.0</version>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <!--
+        Resolves ${revision} to a literal version (e.g. 2.2.0) in the POM
+        that actually gets installed/deployed, so downstream consumers never
+        see the property placeholder. Every module inherits this via the
+        parent's <build> section.
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten-clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
+
+  <!--
+    Activated with `-Prelease` by the tag-triggered publish-maven CI job
+    only. It just flips gpg.skip back to false; the plugin is otherwise
+    already declared (managed) above, and central-publishing-maven-plugin
+    only does anything on the `deploy` goal, which normal
+    `verify`/`install` runs never reach.
+  -->
+  <profiles>
+    <profile>
+      <id>release</id>
+      <properties>
+        <gpg.skip>false</gpg.skip>
+      </properties>
+    </profile>
+  </profiles>
 </project>

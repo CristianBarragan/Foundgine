@@ -1,5 +1,6 @@
 package com.foundgine.core.semantic.capabilities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.foundgine.core.abstractions.AuthorizationDecision;
 import com.foundgine.core.abstractions.EntityId;
 import com.foundgine.core.semantic.SemanticVersionSet;
@@ -52,7 +53,17 @@ public record SemanticCapability(String id, String name, EntityId targetEntityId
 	 * <p>
 	 * Returns the canonical invariant set when callers did not explicitly supply
 	 * one.
+	 *
+	 * <p>
+	 * Explicitly annotated with {@link JsonProperty} because this is a derived
+	 * accessor, not a canonical record component: Jackson's built-in record
+	 * support only auto-serializes the canonical component accessors, whereas
+	 * C#'s {@code System.Text.Json} serializes any public readable property,
+	 * including the computed {@code EffectiveSecurityInvariants} property this
+	 * ports. Without the annotation this value is silently absent from the
+	 * serialized contract.
 	 */
+	@JsonProperty("effectiveSecurityInvariants")
 	public List<String> effectiveSecurityInvariants() {
 		return !requiredSecurityInvariants.isEmpty() ? requiredSecurityInvariants
 				: SemanticCapabilitySecurityDefaults.forCapability(this);

@@ -79,7 +79,10 @@ public sealed class ArchitectureBoundaryTests
 
         while (directory is not null)
         {
-            if (File.Exists(Path.Combine(directory.FullName, "Foundgine.sln")))
+            // Foundgine.sln lives inside src/csharp/, not at the true repo root, so it is
+            // not an ancestor of this test assembly's bin/ directory. Directory.Build.props
+            // sits at the actual repo root and is used as the marker instead.
+            if (File.Exists(Path.Combine(directory.FullName, "Directory.Build.props")))
                 return directory.FullName;
 
             directory = directory.Parent;

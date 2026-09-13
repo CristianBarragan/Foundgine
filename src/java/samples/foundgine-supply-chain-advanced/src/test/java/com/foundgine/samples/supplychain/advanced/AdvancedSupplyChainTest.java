@@ -6,7 +6,7 @@ import com.foundgine.samples.supplychain.advanced.scenarios.Scenarios;
 import java.time.*; import java.util.*; import java.math.BigDecimal; import static org.junit.jupiter.api.Assertions.*; import org.junit.jupiter.api.Test;
 public class AdvancedSupplyChainTest {
  @Test void seedMatchesAdvancedSecurityFixtures(){var d=SupplyChainData.seed(); assertEquals(3,d.warehouses.size()); assertEquals("tenant-b",d.warehouses.get(2).tenantId()); assertEquals(6,d.products.size());}
- @Test void bomCycleIsDetected(){var cycles=Scenarios.recursiveSupplierRisk(SupplyChainData.seed(),1,16); assertTrue(cycles.stream().anyMatch(Scenarios.SupplierRisk::cycleDetected));}
+ @Test void bomCycleIsDetected(){var auth=new Authorization.Context("tenant-a",Set.of(1,2),Authorization.Role.SUPPLY_CHAIN_MANAGER,false); var cycles=Scenarios.recursiveSupplierRisk(SupplyChainData.seed(),1,16,auth); assertTrue(cycles.stream().anyMatch(Scenarios.SupplierRisk::cycleDetected));}
  @Test void tenantBWarehouseCannotBeReadByTenantA(){var c=new Authorization.Context("tenant-a",Set.of(1,2),Authorization.Role.ANALYST,false); assertFalse(Authorization.canReadWarehouse(c,3));}
  @Test void claimSpoofingFailsClosed(){var r=Claims.validate(Map.of("tenant","tenant-a","scope","full"),Instant.now()); assertTrue(r.isSpoofingAttempt()); assertEquals(Claims.Severity.SUSPICIOUS,r.spoofingSeverity()); assertTrue(r.accepted().isEmpty());}
  @Test void expiryRetractsEvidence(){var now=Instant.parse("2026-09-11T00:00:00Z"); var r=Claims.validate(Map.of("reason","approved operational reason","change_ticket","CHG-1234","not_after","2026-09-20T00:00:00Z"),now); assertTrue(r.accepted().isEmpty()); assertFalse(r.rejected().isEmpty());}
