@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../Fixtures/HighAssurance.Banking/Foundgine.HighAssurance.Banking.csproj" />
+    <ProjectReference
+      Include="../../Fixtures/HighAssurance.Banking/Foundgine.HighAssurance.Banking.csproj"
+    />
     <ProjectReference Include="../EfCore/Foundgine.HighAssurance.EfCore.csproj" />
   </ItemGroup>
 

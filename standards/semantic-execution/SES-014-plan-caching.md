@@ -1,4 +1,5 @@
 # SES-014 — Authorization-Safe Plan Caching
+
 ← [SES-013 — Semantic Mutation Model and High-Assurance State Change](SES-013-mutations.md) · [Standard Index](README.md) · [SES-015 — Transport, Agent, and Tool Boundaries](SES-015-transport-and-agents.md) →
 
 ---

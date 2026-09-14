@@ -2,11 +2,11 @@ name: Java — Build & Test
 
 on:
   push:
-    branches: [ main, java ]
+    branches: [main, java]
     tags:
       - v*
   pull_request:
-    branches: [ main, java ]
+    branches: [main, java]
   workflow_dispatch:
 
 permissions:
@@ -26,14 +26,12 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: maven
 
       - name: Build and test Java
         working-directory: src/java
         run: mvn -B -ntp verify
-
-
 
   java-security-penetration:
     name: Java Security Penetration Gate
@@ -50,7 +48,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: maven
 
       - name: Run standalone Java penetration suite
@@ -88,7 +86,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: maven
 
       - name: Wait for PostgreSQL
@@ -136,7 +134,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: maven
           # Writes ~/.m2/settings.xml with a <server id="central"> block whose
           # username/password are read from these env var names at deploy

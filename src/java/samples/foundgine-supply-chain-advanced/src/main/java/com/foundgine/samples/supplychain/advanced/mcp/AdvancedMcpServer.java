@@ -22,36 +22,28 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
- * A minimal, dependency-free MCP (Model Context Protocol) server for the
- * Advanced Supply Chain sample.
+ * A minimal, dependency-free MCP (Model Context Protocol) server for the Advanced Supply Chain
+ * sample.
  *
- * <p>
- * This is the Java counterpart of the C# {@code MCP.Foundgine} sample
- * project: it hosts the same transport-neutral {@link AdvancedMcpFacade}
- * behind a JSON-RPC-over-HTTP endpoint at {@code /mcp}, so that an external
- * MCP client (see {@link AdvancedMcpClientDemo}, or any standard MCP client)
+ * <p>This is the Java counterpart of the C# {@code MCP.Foundgine} sample project: it hosts the same
+ * transport-neutral {@link AdvancedMcpFacade} behind a JSON-RPC-over-HTTP endpoint at {@code /mcp},
+ * so that an external MCP client (see {@link AdvancedMcpClientDemo}, or any standard MCP client)
  * can call {@code tools/call} against it.
- * </p>
  *
- * <p>
- * The two generic tools exposed by {@link AdvancedMcpFacade}, plus one
- * hand-registered demo capability, are wired up:
- * </p>
+ * <p>The two generic tools exposed by {@link AdvancedMcpFacade}, plus one hand-registered demo
+ * capability, are wired up:
+ *
  * <ul>
- * <li>{@code foundgine_query} — arguments: {@code {"intentJson": "..."}}</li>
- * <li>{@code foundgine_mutation} — arguments: {@code {"mutationJson": "..."}}</li>
- * <li>{@code find_top_supplier_overdue_orders} — arguments:
- * {@code {"actor": "...", "state": "...", "supplierName": "..." (optional)}}.
- * Backed directly by Postgres via
- * {@link com.foundgine.samples.supplychain.advanced.ambiguity.TopSupplierOverdueOrdersService},
- * not by {@link AdvancedMcpFacade} — see {@link #findTopSupplierOverdueOrders}.</li>
+ *   <li>{@code foundgine_query} — arguments: {@code {"intentJson": "..."}}
+ *   <li>{@code foundgine_mutation} — arguments: {@code {"mutationJson": "..."}}
+ *   <li>{@code find_top_supplier_overdue_orders} — arguments: {@code {"actor": "...", "state":
+ *       "...", "supplierName": "..." (optional)}}. Backed directly by Postgres via {@link
+ *       com.foundgine.samples.supplychain.advanced.ambiguity.TopSupplierOverdueOrdersService}, not
+ *       by {@link AdvancedMcpFacade} — see {@link #findTopSupplierOverdueOrders}.
  * </ul>
  *
- * <p>
- * Uses only the JDK's built-in {@code com.sun.net.httpserver.HttpServer}, so
- * it needs no additional runtime dependencies beyond Jackson (already a
- * project dependency).
- * </p>
+ * <p>Uses only the JDK's built-in {@code com.sun.net.httpserver.HttpServer}, so it needs no
+ * additional runtime dependencies beyond Jackson (already a project dependency).
  */
 public final class AdvancedMcpServer {
     public static final String DEFAULT_HOST = "localhost";
@@ -66,7 +58,8 @@ public final class AdvancedMcpServer {
         this.facade = Objects.requireNonNull(facade, "facade");
         this.httpServer = HttpServer.create(new InetSocketAddress(host, port), 0);
         this.httpServer.createContext(MCP_PATH, this::handleMcp);
-        this.httpServer.createContext("/health", exchange -> respond(exchange, 200, "{\"status\":\"ok\"}"));
+        this.httpServer.createContext(
+                "/health", exchange -> respond(exchange, 200, "{\"status\":\"ok\"}"));
     }
 
     public int port() {
@@ -89,7 +82,8 @@ public final class AdvancedMcpServer {
             }
 
             JsonNode request = mapper.readTree(exchange.getRequestBody());
-            Object id = request.has("id") ? mapper.treeToValue(request.get("id"), Object.class) : null;
+            Object id =
+                    request.has("id") ? mapper.treeToValue(request.get("id"), Object.class) : null;
             String method = request.path("method").asText("");
 
             if (!"tools/call".equals(method)) {
@@ -101,32 +95,41 @@ public final class AdvancedMcpServer {
             String toolName = params.path("name").asText("");
             JsonNode arguments = params.path("arguments");
 
-            CompletionStage<String> resultJson = switch (toolName) {
-                case "foundgine_query" -> facade.queryTools()
-                        .foundgineQuery(arguments.path("intentJson").asText("{}"));
-                case "foundgine_mutation" -> facade.mutationTools()
-                        .foundgineMutation(arguments.path("mutationJson").asText("{}"))
-                        .thenApply(this::toJson);
-                case "find_top_supplier_overdue_orders" -> findTopSupplierOverdueOrders(arguments);
-                default -> null;
-            };
+            CompletionStage<String> resultJson =
+                    switch (toolName) {
+                        case "foundgine_query" ->
+                                facade.queryTools()
+                                        .foundgineQuery(arguments.path("intentJson").asText("{}"));
+                        case "foundgine_mutation" ->
+                                facade.mutationTools()
+                                        .foundgineMutation(
+                                                arguments.path("mutationJson").asText("{}"))
+                                        .thenApply(this::toJson);
+                        case "find_top_supplier_overdue_orders" ->
+                                findTopSupplierOverdueOrders(arguments);
+                        default -> null;
+                    };
 
             if (resultJson == null) {
                 respondRpcToolError(exchange, id, "Unknown MCP tool: " + toolName);
                 return;
             }
 
-            resultJson.whenComplete((json, error) -> {
-                try {
-                    if (error != null) {
-                        respondRpcToolError(exchange, id, rootMessage(error));
-                    } else {
-                        respondRpcToolSuccess(exchange, id, json);
-                    }
-                } catch (IOException io) {
-                    exchange.close();
-                }
-            }).toCompletableFuture().join();
+            resultJson
+                    .whenComplete(
+                            (json, error) -> {
+                                try {
+                                    if (error != null) {
+                                        respondRpcToolError(exchange, id, rootMessage(error));
+                                    } else {
+                                        respondRpcToolSuccess(exchange, id, json);
+                                    }
+                                } catch (IOException io) {
+                                    exchange.close();
+                                }
+                            })
+                    .toCompletableFuture()
+                    .join();
         } catch (Exception e) {
             try {
                 respondRpcError(exchange, null, -32603, rootMessage(e));
@@ -149,13 +152,18 @@ public final class AdvancedMcpServer {
     private CompletionStage<String> findTopSupplierOverdueOrders(JsonNode arguments) {
         String jdbcUrl = AmbiguityConnectionStrings.jdbcUrl("FOUNDGINE_POSTGRES_CONNECTION_STRING");
         if (jdbcUrl == null) {
-            return CompletableFuture.failedFuture(new IllegalStateException(
-                    "FOUNDGINE_POSTGRES_CONNECTION_STRING is required for find_top_supplier_overdue_orders."));
+            return CompletableFuture.failedFuture(
+                    new IllegalStateException(
+                            "FOUNDGINE_POSTGRES_CONNECTION_STRING is required for"
+                                    + " find_top_supplier_overdue_orders."));
         }
 
         String actor = arguments.path("actor").asText("");
         String state = arguments.path("state").asText("");
-        String supplierName = arguments.hasNonNull("supplierName") ? arguments.path("supplierName").asText() : null;
+        String supplierName =
+                arguments.hasNonNull("supplierName")
+                        ? arguments.path("supplierName").asText()
+                        : null;
 
         try (var connection = DriverManager.getConnection(jdbcUrl)) {
             var service = new TopSupplierOverdueOrdersService(connection);
@@ -182,7 +190,8 @@ public final class AdvancedMcpServer {
         return cursor.getMessage() != null ? cursor.getMessage() : cursor.toString();
     }
 
-    private void respondRpcToolSuccess(HttpExchange exchange, Object id, String textPayload) throws IOException {
+    private void respondRpcToolSuccess(HttpExchange exchange, Object id, String textPayload)
+            throws IOException {
         ObjectNode envelope = mapper.createObjectNode();
         envelope.put("jsonrpc", "2.0");
         envelope.set("id", mapper.valueToTree(id));
@@ -194,7 +203,8 @@ public final class AdvancedMcpServer {
         respond(exchange, 200, mapper.writeValueAsString(envelope));
     }
 
-    private void respondRpcToolError(HttpExchange exchange, Object id, String message) throws IOException {
+    private void respondRpcToolError(HttpExchange exchange, Object id, String message)
+            throws IOException {
         ObjectNode envelope = mapper.createObjectNode();
         envelope.put("jsonrpc", "2.0");
         envelope.set("id", mapper.valueToTree(id));
@@ -206,7 +216,8 @@ public final class AdvancedMcpServer {
         respond(exchange, 200, mapper.writeValueAsString(envelope));
     }
 
-    private void respondRpcError(HttpExchange exchange, Object id, int code, String message) throws IOException {
+    private void respondRpcError(HttpExchange exchange, Object id, int code, String message)
+            throws IOException {
         ObjectNode envelope = mapper.createObjectNode();
         envelope.put("jsonrpc", "2.0");
         envelope.set("id", mapper.valueToTree(id));
@@ -228,8 +239,9 @@ public final class AdvancedMcpServer {
     /** Runs the demo server against the seeded sample data set. */
     public static void main(String[] args) throws IOException {
         var data = SupplyChainData.seed();
-        var auth = new Authorization.Context(
-                "tenant-a", Set.of(1, 2), Authorization.Role.SUPPLY_CHAIN_MANAGER, false);
+        var auth =
+                new Authorization.Context(
+                        "tenant-a", Set.of(1, 2), Authorization.Role.SUPPLY_CHAIN_MANAGER, false);
         var facade = new AdvancedMcpFacade(data, auth);
 
         int port = args.length > 0 ? Integer.parseInt(args[0]) : DEFAULT_PORT;
@@ -239,6 +251,7 @@ public final class AdvancedMcpServer {
         System.out.println("Foundgine Advanced Supply Chain — MCP server");
         System.out.println("=============================================");
         System.out.println("Listening on http://" + DEFAULT_HOST + ":" + server.port() + MCP_PATH);
-        System.out.println("Health check: http://" + DEFAULT_HOST + ":" + server.port() + "/health");
+        System.out.println(
+                "Health check: http://" + DEFAULT_HOST + ":" + server.port() + "/health");
     }
 }

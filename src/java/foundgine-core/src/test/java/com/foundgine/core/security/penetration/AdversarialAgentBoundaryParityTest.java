@@ -1,17 +1,18 @@
 package com.foundgine.core.security.penetration;
 
-import com.foundgine.core.serialization.JsonReadIntentAdapter;
-import com.foundgine.core.serialization.JsonReadIntentAdapterOptions;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.foundgine.core.serialization.JsonReadIntentAdapter;
+import com.foundgine.core.serialization.JsonReadIntentAdapterOptions;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Parity coverage for the agent-facing JSON boundary.
  *
- * <p>Structured intent is treated as hostile model output. Execution authority,
- * tenant identity and provider configuration are never accepted as intent data.
+ * <p>Structured intent is treated as hostile model output. Execution authority, tenant identity and
+ * provider configuration are never accepted as intent data.
  */
 class AdversarialAgentBoundaryParityTest {
 
@@ -22,7 +23,8 @@ class AdversarialAgentBoundaryParityTest {
     void unknownExecutionControlPropertiesAreRejected() {
         var adapter = new JsonReadIntentAdapter();
 
-        var json = """
+        var json =
+                """
                 {
                   "rootEntity": "Customer",
                   "selections": [{"field": "Id"}],
@@ -39,10 +41,12 @@ class AdversarialAgentBoundaryParityTest {
 
     @Test
     void selectionDepthIsBoundedBeforeSemanticResolution() {
-        var adapter = new JsonReadIntentAdapter(
-                new JsonReadIntentAdapterOptions(3, 100, 32, 256, 16, true));
+        var adapter =
+                new JsonReadIntentAdapter(
+                        new JsonReadIntentAdapterOptions(3, 100, 32, 256, 16, true));
 
-        var json = """
+        var json =
+                """
                 {
                   "rootEntity": "Customer",
                   "selections": [
@@ -63,10 +67,12 @@ class AdversarialAgentBoundaryParityTest {
 
     @Test
     void selectionFanoutIsBoundedBeforePlanning() {
-        var adapter = new JsonReadIntentAdapter(
-                new JsonReadIntentAdapterOptions(8, 4, 32, 256, 16, true));
+        var adapter =
+                new JsonReadIntentAdapter(
+                        new JsonReadIntentAdapterOptions(8, 4, 32, 256, 16, true));
 
-        var json = """
+        var json =
+                """
                 {
                   "rootEntity": "Customer",
                   "selections": [
@@ -85,10 +91,12 @@ class AdversarialAgentBoundaryParityTest {
 
     @Test
     void filterDepthAndNodeCountAreBounded() {
-        var adapter = new JsonReadIntentAdapter(
-                new JsonReadIntentAdapterOptions(32, 256, 3, 4, 16, true));
+        var adapter =
+                new JsonReadIntentAdapter(
+                        new JsonReadIntentAdapterOptions(32, 256, 3, 4, 16, true));
 
-        var json = """
+        var json =
+                """
                 {
                   "rootEntity": "Customer",
                   "selections": [{"field":"Id"}],

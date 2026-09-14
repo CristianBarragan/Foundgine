@@ -3,15 +3,15 @@ package com.foundgine.providers.aot;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.METHOD })
+@Target({ElementType.FIELD, ElementType.METHOD})
 public @interface FoundgineRelationship {
-	Class<?> target();
+    Class<?> target();
 
-	String foreignKey();
+    String foreignKey();
 
-	String principalKey();
+    String principalKey();
 
-	long id() default 0;
+    long id() default 0;
 
-	String name() default "";
+    String name() default "";
 }

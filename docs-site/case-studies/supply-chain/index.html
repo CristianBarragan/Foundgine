@@ -1,65 +1,695 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
-<head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Supply Chain Case Study | Foundgine</title>
-<meta content="Foundgine Supply Chain case study: one capability boundary for AI agents, MCP, semantic execution, authorization, transactional mutations and PostgreSQL, backed by reproducible benchmarks and security regression tests." name="description"/>
-<link href="https://cristianbarragan.github.io/Foundgine/case-studies/supply-chain/" rel="canonical"/>
-<meta content="Supply Chain Case Study | Foundgine" property="og:title"/><meta content="A real Foundgine application case combining AI-agent capabilities, semantic authorization, transactional execution, security regression and benchmark evidence." property="og:description"/><meta content="article" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/case-studies/supply-chain/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="Supply Chain Case Study | Foundgine" name="twitter:title"/><meta content="AI-agent capabilities, semantic authorization, transactional execution, security regression and benchmark evidence." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../../assets/style.css" rel="stylesheet"/>
-<style>
-.case-hero{padding:5.5rem 0 3rem}.case-hero h1{max-width:980px;font-size:clamp(2.8rem,7vw,6rem);line-height:.96;margin:.7rem 0 1.2rem}.case-hero .subtitle{max-width:900px;font-size:1.22rem;line-height:1.7}.case-kicker{letter-spacing:.09em;text-transform:uppercase;font:600 .76rem/1.4 'IBM Plex Mono',monospace}.case-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.7rem 0}.case-flow{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:.6rem;margin:2rem 0 3rem}.case-flow div{border:1px solid var(--line,#ddd);border-radius:12px;padding:.8rem .65rem;text-align:center;font-weight:600;font-size:.86rem;background:var(--surface,#fff)}.case-flow div:not(:last-child)::after{content:'→';position:absolute;transform:translateX(.65rem);opacity:.4}.case-flow div{position:relative}.case-section{margin:4rem 0}.case-section>h2{max-width:850px}.case-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.6rem 0}.case-card{border:1px solid var(--line,#ddd);border-radius:16px;padding:1.35rem;background:var(--surface,#fff)}.case-card h3{margin:.1rem 0 .55rem}.case-card p{margin:0;line-height:1.6}.capability{min-height:150px}.capability .tag{display:inline-block;font:600 .7rem 'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;opacity:.65;margin-bottom:.7rem}.benchmark-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem;margin:1.5rem 0}.bench-card{border:1px solid var(--line,#ddd);border-radius:14px;padding:1.15rem;background:var(--surface,#fff)}.bench-card small{display:block;text-transform:uppercase;letter-spacing:.06em;font:600 .67rem 'IBM Plex Mono',monospace;opacity:.65}.bench-card strong{display:block;font-size:1.65rem;margin:.3rem 0}.bench-card span{display:block;line-height:1.45}.benchmark-table{width:100%;border-collapse:collapse;margin:1.3rem 0}.benchmark-table th,.benchmark-table td{padding:.75rem .6rem;border-bottom:1px solid var(--line,#ddd);text-align:left;vertical-align:top}.evidence{border:1px solid var(--line,#ddd);border-radius:18px;padding:1.5rem;margin:1.5rem 0;background:var(--surface,#fff)}.evidence strong{display:block;margin-bottom:.45rem}.warning{border-left:4px solid currentColor}.case-note{font-size:.9rem;color:var(--muted,#666);line-height:1.6}.codebox{overflow:auto;border:1px solid var(--line,#ddd);border-radius:14px;padding:1rem;background:var(--surface,#fff);font:500 .82rem/1.6 'IBM Plex Mono',monospace}.live-loading{padding:1.5rem 0}.live-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.7rem;margin:1rem 0}.live-metric{border:1px solid var(--line,#ddd);border-radius:12px;padding:1rem}.live-metric small{display:block;font:600 .66rem 'IBM Plex Mono',monospace;text-transform:uppercase;opacity:.65}.live-metric strong{display:block;font-size:1.35rem;margin-top:.3rem}.status-good{font-weight:700}.status-warn{font-weight:700}.source-row{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}@media(max-width:900px){.case-flow{grid-template-columns:repeat(4,minmax(0,1fr))}.case-grid{grid-template-columns:1fr 1fr}.benchmark-grid,.live-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.case-flow{grid-template-columns:1fr 1fr}.case-grid{grid-template-columns:1fr}.benchmark-grid,.live-metrics{grid-template-columns:1fr}.case-flow div:not(:last-child)::after{display:none}}
-</style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Supply Chain Case Study | Foundgine","description":"Foundgine Supply Chain case study combining AI-agent capabilities, semantic authorization, transactional execution, security regression and benchmark evidence.","url":"https://cristianbarragan.github.io/Foundgine/case-studies/supply-chain/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head>
-<body>
-<header class="site-header"><div class="site-header-inner"><a class="brand" href="../../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a href="../../what-is-foundgine.html">What is it</a>
-<a href="../../getting-started/index.html">Getting started</a>
-<a href="../../how-it-works/index.html">How it works</a>
-<a href="../../architecture/index.html">Architecture</a>
-<a href="../../ai-agents/index.html">AI agents</a>
-<a href="../../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../../samples/index.html">Overview</a><a href="../../samples/semantic/index.html">Semantic execution</a><a href="../../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../../agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../../agent-benchmark/index.html">Evidence</a><a href="../../agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="../../agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="../../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="../../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="../../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="../../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="../../performance/index.html">Performance</a></div></div>
-<a href="../../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<main class="page page-wide"><article class="article article-wide">
-<section class="case-hero"><div class="case-kicker">Featured case study · Supply Chain · Agent + MCP + PostgreSQL</div><h1>One capability boundary for a real business workflow.</h1><p class="subtitle">The Foundgine Supply Chain case turns a realistic supply-chain domain into an application-controlled capability surface for AI agents. The same semantic model carries intent through authorization, planning, ExecutionIR and PostgreSQL—while the benchmark suite measures agent work and the PenTest suite attacks the boundary.</p><div class="case-actions"><a class="button" href="../../agent-benchmark/supply-chain/index.html">Open live E2E evidence →</a><a class="button secondary" href="../../samples/semantic/index.html">Explore semantic sample</a><a class="button secondary" href="../../samples/pentest/index.html">Read security PenTest</a></div></section>
-<section class="case-section"><div class="case-kicker">The case</div><h2 id="from-an-agent-s-request-to-an-authorized-database-operation">From an agent's request to an authorized database operation.</h2><p>This is deliberately more than a CRUD demo. The agent selects a business capability; it does not receive authority to invent SQL, bypass ownership, choose protected fields or rewrite the application's authorization model.</p><div class="case-flow"><div>AI agent</div><div>MCP</div><div>Intent</div><div>Semantics</div><div>Authorization</div><div>Plan + IR</div><div>Npgsql</div><div>PostgreSQL</div></div></section>
-<section class="case-section"><div class="case-kicker">Capabilities</div><h2 id="the-application-exposes-business-capabilities-not-database-primitives">The application exposes business capabilities, not database primitives.</h2><div class="case-grid">
-<div class="case-card capability"><span class="tag">Customer</span><h3 id="orders-ownership">Orders &amp; ownership</h3><p>Read customer orders and order details while ownership rules remain server-controlled. Cross-customer access is treated as a security boundary, not a prompt convention.</p></div>
-<div class="case-card capability"><span class="tag">Commerce</span><h3 id="placeorder">PlaceOrder</h3><p>Resolve products, validate quantities and inventory, calculate price server-side, write order state atomically and enforce replay protection.</p></div>
-<div class="case-card capability"><span class="tag">Warehouse</span><h3 id="inventory-operations">Inventory operations</h3><p>Expose inventory reads and updates only to authorized warehouse/procurement actors through the same application capability model.</p></div>
-<div class="case-card capability"><span class="tag">Fulfillment</span><h3 id="shipments">Shipments</h3><p>Create and update shipment state with role-aware controls and warehouse allocation carried through fulfillment and cancellation.</p></div>
-<div class="case-card capability"><span class="tag">Procurement</span><h3 id="products-suppliers">Products &amp; suppliers</h3><p>Expose supplier and product discovery to procurement roles without making the transport adapter responsible for business authority.</p></div>
-<div class="case-card capability"><span class="tag">Execution evidence</span><h3 id="traceable-plans">Traceable plans</h3><p>Semantic plans are lowered through ExecutionIR and receipts retain evidence such as a plan fingerprint before physical execution.</p></div>
-</div></section>
-<section class="case-section"><div class="case-kicker">Benchmark evidence</div><h2 id="what-the-measurements-actually-show">What the measurements actually show.</h2><p>The benchmark story is intentionally split into <strong>measured comparisons</strong> and <strong>modeled estimates</strong>. This avoids turning a useful agent-work signal into an unsupported performance claim.</p><div class="benchmark-grid">
-<div class="bench-card"><small>Run 1 · live comparison</small><strong>7 → 4</strong><span>application tool calls for the same workflow: <strong>42.9% fewer</strong>.</span></div>
-<div class="bench-card"><small>Run 1 · context estimate</small><strong>932 → 534</strong><span>estimated context tokens: <strong>42.7% lower</strong>.</span></div>
-<div class="bench-card"><small>Run 2 · scalability</small><strong>9 → 6</strong><span>tool calls across the published customer/concurrency matrix: <strong>33.3% fewer</strong>.</span></div>
-<div class="bench-card"><small>Supply Chain E2E</small><strong>25</strong><span>agent-like business operations in the published run, across <strong>5 customers</strong> and 8 actor identities.</span></div>
-</div>
-<table class="benchmark-table"><thead><tr><th>Experiment</th><th>Measured result</th><th>What it means</th></tr></thead><tbody>
-<tr><td>Run 1 · conventional vs Foundgine</td><td>7 → 4 tool calls; 932 → 534 estimated context tokens; 12.69 → 24.25 ms wall time</td><td>Strong early evidence of reduced agent/application work, with an execution-latency trade-off that should not be hidden.</td></tr>
-<tr><td>Run 2 · customer tiers / concurrency</td><td>9 → 6 tool calls; ~26.5% lower estimated context; published cells reported 100% request success</td><td>The agent-work reduction persisted as workload size and concurrency increased; this run is not a claim that Foundgine is always faster.</td></tr>
-<tr><td>Supply Chain E2E</td><td>25 operations; 43.2 ms average latency in the published fixture</td><td>Demonstrates a stateful capability workflow rather than an isolated microbenchmark.</td></tr>
-</tbody></table><p class="case-note">Run 1 and Run 2 are live conventional-vs-Foundgine experiments. The Supply Chain E2E page also contains a modeled efficiency estimate for its standalone workload; that estimate is explicitly not a measured conventional comparison.</p></section>
-<section class="case-section"><div class="case-kicker">Security boundary</div><h2 id="the-same-case-is-attacked-from-both-sides-of-the-transport-boundary">The same case is attacked from both sides of the transport boundary.</h2><p>The <code>Foundgine.SupplyChain.PenTest</code> sample puts MCP and GraphQL over the same application and infrastructure layers. Its deterministic regression suite covers authentication, BOLA/IDOR, role escalation, injection-shaped input and information leakage.</p><div class="case-grid"><div class="case-card"><span class="tag">MCP</span><h3 id="7-penetration-cases">7 penetration cases</h3><p>Missing credentials, invalid tokens, identity ambiguity, cross-customer access, capability escalation and injection-shaped data are exercised through MCP.</p></div><div class="case-card"><span class="tag">GraphQL</span><h3 id="7-penetration-cases">7 penetration cases</h3><p>The same security invariants are exercised through GraphQL so the transport adapter cannot become a policy bypass.</p></div><div class="case-card"><span class="tag">Regression</span><h3 id="14-deterministic-cases">14 deterministic cases</h3><p>The cases are executable security tests, not screenshots or prose claims. The E2E benchmark can merge their TRX timings into the application report.</p></div></div><div class="evidence warning"><strong>Evidence discipline</strong><p>The currently published Supply Chain fixture records <strong>9 unexpected unauthorized successes</strong>. That is a benchmark/security signal to investigate, not something this case study presents as a passing security result. The PenTest suite and the latest E2E run should be rerun after authorization expectations are corrected.</p><p class="case-note">This page intentionally keeps that result visible rather than converting an unfinished benchmark into a marketing claim.</p></div></section>
-<section class="case-section"><div class="case-kicker">Reproduce it</div><h2 id="everything-important-is-runnable-from-the-repository">Everything important is runnable from the repository.</h2><div class="codebox">cd samples/Foundgine.SupplyChain.Advanced
-$env:SUPPLY_CHAIN_CUSTOMERS="5"
-$env:SUPPLY_CHAIN_STEPS="25"
-$env:SUPPLY_CHAIN_SEED="20260823"
-./run-supply-chain.ps1
-
-./publish-supply-chain-report.ps1</div><div class="source-row"><a class="button" href="../../agent-benchmark/supply-chain/index.html">View the published report</a><a class="button secondary" href="../../samples/pentest/index.html">View PenTest architecture</a><a class="button secondary" href="https://github.com/cristianbarragan/Foundgine/tree/main/src/csharp/samples/Foundgine.SupplyChain.Advanced" rel="noopener" target="_blank">Source on GitHub</a></div></section>
-<section class="case-section" id="live"><div class="case-kicker">Latest published E2E</div><h2 id="live-evidence-from-the-benchmark-artifact">Live evidence from the benchmark artifact.</h2><div class="live-loading" id="live-report">Loading the published Supply Chain report…</div></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-link prev" href="../../samples/index.html"><span>Previous</span><strong>← Samples</strong></a><a class="page-nav-home" href="../../index.html">Documentation home</a><a class="page-nav-link next" href="../../agent-benchmark/supply-chain/index.html"><span>Evidence</span><strong>Supply Chain E2E →</strong></a></nav></article></main><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer>
-<script src="../../assets/site-nav.js"></script><script>
-const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const fmt=(v,d=1)=>typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:d}):'—';
-fetch('../../assets/agent-benchmark/supply-chain/supply-chain-report.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('No published report yet.');return r.json()}).then(r=>{const s=r.summary||{};const caps=[...new Set((r.records||[]).map(x=>x.Capability))];const unexpected=(r.records||[]).filter(x=>!x.ExpectedAllowed&&x.Success).length;document.getElementById('live-report').innerHTML=`<div class="live-metrics"><div class="live-metric"><small>Customers</small><strong>${esc(r.customers)}</strong></div><div class="live-metric"><small>Operations</small><strong>${esc(r.steps)}</strong></div><div class="live-metric"><small>Capabilities exercised</small><strong>${caps.length}</strong></div><div class="live-metric"><small>Average latency</small><strong>${fmt(s.avgLatencyMs)} ms</strong></div><div class="live-metric"><small>Unexpected successes</small><strong class="${unexpected?'status-warn':'status-good'}">${unexpected}</strong></div></div><div class="evidence"><strong>${unexpected?'Latest fixture needs investigation':'Latest fixture reports no unexpected unauthorized successes.'}</strong><p>${unexpected?`The published artifact contains ${unexpected} operations that were marked unauthorized but completed successfully. Treat the run as evidence of an open authorization issue, not as a security pass.`:'The latest published artifact reports no unexpected unauthorized successes.'}</p><p class="case-note">Seed ${esc(r.seed)} · published timestamp ${esc(r.utc)} · ${esc((r.records||[]).length)} recorded operations.</p></div>`}).catch(e=>{document.getElementById('live-report').innerHTML=`<div class="evidence"><strong>Report unavailable</strong><p>${esc(e.message)}</p></div>`});
-</script></body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Supply Chain Case Study | Foundgine</title>
+    <meta
+      content="Foundgine Supply Chain case study: one capability boundary for AI agents, MCP, semantic execution, authorization, transactional mutations and PostgreSQL, backed by reproducible benchmarks and security regression tests."
+      name="description"
+    />
+    <link
+      href="https://cristianbarragan.github.io/Foundgine/case-studies/supply-chain/"
+      rel="canonical"
+    />
+    <meta content="Supply Chain Case Study | Foundgine" property="og:title" />
+    <meta
+      content="A real Foundgine application case combining AI-agent capabilities, semantic authorization, transactional execution, security regression and benchmark evidence."
+      property="og:description"
+    />
+    <meta content="article" property="og:type" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/case-studies/supply-chain/"
+      property="og:url"
+    />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Supply Chain Case Study | Foundgine" name="twitter:title" />
+    <meta
+      content="AI-agent capabilities, semantic authorization, transactional execution, security regression and benchmark evidence."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../../assets/style.css" rel="stylesheet" />
+    <style>
+      .case-hero {
+        padding: 5.5rem 0 3rem;
+      }
+      .case-hero h1 {
+        max-width: 980px;
+        font-size: clamp(2.8rem, 7vw, 6rem);
+        line-height: 0.96;
+        margin: 0.7rem 0 1.2rem;
+      }
+      .case-hero .subtitle {
+        max-width: 900px;
+        font-size: 1.22rem;
+        line-height: 1.7;
+      }
+      .case-kicker {
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        font:
+          600 0.76rem/1.4 "IBM Plex Mono",
+          monospace;
+      }
+      .case-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        margin: 1.7rem 0;
+      }
+      .case-flow {
+        display: grid;
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin: 2rem 0 3rem;
+      }
+      .case-flow div {
+        border: 1px solid var(--line, #ddd);
+        border-radius: 12px;
+        padding: 0.8rem 0.65rem;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.86rem;
+        background: var(--surface, #fff);
+      }
+      .case-flow div:not(:last-child)::after {
+        content: "→";
+        position: absolute;
+        transform: translateX(0.65rem);
+        opacity: 0.4;
+      }
+      .case-flow div {
+        position: relative;
+      }
+      .case-section {
+        margin: 4rem 0;
+      }
+      .case-section > h2 {
+        max-width: 850px;
+      }
+      .case-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        margin: 1.6rem 0;
+      }
+      .case-card {
+        border: 1px solid var(--line, #ddd);
+        border-radius: 16px;
+        padding: 1.35rem;
+        background: var(--surface, #fff);
+      }
+      .case-card h3 {
+        margin: 0.1rem 0 0.55rem;
+      }
+      .case-card p {
+        margin: 0;
+        line-height: 1.6;
+      }
+      .capability {
+        min-height: 150px;
+      }
+      .capability .tag {
+        display: inline-block;
+        font:
+          600 0.7rem "IBM Plex Mono",
+          monospace;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        opacity: 0.65;
+        margin-bottom: 0.7rem;
+      }
+      .benchmark-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin: 1.5rem 0;
+      }
+      .bench-card {
+        border: 1px solid var(--line, #ddd);
+        border-radius: 14px;
+        padding: 1.15rem;
+        background: var(--surface, #fff);
+      }
+      .bench-card small {
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font:
+          600 0.67rem "IBM Plex Mono",
+          monospace;
+        opacity: 0.65;
+      }
+      .bench-card strong {
+        display: block;
+        font-size: 1.65rem;
+        margin: 0.3rem 0;
+      }
+      .bench-card span {
+        display: block;
+        line-height: 1.45;
+      }
+      .benchmark-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.3rem 0;
+      }
+      .benchmark-table th,
+      .benchmark-table td {
+        padding: 0.75rem 0.6rem;
+        border-bottom: 1px solid var(--line, #ddd);
+        text-align: left;
+        vertical-align: top;
+      }
+      .evidence {
+        border: 1px solid var(--line, #ddd);
+        border-radius: 18px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        background: var(--surface, #fff);
+      }
+      .evidence strong {
+        display: block;
+        margin-bottom: 0.45rem;
+      }
+      .warning {
+        border-left: 4px solid currentColor;
+      }
+      .case-note {
+        font-size: 0.9rem;
+        color: var(--muted, #666);
+        line-height: 1.6;
+      }
+      .codebox {
+        overflow: auto;
+        border: 1px solid var(--line, #ddd);
+        border-radius: 14px;
+        padding: 1rem;
+        background: var(--surface, #fff);
+        font:
+          500 0.82rem/1.6 "IBM Plex Mono",
+          monospace;
+      }
+      .live-loading {
+        padding: 1.5rem 0;
+      }
+      .live-metrics {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.7rem;
+        margin: 1rem 0;
+      }
+      .live-metric {
+        border: 1px solid var(--line, #ddd);
+        border-radius: 12px;
+        padding: 1rem;
+      }
+      .live-metric small {
+        display: block;
+        font:
+          600 0.66rem "IBM Plex Mono",
+          monospace;
+        text-transform: uppercase;
+        opacity: 0.65;
+      }
+      .live-metric strong {
+        display: block;
+        font-size: 1.35rem;
+        margin-top: 0.3rem;
+      }
+      .status-good {
+        font-weight: 700;
+      }
+      .status-warn {
+        font-weight: 700;
+      }
+      .source-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-top: 1rem;
+      }
+      @media (max-width: 900px) {
+        .case-flow {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .case-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .benchmark-grid,
+        .live-metrics {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 620px) {
+        .case-flow {
+          grid-template-columns: 1fr 1fr;
+        }
+        .case-grid {
+          grid-template-columns: 1fr;
+        }
+        .benchmark-grid,
+        .live-metrics {
+          grid-template-columns: 1fr;
+        }
+        .case-flow div:not(:last-child)::after {
+          display: none;
+        }
+      }
+    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Supply Chain Case Study | Foundgine",
+        "description": "Foundgine Supply Chain case study combining AI-agent capabilities, semantic authorization, transactional execution, security regression and benchmark evidence.",
+        "url": "https://cristianbarragan.github.io/Foundgine/case-studies/supply-chain/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a href="../../what-is-foundgine.html">What is it</a>
+          <a href="../../getting-started/index.html">Getting started</a>
+          <a href="../../how-it-works/index.html">How it works</a>
+          <a href="../../architecture/index.html">Architecture</a>
+          <a href="../../ai-agents/index.html">AI agents</a>
+          <a href="../../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../../samples/index.html">Overview</a
+              ><a href="../../samples/semantic/index.html">Semantic execution</a
+              ><a href="../../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../../agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../../agent-benchmark/index.html">Evidence</a
+              ><a href="../../agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="../../agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="../../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../../agent-benchmark/run-5/index.html"
+                >Run 5 · High-assurance TransferFunds</a
+              ><a href="../../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <main class="page page-wide">
+      <article class="article article-wide">
+        <section class="case-hero">
+          <div class="case-kicker">
+            Featured case study · Supply Chain · Agent + MCP + PostgreSQL
+          </div>
+          <h1>One capability boundary for a real business workflow.</h1>
+          <p class="subtitle">
+            The Foundgine Supply Chain case turns a realistic supply-chain domain into an
+            application-controlled capability surface for AI agents. The same semantic model carries
+            intent through authorization, planning, ExecutionIR and PostgreSQL—while the benchmark
+            suite measures agent work and the PenTest suite attacks the boundary.
+          </p>
+          <div class="case-actions">
+            <a class="button" href="../../agent-benchmark/supply-chain/index.html"
+              >Open live E2E evidence →</a
+            ><a class="button secondary" href="../../samples/semantic/index.html"
+              >Explore semantic sample</a
+            ><a class="button secondary" href="../../samples/pentest/index.html"
+              >Read security PenTest</a
+            >
+          </div>
+        </section>
+        <section class="case-section">
+          <div class="case-kicker">The case</div>
+          <h2 id="from-an-agent-s-request-to-an-authorized-database-operation">
+            From an agent's request to an authorized database operation.
+          </h2>
+          <p>
+            This is deliberately more than a CRUD demo. The agent selects a business capability; it
+            does not receive authority to invent SQL, bypass ownership, choose protected fields or
+            rewrite the application's authorization model.
+          </p>
+          <div class="case-flow">
+            <div>AI agent</div>
+            <div>MCP</div>
+            <div>Intent</div>
+            <div>Semantics</div>
+            <div>Authorization</div>
+            <div>Plan + IR</div>
+            <div>Npgsql</div>
+            <div>PostgreSQL</div>
+          </div>
+        </section>
+        <section class="case-section">
+          <div class="case-kicker">Capabilities</div>
+          <h2 id="the-application-exposes-business-capabilities-not-database-primitives">
+            The application exposes business capabilities, not database primitives.
+          </h2>
+          <div class="case-grid">
+            <div class="case-card capability">
+              <span class="tag">Customer</span>
+              <h3 id="orders-ownership">Orders &amp; ownership</h3>
+              <p>
+                Read customer orders and order details while ownership rules remain
+                server-controlled. Cross-customer access is treated as a security boundary, not a
+                prompt convention.
+              </p>
+            </div>
+            <div class="case-card capability">
+              <span class="tag">Commerce</span>
+              <h3 id="placeorder">PlaceOrder</h3>
+              <p>
+                Resolve products, validate quantities and inventory, calculate price server-side,
+                write order state atomically and enforce replay protection.
+              </p>
+            </div>
+            <div class="case-card capability">
+              <span class="tag">Warehouse</span>
+              <h3 id="inventory-operations">Inventory operations</h3>
+              <p>
+                Expose inventory reads and updates only to authorized warehouse/procurement actors
+                through the same application capability model.
+              </p>
+            </div>
+            <div class="case-card capability">
+              <span class="tag">Fulfillment</span>
+              <h3 id="shipments">Shipments</h3>
+              <p>
+                Create and update shipment state with role-aware controls and warehouse allocation
+                carried through fulfillment and cancellation.
+              </p>
+            </div>
+            <div class="case-card capability">
+              <span class="tag">Procurement</span>
+              <h3 id="products-suppliers">Products &amp; suppliers</h3>
+              <p>
+                Expose supplier and product discovery to procurement roles without making the
+                transport adapter responsible for business authority.
+              </p>
+            </div>
+            <div class="case-card capability">
+              <span class="tag">Execution evidence</span>
+              <h3 id="traceable-plans">Traceable plans</h3>
+              <p>
+                Semantic plans are lowered through ExecutionIR and receipts retain evidence such as
+                a plan fingerprint before physical execution.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="case-section">
+          <div class="case-kicker">Benchmark evidence</div>
+          <h2 id="what-the-measurements-actually-show">What the measurements actually show.</h2>
+          <p>
+            The benchmark story is intentionally split into
+            <strong>measured comparisons</strong> and <strong>modeled estimates</strong>. This
+            avoids turning a useful agent-work signal into an unsupported performance claim.
+          </p>
+          <div class="benchmark-grid">
+            <div class="bench-card">
+              <small>Run 1 · live comparison</small><strong>7 → 4</strong
+              ><span
+                >application tool calls for the same workflow: <strong>42.9% fewer</strong>.</span
+              >
+            </div>
+            <div class="bench-card">
+              <small>Run 1 · context estimate</small><strong>932 → 534</strong
+              ><span>estimated context tokens: <strong>42.7% lower</strong>.</span>
+            </div>
+            <div class="bench-card">
+              <small>Run 2 · scalability</small><strong>9 → 6</strong
+              ><span
+                >tool calls across the published customer/concurrency matrix:
+                <strong>33.3% fewer</strong>.</span
+              >
+            </div>
+            <div class="bench-card">
+              <small>Supply Chain E2E</small><strong>25</strong
+              ><span
+                >agent-like business operations in the published run, across
+                <strong>5 customers</strong> and 8 actor identities.</span
+              >
+            </div>
+          </div>
+          <table class="benchmark-table">
+            <thead>
+              <tr>
+                <th>Experiment</th>
+                <th>Measured result</th>
+                <th>What it means</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Run 1 · conventional vs Foundgine</td>
+                <td>
+                  7 → 4 tool calls; 932 → 534 estimated context tokens; 12.69 → 24.25 ms wall time
+                </td>
+                <td>
+                  Strong early evidence of reduced agent/application work, with an execution-latency
+                  trade-off that should not be hidden.
+                </td>
+              </tr>
+              <tr>
+                <td>Run 2 · customer tiers / concurrency</td>
+                <td>
+                  9 → 6 tool calls; ~26.5% lower estimated context; published cells reported 100%
+                  request success
+                </td>
+                <td>
+                  The agent-work reduction persisted as workload size and concurrency increased;
+                  this run is not a claim that Foundgine is always faster.
+                </td>
+              </tr>
+              <tr>
+                <td>Supply Chain E2E</td>
+                <td>25 operations; 43.2 ms average latency in the published fixture</td>
+                <td>
+                  Demonstrates a stateful capability workflow rather than an isolated
+                  microbenchmark.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="case-note">
+            Run 1 and Run 2 are live conventional-vs-Foundgine experiments. The Supply Chain E2E
+            page also contains a modeled efficiency estimate for its standalone workload; that
+            estimate is explicitly not a measured conventional comparison.
+          </p>
+        </section>
+        <section class="case-section">
+          <div class="case-kicker">Security boundary</div>
+          <h2 id="the-same-case-is-attacked-from-both-sides-of-the-transport-boundary">
+            The same case is attacked from both sides of the transport boundary.
+          </h2>
+          <p>
+            The <code>Foundgine.SupplyChain.PenTest</code> sample puts MCP and GraphQL over the same
+            application and infrastructure layers. Its deterministic regression suite covers
+            authentication, BOLA/IDOR, role escalation, injection-shaped input and information
+            leakage.
+          </p>
+          <div class="case-grid">
+            <div class="case-card">
+              <span class="tag">MCP</span>
+              <h3 id="7-penetration-cases">7 penetration cases</h3>
+              <p>
+                Missing credentials, invalid tokens, identity ambiguity, cross-customer access,
+                capability escalation and injection-shaped data are exercised through MCP.
+              </p>
+            </div>
+            <div class="case-card">
+              <span class="tag">GraphQL</span>
+              <h3 id="7-penetration-cases">7 penetration cases</h3>
+              <p>
+                The same security invariants are exercised through GraphQL so the transport adapter
+                cannot become a policy bypass.
+              </p>
+            </div>
+            <div class="case-card">
+              <span class="tag">Regression</span>
+              <h3 id="14-deterministic-cases">14 deterministic cases</h3>
+              <p>
+                The cases are executable security tests, not screenshots or prose claims. The E2E
+                benchmark can merge their TRX timings into the application report.
+              </p>
+            </div>
+          </div>
+          <div class="evidence warning">
+            <strong>Evidence discipline</strong>
+            <p>
+              The currently published Supply Chain fixture records
+              <strong>9 unexpected unauthorized successes</strong>. That is a benchmark/security
+              signal to investigate, not something this case study presents as a passing security
+              result. The PenTest suite and the latest E2E run should be rerun after authorization
+              expectations are corrected.
+            </p>
+            <p class="case-note">
+              This page intentionally keeps that result visible rather than converting an unfinished
+              benchmark into a marketing claim.
+            </p>
+          </div>
+        </section>
+        <section class="case-section">
+          <div class="case-kicker">Reproduce it</div>
+          <h2 id="everything-important-is-runnable-from-the-repository">
+            Everything important is runnable from the repository.
+          </h2>
+          <div class="codebox">
+            cd samples/Foundgine.SupplyChain.Advanced $env:SUPPLY_CHAIN_CUSTOMERS="5"
+            $env:SUPPLY_CHAIN_STEPS="25" $env:SUPPLY_CHAIN_SEED="20260823" ./run-supply-chain.ps1
+            ./publish-supply-chain-report.ps1
+          </div>
+          <div class="source-row">
+            <a class="button" href="../../agent-benchmark/supply-chain/index.html"
+              >View the published report</a
+            ><a class="button secondary" href="../../samples/pentest/index.html"
+              >View PenTest architecture</a
+            ><a
+              class="button secondary"
+              href="https://github.com/cristianbarragan/Foundgine/tree/main/src/csharp/samples/Foundgine.SupplyChain.Advanced"
+              rel="noopener"
+              target="_blank"
+              >Source on GitHub</a
+            >
+          </div>
+        </section>
+        <section class="case-section" id="live">
+          <div class="case-kicker">Latest published E2E</div>
+          <h2 id="live-evidence-from-the-benchmark-artifact">
+            Live evidence from the benchmark artifact.
+          </h2>
+          <div class="live-loading" id="live-report">
+            Loading the published Supply Chain report…
+          </div>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-link prev" href="../../samples/index.html"
+            ><span>Previous</span><strong>← Samples</strong></a
+          ><a class="page-nav-home" href="../../index.html">Documentation home</a
+          ><a class="page-nav-link next" href="../../agent-benchmark/supply-chain/index.html"
+            ><span>Evidence</span><strong>Supply Chain E2E →</strong></a
+          >
+        </nav>
+      </article>
+    </main>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../../assets/site-nav.js"></script>
+    <script>
+      const esc = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m],
+        );
+      const fmt = (v, d = 1) =>
+        typeof v === "number" ? v.toLocaleString(undefined, { maximumFractionDigits: d }) : "—";
+      fetch("../../assets/agent-benchmark/supply-chain/supply-chain-report.json", {
+        cache: "no-store",
+      })
+        .then((r) => {
+          if (!r.ok) throw new Error("No published report yet.");
+          return r.json();
+        })
+        .then((r) => {
+          const s = r.summary || {};
+          const caps = [...new Set((r.records || []).map((x) => x.Capability))];
+          const unexpected = (r.records || []).filter(
+            (x) => !x.ExpectedAllowed && x.Success,
+          ).length;
+          document.getElementById("live-report").innerHTML =
+            `<div class="live-metrics"><div class="live-metric"><small>Customers</small><strong>${esc(r.customers)}</strong></div><div class="live-metric"><small>Operations</small><strong>${esc(r.steps)}</strong></div><div class="live-metric"><small>Capabilities exercised</small><strong>${caps.length}</strong></div><div class="live-metric"><small>Average latency</small><strong>${fmt(s.avgLatencyMs)} ms</strong></div><div class="live-metric"><small>Unexpected successes</small><strong class="${unexpected ? "status-warn" : "status-good"}">${unexpected}</strong></div></div><div class="evidence"><strong>${unexpected ? "Latest fixture needs investigation" : "Latest fixture reports no unexpected unauthorized successes."}</strong><p>${unexpected ? `The published artifact contains ${unexpected} operations that were marked unauthorized but completed successfully. Treat the run as evidence of an open authorization issue, not as a security pass.` : "The latest published artifact reports no unexpected unauthorized successes."}</p><p class="case-note">Seed ${esc(r.seed)} · published timestamp ${esc(r.utc)} · ${esc((r.records || []).length)} recorded operations.</p></div>`;
+        })
+        .catch((e) => {
+          document.getElementById("live-report").innerHTML =
+            `<div class="evidence"><strong>Report unavailable</strong><p>${esc(e.message)}</p></div>`;
+        });
+    </script>
+  </body>
+</html>

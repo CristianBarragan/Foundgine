@@ -1,21 +1,22 @@
 package com.foundgine.core.semantic.planning;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import com.foundgine.core.abstractions.AuthorizationOperation;
 import com.foundgine.core.abstractions.AuthorizationPredicate;
 import com.foundgine.core.abstractions.EntityId;
 import com.foundgine.core.abstractions.FieldId;
 import com.foundgine.core.abstractions.RelationshipId;
 import com.foundgine.core.semantic.SemanticGraph;
 import com.foundgine.core.semantic.authorization.AllowAllSemanticAuthorizationPolicy;
-import com.foundgine.core.abstractions.AuthorizationOperation;
 import com.foundgine.core.semantic.authorization.SemanticAuthorizationException;
 import com.foundgine.core.semantic.authorization.SemanticAuthorizer;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
- * Port of {@code AuthorizationInvariantTests} (Foundgine.Planning.Tests).
- * Locks the provider-independent semantic-to-plan authorization boundary.
+ * Port of {@code AuthorizationInvariantTests} (Foundgine.Planning.Tests). Locks the
+ * provider-independent semantic-to-plan authorization boundary.
  */
 class AuthorizationInvariantParityTest {
 
@@ -24,8 +25,10 @@ class AuthorizationInvariantParityTest {
         var graph = new SemanticGraph();
         graph.addRoot(new EntityId(1), java.util.List.of(new FieldId(1)));
 
-        var exception = assertThrows(SemanticAuthorizationException.class,
-                () -> new SemanticAuthorizer(new DenyRootPolicy()).authorize(graph));
+        var exception =
+                assertThrows(
+                        SemanticAuthorizationException.class,
+                        () -> new SemanticAuthorizer(new DenyRootPolicy()).authorize(graph));
 
         assertTrue(exception.getMessage().contains("Access denied"));
     }
@@ -36,17 +39,20 @@ class AuthorizationInvariantParityTest {
         graph.addRoot(new EntityId(1), java.util.List.of(new FieldId(1), new FieldId(2)));
 
         var authorized = new SemanticAuthorizer(new DenyFieldPolicy()).authorize(graph);
-        var plan = new Planner().plan(new com.foundgine.core.semantic.ir.SemanticOperation(
-                new com.foundgine.core.semantic.ir.SemanticReadNode(
-                        authorized.nodes().get(0).id(),
-                        authorized.nodes().get(0).entityId(),
-                        authorized.nodes().get(0).fields(),
-                        authorized.nodes().get(0).viaRelationship(),
-                        authorized.nodes().get(0).viaConnection(),
-                        java.util.List.of(),
-                        null,
-                        authorized.nodes().get(0).authorization(),
-                        java.util.List.of())));
+        var plan =
+                new Planner()
+                        .plan(
+                                new com.foundgine.core.semantic.ir.SemanticOperation(
+                                        new com.foundgine.core.semantic.ir.SemanticReadNode(
+                                                authorized.nodes().get(0).id(),
+                                                authorized.nodes().get(0).entityId(),
+                                                authorized.nodes().get(0).fields(),
+                                                authorized.nodes().get(0).viaRelationship(),
+                                                authorized.nodes().get(0).viaConnection(),
+                                                java.util.List.of(),
+                                                null,
+                                                authorized.nodes().get(0).authorization(),
+                                                java.util.List.of())));
 
         assertEquals(java.util.List.of(new FieldId(1)), plan.root().fields());
         assertFalse(plan.root().fields().contains(new FieldId(2)));
@@ -65,9 +71,12 @@ class AuthorizationInvariantParityTest {
 
     @Test
     void conditionalAuthorizationIsPreservedInTheExecutionPlan() {
-        var predicate = AuthorizationPredicate.equal(
-                AuthorizationPredicate.member(AuthorizationPredicate.resourceParameter("resource"), "TenantId"),
-                AuthorizationPredicate.member(AuthorizationPredicate.contextParameter("user"), "TenantId"));
+        var predicate =
+                AuthorizationPredicate.equal(
+                        AuthorizationPredicate.member(
+                                AuthorizationPredicate.resourceParameter("resource"), "TenantId"),
+                        AuthorizationPredicate.member(
+                                AuthorizationPredicate.contextParameter("user"), "TenantId"));
 
         var graph = new SemanticGraph();
         graph.addRoot(new EntityId(1), java.util.List.of(new FieldId(1)), predicate);
@@ -107,7 +116,8 @@ class AuthorizationInvariantParityTest {
         }
 
         @Override
-        public AuthorizationPredicate getPredicate(EntityId entityId, AuthorizationOperation operation) {
+        public AuthorizationPredicate getPredicate(
+                EntityId entityId, AuthorizationOperation operation) {
             return operation == AuthorizationOperation.READ ? predicate : null;
         }
     }

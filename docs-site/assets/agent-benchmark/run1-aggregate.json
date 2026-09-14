@@ -1,77 +1,77 @@
 ﻿{
-    "run":  "Run1",
-    "aggregate":  [
-                      {
-                          "customers":  10,
-                          "concurrency":  8,
-                          "implementation":  "Conventional",
-                          "rps":  603.14979903802634,
-                          "avgWallMs":  13.263703333333332,
-                          "toolCalls":  56,
-                          "estimatedContextTokens":  7568
-                      },
-                      {
-                          "customers":  10,
-                          "concurrency":  8,
-                          "implementation":  "Foundgine",
-                          "rps":  455.71270048510621,
-                          "avgWallMs":  17.55492,
-                          "toolCalls":  32,
-                          "estimatedContextTokens":  2520
-                      },
-                      {
-                          "customers":  100,
-                          "concurrency":  64,
-                          "implementation":  "Conventional",
-                          "rps":  923.37186936057856,
-                          "avgWallMs":  69.311186666666657,
-                          "toolCalls":  448,
-                          "estimatedContextTokens":  61713
-                      },
-                      {
-                          "customers":  100,
-                          "concurrency":  64,
-                          "implementation":  "Foundgine",
-                          "rps":  805.90584593607082,
-                          "avgWallMs":  79.413743333333329,
-                          "toolCalls":  256,
-                          "estimatedContextTokens":  20215
-                      },
-                      {
-                          "customers":  1000,
-                          "concurrency":  64,
-                          "implementation":  "Conventional",
-                          "rps":  868.75838951379649,
-                          "avgWallMs":  73.668353333333343,
-                          "toolCalls":  448,
-                          "estimatedContextTokens":  61713
-                      },
-                      {
-                          "customers":  1000,
-                          "concurrency":  64,
-                          "implementation":  "Foundgine",
-                          "rps":  612.29382679623575,
-                          "avgWallMs":  104.52498,
-                          "toolCalls":  256,
-                          "estimatedContextTokens":  20215
-                      },
-                      {
-                          "customers":  10000,
-                          "concurrency":  64,
-                          "implementation":  "Conventional",
-                          "rps":  873.438489868523,
-                          "avgWallMs":  73.27362,
-                          "toolCalls":  448,
-                          "estimatedContextTokens":  61713
-                      },
-                      {
-                          "customers":  10000,
-                          "concurrency":  64,
-                          "implementation":  "Foundgine",
-                          "rps":  250.55326271045931,
-                          "avgWallMs":  255.43471000000005,
-                          "toolCalls":  256,
-                          "estimatedContextTokens":  20215
-                      }
-                  ]
+  "run": "Run1",
+  "aggregate": [
+    {
+      "customers": 10,
+      "concurrency": 8,
+      "implementation": "Conventional",
+      "rps": 603.14979903802634,
+      "avgWallMs": 13.263703333333332,
+      "toolCalls": 56,
+      "estimatedContextTokens": 7568
+    },
+    {
+      "customers": 10,
+      "concurrency": 8,
+      "implementation": "Foundgine",
+      "rps": 455.71270048510621,
+      "avgWallMs": 17.55492,
+      "toolCalls": 32,
+      "estimatedContextTokens": 2520
+    },
+    {
+      "customers": 100,
+      "concurrency": 64,
+      "implementation": "Conventional",
+      "rps": 923.37186936057856,
+      "avgWallMs": 69.311186666666657,
+      "toolCalls": 448,
+      "estimatedContextTokens": 61713
+    },
+    {
+      "customers": 100,
+      "concurrency": 64,
+      "implementation": "Foundgine",
+      "rps": 805.90584593607082,
+      "avgWallMs": 79.413743333333329,
+      "toolCalls": 256,
+      "estimatedContextTokens": 20215
+    },
+    {
+      "customers": 1000,
+      "concurrency": 64,
+      "implementation": "Conventional",
+      "rps": 868.75838951379649,
+      "avgWallMs": 73.668353333333343,
+      "toolCalls": 448,
+      "estimatedContextTokens": 61713
+    },
+    {
+      "customers": 1000,
+      "concurrency": 64,
+      "implementation": "Foundgine",
+      "rps": 612.29382679623575,
+      "avgWallMs": 104.52498,
+      "toolCalls": 256,
+      "estimatedContextTokens": 20215
+    },
+    {
+      "customers": 10000,
+      "concurrency": 64,
+      "implementation": "Conventional",
+      "rps": 873.438489868523,
+      "avgWallMs": 73.27362,
+      "toolCalls": 448,
+      "estimatedContextTokens": 61713
+    },
+    {
+      "customers": 10000,
+      "concurrency": 64,
+      "implementation": "Foundgine",
+      "rps": 250.55326271045931,
+      "avgWallMs": 255.43471000000005,
+      "toolCalls": 256,
+      "estimatedContextTokens": 20215
+    }
+  ]
 }

@@ -1,4 +1,5 @@
 # SES-003 — Semantic Contract and Domain Meaning
+
 ← [SES-002 — Canonical Semantic Execution Lifecycle](SES-002-canonical-lifecycle.md) · [Standard Index](README.md) · [SES-004 — Semantic Operation Graph](SES-004-operation-graph.md) →
 
 ---
@@ -40,18 +41,23 @@ A mature contract SHOULD define:
 ## 3. Critique — major missing semantic dimensions
 
 ### 3.1 Temporal semantics
+
 “Current”, “as of”, effective dates, event time, processing time, and historical visibility require a formal model.
 
 ### 3.2 Units and normalization
+
 A semantic field representing money, distance, quantity, or rates needs canonical units and conversion rules. Silent unit conversion can change meaning.
 
 ### 3.3 Locale and linguistic semantics
+
 Synonyms, morphology, Unicode normalization, locale, transliteration, and multilingual labels need deterministic treatment.
 
 ### 3.4 Data classification
+
 Sensitivity and export restrictions should be semantic properties, not ad-hoc provider behavior.
 
 ### 3.5 Lifecycle/deprecation
+
 The contract needs explicit evolution semantics so an alias cannot accidentally resolve to a retired or security-sensitive concept.
 
 ## 4. Future development

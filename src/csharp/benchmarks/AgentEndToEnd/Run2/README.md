@@ -35,11 +35,11 @@ From the repository root:
 The default matrix is:
 
 | PostgreSQL customer volume | measured runs |
-|---:|---:|
-| 10 | 10 |
-| 100 | 10 |
-| 1,000 | 10 |
-| 10,000 | 10 |
+| -------------------------: | ------------: |
+|                         10 |            10 |
+|                        100 |            10 |
+|                      1,000 |            10 |
+|                     10,000 |            10 |
 
 Each tier gets a **fresh PostgreSQL volume**, then the benchmark fixture is seeded with the exact configured graph density. This means the database volume is the intentional independent variable between tiers.
 
@@ -127,7 +127,6 @@ CoffeeBeanery.Database projects before using `--no-restore`. No pre-existing
 
 The benchmark uses the local `docker-compose.yml` in this directory and does
 not depend on the CoffeeBeanery benchmark compose file.
-
 
 ## Agent communication efficiency
 

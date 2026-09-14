@@ -1,13 +1,13 @@
 # Grounding decisions
 
-[Lexical grounding](LEXICAL-GROUNDING.md) answers one question: *can these
-tokens be mapped onto a legal path through the semantic contract?*
+[Lexical grounding](LEXICAL-GROUNDING.md) answers one question: _can these
+tokens be mapped onto a legal path through the semantic contract?_
 
 That is a narrower question than grounding actually requires, and answering
 only that one creates a specific failure mode: **a candidate that fits the
 graph is not necessarily the meaning the user intended.** A semantically
-valid path is evidence that an interpretation is *possible*. It is not
-evidence that it is the *intended* one, and a resolver that always returns
+valid path is evidence that an interpretation is _possible_. It is not
+evidence that it is the _intended_ one, and a resolver that always returns
 the top-scored path will occasionally authorize and execute a confidently
 wrong interpretation instead of failing loudly.
 
@@ -47,7 +47,7 @@ ambiguous. It separates two situations that look identical at the level of
 1. **Different evidence for the same meaning.** Two retrieval sources (say,
    a fuzzy/BM25 index and a `pgvector` index) both proposed the same
    relationship, or the graph search found two different bridging routes to
-   the same field. The *meaning* is identical; only the supporting evidence
+   the same field. The _meaning_ is identical; only the supporting evidence
    or the mechanical route differs. This is retrieval noise, not ambiguity,
    and should not block execution.
 2. **Different meanings.** Two candidates map the same token onto a
@@ -112,7 +112,7 @@ or escalated:
   `null` when clarification is required.
 - `CompetingInterpretations` holds every semantically distinct reading that
   was still in contention, each with its own steps, confidence, and lexical
-  evidence — not just the runner-up's score, but *why* it was a legitimate
+  evidence — not just the runner-up's score, but _why_ it was a legitimate
   alternative.
 - `Reason` explains the outcome in terms a caller, a log line, or a
   clarifying question can use directly.
@@ -169,7 +169,7 @@ find the second, competing interpretation that would have forced
 null`, the same as `Unresolved`, and `GroundingDecision.BudgetLimit`
 records exactly which control fired.
 
-Whatever interpretations the search *had* constructed before the limit
+Whatever interpretations the search _had_ constructed before the limit
 tripped are still exposed, via `PartialInterpretationsAtCutoff` — but
 strictly as a diagnostic. It exists so an operator can see "grounding
 found 2 partial candidates before hitting `MaxPathsExplored`, maybe raise
@@ -207,7 +207,7 @@ carrying an unacknowledged coin-flip between two different meanings.
 
 ## What this does not claim to solve
 
-This is deliberately scoped to *structural* ambiguity — cases where the
+This is deliberately scoped to _structural_ ambiguity — cases where the
 frozen semantic contract itself admits more than one legal mapping for the
 same tokens. It does not attempt to resolve ambiguity using conversational
 context, user history, or an LLM's judgment about which interpretation
@@ -233,7 +233,6 @@ tracked future work.
 ---
 
 Previous: [Lexical grounding](LEXICAL-GROUNDING.md) · Next: [Authorization](AUTHORIZATION.md)
-
 
 > **Disclosure boundary:** `CompetingInterpretations` is an internal semantic result. Do not expose its
 > semantic metadata directly to untrusted callers unless the application has determined that the metadata

@@ -179,22 +179,22 @@ When changing these, update the affected adapter/provider tests rather than addi
 
 ## Where the implementation lives
 
-| Area | Package |
-|---|---|
-| Facade | `Foundgine` |
-| Contracts/IDs | `Foundgine.Core.Abstractions` |
-| Semantics | `Foundgine.Core.Semantic` |
-| Metadata | `Foundgine.Core.Semantic.Metadata` |
-| Planning | `Foundgine.Core.Semantic.Planning` |
-| Execution | `Foundgine.Core.Execution` |
-| SQL | `Foundgine.Providers.Storage.Sql` |
-| InMemory | `Foundgine.Providers.Storage.InMemory` |
-| AOT | `Foundgine.Providers.Aot`, `Foundgine.Providers.Aot.Generator` (build-only analyzer) |
-| JSON | `Foundgine.Core.Serialization` |
-| GraphQL | `Foundgine.Extensions.GraphQL.HotChocolate*` |
-| MCP | `Foundgine.Providers.Tools.MCP` |
-| AI | `Foundgine.Providers.Models` |
-| Authority recovery | `Foundgine.Runtime.ControlPlane` |
+| Area               | Package                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| Facade             | `Foundgine`                                                                          |
+| Contracts/IDs      | `Foundgine.Core.Abstractions`                                                        |
+| Semantics          | `Foundgine.Core.Semantic`                                                            |
+| Metadata           | `Foundgine.Core.Semantic.Metadata`                                                   |
+| Planning           | `Foundgine.Core.Semantic.Planning`                                                   |
+| Execution          | `Foundgine.Core.Execution`                                                           |
+| SQL                | `Foundgine.Providers.Storage.Sql`                                                    |
+| InMemory           | `Foundgine.Providers.Storage.InMemory`                                               |
+| AOT                | `Foundgine.Providers.Aot`, `Foundgine.Providers.Aot.Generator` (build-only analyzer) |
+| JSON               | `Foundgine.Core.Serialization`                                                       |
+| GraphQL            | `Foundgine.Extensions.GraphQL.HotChocolate*`                                         |
+| MCP                | `Foundgine.Providers.Tools.MCP`                                                      |
+| AI                 | `Foundgine.Providers.Models`                                                         |
+| Authority recovery | `Foundgine.Runtime.ControlPlane`                                                     |
 
 ---
 

@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Repeatable(FoundgineModelEntityMaps.class)
 public @interface FoundgineModelEntityMap {
-	Class<?> model();
+    Class<?> model();
 
-	Class<?> entity();
+    Class<?> entity();
 }

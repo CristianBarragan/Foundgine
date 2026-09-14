@@ -8,7 +8,7 @@ The starter sample's "high assurance" story was about a single mutation
 (`place_order`) getting idempotency and inventory checks. This sample's
 version of high assurance is different in shape: two **read-side traversal
 scenarios** that have to stay correct — and terminate — even against
-adversarial or malformed data, plus authorization scoping applied *inside*
+adversarial or malformed data, plus authorization scoping applied _inside_
 application logic, not just at the API boundary.
 
 ## Scenario 1: recursive supplier risk (`RecursiveSupplierRisk`)
@@ -20,7 +20,7 @@ supplier reachable at each depth, scoped to the caller's own tenant.
 **The two failure modes this has to survive, by construction, not by luck:**
 
 1. **Unbounded depth.** A real BOM can be deep, and a malicious or malformed
-   one could be *deliberately* deep to cause a stack overflow or a hung
+   one could be _deliberately_ deep to cause a stack overflow or a hung
    request. `Walk` checks `depth > SupplyChainExecutionLimits.RecursiveBomMaxDepth`
    (5) before doing anything else on each call — the traversal is bounded by
    policy, not by "however deep the data happens to go."
@@ -29,18 +29,18 @@ supplier reachable at each depth, scoped to the caller's own tenant.
    component of product A. `Walk` tracks the current call-stack path in a
    `HashSet<ProductId> path` (distinct from `visited`, which is the
    whole-traversal memoization set) — `path.Add(product)` returning `false`
-   means *this specific product is already an ancestor of itself in the
-   current recursion*, which means a cycle, and the function records it
+   means _this specific product is already an ancestor of itself in the
+   current recursion_, which means a cycle, and the function records it
    (`CycleDetected: true`) and returns instead of recursing forever.
 
 **The authorization scoping that isn't just a filter bolted on top:** notice
 the supplier-collection line —
 `d.Suppliers.FirstOrDefault(s => s.Id == supplier)?.TenantId == auth.TenantId`
-— tenant scoping happens *inside* the traversal, at the point where a
+— tenant scoping happens _inside_ the traversal, at the point where a
 supplier is about to be added to the result, not as a post-hoc `.Where()` on
 the final list. This matters because the traversal itself (which products
 lead to which components) is still allowed to walk through nodes the caller
-can't see suppliers for — only the *supplier attribution* is filtered. A
+can't see suppliers for — only the _supplier attribution_ is filtered. A
 looser design that filtered the whole result set after the fact would have
 been simpler to write and would have produced the same output here, but
 would not generalize safely to a scenario where the traversal path itself
@@ -49,12 +49,12 @@ would not generalize safely to a scenario where the traversal path itself
 ## Scenario 2: fulfillment planning (`FulfillmentPlanning`)
 
 **The question:** across all open customer orders, which products are
-projected to fall short, after netting available inventory *and* inbound
+projected to fall short, after netting available inventory _and_ inbound
 shipments expected within 14 days?
 
 **Where authorization scoping shows up again:** both the "available
 inventory" sum and the "inbound shipments" sum are filtered by
-`auth.AllowedWarehouses.Contains(...)` *before* being summed — a caller
+`auth.AllowedWarehouses.Contains(...)` _before_ being summed — a caller
 scoped to one warehouse gets a fulfillment picture computed only from data
 they're allowed to see, not a globally-accurate number with some fields
 redacted afterward. This is the same principle as scenario 1: authorization
@@ -78,8 +78,8 @@ public static class SupplyChainExecutionLimits
 ```
 
 The doc comment on this class is worth internalizing as a design principle
-on its own: these are **operational/security policy**, explicitly *not*
-structural metadata and *not* generated semantic topology. A schema change
+on its own: these are **operational/security policy**, explicitly _not_
+structural metadata and _not_ generated semantic topology. A schema change
 (adding a field, renaming a table) should never have to touch this file, and
 this file should never have to know anything about column names. Keeping
 "how deep is too deep" separate from "what does the schema look like" is
@@ -90,7 +90,7 @@ touching a single `[Foundgine*]` attribute.
 
 `SupplyChainScenarios.AssertAdversarialInvariants` is unusual: it's
 production code (not a test file) whose entire job is to assert that the
-*seed fixture itself* has certain adversarial properties, and throw if it
+_seed fixture itself_ has certain adversarial properties, and throw if it
 doesn't:
 
 - A cross-tenant warehouse (id 3) is present in the fixture but excluded
@@ -106,9 +106,10 @@ it passes clean for a correctly-scoped context, one proving it throws for a
 leaky one. The value of this split — invariant-checking logic living in
 application code, exercised by a thin test — is that anyone can run
 `SupplyChainScenarios.AssertAdversarialInvariants(data, auth)` against a
-*different* data fixture or a *different* auth context (e.g. in a demo, or
+_different_ data fixture or a _different_ auth context (e.g. in a demo, or
 while debugging a production incident) and get the same fail-loud guarantee
 that xUnit gives at test time.
 
 ---
+
 Previous: [`01-Claims-And-Authorization.md`](./01-Claims-And-Authorization.md) · Next: [`03-Ambiguity-And-Grounding.md`](./03-Ambiguity-And-Grounding.md)

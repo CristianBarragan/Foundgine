@@ -6,7 +6,6 @@ The normal test suite does not require a database. The PostgreSQL tests run when
 
 CI always supplies that connection string.
 
-
 ## PostgreSQL retrieval in the canonical lifecycle
 
 PostgreSQL retrieval is a branch inside the canonical semantic lifecycle, not a second pipeline:

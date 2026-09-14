@@ -57,7 +57,6 @@ The four benchmark projects are now part of `Foundgine.sln`, so IDE restore/buil
 
 The package contains no `.git`, `bin`, `obj`, `.idea`, or duplicated `src/csharp/benchmarks/benchmarks` / `src/csharp/benchmarks/src` trees. A root `.dockerignore` also prevents stale build artifacts and historical reports from entering Docker build contexts.
 
-
 ## v2 benchmark readiness and cache hardening
 
 - Target readiness has a separate 90-second startup timeout; this is not the per-request timeout.

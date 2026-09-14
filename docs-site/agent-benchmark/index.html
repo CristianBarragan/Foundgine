@@ -1,269 +1,1030 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
-<head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Agent Benchmark — Five experiments, one execution boundary | Foundgine</title>
-<meta content="Five end-to-end agent benchmark runs: baseline, scalability, efficiency, graph execution performance, and high-assurance TransferFunds execution through MCP." name="description"/>
-<link href="https://cristianbarragan.github.io/Foundgine/agent-benchmark/" rel="canonical"/>
-<meta content="article" property="og:type"/><meta content="Foundgine Agent Benchmark — controlled experiments" property="og:title"/><meta content="Controlled experiments examining agent work, scalability, efficiency and high-assurance business capabilities." property="og:description"/><meta content="https://cristianbarragan.github.io/Foundgine/agent-benchmark/" property="og:url"/><meta content="Foundgine" property="og:site_name"/>
-<meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="Foundgine Agent Benchmark" name="twitter:title"/><meta content="Explore the five benchmark experiments and the evidence behind each result." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../assets/style.css?v=20260828-2" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Foundgine Agent Benchmark","description":"Five end-to-end benchmark experiments examining agent work, scalability, efficiency, graph execution and high-assurance business capability execution.","url":"https://cristianbarragan.github.io/Foundgine/agent-benchmark/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head>
-<body>
-<header class="site-header"><div class="site-header-inner"><a class="brand" href="../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav class="site-nav" id="site-nav"><a href="../what-is-foundgine.html">What is it</a>
-<a href="../getting-started/index.html">Getting started</a>
-<a href="../how-it-works/index.html">How it works</a>
-<a href="../architecture/index.html">Architecture</a>
-<a href="../ai-agents/index.html">AI agents</a>
-<a href="../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../samples/index.html">Overview</a><a href="../samples/semantic/index.html">Semantic execution</a><a href="../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="index.html">Evidence</a><a href="run-1/index.html">Run 1 · Baseline</a><a href="run-2/index.html">Run 2 · Scalability</a><a href="run-3/index.html">Run 3 · Efficiency</a><a href="run-4/index.html">Run 4 · Graph execution</a><a href="run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="run-5b/index.html">Run 5b · Individual vs batch</a><a href="supply-chain/index.html">Supply Chain E2E</a><a href="../performance/index.html">Performance</a></div></div>
-<a href="../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div aria-hidden="true" class="run-menu-overlay" id="run-menu"><aside aria-labelledby="run-menu-title" aria-modal="true" class="run-menu" role="dialog"><div class="run-menu-head"><div><div class="run-label">Benchmark explorer</div><div class="run-menu-title" id="run-menu-title">Choose the experiment</div></div><button class="run-menu-close" id="run-menu-close" type="button">Close ×</button></div><div class="run-menu-list" id="run-menu-list"></div></aside></div>
-<div class="page page-wide"><main class="article article-wide">
-<div class="run-hero">
-<span class="eyebrow">End-to-end evidence · Runs 1–5 · August 2026</span>
-<h1>Five experiments. One question: what should the agent execution boundary do?</h1>
-<section aria-labelledby="benchmark-problem-title" class="problem-hero benchmark-problem">
-<div class="run-label">Why these experiments exist</div>
-<h2 id="benchmark-problem-title">The problem is not giving an agent an API. It is giving the agent useful capabilities without making the API the execution model.</h2>
-<p>A conventional endpoint can solve one operation very well, but as agent-facing capabilities multiply, the application can accumulate bespoke tools, repeated orchestration, duplicated policy checks and increasingly large interaction traces. These experiments ask whether a semantic execution boundary can reduce that agent-side work while preserving correctness and application control.</p>
-<div class="problem-grid"><div><strong>Agent-facing surface</strong><span>Can one capability express the business operation without exposing implementation-shaped steps?</span></div><div><strong>Execution boundary</strong><span>Can authorization, validation and planning remain application-owned rather than becoming model-owned orchestration?</span></div><div><strong>Efficiency</strong><span>Does reducing unnecessary interaction also reduce context load and improve execution throughput?</span></div></div>
-<blockquote><strong>Read the runs as a progression:</strong> establish the baseline, scale it, measure efficiency, compare execution architectures, then test a high-assurance business capability.</blockquote>
-</section>
-<p class="subtitle">Foundgine is intended to let an agent express a capability while the application remains responsible for semantics, authorization and execution. These runs progressively test that idea — from a small customer workflow to a high-assurance financial mutation.</p>
-<div class="run-actions"><button class="button" id="open-run-menu" type="button">Explore the five runs →</button><a class="button secondary" href="#selected-run">Read the current finding ↓</a></div>
-</div>
-<section class="benchmark-evidence-frame" id="verification-story" style="margin-top:2rem">
-<div class="evidence-frame-head"><div><div class="run-label">The complete verification story</div><h2 id="from-isolated-contracts-to-a-stateful-agent-facing-system">From isolated contracts to a stateful agent-facing system</h2><p>The benchmark suite is only meaningful when the execution boundary is verified underneath it. Foundgine's story progresses from deterministic unit behavior, through real PostgreSQL execution and security attack paths, into performance, and finally into the Supply Chain application workflow.</p></div></div>
-<div class="run-intro-grid">
-<div class="run-intro-card"><strong>01 · Unit tests</strong><span>Semantic, planning, authorization, MCP, AOT, InMemory and other deterministic contracts.</span></div>
-<div class="run-intro-card"><strong>02 · PostgreSQL integration</strong><span>Real provider execution against PostgreSQL, including end-to-end state and transaction behavior.</span></div>
-<div class="run-intro-card"><strong>03 · Penetration</strong><span>Authorization attacks plus adversarial semantic-input and hostile-model replay coverage.</span></div>
-<div class="run-intro-card"><strong>04 · Performance</strong><span>A real Docker performance smoke gate plus larger reproducible CoffeeBeanery benchmark matrices.</span></div>
-<div class="run-intro-card"><strong>05 · Supply Chain E2E</strong><span>An agent-like workload crossing MCP, semantic execution, authorization, ExecutionIR and PostgreSQL.</span></div>
-<div class="run-intro-card"><strong>Release principle</strong><span>The CI release path requires the core verification gates before package publication; the Supply Chain E2E adds the application-level proof story.</span></div>
-</div>
-<div style="margin-top:1rem"><a class="button secondary" href="supply-chain/index.html">See the complete Supply Chain story →</a></div>
-</section>
-<div class="run-intro-grid">
-<div class="run-intro-card"><strong>01 · Start with agent work</strong><span>How many tool interactions and how much context does the agent need to complete the same business process?</span></div>
-<div class="run-intro-card"><strong>02–03 · Stress the workflow</strong><span>Does the reduction survive more customers, more concurrency and a larger amount of orchestration?</span></div>
-<div class="run-intro-card"><strong>04 · Change the boundary</strong><span>Does the execution architecture matter for a high-assurance business capability?</span></div>
-</div>
-<section class="benchmark-evidence-frame" id="supply-chain-e2e" style="margin-top:2rem">
-<div class="evidence-frame-head"><div><div class="run-label">Supply Chain E2E · New vertical</div><h2 id="agent-mcp-foundgine-postgresql">Agent → MCP → Foundgine → PostgreSQL</h2><p>The application-level culmination: a stateful agent workload that brings semantic execution, authorization, high-assurance mutations, replay protection and PostgreSQL state integrity together.</p></div><a class="button" href="supply-chain/index.html">Open Supply Chain E2E →</a></div>
-<div class="run-intro-grid"><div class="run-intro-card"><strong>10 entities · 10 relationships</strong><span>Customer, orders, products, inventory, suppliers, warehouses, shipments and carriers.</span></div><div class="run-intro-card"><strong>Mixed workload</strong><span>Valid, invalid and unauthorized agent operations across customer, service, warehouse, procurement and admin identities.</span></div><div class="run-intro-card"><strong>Stateful evidence</strong><span>PlaceOrder covers authorization, ownership, validation, pricing, atomic mutation, idempotency and execution evidence.</span></div></div>
-</section>
-<div id="selected-run"></div>
-<section class="benchmark-evidence-frame" id="evidence-frame">
-<div class="evidence-frame-head">
-<div>
-<div class="run-label">Benchmark evidence</div>
-<h2 id="inspect-the-exact-workload-and-concurrency-result">Inspect the exact workload and concurrency result</h2>
-<p>The matrix shows the completed benchmark result for each workload/concurrency cell. Select a cell to compare the conventional and Foundgine execution paths using the published measurements.</p>
-</div>
-</div>
-<div class="run-label">Interactive matrix</div><h2 id="matrix-heading">Published workload/concurrency matrix</h2>
-<p id="matrix-description">Select one workload/concurrency cell to inspect the conventional and Foundgine measurements for that exact experiment.</p>
-<details class="matrix-help" id="matrix-help-wrap" open="">
-<summary>What do these controls mean?</summary>
-<dl>
-<div><dt>Run</dt><dd>Which of the six published runs (1, 2, 3, 4, 5, 5b) you're looking at. Runs 2, 4, 5 and 5b have workload/concurrency grids; Runs 1 and 3 are focused single-scenario experiments, so they show as "no matrix for this run" here — see that run's page for its measured result.</dd></div>
-<div><dt>Metric</dt><dd>What each cell shows: an <strong>RPS ratio</strong> (throughput), <strong>average wall time</strong>, <strong>estimated context tokens</strong>, or <strong>tool calls</strong> — always Foundgine compared against the conventional path.</dd></div>
-<div><dt>Customer workload / Concurrency</dt><dd>Filters the grid to one row or column. "All" keeps every published cell visible; the rest are dimmed rather than hidden.</dd></div>
-<div><dt>Reading a cell</dt><dd>A blue left edge means Foundgine wins on the selected metric; amber means the conventional path wins; a dashed grey edge means that metric wasn't recorded for this run. Click any solid cell for the full comparison.</dd></div>
-</dl>
-</details>
-<div id="matrix-controls-wrap"><div class="matrix-controls" style="margin-top:1.2rem">
-<div class="matrix-field"><label for="matrix-run">Run<select id="matrix-run"><option value="1">Run 1</option><option value="2">Run 2</option><option value="3">Run 3</option><option value="4">Run 4</option><option value="5">Run 5</option><option value="5b">Run 5b</option></select></label></div>
-<div class="matrix-field"><label for="matrix-metric">Metric<select id="matrix-metric"><option value="rps">RPS ratio</option><option value="wall">Average wall time</option><option value="tokens">Estimated context tokens (Conventional vs Foundgine)</option><option value="tools">Tool calls</option></select></label></div>
-<div class="matrix-field" id="matrix-customers-field"><label for="matrix-customers">Customer workload<select id="matrix-customers"><option value="all">All workloads</option></select></label></div>
-<div class="matrix-field" id="matrix-concurrency-field"><label for="matrix-concurrency">Concurrency<select id="matrix-concurrency"><option value="all">All concurrency</option></select></label></div>
-</div></div>
-<div class="matrix-legend" id="matrix-legend-wrap"><span id="legend-conventional"><span class="matrix-dot conventional"></span>Conventional</span><span id="legend-foundgine"><span class="matrix-dot foundgine"></span>Foundgine</span><span><span class="matrix-dot missing"></span>Not measured</span><span id="matrix-status"></span></div>
-<!-- The selected run's outcome intentionally sits directly above the matrix.
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Agent Benchmark — Five experiments, one execution boundary | Foundgine</title>
+    <meta
+      content="Five end-to-end agent benchmark runs: baseline, scalability, efficiency, graph execution performance, and high-assurance TransferFunds execution through MCP."
+      name="description"
+    />
+    <link href="https://cristianbarragan.github.io/Foundgine/agent-benchmark/" rel="canonical" />
+    <meta content="article" property="og:type" />
+    <meta content="Foundgine Agent Benchmark — controlled experiments" property="og:title" />
+    <meta
+      content="Controlled experiments examining agent work, scalability, efficiency and high-assurance business capabilities."
+      property="og:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/agent-benchmark/"
+      property="og:url"
+    />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Foundgine Agent Benchmark" name="twitter:title" />
+    <meta
+      content="Explore the five benchmark experiments and the evidence behind each result."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../assets/style.css?v=20260828-2" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Foundgine Agent Benchmark",
+        "description": "Five end-to-end benchmark experiments examining agent work, scalability, efficiency, graph execution and high-assurance business capability execution.",
+        "url": "https://cristianbarragan.github.io/Foundgine/agent-benchmark/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="site-nav" id="site-nav">
+          <a href="../what-is-foundgine.html">What is it</a>
+          <a href="../getting-started/index.html">Getting started</a>
+          <a href="../how-it-works/index.html">How it works</a>
+          <a href="../architecture/index.html">Architecture</a>
+          <a href="../ai-agents/index.html">AI agents</a>
+          <a href="../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../samples/index.html">Overview</a
+              ><a href="../samples/semantic/index.html">Semantic execution</a
+              ><a href="../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="index.html">Evidence</a><a href="run-1/index.html">Run 1 · Baseline</a
+              ><a href="run-2/index.html">Run 2 · Scalability</a
+              ><a href="run-3/index.html">Run 3 · Efficiency</a
+              ><a href="run-4/index.html">Run 4 · Graph execution</a
+              ><a href="run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div aria-hidden="true" class="run-menu-overlay" id="run-menu">
+      <aside aria-labelledby="run-menu-title" aria-modal="true" class="run-menu" role="dialog">
+        <div class="run-menu-head">
+          <div>
+            <div class="run-label">Benchmark explorer</div>
+            <div class="run-menu-title" id="run-menu-title">Choose the experiment</div>
+          </div>
+          <button class="run-menu-close" id="run-menu-close" type="button">Close ×</button>
+        </div>
+        <div class="run-menu-list" id="run-menu-list"></div>
+      </aside>
+    </div>
+    <div class="page page-wide">
+      <main class="article article-wide">
+        <div class="run-hero">
+          <span class="eyebrow">End-to-end evidence · Runs 1–5 · August 2026</span>
+          <h1>Five experiments. One question: what should the agent execution boundary do?</h1>
+          <section aria-labelledby="benchmark-problem-title" class="problem-hero benchmark-problem">
+            <div class="run-label">Why these experiments exist</div>
+            <h2 id="benchmark-problem-title">
+              The problem is not giving an agent an API. It is giving the agent useful capabilities
+              without making the API the execution model.
+            </h2>
+            <p>
+              A conventional endpoint can solve one operation very well, but as agent-facing
+              capabilities multiply, the application can accumulate bespoke tools, repeated
+              orchestration, duplicated policy checks and increasingly large interaction traces.
+              These experiments ask whether a semantic execution boundary can reduce that agent-side
+              work while preserving correctness and application control.
+            </p>
+            <div class="problem-grid">
+              <div>
+                <strong>Agent-facing surface</strong
+                ><span
+                  >Can one capability express the business operation without exposing
+                  implementation-shaped steps?</span
+                >
+              </div>
+              <div>
+                <strong>Execution boundary</strong
+                ><span
+                  >Can authorization, validation and planning remain application-owned rather than
+                  becoming model-owned orchestration?</span
+                >
+              </div>
+              <div>
+                <strong>Efficiency</strong
+                ><span
+                  >Does reducing unnecessary interaction also reduce context load and improve
+                  execution throughput?</span
+                >
+              </div>
+            </div>
+            <blockquote>
+              <strong>Read the runs as a progression:</strong> establish the baseline, scale it,
+              measure efficiency, compare execution architectures, then test a high-assurance
+              business capability.
+            </blockquote>
+          </section>
+          <p class="subtitle">
+            Foundgine is intended to let an agent express a capability while the application remains
+            responsible for semantics, authorization and execution. These runs progressively test
+            that idea — from a small customer workflow to a high-assurance financial mutation.
+          </p>
+          <div class="run-actions">
+            <button class="button" id="open-run-menu" type="button">Explore the five runs →</button
+            ><a class="button secondary" href="#selected-run">Read the current finding ↓</a>
+          </div>
+        </div>
+        <section class="benchmark-evidence-frame" id="verification-story" style="margin-top: 2rem">
+          <div class="evidence-frame-head">
+            <div>
+              <div class="run-label">The complete verification story</div>
+              <h2 id="from-isolated-contracts-to-a-stateful-agent-facing-system">
+                From isolated contracts to a stateful agent-facing system
+              </h2>
+              <p>
+                The benchmark suite is only meaningful when the execution boundary is verified
+                underneath it. Foundgine's story progresses from deterministic unit behavior,
+                through real PostgreSQL execution and security attack paths, into performance, and
+                finally into the Supply Chain application workflow.
+              </p>
+            </div>
+          </div>
+          <div class="run-intro-grid">
+            <div class="run-intro-card">
+              <strong>01 · Unit tests</strong
+              ><span
+                >Semantic, planning, authorization, MCP, AOT, InMemory and other deterministic
+                contracts.</span
+              >
+            </div>
+            <div class="run-intro-card">
+              <strong>02 · PostgreSQL integration</strong
+              ><span
+                >Real provider execution against PostgreSQL, including end-to-end state and
+                transaction behavior.</span
+              >
+            </div>
+            <div class="run-intro-card">
+              <strong>03 · Penetration</strong
+              ><span
+                >Authorization attacks plus adversarial semantic-input and hostile-model replay
+                coverage.</span
+              >
+            </div>
+            <div class="run-intro-card">
+              <strong>04 · Performance</strong
+              ><span
+                >A real Docker performance smoke gate plus larger reproducible CoffeeBeanery
+                benchmark matrices.</span
+              >
+            </div>
+            <div class="run-intro-card">
+              <strong>05 · Supply Chain E2E</strong
+              ><span
+                >An agent-like workload crossing MCP, semantic execution, authorization, ExecutionIR
+                and PostgreSQL.</span
+              >
+            </div>
+            <div class="run-intro-card">
+              <strong>Release principle</strong
+              ><span
+                >The CI release path requires the core verification gates before package
+                publication; the Supply Chain E2E adds the application-level proof story.</span
+              >
+            </div>
+          </div>
+          <div style="margin-top: 1rem">
+            <a class="button secondary" href="supply-chain/index.html"
+              >See the complete Supply Chain story →</a
+            >
+          </div>
+        </section>
+        <div class="run-intro-grid">
+          <div class="run-intro-card">
+            <strong>01 · Start with agent work</strong
+            ><span
+              >How many tool interactions and how much context does the agent need to complete the
+              same business process?</span
+            >
+          </div>
+          <div class="run-intro-card">
+            <strong>02–03 · Stress the workflow</strong
+            ><span
+              >Does the reduction survive more customers, more concurrency and a larger amount of
+              orchestration?</span
+            >
+          </div>
+          <div class="run-intro-card">
+            <strong>04 · Change the boundary</strong
+            ><span
+              >Does the execution architecture matter for a high-assurance business
+              capability?</span
+            >
+          </div>
+        </div>
+        <section class="benchmark-evidence-frame" id="supply-chain-e2e" style="margin-top: 2rem">
+          <div class="evidence-frame-head">
+            <div>
+              <div class="run-label">Supply Chain E2E · New vertical</div>
+              <h2 id="agent-mcp-foundgine-postgresql">Agent → MCP → Foundgine → PostgreSQL</h2>
+              <p>
+                The application-level culmination: a stateful agent workload that brings semantic
+                execution, authorization, high-assurance mutations, replay protection and PostgreSQL
+                state integrity together.
+              </p>
+            </div>
+            <a class="button" href="supply-chain/index.html">Open Supply Chain E2E →</a>
+          </div>
+          <div class="run-intro-grid">
+            <div class="run-intro-card">
+              <strong>10 entities · 10 relationships</strong
+              ><span
+                >Customer, orders, products, inventory, suppliers, warehouses, shipments and
+                carriers.</span
+              >
+            </div>
+            <div class="run-intro-card">
+              <strong>Mixed workload</strong
+              ><span
+                >Valid, invalid and unauthorized agent operations across customer, service,
+                warehouse, procurement and admin identities.</span
+              >
+            </div>
+            <div class="run-intro-card">
+              <strong>Stateful evidence</strong
+              ><span
+                >PlaceOrder covers authorization, ownership, validation, pricing, atomic mutation,
+                idempotency and execution evidence.</span
+              >
+            </div>
+          </div>
+        </section>
+        <div id="selected-run"></div>
+        <section class="benchmark-evidence-frame" id="evidence-frame">
+          <div class="evidence-frame-head">
+            <div>
+              <div class="run-label">Benchmark evidence</div>
+              <h2 id="inspect-the-exact-workload-and-concurrency-result">
+                Inspect the exact workload and concurrency result
+              </h2>
+              <p>
+                The matrix shows the completed benchmark result for each workload/concurrency cell.
+                Select a cell to compare the conventional and Foundgine execution paths using the
+                published measurements.
+              </p>
+            </div>
+          </div>
+          <div class="run-label">Interactive matrix</div>
+          <h2 id="matrix-heading">Published workload/concurrency matrix</h2>
+          <p id="matrix-description">
+            Select one workload/concurrency cell to inspect the conventional and Foundgine
+            measurements for that exact experiment.
+          </p>
+          <details class="matrix-help" id="matrix-help-wrap" open="">
+            <summary>What do these controls mean?</summary>
+            <dl>
+              <div>
+                <dt>Run</dt>
+                <dd>
+                  Which of the six published runs (1, 2, 3, 4, 5, 5b) you're looking at. Runs 2, 4,
+                  5 and 5b have workload/concurrency grids; Runs 1 and 3 are focused single-scenario
+                  experiments, so they show as "no matrix for this run" here — see that run's page
+                  for its measured result.
+                </dd>
+              </div>
+              <div>
+                <dt>Metric</dt>
+                <dd>
+                  What each cell shows: an <strong>RPS ratio</strong> (throughput),
+                  <strong>average wall time</strong>, <strong>estimated context tokens</strong>, or
+                  <strong>tool calls</strong> — always Foundgine compared against the conventional
+                  path.
+                </dd>
+              </div>
+              <div>
+                <dt>Customer workload / Concurrency</dt>
+                <dd>
+                  Filters the grid to one row or column. "All" keeps every published cell visible;
+                  the rest are dimmed rather than hidden.
+                </dd>
+              </div>
+              <div>
+                <dt>Reading a cell</dt>
+                <dd>
+                  A blue left edge means Foundgine wins on the selected metric; amber means the
+                  conventional path wins; a dashed grey edge means that metric wasn't recorded for
+                  this run. Click any solid cell for the full comparison.
+                </dd>
+              </div>
+            </dl>
+          </details>
+          <div id="matrix-controls-wrap">
+            <div class="matrix-controls" style="margin-top: 1.2rem">
+              <div class="matrix-field">
+                <label for="matrix-run"
+                  >Run<select id="matrix-run">
+                    <option value="1">Run 1</option>
+                    <option value="2">Run 2</option>
+                    <option value="3">Run 3</option>
+                    <option value="4">Run 4</option>
+                    <option value="5">Run 5</option>
+                    <option value="5b">Run 5b</option>
+                  </select></label
+                >
+              </div>
+              <div class="matrix-field">
+                <label for="matrix-metric"
+                  >Metric<select id="matrix-metric">
+                    <option value="rps">RPS ratio</option>
+                    <option value="wall">Average wall time</option>
+                    <option value="tokens">
+                      Estimated context tokens (Conventional vs Foundgine)
+                    </option>
+                    <option value="tools">Tool calls</option>
+                  </select></label
+                >
+              </div>
+              <div class="matrix-field" id="matrix-customers-field">
+                <label for="matrix-customers"
+                  >Customer workload<select id="matrix-customers">
+                    <option value="all">All workloads</option>
+                  </select></label
+                >
+              </div>
+              <div class="matrix-field" id="matrix-concurrency-field">
+                <label for="matrix-concurrency"
+                  >Concurrency<select id="matrix-concurrency">
+                    <option value="all">All concurrency</option>
+                  </select></label
+                >
+              </div>
+            </div>
+          </div>
+          <div class="matrix-legend" id="matrix-legend-wrap">
+            <span id="legend-conventional"
+              ><span class="matrix-dot conventional"></span>Conventional</span
+            ><span id="legend-foundgine"><span class="matrix-dot foundgine"></span>Foundgine</span
+            ><span><span class="matrix-dot missing"></span>Not measured</span
+            ><span id="matrix-status"></span>
+          </div>
+          <!-- The selected run's outcome intentionally sits directly above the matrix.
      It is re-rendered whenever the Run dropdown changes, so the headline result
      always describes the matrix currently visible below it. -->
-<div aria-live="polite" class="current-run-outcome" id="current-run-outcome">
-<div class="run-metrics" id="current-run-metrics"></div>
-<div class="run-finding" id="current-run-finding"></div>
-</div>
-<div class="heatmap-wrap" id="heatmap-wrap"><table class="heatmap"><thead id="heatmap-head"><tr><th>Workload \ Concurrency</th></tr></thead><tbody id="heatmap-body"></tbody></table></div>
-<div class="matrix-empty-state" hidden="" id="matrix-empty-state"><strong>No matrix for this run.</strong><span>This experiment is a focused agent workflow rather than a 4 × 4 workload/concurrency test.</span></div>
-<div class="selected-evidence" id="selected-evidence">
-<div class="chart-grid"><div class="chart-card"><h3 id="selected-cell-title">No matrix cell selected yet.</h3><div id="selected-chart"></div></div><div class="chart-card"><h3 id="what-this-cell-means">What this cell means</h3><div id="selected-impact"><p>Click a matrix cell above to inspect the benchmark result for one exact workload/concurrency combination.</p></div></div></div>
-<div class="table-wrap" style="margin-top:1rem"><div id="matrix-detail"></div></div>
-</div>
-</section>
-<section aria-labelledby="evidence-explainer-title" class="evidence-explainer">
-<div class="run-label">How to read this together</div>
-<h2 id="evidence-explainer-title">The matrix tells you what the system did. The published benchmark measurements show how the two execution paths compare.</h2>
-<div class="evidence-explainer-grid">
-<div><h3 id="1-select-the-experiment">1 · Select the experiment</h3><p>Start with a cell such as <strong>10,000 customers · C64</strong>. That fixes the exact workload and concurrency being discussed. The result above is the published benchmark measurement for that experiment.</p></div>
-<div><h3 id="2-read-the-execution-result">2 · Read the execution result</h3><p>Compare tool calls, estimated context, latency, throughput and success rate. These describe the <strong>agent and application execution path</strong>. A lower context figure means less estimated replay context; it does not by itself prove lower electricity use.</p></div>
-<div><h3 id="3-inspect-the-exact-measurements">3 · Inspect the exact measurements</h3><p>Use the selected-cell comparison and detailed table to see RPS, wall time, estimated context load and tool calls for both execution paths. The values come from the published benchmark artifacts.</p></div>
-<div><h3 id="4-keep-the-claims-separate">4 · Keep the claims separate</h3><p>This is deliberate. We can say <strong>lower estimated context</strong> when the benchmark supports it. We should only claim lower energy or carbon when the corresponding energy/emissions measurements were actually captured.</p></div>
-</div>
-</section>
-<section class="benchmark-evidence-frame" id="reduction-estimate">
-<div class="evidence-frame-head"><div><div class="run-label">Token &amp; agent-work reduction · beyond Run1-5</div><h2 id="how-much-does-this-approach-save-in-one-number">How much does this approach save, in one number?</h2><p>Run1-5 above measure a live conventional-vs-Foundgine comparison. Two other workloads in this repo — Supply Chain E2E's agent-authorization test and the SupplyChain.Semantic pipeline-weight benchmark — have no conventional counterpart running next to them, so they report a <strong>modeled</strong> estimate instead of a measured one. Both kinds are shown below, clearly labelled, so they're never confused for each other.</p></div></div>
-<div class="run-label" id="reduction-summary-status" style="margin-top:0.5rem">Loading reduction summary…</div>
-<div id="reduction-summary-body"></div>
-</section>
-<section class="run-section" id="methodology"><div class="run-label">How to read the evidence</div><h2 id="measured-and-estimated-values-are-labelled-separately">Measured and estimated values are labelled separately</h2><p><strong>Measured benchmark signals</strong> include tool calls, request timing, RPS and success/failure counts. The replay harness also computes an <strong>estimated context load</strong> using the benchmark's documented heuristic; that is not provider billing data.</p><p><strong>Estimated context tokens</strong> are included because they describe the amount of agent-facing context carried through the workflow. They should not be presented as exact model-provider usage unless the benchmark is run against a live model with provider usage reporting.</p></section>
-<p class="sitenav"><a href="../index.html">Home</a> · <a href="../what-is-foundgine.html">What is Foundgine?</a> · <a href="../how-it-works/index.html">How it works</a> · <a href="../architecture/index.html">Architecture</a><a href="../packages/index.html">Packages</a></p>
-</main></div>
-<footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer>
-<script>
-const $=id=>document.getElementById(id);
-const state={runs:[],selectedRun:'5b',aggregates:{}};
-const fmt=(n,d=1)=>Number(n||0).toLocaleString(undefined,{maximumFractionDigits:d});
-const pct=(a,b)=>b?((a/b)-1)*100:0;
-const METRIC_FIELD={rps:'rps',wall:'avgWallMs',tokens:'estimatedContextTokens',tools:'toolCalls'};
-// estimatedContextTokens is an average PER TOOL CALL, not per logical operation. When a
-// side folds multiple logical ops into one call (e.g. Run 5b's transfer_funds_batch),
-// logicalOps/toolCalls > 1 and the raw per-call figure must be divided down to a
-// per-operation figure before the two sides are comparable. Rows without a logicalOps
-// field (Run 2, Run 5) fall back to 1, leaving their ratio unchanged from before.
-const opsPerCall=x=>(x&&x.logicalOps&&x.toolCalls)?x.logicalOps/x.toolCalls:1;
-function metricPair(c,f,metric){
- if(!c||!f)return {label:'—',detail:'No published pair',good:false,missing:true};
- const field=METRIC_FIELD[metric], cv=c[field], fv=f[field];
- if(cv==null||fv==null||!isFinite(cv)||!isFinite(fv)||cv===0)return {label:'—',detail:'Not measured in this run',good:false,missing:true};
- if(metric==='rps'){const ratio=fv/cv;return {label:ratio.toFixed(2)+'×',detail:ratio>=1?'Foundgine higher RPS':'Conventional higher RPS',good:ratio>=1};}
- if(metric==='wall'){const ratio=fv/cv,cpo=opsPerCall(c),fpo=opsPerCall(f);if(cpo!==fpo)return {label:fmt(ratio,2)+'×',detail:`Request wall only · ${fmt(cpo,0)} vs ${fmt(fpo,0)} ops/call`,good:false};return {label:fmt(ratio,2)+'×',detail:ratio<=1?'Foundgine lower wall time':'Conventional lower wall time',good:ratio<=1};}
- if(metric==='tokens'){const cpo=opsPerCall(c),fpo=opsPerCall(f),ratio=(fv/fpo)/(cv/cpo);return {label:fmt(ratio*100,0)+'%',detail:ratio<=1?fmt((1-ratio)*100,1)+'% lower estimated context per operation':fmt((ratio-1)*100,1)+'% higher estimated context per operation',good:ratio<=1};}
- const ratio=fv/cv;return {label:fmt(ratio,2)+'×',detail:ratio<=1?'Fewer Foundgine tool calls':'More Foundgine tool calls',good:ratio<=1};
-}
-function normalizeRows(run){return (state.aggregates[run]||[]).map(x=>({...x,customers:+x.customers,concurrency:+x.concurrency}));}
-function renderCurrentRunOutcome(runId){
- const r=state.runs.find(x=>x.id===runId);
- const metrics=$('current-run-metrics'), finding=$('current-run-finding');
- if(!r){ metrics.innerHTML=''; finding.innerHTML=''; return; }
- metrics.innerHTML=Object.entries(r.metrics||{}).map(([k,v])=>`<div class="run-metric"><small>${k.replace(/([A-Z])/g,' $1')}</small><strong>${v}</strong></div>`).join('');
- finding.innerHTML=`<div class="finding-label">Finding · Run ${r.id}</div><p>${r.finding}</p>`;
-}
-function pair(rows,b,c){return {c:rows.find(x=>x.customers===b&&x.concurrency===c&&/^(?:Conventional|MCP \+ EF Core)$/.test(x.implementation)),f:rows.find(x=>x.customers===b&&x.concurrency===c&&/^MCP \+ Foundgine Postgres$|^Foundgine$|^MCP \+ Foundgine$/.test(x.implementation))};}
-function renderMatrix(){
- const run=$('matrix-run').value, rows=normalizeRows(run), metric=$('matrix-metric').value;
- renderCurrentRunOutcome(run);
- const hasMatrix=rows.length>0;
- const frame=document.getElementById('evidence-frame');
- frame.classList.toggle('run-has-matrix',hasMatrix); frame.classList.toggle('run-no-matrix',!hasMatrix);
- document.getElementById('matrix-customers-field').hidden=!hasMatrix;
- document.getElementById('matrix-concurrency-field').hidden=!hasMatrix;
- document.getElementById('matrix-legend-wrap').hidden=!hasMatrix;
- document.getElementById('heatmap-wrap').hidden=!hasMatrix;
- document.getElementById('selected-evidence').hidden=!hasMatrix;
- document.getElementById('matrix-empty-state').hidden=hasMatrix;
- if(!hasMatrix){
-  $('matrix-heading').textContent=`Run ${run} · single-scenario agent workflow`;
-  $('matrix-description').textContent=`This run is intentionally reported as a single workflow rather than a workload/concurrency matrix. See the Run ${run} page for its story and measurements.`;
-  $('matrix-status').textContent=`Run ${run}`;
-  return;
- }
- const bs=[...new Set(rows.map(x=>x.customers))].sort((a,b)=>a-b), cs=[8,16,32,64].filter(c=>rows.some(x=>x.concurrency===c));
- // The header row must be built from the same `cs` list the body uses below.
- // A run whose data doesn't span all four concurrency tiers (e.g. Run 1/Run 3,
- // which only ever measured C8 and C64) would otherwise render fewer <td>
- // cells than a static 4-column <th> header expects, and the browser just
- // slots the real data into the wrong-labelled column positionally.
- document.getElementById('heatmap-head').innerHTML=`<tr><th>Workload \\ Concurrency</th>${cs.map(c=>`<th>C${c}</th>`).join('')}</tr>`;
- const sb=$('matrix-customers').value==='all'?null:+$('matrix-customers').value, sc=$('matrix-concurrency').value==='all'?null:+$('matrix-concurrency').value;
- $('matrix-customers').innerHTML='<option value="all">All workloads</option>'+bs.map(b=>`<option value="${b}" ${sb===b?'selected':''}>${b.toLocaleString()} customers</option>`).join('');
- $('matrix-concurrency').innerHTML='<option value="all">All concurrency</option>'+cs.map(c=>`<option value="${c}" ${sc===c?'selected':''}>C${c}</option>`).join('');
- const visible=bs.filter(b=>sb===null||b===sb), vcount=visible.reduce((n,b)=>n+cs.filter(c=>sc===null||c===sc).length,0);
- $('legend-conventional').lastChild.textContent=(run==='5'||run==='5b')?'MCP + EF Core':'Conventional'; $('legend-foundgine').lastChild.textContent=(run==='5'||run==='5b')?'MCP + Foundgine':'Foundgine'; $('matrix-status').textContent=`${vcount} visible cells · Run ${run}`;
- $('matrix-heading').textContent=`Run ${run} · ${run==='5'?'4 × 4 high-assurance mutation matrix':run==='5b'?'4 × 4 same-client individual-vs-batch matrix':'published scalability matrix'}`; if(run==='5'){ $('matrix-description').textContent='Both paths use MCP. Select a workload/concurrency cell to compare the purpose-built MCP + EF Core implementation with MCP + Foundgine High-Assurance Postgres.'; } else if(run==='5b'){ $('matrix-description').textContent='Same client, same logical task on both sides. Select a workload/concurrency cell to compare batchSize individual transfer_funds calls with one transfer_funds_batch call.'; } else { $('matrix-description').textContent='Select one workload/concurrency cell to inspect the conventional and Foundgine measurements for that exact experiment.'; }
- $('heatmap-body').innerHTML=visible.map(b=>`<tr><th>${b.toLocaleString()} customers</th>${cs.map(c=>{const p=pair(rows,b,c),m=metricPair(p.c,p.f,metric),hidden=(sc!==null&&c!==sc);const cellClass=m.missing?'missing':(m.good?'good':'neutral');return `<td style="opacity:${hidden?.3:1}"><button class="heat-cell ${cellClass}" data-b="${b}" data-c="${c}" type="button" title="${b.toLocaleString()} customers · C${c} · ${m.detail}"><span class="cell-label">C${c}</span><strong>${m.label}</strong><small>${m.detail}</small></button></td>`}).join('')}</tr>`).join('');
- document.querySelectorAll('.heat-cell').forEach(x=>x.onclick=()=>showCell(run,+x.dataset.b,+x.dataset.c));
- if(!window.__benchmarkCellSelected){
-   $('selected-cell-title').textContent='No matrix cell selected yet.';
-   $('selected-chart').innerHTML='';
-   $('selected-impact').innerHTML='<p>Click a matrix cell above to inspect the benchmark result for one exact workload/concurrency combination.</p>';
- }
- $('matrix-detail').innerHTML=`<table class="impact-table"><thead><tr><th>Workload</th><th>Concurrency</th><th>Implementation</th><th>RPS</th><th>Avg request/task wall</th><th>Estimated context tokens</th><th>Tool calls</th></tr></thead><tbody>${rows.filter(x=>(sb===null||x.customers===sb)&&(sc===null||x.concurrency===sc)).map(r=>`<tr><td>${r.customers.toLocaleString()}</td><td>C${r.concurrency}</td><td><span class="matrix-badge ${/Foundgine/.test(r.implementation)?'foundgine':'conventional'}">${r.implementation}</span></td><td>${r.rps==null?'—':fmt(r.rps,1)}</td><td>${fmt(r.avgWallMs,1)} ms</td><td>${fmt(r.estimatedContextTokens,0)}</td><td>${fmt(r.toolCalls,1)}</td></tr>`).join('')}</tbody></table>`;
-}
-function showCell(run,b,c){const p=pair(normalizeRows(run),b,c);if(!p.c||!p.f)return; window.__benchmarkCellSelected=true; $('selected-cell-title').textContent=`Run ${run} · ${b.toLocaleString()} customers · C${c}`; const rps=p.c.rps&&p.f.rps;
- const cpo=opsPerCall(p.c),fpo=opsPerCall(p.f),cToken=p.c.estimatedContextTokens/cpo,fToken=p.f.estimatedContextTokens/fpo,batched=(cpo!==1||fpo!==1);
- const cTokenLabel=cpo>1?`${fmt(p.c.estimatedContextTokens,0)} per call · ${fmt(cToken,1)} per operation`:fmt(p.c.estimatedContextTokens,0);
- const fTokenLabel=fpo>1?`${fmt(p.f.estimatedContextTokens,0)} per call · ${fmt(fToken,1)} per operation`:fmt(p.f.estimatedContextTokens,0);
- $('selected-chart').innerHTML=`<div class="bar-row"><span>${(run==='5'||run==='5b')?'MCP + EF Core':'Conventional'}</span><div class="bar-track"><div class="bar-fill conventional" style="width:100%"></div></div><strong>${p.c.rps==null?'—':fmt(p.c.rps,1)+' RPS'}</strong></div><div class="bar-row"><span>${(run==='5'||run==='5b')?'MCP + Foundgine':'Foundgine'}</span><div class="bar-track"><div class="bar-fill foundgine" style="width:${rps?Math.min(100,p.f.rps/p.c.rps*100):100}%"></div></div><strong>${p.f.rps==null?'—':fmt(p.f.rps,1)+' RPS'}</strong></div><div class="bar-row"><span>${(run==='5'||run==='5b')?'MCP + EF Core estimated context':'Conventional estimated context'}</span><div class="bar-track"><div class="bar-fill conventional" style="width:100%"></div></div><strong>${cTokenLabel}</strong></div><div class="bar-row"><span>${(run==='5'||run==='5b')?'MCP + Foundgine estimated context':'Foundgine estimated context'}</span><div class="bar-track"><div class="bar-fill foundgine" style="width:${Math.min(100,fToken/cToken*100)}%"></div></div><strong>${fTokenLabel}</strong></div>`;
- const contextSaving=(1-fToken/cToken)*100; const contextText=contextSaving>=0?`${fmt(contextSaving,1)}% lower estimated context load per operation`:`${fmt(Math.abs(contextSaving),1)}% higher estimated context load per operation`;
- $('selected-impact').innerHTML=`<p><strong>${contextText}</strong> for Foundgine in this cell.</p><p>${fmt(p.c.toolCalls,1)} → ${fmt(p.f.toolCalls,1)} tool calls. ${p.c.rps&&p.f.rps?`Throughput is ${fmt(p.f.rps/p.c.rps,2)}× the conventional path.`:''}</p><p class="matrix-note">${batched?`Foundgine folds ${fpo} logical operation${fpo===1?'':'s'} into each call here (conventional: ${cpo} per call), so the context figures are normalized per operation before comparing. `:''}The context figure is an estimate from the published benchmark fields, not provider billing. It is shown separately from any energy or carbon claim.</p>`;
- history.replaceState(null,'',`?run=${encodeURIComponent(run)}&customers=${encodeURIComponent(b)}&concurrency=${encodeURIComponent(c)}`);
-}
+          <div aria-live="polite" class="current-run-outcome" id="current-run-outcome">
+            <div class="run-metrics" id="current-run-metrics"></div>
+            <div class="run-finding" id="current-run-finding"></div>
+          </div>
+          <div class="heatmap-wrap" id="heatmap-wrap">
+            <table class="heatmap">
+              <thead id="heatmap-head">
+                <tr>
+                  <th>Workload \ Concurrency</th>
+                </tr>
+              </thead>
+              <tbody id="heatmap-body"></tbody>
+            </table>
+          </div>
+          <div class="matrix-empty-state" hidden="" id="matrix-empty-state">
+            <strong>No matrix for this run.</strong
+            ><span
+              >This experiment is a focused agent workflow rather than a 4 × 4 workload/concurrency
+              test.</span
+            >
+          </div>
+          <div class="selected-evidence" id="selected-evidence">
+            <div class="chart-grid">
+              <div class="chart-card">
+                <h3 id="selected-cell-title">No matrix cell selected yet.</h3>
+                <div id="selected-chart"></div>
+              </div>
+              <div class="chart-card">
+                <h3 id="what-this-cell-means">What this cell means</h3>
+                <div id="selected-impact">
+                  <p>
+                    Click a matrix cell above to inspect the benchmark result for one exact
+                    workload/concurrency combination.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="table-wrap" style="margin-top: 1rem"><div id="matrix-detail"></div></div>
+          </div>
+        </section>
+        <section aria-labelledby="evidence-explainer-title" class="evidence-explainer">
+          <div class="run-label">How to read this together</div>
+          <h2 id="evidence-explainer-title">
+            The matrix tells you what the system did. The published benchmark measurements show how
+            the two execution paths compare.
+          </h2>
+          <div class="evidence-explainer-grid">
+            <div>
+              <h3 id="1-select-the-experiment">1 · Select the experiment</h3>
+              <p>
+                Start with a cell such as <strong>10,000 customers · C64</strong>. That fixes the
+                exact workload and concurrency being discussed. The result above is the published
+                benchmark measurement for that experiment.
+              </p>
+            </div>
+            <div>
+              <h3 id="2-read-the-execution-result">2 · Read the execution result</h3>
+              <p>
+                Compare tool calls, estimated context, latency, throughput and success rate. These
+                describe the <strong>agent and application execution path</strong>. A lower context
+                figure means less estimated replay context; it does not by itself prove lower
+                electricity use.
+              </p>
+            </div>
+            <div>
+              <h3 id="3-inspect-the-exact-measurements">3 · Inspect the exact measurements</h3>
+              <p>
+                Use the selected-cell comparison and detailed table to see RPS, wall time, estimated
+                context load and tool calls for both execution paths. The values come from the
+                published benchmark artifacts.
+              </p>
+            </div>
+            <div>
+              <h3 id="4-keep-the-claims-separate">4 · Keep the claims separate</h3>
+              <p>
+                This is deliberate. We can say <strong>lower estimated context</strong> when the
+                benchmark supports it. We should only claim lower energy or carbon when the
+                corresponding energy/emissions measurements were actually captured.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="benchmark-evidence-frame" id="reduction-estimate">
+          <div class="evidence-frame-head">
+            <div>
+              <div class="run-label">Token &amp; agent-work reduction · beyond Run1-5</div>
+              <h2 id="how-much-does-this-approach-save-in-one-number">
+                How much does this approach save, in one number?
+              </h2>
+              <p>
+                Run1-5 above measure a live conventional-vs-Foundgine comparison. Two other
+                workloads in this repo — Supply Chain E2E's agent-authorization test and the
+                SupplyChain.Semantic pipeline-weight benchmark — have no conventional counterpart
+                running next to them, so they report a <strong>modeled</strong> estimate instead of
+                a measured one. Both kinds are shown below, clearly labelled, so they're never
+                confused for each other.
+              </p>
+            </div>
+          </div>
+          <div class="run-label" id="reduction-summary-status" style="margin-top: 0.5rem">
+            Loading reduction summary…
+          </div>
+          <div id="reduction-summary-body"></div>
+        </section>
+        <section class="run-section" id="methodology">
+          <div class="run-label">How to read the evidence</div>
+          <h2 id="measured-and-estimated-values-are-labelled-separately">
+            Measured and estimated values are labelled separately
+          </h2>
+          <p>
+            <strong>Measured benchmark signals</strong> include tool calls, request timing, RPS and
+            success/failure counts. The replay harness also computes an
+            <strong>estimated context load</strong> using the benchmark's documented heuristic; that
+            is not provider billing data.
+          </p>
+          <p>
+            <strong>Estimated context tokens</strong> are included because they describe the amount
+            of agent-facing context carried through the workflow. They should not be presented as
+            exact model-provider usage unless the benchmark is run against a live model with
+            provider usage reporting.
+          </p>
+        </section>
+        <p class="sitenav">
+          <a href="../index.html">Home</a> ·
+          <a href="../what-is-foundgine.html">What is Foundgine?</a> ·
+          <a href="../how-it-works/index.html">How it works</a> ·
+          <a href="../architecture/index.html">Architecture</a
+          ><a href="../packages/index.html">Packages</a>
+        </p>
+      </main>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const state = { runs: [], selectedRun: "5b", aggregates: {} };
+      const fmt = (n, d = 1) =>
+        Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: d });
+      const pct = (a, b) => (b ? (a / b - 1) * 100 : 0);
+      const METRIC_FIELD = {
+        rps: "rps",
+        wall: "avgWallMs",
+        tokens: "estimatedContextTokens",
+        tools: "toolCalls",
+      };
+      // estimatedContextTokens is an average PER TOOL CALL, not per logical operation. When a
+      // side folds multiple logical ops into one call (e.g. Run 5b's transfer_funds_batch),
+      // logicalOps/toolCalls > 1 and the raw per-call figure must be divided down to a
+      // per-operation figure before the two sides are comparable. Rows without a logicalOps
+      // field (Run 2, Run 5) fall back to 1, leaving their ratio unchanged from before.
+      const opsPerCall = (x) => (x && x.logicalOps && x.toolCalls ? x.logicalOps / x.toolCalls : 1);
+      function metricPair(c, f, metric) {
+        if (!c || !f)
+          return { label: "—", detail: "No published pair", good: false, missing: true };
+        const field = METRIC_FIELD[metric],
+          cv = c[field],
+          fv = f[field];
+        if (cv == null || fv == null || !isFinite(cv) || !isFinite(fv) || cv === 0)
+          return { label: "—", detail: "Not measured in this run", good: false, missing: true };
+        if (metric === "rps") {
+          const ratio = fv / cv;
+          return {
+            label: ratio.toFixed(2) + "×",
+            detail: ratio >= 1 ? "Foundgine higher RPS" : "Conventional higher RPS",
+            good: ratio >= 1,
+          };
+        }
+        if (metric === "wall") {
+          const ratio = fv / cv,
+            cpo = opsPerCall(c),
+            fpo = opsPerCall(f);
+          if (cpo !== fpo)
+            return {
+              label: fmt(ratio, 2) + "×",
+              detail: `Request wall only · ${fmt(cpo, 0)} vs ${fmt(fpo, 0)} ops/call`,
+              good: false,
+            };
+          return {
+            label: fmt(ratio, 2) + "×",
+            detail: ratio <= 1 ? "Foundgine lower wall time" : "Conventional lower wall time",
+            good: ratio <= 1,
+          };
+        }
+        if (metric === "tokens") {
+          const cpo = opsPerCall(c),
+            fpo = opsPerCall(f),
+            ratio = fv / fpo / (cv / cpo);
+          return {
+            label: fmt(ratio * 100, 0) + "%",
+            detail:
+              ratio <= 1
+                ? fmt((1 - ratio) * 100, 1) + "% lower estimated context per operation"
+                : fmt((ratio - 1) * 100, 1) + "% higher estimated context per operation",
+            good: ratio <= 1,
+          };
+        }
+        const ratio = fv / cv;
+        return {
+          label: fmt(ratio, 2) + "×",
+          detail: ratio <= 1 ? "Fewer Foundgine tool calls" : "More Foundgine tool calls",
+          good: ratio <= 1,
+        };
+      }
+      function normalizeRows(run) {
+        return (state.aggregates[run] || []).map((x) => ({
+          ...x,
+          customers: +x.customers,
+          concurrency: +x.concurrency,
+        }));
+      }
+      function renderCurrentRunOutcome(runId) {
+        const r = state.runs.find((x) => x.id === runId);
+        const metrics = $("current-run-metrics"),
+          finding = $("current-run-finding");
+        if (!r) {
+          metrics.innerHTML = "";
+          finding.innerHTML = "";
+          return;
+        }
+        metrics.innerHTML = Object.entries(r.metrics || {})
+          .map(
+            ([k, v]) =>
+              `<div class="run-metric"><small>${k.replace(/([A-Z])/g, " $1")}</small><strong>${v}</strong></div>`,
+          )
+          .join("");
+        finding.innerHTML = `<div class="finding-label">Finding · Run ${r.id}</div><p>${r.finding}</p>`;
+      }
+      function pair(rows, b, c) {
+        return {
+          c: rows.find(
+            (x) =>
+              x.customers === b &&
+              x.concurrency === c &&
+              /^(?:Conventional|MCP \+ EF Core)$/.test(x.implementation),
+          ),
+          f: rows.find(
+            (x) =>
+              x.customers === b &&
+              x.concurrency === c &&
+              /^MCP \+ Foundgine Postgres$|^Foundgine$|^MCP \+ Foundgine$/.test(x.implementation),
+          ),
+        };
+      }
+      function renderMatrix() {
+        const run = $("matrix-run").value,
+          rows = normalizeRows(run),
+          metric = $("matrix-metric").value;
+        renderCurrentRunOutcome(run);
+        const hasMatrix = rows.length > 0;
+        const frame = document.getElementById("evidence-frame");
+        frame.classList.toggle("run-has-matrix", hasMatrix);
+        frame.classList.toggle("run-no-matrix", !hasMatrix);
+        document.getElementById("matrix-customers-field").hidden = !hasMatrix;
+        document.getElementById("matrix-concurrency-field").hidden = !hasMatrix;
+        document.getElementById("matrix-legend-wrap").hidden = !hasMatrix;
+        document.getElementById("heatmap-wrap").hidden = !hasMatrix;
+        document.getElementById("selected-evidence").hidden = !hasMatrix;
+        document.getElementById("matrix-empty-state").hidden = hasMatrix;
+        if (!hasMatrix) {
+          $("matrix-heading").textContent = `Run ${run} · single-scenario agent workflow`;
+          $("matrix-description").textContent =
+            `This run is intentionally reported as a single workflow rather than a workload/concurrency matrix. See the Run ${run} page for its story and measurements.`;
+          $("matrix-status").textContent = `Run ${run}`;
+          return;
+        }
+        const bs = [...new Set(rows.map((x) => x.customers))].sort((a, b) => a - b),
+          cs = [8, 16, 32, 64].filter((c) => rows.some((x) => x.concurrency === c));
+        // The header row must be built from the same `cs` list the body uses below.
+        // A run whose data doesn't span all four concurrency tiers (e.g. Run 1/Run 3,
+        // which only ever measured C8 and C64) would otherwise render fewer <td>
+        // cells than a static 4-column <th> header expects, and the browser just
+        // slots the real data into the wrong-labelled column positionally.
+        document.getElementById("heatmap-head").innerHTML =
+          `<tr><th>Workload \\ Concurrency</th>${cs.map((c) => `<th>C${c}</th>`).join("")}</tr>`;
+        const sb = $("matrix-customers").value === "all" ? null : +$("matrix-customers").value,
+          sc = $("matrix-concurrency").value === "all" ? null : +$("matrix-concurrency").value;
+        $("matrix-customers").innerHTML =
+          '<option value="all">All workloads</option>' +
+          bs
+            .map(
+              (b) =>
+                `<option value="${b}" ${sb === b ? "selected" : ""}>${b.toLocaleString()} customers</option>`,
+            )
+            .join("");
+        $("matrix-concurrency").innerHTML =
+          '<option value="all">All concurrency</option>' +
+          cs
+            .map((c) => `<option value="${c}" ${sc === c ? "selected" : ""}>C${c}</option>`)
+            .join("");
+        const visible = bs.filter((b) => sb === null || b === sb),
+          vcount = visible.reduce(
+            (n, b) => n + cs.filter((c) => sc === null || c === sc).length,
+            0,
+          );
+        $("legend-conventional").lastChild.textContent =
+          run === "5" || run === "5b" ? "MCP + EF Core" : "Conventional";
+        $("legend-foundgine").lastChild.textContent =
+          run === "5" || run === "5b" ? "MCP + Foundgine" : "Foundgine";
+        $("matrix-status").textContent = `${vcount} visible cells · Run ${run}`;
+        $("matrix-heading").textContent =
+          `Run ${run} · ${run === "5" ? "4 × 4 high-assurance mutation matrix" : run === "5b" ? "4 × 4 same-client individual-vs-batch matrix" : "published scalability matrix"}`;
+        if (run === "5") {
+          $("matrix-description").textContent =
+            "Both paths use MCP. Select a workload/concurrency cell to compare the purpose-built MCP + EF Core implementation with MCP + Foundgine High-Assurance Postgres.";
+        } else if (run === "5b") {
+          $("matrix-description").textContent =
+            "Same client, same logical task on both sides. Select a workload/concurrency cell to compare batchSize individual transfer_funds calls with one transfer_funds_batch call.";
+        } else {
+          $("matrix-description").textContent =
+            "Select one workload/concurrency cell to inspect the conventional and Foundgine measurements for that exact experiment.";
+        }
+        $("heatmap-body").innerHTML = visible
+          .map(
+            (b) =>
+              `<tr><th>${b.toLocaleString()} customers</th>${cs
+                .map((c) => {
+                  const p = pair(rows, b, c),
+                    m = metricPair(p.c, p.f, metric),
+                    hidden = sc !== null && c !== sc;
+                  const cellClass = m.missing ? "missing" : m.good ? "good" : "neutral";
+                  return `<td style="opacity:${hidden ? 0.3 : 1}"><button class="heat-cell ${cellClass}" data-b="${b}" data-c="${c}" type="button" title="${b.toLocaleString()} customers · C${c} · ${m.detail}"><span class="cell-label">C${c}</span><strong>${m.label}</strong><small>${m.detail}</small></button></td>`;
+                })
+                .join("")}</tr>`,
+          )
+          .join("");
+        document
+          .querySelectorAll(".heat-cell")
+          .forEach((x) => (x.onclick = () => showCell(run, +x.dataset.b, +x.dataset.c)));
+        if (!window.__benchmarkCellSelected) {
+          $("selected-cell-title").textContent = "No matrix cell selected yet.";
+          $("selected-chart").innerHTML = "";
+          $("selected-impact").innerHTML =
+            "<p>Click a matrix cell above to inspect the benchmark result for one exact workload/concurrency combination.</p>";
+        }
+        $("matrix-detail").innerHTML =
+          `<table class="impact-table"><thead><tr><th>Workload</th><th>Concurrency</th><th>Implementation</th><th>RPS</th><th>Avg request/task wall</th><th>Estimated context tokens</th><th>Tool calls</th></tr></thead><tbody>${rows
+            .filter(
+              (x) => (sb === null || x.customers === sb) && (sc === null || x.concurrency === sc),
+            )
+            .map(
+              (r) =>
+                `<tr><td>${r.customers.toLocaleString()}</td><td>C${r.concurrency}</td><td><span class="matrix-badge ${/Foundgine/.test(r.implementation) ? "foundgine" : "conventional"}">${r.implementation}</span></td><td>${r.rps == null ? "—" : fmt(r.rps, 1)}</td><td>${fmt(r.avgWallMs, 1)} ms</td><td>${fmt(r.estimatedContextTokens, 0)}</td><td>${fmt(r.toolCalls, 1)}</td></tr>`,
+            )
+            .join("")}</tbody></table>`;
+      }
+      function showCell(run, b, c) {
+        const p = pair(normalizeRows(run), b, c);
+        if (!p.c || !p.f) return;
+        window.__benchmarkCellSelected = true;
+        $("selected-cell-title").textContent =
+          `Run ${run} · ${b.toLocaleString()} customers · C${c}`;
+        const rps = p.c.rps && p.f.rps;
+        const cpo = opsPerCall(p.c),
+          fpo = opsPerCall(p.f),
+          cToken = p.c.estimatedContextTokens / cpo,
+          fToken = p.f.estimatedContextTokens / fpo,
+          batched = cpo !== 1 || fpo !== 1;
+        const cTokenLabel =
+          cpo > 1
+            ? `${fmt(p.c.estimatedContextTokens, 0)} per call · ${fmt(cToken, 1)} per operation`
+            : fmt(p.c.estimatedContextTokens, 0);
+        const fTokenLabel =
+          fpo > 1
+            ? `${fmt(p.f.estimatedContextTokens, 0)} per call · ${fmt(fToken, 1)} per operation`
+            : fmt(p.f.estimatedContextTokens, 0);
+        $("selected-chart").innerHTML =
+          `<div class="bar-row"><span>${run === "5" || run === "5b" ? "MCP + EF Core" : "Conventional"}</span><div class="bar-track"><div class="bar-fill conventional" style="width:100%"></div></div><strong>${p.c.rps == null ? "—" : fmt(p.c.rps, 1) + " RPS"}</strong></div><div class="bar-row"><span>${run === "5" || run === "5b" ? "MCP + Foundgine" : "Foundgine"}</span><div class="bar-track"><div class="bar-fill foundgine" style="width:${rps ? Math.min(100, (p.f.rps / p.c.rps) * 100) : 100}%"></div></div><strong>${p.f.rps == null ? "—" : fmt(p.f.rps, 1) + " RPS"}</strong></div><div class="bar-row"><span>${run === "5" || run === "5b" ? "MCP + EF Core estimated context" : "Conventional estimated context"}</span><div class="bar-track"><div class="bar-fill conventional" style="width:100%"></div></div><strong>${cTokenLabel}</strong></div><div class="bar-row"><span>${run === "5" || run === "5b" ? "MCP + Foundgine estimated context" : "Foundgine estimated context"}</span><div class="bar-track"><div class="bar-fill foundgine" style="width:${Math.min(100, (fToken / cToken) * 100)}%"></div></div><strong>${fTokenLabel}</strong></div>`;
+        const contextSaving = (1 - fToken / cToken) * 100;
+        const contextText =
+          contextSaving >= 0
+            ? `${fmt(contextSaving, 1)}% lower estimated context load per operation`
+            : `${fmt(Math.abs(contextSaving), 1)}% higher estimated context load per operation`;
+        $("selected-impact").innerHTML =
+          `<p><strong>${contextText}</strong> for Foundgine in this cell.</p><p>${fmt(p.c.toolCalls, 1)} → ${fmt(p.f.toolCalls, 1)} tool calls. ${p.c.rps && p.f.rps ? `Throughput is ${fmt(p.f.rps / p.c.rps, 2)}× the conventional path.` : ""}</p><p class="matrix-note">${batched ? `Foundgine folds ${fpo} logical operation${fpo === 1 ? "" : "s"} into each call here (conventional: ${cpo} per call), so the context figures are normalized per operation before comparing. ` : ""}The context figure is an estimate from the published benchmark fields, not provider billing. It is shown separately from any energy or carbon claim.</p>`;
+        history.replaceState(
+          null,
+          "",
+          `?run=${encodeURIComponent(run)}&customers=${encodeURIComponent(b)}&concurrency=${encodeURIComponent(c)}`,
+        );
+      }
 
-function renderRun(runId, shouldScroll=true){
- state.selectedRun=runId; history.replaceState(null,'',`?run=${runId}`);
- const r=state.runs.find(x=>x.id===runId)||state.runs[state.runs.length-1];
- const anchor=`run-${r.id}`;
- $('selected-run').innerHTML='';
- let section=document.createElement('section');section.id=anchor;section.className='run-section';$('selected-run').appendChild(section);
- const prev=state.runs[Math.max(0,state.runs.findIndex(x=>x.id===r.id)-1)], next=state.runs[Math.min(state.runs.length-1,state.runs.findIndex(x=>x.id===r.id)+1)];
- section.innerHTML=`<div class="run-section-head"><div><div class="run-label">Run ${r.id} · ${r.short}</div><h2>${r.title}</h2><p>${r.story}</p></div><span class="run-status">${r.status}</span></div><div class="run-intro-grid"><div class="run-intro-card"><strong>Why this run exists</strong><span>${r.why}</span></div><div class="run-intro-card"><strong>What was compared</strong><span>${r.id==='5'?'MCP + purpose-built EF Core tool versus MCP + Foundgine High-Assurance Postgres. Both use MCP; only the execution architecture changes.':r.id==='5b'?'The same Run 5 HttpClient against both endpoints: batchSize individual transfer_funds MCP calls versus one transfer_funds_batch MCP call.': 'The same customer-exposure-review business process through conventional and semantic agent flows.'}</span></div><div class="run-intro-card"><strong>What to take away</strong><span>${r.meaning}</span></div></div><div class="run-nav-row"><a href="#run-${prev.id}" data-run-nav="${prev.id}">← Run ${prev.id}: ${prev.short}</a><a href="#run-${next.id}" data-run-nav="${next.id}">Run ${next.id}: ${next.short} →</a></div>`;
- section.querySelectorAll('[data-run-nav]').forEach(a=>a.onclick=e=>{e.preventDefault();renderRun(a.dataset.run);document.getElementById(`run-${a.dataset.run}`).scrollIntoView({behavior:'smooth',block:'start'});});
- window.__benchmarkCellSelected=false; document.getElementById('matrix-run').value=runId; renderMatrix(); if(shouldScroll) section.scrollIntoView({behavior:'smooth',block:'start'});
-}
-async function loadReductionSummary(){
- const statusEl=$('reduction-summary-status'), bodyEl=$('reduction-summary-body');
- try{
-  const summary=await fetch('../assets/agent-benchmark/reduction-summary.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
-  statusEl.textContent=summary.note||'';
-  let html='';
-  if(summary.measured){
-   html+=`<div class="run-intro-card" style="margin-top:1rem"><strong>Measured · ${summary.measured.source}</strong><span>${summary.measured.note}</span></div>`;
-  }
-  if(summary.modeled&&summary.modeled.length){
-   html+='<div class="run-intro-grid" style="margin-top:1rem">'+summary.modeled.map(m=>{
-    if(m.scenarios){
-     const rows=m.scenarios.map(s=>`<tr><td>${s.Name||s.name}</td><td>${fmt(s.ContextLoadReductionPercent??s.contextLoadReductionPercent,1)}%</td><td>${fmt(s.ToolCallReductionPercent??s.toolCallReductionPercent,1)}%</td></tr>`).join('');
-     return `<div class="run-intro-card"><strong>Modeled · ${m.benchmark}</strong><span>No live conventional flow to compare against — see caveats in the source report.</span><div class="table-wrap" style="margin-top:0.6rem"><table class="impact-table"><thead><tr><th>Scenario</th><th>Est. context-load reduction</th><th>Est. tool-call reduction</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
-    }
-    return `<div class="run-intro-card"><strong>Modeled · ${m.benchmark}</strong><span>Est. context-load reduction: <strong>${fmt(m.estimatedContextLoadReductionPercent,1)}%</strong> · Est. tool-call reduction: <strong>${fmt(m.estimatedToolCallReductionPercent,1)}%</strong> (modeled ${m.modeledConventional?.stepsPerCapabilityMultiplier||'?'}× conventional choreography vs. ${m.measuredFoundgine?.toolCalls??'?'} measured Foundgine calls). Not a live comparison — see caveats in the source report.</span></div>`;
-   }).join('')+'</div>';
-  }
-  if(!summary.measured&&(!summary.modeled||!summary.modeled.length)){
-   html='<p>No reduction-summary data has been published yet. Run <code>scripts/build-reduction-summary.py</code> after running the benchmarks.</p>';
-  }
-  bodyEl.innerHTML=html;
- }catch(e){
-  statusEl.textContent='Reduction summary not published yet.';
-  bodyEl.innerHTML='<p>This section fills in once <code>docs-site/assets/agent-benchmark/reduction-summary.json</code> is published (see <code>benchmarks/AgentEndToEnd/scripts/build-reduction-summary.py</code>).</p>';
- }
-}
-function openMenu(){ $('run-menu').classList.add('is-open');$('run-menu').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
-function closeMenu(){ $('run-menu').classList.remove('is-open');$('run-menu').setAttribute('aria-hidden','true');document.body.style.overflow='';}
-(async function(){
- loadReductionSummary();
- state.runs=(await fetch('../assets/agent-benchmark/runs.json?v=20260902-2',{cache:'no-store'}).then(r=>r.json())).runs;
- // Fetch every run's aggregate, not a hardcoded subset - Run 1/3/4 were
- // being silently skipped here even though their aggregate files exist,
- // which meant their matrix always rendered as "single-scenario" data.
- // Each run is fetched independently so one missing/unpublished aggregate
- // file can't take down the rest of the page.
- await Promise.all(state.runs.map(async r=>{
-  try{
-   const aggregateFile = r.aggregateFile || (r.id==='5b' ? 'run5b-aggregate.json' : `run${r.id}-aggregate.json`);
-   const res=await fetch(`../assets/agent-benchmark/${aggregateFile}?v=20260902-3`,{cache:'no-store'});
-   if(!res.ok) throw new Error('HTTP '+res.status);
-   state.aggregates[r.id]=(await res.json()).aggregate;
-  }catch(e){
-   state.aggregates[r.id]=[]; // no published matrix for this run - falls back to the single-scenario view
-  }
- }));
- const menu=$('run-menu-list'); menu.innerHTML=state.runs.map(r=>`<a class="run-menu-item" href="run-${r.id}/index.html"><span class="run-menu-number">RUN ${r.id}</span><span><strong>${r.title}</strong><span>${r.story}</span></span><span class="run-menu-arrow">→</span></a>`).join('');
- $('open-run-menu').onclick=openMenu;$('run-menu-close').onclick=closeMenu;$('run-menu').onclick=e=>{if(e.target===$('run-menu'))closeMenu();};document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();});
- const resetMatrixSelection=()=>{window.__benchmarkCellSelected=false;}; $('matrix-run').onchange=()=>{resetMatrixSelection();renderMatrix();};$('matrix-metric').onchange=()=>{resetMatrixSelection();renderMatrix();};$('matrix-customers').onchange=()=>{resetMatrixSelection();renderMatrix();};$('matrix-concurrency').onchange=()=>{resetMatrixSelection();renderMatrix();};
- const params=new URLSearchParams(location.search); const legacyTest=params.get('test'); let initialRun=params.get('run')||'5b'; let urlCustomers=params.get('customers'), urlConcurrency=params.get('concurrency'); const legacyConcurrencyKey=[...params.keys()].find(k=>/^concurrency\d+$/i.test(k)); if(!urlConcurrency&&legacyConcurrencyKey) urlConcurrency=legacyConcurrencyKey.match(/\d+/)[0]; if(legacyTest){ const m=legacyTest.match(/^(\d+)-c(\d+)$/i); if(m){ initialRun=params.get('run')||'5b'; urlCustomers=m[1]; urlConcurrency=m[2]; } } renderRun(initialRun, false); if(urlCustomers&&urlConcurrency){ setTimeout(()=>{ const selC=$('matrix-customers'), selK=$('matrix-concurrency'); if([...selC.options].some(o=>o.value===urlCustomers)) selC.value=urlCustomers; if([...selK.options].some(o=>o.value===urlConcurrency)) selK.value=urlConcurrency; window.__benchmarkCellSelected=false; renderMatrix(); const run=initialRun; const b=Number(urlCustomers), c=Number(urlConcurrency); if(pair(normalizeRows(run),b,c).c&&pair(normalizeRows(run),b,c).f) showCell(run,b,c); },0); }
-})().catch(e=>{console.error(e);$('selected-run').innerHTML='<section class="run-section"><h2>Benchmark data could not be loaded</h2><p>Check that the published benchmark assets are present.</p></section>';});
-
-</script>
-<script src="../assets/site-nav.js"></script>
-</body></html>
+      function renderRun(runId, shouldScroll = true) {
+        state.selectedRun = runId;
+        history.replaceState(null, "", `?run=${runId}`);
+        const r = state.runs.find((x) => x.id === runId) || state.runs[state.runs.length - 1];
+        const anchor = `run-${r.id}`;
+        $("selected-run").innerHTML = "";
+        let section = document.createElement("section");
+        section.id = anchor;
+        section.className = "run-section";
+        $("selected-run").appendChild(section);
+        const prev = state.runs[Math.max(0, state.runs.findIndex((x) => x.id === r.id) - 1)],
+          next =
+            state.runs[
+              Math.min(state.runs.length - 1, state.runs.findIndex((x) => x.id === r.id) + 1)
+            ];
+        section.innerHTML = `<div class="run-section-head"><div><div class="run-label">Run ${r.id} · ${r.short}</div><h2>${r.title}</h2><p>${r.story}</p></div><span class="run-status">${r.status}</span></div><div class="run-intro-grid"><div class="run-intro-card"><strong>Why this run exists</strong><span>${r.why}</span></div><div class="run-intro-card"><strong>What was compared</strong><span>${r.id === "5" ? "MCP + purpose-built EF Core tool versus MCP + Foundgine High-Assurance Postgres. Both use MCP; only the execution architecture changes." : r.id === "5b" ? "The same Run 5 HttpClient against both endpoints: batchSize individual transfer_funds MCP calls versus one transfer_funds_batch MCP call." : "The same customer-exposure-review business process through conventional and semantic agent flows."}</span></div><div class="run-intro-card"><strong>What to take away</strong><span>${r.meaning}</span></div></div><div class="run-nav-row"><a href="#run-${prev.id}" data-run-nav="${prev.id}">← Run ${prev.id}: ${prev.short}</a><a href="#run-${next.id}" data-run-nav="${next.id}">Run ${next.id}: ${next.short} →</a></div>`;
+        section.querySelectorAll("[data-run-nav]").forEach(
+          (a) =>
+            (a.onclick = (e) => {
+              e.preventDefault();
+              renderRun(a.dataset.run);
+              document
+                .getElementById(`run-${a.dataset.run}`)
+                .scrollIntoView({ behavior: "smooth", block: "start" });
+            }),
+        );
+        window.__benchmarkCellSelected = false;
+        document.getElementById("matrix-run").value = runId;
+        renderMatrix();
+        if (shouldScroll) section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      async function loadReductionSummary() {
+        const statusEl = $("reduction-summary-status"),
+          bodyEl = $("reduction-summary-body");
+        try {
+          const summary = await fetch("../assets/agent-benchmark/reduction-summary.json", {
+            cache: "no-store",
+          }).then((r) => {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          });
+          statusEl.textContent = summary.note || "";
+          let html = "";
+          if (summary.measured) {
+            html += `<div class="run-intro-card" style="margin-top:1rem"><strong>Measured · ${summary.measured.source}</strong><span>${summary.measured.note}</span></div>`;
+          }
+          if (summary.modeled && summary.modeled.length) {
+            html +=
+              '<div class="run-intro-grid" style="margin-top:1rem">' +
+              summary.modeled
+                .map((m) => {
+                  if (m.scenarios) {
+                    const rows = m.scenarios
+                      .map(
+                        (s) =>
+                          `<tr><td>${s.Name || s.name}</td><td>${fmt(s.ContextLoadReductionPercent ?? s.contextLoadReductionPercent, 1)}%</td><td>${fmt(s.ToolCallReductionPercent ?? s.toolCallReductionPercent, 1)}%</td></tr>`,
+                      )
+                      .join("");
+                    return `<div class="run-intro-card"><strong>Modeled · ${m.benchmark}</strong><span>No live conventional flow to compare against — see caveats in the source report.</span><div class="table-wrap" style="margin-top:0.6rem"><table class="impact-table"><thead><tr><th>Scenario</th><th>Est. context-load reduction</th><th>Est. tool-call reduction</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+                  }
+                  return `<div class="run-intro-card"><strong>Modeled · ${m.benchmark}</strong><span>Est. context-load reduction: <strong>${fmt(m.estimatedContextLoadReductionPercent, 1)}%</strong> · Est. tool-call reduction: <strong>${fmt(m.estimatedToolCallReductionPercent, 1)}%</strong> (modeled ${m.modeledConventional?.stepsPerCapabilityMultiplier || "?"}× conventional choreography vs. ${m.measuredFoundgine?.toolCalls ?? "?"} measured Foundgine calls). Not a live comparison — see caveats in the source report.</span></div>`;
+                })
+                .join("") +
+              "</div>";
+          }
+          if (!summary.measured && (!summary.modeled || !summary.modeled.length)) {
+            html =
+              "<p>No reduction-summary data has been published yet. Run <code>scripts/build-reduction-summary.py</code> after running the benchmarks.</p>";
+          }
+          bodyEl.innerHTML = html;
+        } catch (e) {
+          statusEl.textContent = "Reduction summary not published yet.";
+          bodyEl.innerHTML =
+            "<p>This section fills in once <code>docs-site/assets/agent-benchmark/reduction-summary.json</code> is published (see <code>benchmarks/AgentEndToEnd/scripts/build-reduction-summary.py</code>).</p>";
+        }
+      }
+      function openMenu() {
+        $("run-menu").classList.add("is-open");
+        $("run-menu").setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+      function closeMenu() {
+        $("run-menu").classList.remove("is-open");
+        $("run-menu").setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+      (async function () {
+        loadReductionSummary();
+        state.runs = (
+          await fetch("../assets/agent-benchmark/runs.json?v=20260902-2", {
+            cache: "no-store",
+          }).then((r) => r.json())
+        ).runs;
+        // Fetch every run's aggregate, not a hardcoded subset - Run 1/3/4 were
+        // being silently skipped here even though their aggregate files exist,
+        // which meant their matrix always rendered as "single-scenario" data.
+        // Each run is fetched independently so one missing/unpublished aggregate
+        // file can't take down the rest of the page.
+        await Promise.all(
+          state.runs.map(async (r) => {
+            try {
+              const aggregateFile =
+                r.aggregateFile ||
+                (r.id === "5b" ? "run5b-aggregate.json" : `run${r.id}-aggregate.json`);
+              const res = await fetch(`../assets/agent-benchmark/${aggregateFile}?v=20260902-3`, {
+                cache: "no-store",
+              });
+              if (!res.ok) throw new Error("HTTP " + res.status);
+              state.aggregates[r.id] = (await res.json()).aggregate;
+            } catch (e) {
+              state.aggregates[r.id] = []; // no published matrix for this run - falls back to the single-scenario view
+            }
+          }),
+        );
+        const menu = $("run-menu-list");
+        menu.innerHTML = state.runs
+          .map(
+            (r) =>
+              `<a class="run-menu-item" href="run-${r.id}/index.html"><span class="run-menu-number">RUN ${r.id}</span><span><strong>${r.title}</strong><span>${r.story}</span></span><span class="run-menu-arrow">→</span></a>`,
+          )
+          .join("");
+        $("open-run-menu").onclick = openMenu;
+        $("run-menu-close").onclick = closeMenu;
+        $("run-menu").onclick = (e) => {
+          if (e.target === $("run-menu")) closeMenu();
+        };
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeMenu();
+        });
+        const resetMatrixSelection = () => {
+          window.__benchmarkCellSelected = false;
+        };
+        $("matrix-run").onchange = () => {
+          resetMatrixSelection();
+          renderMatrix();
+        };
+        $("matrix-metric").onchange = () => {
+          resetMatrixSelection();
+          renderMatrix();
+        };
+        $("matrix-customers").onchange = () => {
+          resetMatrixSelection();
+          renderMatrix();
+        };
+        $("matrix-concurrency").onchange = () => {
+          resetMatrixSelection();
+          renderMatrix();
+        };
+        const params = new URLSearchParams(location.search);
+        const legacyTest = params.get("test");
+        let initialRun = params.get("run") || "5b";
+        let urlCustomers = params.get("customers"),
+          urlConcurrency = params.get("concurrency");
+        const legacyConcurrencyKey = [...params.keys()].find((k) => /^concurrency\d+$/i.test(k));
+        if (!urlConcurrency && legacyConcurrencyKey)
+          urlConcurrency = legacyConcurrencyKey.match(/\d+/)[0];
+        if (legacyTest) {
+          const m = legacyTest.match(/^(\d+)-c(\d+)$/i);
+          if (m) {
+            initialRun = params.get("run") || "5b";
+            urlCustomers = m[1];
+            urlConcurrency = m[2];
+          }
+        }
+        renderRun(initialRun, false);
+        if (urlCustomers && urlConcurrency) {
+          setTimeout(() => {
+            const selC = $("matrix-customers"),
+              selK = $("matrix-concurrency");
+            if ([...selC.options].some((o) => o.value === urlCustomers)) selC.value = urlCustomers;
+            if ([...selK.options].some((o) => o.value === urlConcurrency))
+              selK.value = urlConcurrency;
+            window.__benchmarkCellSelected = false;
+            renderMatrix();
+            const run = initialRun;
+            const b = Number(urlCustomers),
+              c = Number(urlConcurrency);
+            if (pair(normalizeRows(run), b, c).c && pair(normalizeRows(run), b, c).f)
+              showCell(run, b, c);
+          }, 0);
+        }
+      })().catch((e) => {
+        console.error(e);
+        $("selected-run").innerHTML =
+          '<section class="run-section"><h2>Benchmark data could not be loaded</h2><p>Check that the published benchmark assets are present.</p></section>';
+      });
+    </script>
+    <script src="../assets/site-nav.js"></script>
+  </body>
+</html>

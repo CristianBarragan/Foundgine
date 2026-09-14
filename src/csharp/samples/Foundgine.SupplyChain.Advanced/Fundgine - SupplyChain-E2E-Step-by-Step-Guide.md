@@ -111,18 +111,18 @@ Only after the individual projects work, run the full orchestration script:
 
 Step 15 — What a Successful E2E Must Demonstrate
 
-•	AI agent generates multiple supply-chain requests.
-•	Requests travel through MCP.
-•	Foundgine resolves semantic capabilities.
-•	Identity and permissions are applied.
-•	Authorization is enforced before execution.
-•	Queries and mutations are planned by Foundgine.
-•	Execution reaches PostgreSQL through Npgsql.
-•	Successful mutations produce correct database state.
-•	Unauthorized operations are rejected without modifying PostgreSQL.
-•	PlaceOrder is atomic and validates inventory and pricing server-side.
-•	Idempotent retries do not create duplicate orders.
-•	Execution evidence can explain the resulting operation.
+• AI agent generates multiple supply-chain requests.
+• Requests travel through MCP.
+• Foundgine resolves semantic capabilities.
+• Identity and permissions are applied.
+• Authorization is enforced before execution.
+• Queries and mutations are planned by Foundgine.
+• Execution reaches PostgreSQL through Npgsql.
+• Successful mutations produce correct database state.
+• Unauthorized operations are rejected without modifying PostgreSQL.
+• PlaceOrder is atomic and validates inventory and pricing server-side.
+• Idempotent retries do not create duplicate orders.
+• Execution evidence can explain the resulting operation.
 
 First Run Protocol
 

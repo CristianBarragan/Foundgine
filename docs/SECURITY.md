@@ -8,7 +8,6 @@ The fundamental rule is:
 
 No transport adapter should bypass the semantic/security boundary.
 
-
 ## Canonical security boundary
 
 Foundgine's security story follows one lifecycle rather than separate transport-specific paths:
@@ -76,20 +75,20 @@ arrived through JSON, MCP, GraphQL, C#, or another adapter.
 
 The default bounds include:
 
-| Resource | Default maximum |
-|---|---:|
-| Selection depth | 32 |
-| Selection nodes | 256 |
-| Operation-graph nodes | 256 |
-| Operation-graph depth | 32 |
-| Operation-graph fields | 512 |
-| Filter depth | 32 |
-| Filter nodes | 256 |
-| Order terms | 64 |
-| Order-path depth | 16 |
-| Page size | 1,000 |
-| Offset | 1,000,000 |
-| Cursor length | 4,096 |
+| Resource               | Default maximum |
+| ---------------------- | --------------: |
+| Selection depth        |              32 |
+| Selection nodes        |             256 |
+| Operation-graph nodes  |             256 |
+| Operation-graph depth  |              32 |
+| Operation-graph fields |             512 |
+| Filter depth           |              32 |
+| Filter nodes           |             256 |
+| Order terms            |              64 |
+| Order-path depth       |              16 |
+| Page size              |           1,000 |
+| Offset                 |       1,000,000 |
+| Cursor length          |           4,096 |
 
 Mutation requests also have independent bounds for operations, fields, return
 fields, dependencies, and effects. Applications can tighten the defaults for
@@ -263,38 +262,38 @@ After both fixes, 18 attack attempts were sent across the two surfaces. All reac
 the MCP endpoint (HTTP 200 at the transport layer) and were evaluated by the
 JSON-RPC/authorization layer underneath:
 
-| Surface | Target | Requests | Legitimate baseline succeeded | Adversarial attempts blocked |
-|---|---|---:|---:|---:|
-| Semantic authorization API | `http://127.0.0.1:4432/` | 11 | 1/1 | 10/10 |
-| Execution API | `http://127.0.0.1:4422/` | 7 | 1/1 | 5/5 (1 unauthenticated baseline also blocked) |
+| Surface                    | Target                   | Requests | Legitimate baseline succeeded |                  Adversarial attempts blocked |
+| -------------------------- | ------------------------ | -------: | ----------------------------: | --------------------------------------------: |
+| Semantic authorization API | `http://127.0.0.1:4432/` |       11 |                           1/1 |                                         10/10 |
+| Execution API              | `http://127.0.0.1:4422/` |        7 |                           1/1 | 5/5 (1 unauthenticated baseline also blocked) |
 
 ### Attacks attempted and outcome
 
 **Semantic authorization API**
 
-| Attack | Result |
-|---|---|
-| Authenticated capability discovery (baseline) | Succeeded — capability document returned, all entity/field access correctly marked `Denied` where policy disallows it |
-| Cross-tenant policy probe | Denied |
-| Named operation escalation | Denied |
-| Identity claim spoofing | Rejected — server error explicitly states claims cannot assert identity/privilege directly; identity comes only from actor/token authentication |
-| Entity write escalation | Denied |
-| Wrong-token authentication bypass | Failed before reaching the tool (auth rejected) |
-| Relationship authorization escalation | Denied |
-| Sensitive field authorization probe | Denied |
-| Unknown actor authentication | Failed before reaching the tool (auth rejected) |
-| Claim boundary manipulation (attempted `scope: *` widening) | Denied — the widened claim was explicitly rejected, not silently narrowed |
+| Attack                                                      | Result                                                                                                                                          |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Authenticated capability discovery (baseline)               | Succeeded — capability document returned, all entity/field access correctly marked `Denied` where policy disallows it                           |
+| Cross-tenant policy probe                                   | Denied                                                                                                                                          |
+| Named operation escalation                                  | Denied                                                                                                                                          |
+| Identity claim spoofing                                     | Rejected — server error explicitly states claims cannot assert identity/privilege directly; identity comes only from actor/token authentication |
+| Entity write escalation                                     | Denied                                                                                                                                          |
+| Wrong-token authentication bypass                           | Failed before reaching the tool (auth rejected)                                                                                                 |
+| Relationship authorization escalation                       | Denied                                                                                                                                          |
+| Sensitive field authorization probe                         | Denied                                                                                                                                          |
+| Unknown actor authentication                                | Failed before reaching the tool (auth rejected)                                                                                                 |
+| Claim boundary manipulation (attempted `scope: *` widening) | Denied — the widened claim was explicitly rejected, not silently narrowed                                                                       |
 
 **Execution API**
 
-| Attack | Result |
-|---|---|
-| Authenticated execution baseline | Succeeded — legitimate product lookup returned data |
-| Cross-customer order access | Blocked — tool invocation errored rather than returning another customer's order |
-| Customer → warehouse capability escalation (`update_inventory`) | Blocked |
-| Customer shipment write escalation (`create_shipment`) | Blocked |
-| Customer supplier enumeration (`list_suppliers`) | Blocked |
-| Unknown actor authorization (`update_inventory`) | Blocked |
+| Attack                                                          | Result                                                                           |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Authenticated execution baseline                                | Succeeded — legitimate product lookup returned data                              |
+| Cross-customer order access                                     | Blocked — tool invocation errored rather than returning another customer's order |
+| Customer → warehouse capability escalation (`update_inventory`) | Blocked                                                                          |
+| Customer shipment write escalation (`create_shipment`)          | Blocked                                                                          |
+| Customer supplier enumeration (`list_suppliers`)                | Blocked                                                                          |
+| Unknown actor authorization (`update_inventory`)                | Blocked                                                                          |
 
 ### Assessment
 
@@ -333,7 +332,7 @@ error would allow.
 ### Implemented: server-side classification with a correlation id
 
 The execution API's `Execute` helper in
-[`Semantic/Api/Mcp/Program.cs`](../samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs)
+[`Semantic/Api/Mcp/Program.cs`](../src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs)
 now:
 
 1. Generates a short opaque correlation id for every call before it runs.
@@ -346,7 +345,7 @@ now:
    authorization" from "blocked by an unrelated bug" from the server-side log alone.
 4. Throws a single `McpException` whose message is uniform across every
    classification — `"Request blocked while invoking '<tool>'. Reference:
-   <correlationId>."` — so the correlation id reaches the caller (via the one
+<correlationId>."` — so the correlation id reaches the caller (via the one
    exception type the SDK propagates verbatim) without the message itself ever
    varying by cause. The id lets a support ticket or alert be joined back to the
    exact log line; it carries no information an attacker could use as an oracle.
@@ -364,7 +363,7 @@ applies to the execution API applied to it too: is that detail something a
 live caller should see, or does it belong in server-side logging only?
 
 This is now made explicit rather than left open. `SupplyChainMcpTools` (in
-[`Semantic/Api/Mcp/Program.cs`](../samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs))
+[`Semantic/Api/Mcp/Program.cs`](../src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs))
 gates the verbose decision detail on `IHostEnvironment.IsDevelopment()`:
 
 - **Development/lab** (`ASPNETCORE_ENVIRONMENT=Development`): `policy_probe`

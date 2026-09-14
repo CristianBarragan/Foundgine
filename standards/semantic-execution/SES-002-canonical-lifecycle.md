@@ -1,4 +1,5 @@
 # SES-002 — Canonical Semantic Execution Lifecycle
+
 ← [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) · [Standard Index](README.md) · [SES-003 — Semantic Contract and Domain Meaning](SES-003-semantic-contract.md) →
 
 ---

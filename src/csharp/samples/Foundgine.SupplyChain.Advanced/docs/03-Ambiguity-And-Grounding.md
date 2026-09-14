@@ -6,10 +6,9 @@ Files: `Tests/Grounding/SupplyChainGroundingAmbiguityTests.cs`,
 
 Core design docs these tests are case studies against (read these for the
 general-purpose design; this file only covers what's specific to being
-tested against *this* sample's real generated schema):
+tested against _this_ sample's real generated schema):
 `docs/LEXICAL-GROUNDING.md` and `docs/GROUNDING-DECISIONS.md` at the repo
 root.
-
 
 > **Retrieval deadline case studies:** `Semantic/Tests/Grounding/SupplyChainGroundingRetrievalDeadlineTests.cs` covers three distinct failure modes: deadline exhausted before a provider call, a provider returning after the deadline, and a compact-token fallback consuming the remaining portion of the same shared deadline.
 
@@ -18,17 +17,17 @@ root.
 "Grounding" is the step where a natural-language phrase from an agent or
 user (`"show me our active suppliers"`) gets matched against the semantic
 contract — which entity is "suppliers," which field or relationship is
-"active" — *before* anything gets planned into a query. `SemanticLexicalResolver.Ground`
+"active" — _before_ anything gets planned into a query. `SemanticLexicalResolver.Ground`
 is the entry point; its result is a `GroundingOutcome`, one of:
 
 - **Committed** — exactly one interpretation survived, safe to plan.
-- **Unresolved** — some token had *no* candidate interpretation at all.
+- **Unresolved** — some token had _no_ candidate interpretation at all.
 - **BudgetExceeded** — the resolution process was cut off by a complexity
   bound before it could prove there was only one legal interpretation.
 
 The important design decision, stated directly in the doc comments across
 this test suite: **there is no fourth outcome that means "picked the
-best-scored guess."** If grounding can't *prove* a single interpretation,
+best-scored guess."** If grounding can't _prove_ a single interpretation,
 it refuses — every outcome other than `Committed` returns `Committed = null`.
 
 ## Weighted alias evidence is a separate signal
@@ -59,8 +58,8 @@ resolver that just took the top-scored candidate would silently commit to
 one of them and execute a query the caller never precisely asked for. The
 test's point is narrower than "does retrieval work" (it uses a fixed
 `FakeLexicalSource`, not a live retrieval provider) — it's specifically:
-*given two structurally-valid, materially-different candidates with tied
-confidence, does the resolver refuse rather than pick one?*
+_given two structurally-valid, materially-different candidates with tied
+confidence, does the resolver refuse rather than pick one?_
 
 ## Case 2: unresolved — no candidate exists at all
 
@@ -75,7 +74,7 @@ token that had no candidate — silently dropping that part of the phrase and
 running the rest would answer a question the caller didn't ask, with no
 indication anything was dropped.
 
-## Case 3: budgets — failing closed on *cost*, not just on *meaning*
+## Case 3: budgets — failing closed on _cost_, not just on _meaning_
 
 `SupplyChainGroundingBudgetTests.cs` is the third, orthogonal failure mode:
 even when candidates plausibly exist, resolution has to stay inside
@@ -95,9 +94,10 @@ capability (`get_my_orders`, `place_order`) — there's no natural-language
 interpretation step at all, so there's nothing to be ambiguous about. This
 sample's grounding tests exist because once you let an agent phrase things
 in its own words against a rich schema (13 entities, dozens of relationships
-— see `Semantic/Domain/Domain.cs`), *some* of those phrasings will
+— see `Semantic/Domain/Domain.cs`), _some_ of those phrasings will
 genuinely be ambiguous or under-specified, and "fail closed and say why"
 has to be a tested guarantee, not an assumption.
 
 ---
+
 Previous: [`02-High-Assurance-Scenarios.md`](./02-High-Assurance-Scenarios.md) · Next: [`04-Retrieval-Strategies.md`](./04-Retrieval-Strategies.md)

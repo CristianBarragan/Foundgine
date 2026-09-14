@@ -1,4 +1,5 @@
 # SES-009 — Authorization Provenance and Security Proof
+
 ← [SES-008 — Semantic Authorization Model](SES-008-authorization-model.md) · [Standard Index](README.md) · [SES-010 — Semantic Planning, Normalization, and Safe Rewriting](SES-010-planning-and-rewrites.md) →
 
 ---

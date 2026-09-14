@@ -4,14 +4,14 @@ The Supply Chain E2E is the **application-level story**. It sits on top of the r
 
 ## Required gates
 
-| Gate | What it proves | CI job / command |
-|---|---|---|
-| Unit tests | Semantic, planning, authorization, MCP, AOT, InMemory and other deterministic behavior | `unit-tests` |
-| PostgreSQL integration tests | Real provider behavior and end-to-end database semantics | `integration-tests` |
-| Authorization penetration tests | High-assurance authorization cannot be bypassed through the real PostgreSQL path | `security-penetration` |
-| Adversarial semantic-input tests | Hostile model input and replay/corpus cases remain inside the semantic security boundary | `security-adversarial` |
-| Performance smoke test | The benchmark stack can seed, start, execute real traffic and finish without errors | `benchmark-build-hotchocolate`, `benchmark-build-foundgine` |
-| Agent benchmark smoke + Supply Chain E2E | Run1-5 agent benchmark pipeline, plus the stateful agent → MCP → Foundgine → PostgreSQL business workflow | `agent-benchmark-smoke` |
+| Gate                                     | What it proves                                                                                            | CI job / command                                            |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Unit tests                               | Semantic, planning, authorization, MCP, AOT, InMemory and other deterministic behavior                    | `unit-tests`                                                |
+| PostgreSQL integration tests             | Real provider behavior and end-to-end database semantics                                                  | `integration-tests`                                         |
+| Authorization penetration tests          | High-assurance authorization cannot be bypassed through the real PostgreSQL path                          | `security-penetration`                                      |
+| Adversarial semantic-input tests         | Hostile model input and replay/corpus cases remain inside the semantic security boundary                  | `security-adversarial`                                      |
+| Performance smoke test                   | The benchmark stack can seed, start, execute real traffic and finish without errors                       | `benchmark-build-hotchocolate`, `benchmark-build-foundgine` |
+| Agent benchmark smoke + Supply Chain E2E | Run1-5 agent benchmark pipeline, plus the stateful agent → MCP → Foundgine → PostgreSQL business workflow | `agent-benchmark-smoke`                                     |
 
 The GitHub Actions release gate requires the unit, integration, authorization penetration, adversarial security, performance and agent-benchmark-smoke jobs (which now also runs the Supply Chain E2E benchmark on every push/PR) before NuGet publication.
 

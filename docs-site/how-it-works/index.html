@@ -1,25 +1,169 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>How Foundgine Executes a Request | Foundgine</title><meta content="Follow the security-preserving Foundgine lifecycle from intent through semantic resolution, authorization, planning and provider execution." name="description"/><link href="https://cristianbarragan.github.io/Foundgine/how-it-works/" rel="canonical"/>
-<meta content="How Foundgine Executes a Request | Foundgine" property="og:title"/><meta content="Follow the security-preserving Foundgine lifecycle from intent through semantic resolution, authorization, planning and provider execution." property="og:description"/><meta content="website" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/how-it-works/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="How Foundgine Executes a Request | Foundgine" name="twitter:title"/><meta content="Follow the security-preserving Foundgine lifecycle from intent through semantic resolution, authorization, planning and provider execution." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../assets/style.css" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"How Foundgine Executes a Request | Foundgine","description":"Follow the security-preserving Foundgine lifecycle from intent through semantic resolution, authorization, planning and provider execution.","url":"https://cristianbarragan.github.io/Foundgine/how-it-works/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a href="../what-is-foundgine.html">What is it</a>
-<a href="../getting-started/index.html">Getting started</a>
-<a href="index.html">How it works</a>
-<a href="../architecture/index.html">Architecture</a>
-<a href="../ai-agents/index.html">AI agents</a>
-<a href="../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../samples/index.html">Overview</a><a href="../samples/semantic/index.html">Semantic execution</a><a href="../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../agent-benchmark/index.html">Evidence</a><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="../performance/index.html">Performance</a></div></div>
-<a href="../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page has-toc"><main class="article"><span class="eyebrow">Lifecycle · from intent to evidence</span><h1>See the request move through Foundgine.</h1><p class="subtitle">Every caller follows the same security-preserving lifecycle. The physical provider only appears after the semantic meaning and authorization decision are established.</p>
-<section><h2 id="the-lifecycle">The lifecycle</h2><p>Think of Foundgine as a controlled sequence of boundaries rather than a collection of helpers:</p><pre>Intent
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>How Foundgine Executes a Request | Foundgine</title>
+    <meta
+      content="Follow the security-preserving Foundgine lifecycle from intent through semantic resolution, authorization, planning and provider execution."
+      name="description"
+    />
+    <link href="https://cristianbarragan.github.io/Foundgine/how-it-works/" rel="canonical" />
+    <meta content="How Foundgine Executes a Request | Foundgine" property="og:title" />
+    <meta
+      content="Follow the security-preserving Foundgine lifecycle from intent through semantic resolution, authorization, planning and provider execution."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="https://cristianbarragan.github.io/Foundgine/how-it-works/" property="og:url" />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="How Foundgine Executes a Request | Foundgine" name="twitter:title" />
+    <meta
+      content="Follow the security-preserving Foundgine lifecycle from intent through semantic resolution, authorization, planning and provider execution."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../assets/style.css" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "How Foundgine Executes a Request | Foundgine",
+        "description": "Follow the security-preserving Foundgine lifecycle from intent through semantic resolution, authorization, planning and provider execution.",
+        "url": "https://cristianbarragan.github.io/Foundgine/how-it-works/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a href="../what-is-foundgine.html">What is it</a>
+          <a href="../getting-started/index.html">Getting started</a>
+          <a href="index.html">How it works</a>
+          <a href="../architecture/index.html">Architecture</a>
+          <a href="../ai-agents/index.html">AI agents</a>
+          <a href="../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../samples/index.html">Overview</a
+              ><a href="../samples/semantic/index.html">Semantic execution</a
+              ><a href="../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../agent-benchmark/index.html">Evidence</a
+              ><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page has-toc">
+      <main class="article">
+        <span class="eyebrow">Lifecycle · from intent to evidence</span>
+        <h1>See the request move through Foundgine.</h1>
+        <p class="subtitle">
+          Every caller follows the same security-preserving lifecycle. The physical provider only
+          appears after the semantic meaning and authorization decision are established.
+        </p>
+        <section>
+          <h2 id="the-lifecycle">The lifecycle</h2>
+          <p>
+            Think of Foundgine as a controlled sequence of boundaries rather than a collection of
+            helpers:
+          </p>
+          <pre>
+Intent
   ↓
 Semantic Operation Graph
   ↓
@@ -39,8 +183,105 @@ Provider Plan + Security Proof
   ↓
 Final execution gate
   ↓
-Execute → Result + Evidence</pre><p>Retrieval can run alongside graph construction to discover candidates. It supplies evidence to resolution; it never grants authority.</p></section>
-<section><h2 id="what-changes-at-each-boundary">What changes at each boundary</h2><div class="table-wrap"><table><thead><tr><th>Boundary</th><th>Responsibility</th><th>What it must not do</th></tr></thead><tbody><tr><td>Caller → Intent</td><td>Express the requested operation.</td><td>Choose physical SQL or security context.</td></tr><tr><td>Semantic model → Graph</td><td>Give the request application meaning.</td><td>Depend on a particular provider.</td></tr><tr><td>Resolution → Authorization</td><td>Resolve the target, validate limits and decide authority.</td><td>Treat retrieval relevance as permission.</td></tr><tr><td>Plan → ExecutionIR</td><td>Carry the authorized semantics into executable structure.</td><td>Drop security provenance during optimization.</td></tr><tr><td>ExecutionIR → Provider</td><td>Compile/dispatch physical work and enforce conformance.</td><td>Redefine application authorization.</td></tr></tbody></table></div></section>
-<section><h2 id="two-useful-mental-models">Two useful mental models</h2><p><strong>For a read:</strong> intent becomes a semantic graph, is authorized, then becomes a provider-independent plan before SQL is produced.</p><p><strong>For a mutation:</strong> the same boundary is stricter because dependency ordering, replay protection, approvals or execution-time revalidation may matter. See the <a href="../agent-benchmark/run-5/index.html">high-assurance mutation evidence</a>.</p></section>
-<section><h2 id="where-the-detailed-trace-lives">Where the detailed trace lives</h2><p>The <a href="../walkthrough/index.html">worked walkthrough</a> shows the complete request with representative payloads. The <a href="../architecture/index.html">Architecture</a> page explains the layers and provenance binding. <a href="../security/index.html">Security</a> explains the invariants that every stage must preserve.</p></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-link prev" href="../getting-started/index.html"><span>Previous</span><strong>← Getting started</strong></a><a class="page-nav-home" href="../index.html">Documentation home</a><a class="page-nav-link next" href="../architecture/index.html"><span>Next</span><strong>Architecture →</strong></a></nav></main><aside aria-label="On this page" class="toc"><div class="toc-label">On this page</div><ol><li class=""><a href="#the-lifecycle">The lifecycle</a></li><li class=""><a href="#what-changes-at-each-boundary">What changes at each boundary</a></li><li class=""><a href="#two-useful-mental-models">Two useful mental models</a></li><li class=""><a href="#where-the-detailed-trace-lives">Where the detailed trace lives</a></li></ol><div class="toc-return"><a href="../index.html">↑ Documentation home</a></div></aside></div><script src="../assets/how-it-works.js"></script><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../assets/site-nav.js"></script><script src="../assets/toc.js"></script></body></html>
+Execute → Result + Evidence</pre>
+          <p>
+            Retrieval can run alongside graph construction to discover candidates. It supplies
+            evidence to resolution; it never grants authority.
+          </p>
+        </section>
+        <section>
+          <h2 id="what-changes-at-each-boundary">What changes at each boundary</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Boundary</th>
+                  <th>Responsibility</th>
+                  <th>What it must not do</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Caller → Intent</td>
+                  <td>Express the requested operation.</td>
+                  <td>Choose physical SQL or security context.</td>
+                </tr>
+                <tr>
+                  <td>Semantic model → Graph</td>
+                  <td>Give the request application meaning.</td>
+                  <td>Depend on a particular provider.</td>
+                </tr>
+                <tr>
+                  <td>Resolution → Authorization</td>
+                  <td>Resolve the target, validate limits and decide authority.</td>
+                  <td>Treat retrieval relevance as permission.</td>
+                </tr>
+                <tr>
+                  <td>Plan → ExecutionIR</td>
+                  <td>Carry the authorized semantics into executable structure.</td>
+                  <td>Drop security provenance during optimization.</td>
+                </tr>
+                <tr>
+                  <td>ExecutionIR → Provider</td>
+                  <td>Compile/dispatch physical work and enforce conformance.</td>
+                  <td>Redefine application authorization.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section>
+          <h2 id="two-useful-mental-models">Two useful mental models</h2>
+          <p>
+            <strong>For a read:</strong> intent becomes a semantic graph, is authorized, then
+            becomes a provider-independent plan before SQL is produced.
+          </p>
+          <p>
+            <strong>For a mutation:</strong> the same boundary is stricter because dependency
+            ordering, replay protection, approvals or execution-time revalidation may matter. See
+            the <a href="../agent-benchmark/run-5/index.html">high-assurance mutation evidence</a>.
+          </p>
+        </section>
+        <section>
+          <h2 id="where-the-detailed-trace-lives">Where the detailed trace lives</h2>
+          <p>
+            The <a href="../walkthrough/index.html">worked walkthrough</a> shows the complete
+            request with representative payloads. The
+            <a href="../architecture/index.html">Architecture</a> page explains the layers and
+            provenance binding. <a href="../security/index.html">Security</a> explains the
+            invariants that every stage must preserve.
+          </p>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-link prev" href="../getting-started/index.html"
+            ><span>Previous</span><strong>← Getting started</strong></a
+          ><a class="page-nav-home" href="../index.html">Documentation home</a
+          ><a class="page-nav-link next" href="../architecture/index.html"
+            ><span>Next</span><strong>Architecture →</strong></a
+          >
+        </nav>
+      </main>
+      <aside aria-label="On this page" class="toc">
+        <div class="toc-label">On this page</div>
+        <ol>
+          <li class=""><a href="#the-lifecycle">The lifecycle</a></li>
+          <li class="">
+            <a href="#what-changes-at-each-boundary">What changes at each boundary</a>
+          </li>
+          <li class=""><a href="#two-useful-mental-models">Two useful mental models</a></li>
+          <li class="">
+            <a href="#where-the-detailed-trace-lives">Where the detailed trace lives</a>
+          </li>
+        </ol>
+        <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>
+      </aside>
+    </div>
+    <script src="../assets/how-it-works.js"></script>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../assets/site-nav.js"></script>
+    <script src="../assets/toc.js"></script>
+  </body>
+</html>

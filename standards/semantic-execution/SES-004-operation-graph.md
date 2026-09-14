@@ -1,4 +1,5 @@
 # SES-004 — Semantic Operation Graph
+
 ← [SES-003 — Semantic Contract and Domain Meaning](SES-003-semantic-contract.md) · [Standard Index](README.md) · [SES-005 — Semantic Operation, Predicate, and Traversal Algebra](SES-005-operation-algebra.md) →
 
 ---

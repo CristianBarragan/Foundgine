@@ -41,7 +41,6 @@ The purpose of this sample is to teach the metadata-first architecture. Manually
 
 This is the intended composition pattern when an application has a metadata source but still needs curated semantic meaning: discover the complete structural graph first, then overlay only the small set of typed semantic declarations that cannot be inferred structurally.
 
-
 ## Weighted lexical evidence
 
 The generated semantic contract also carries optional alias weights. In the

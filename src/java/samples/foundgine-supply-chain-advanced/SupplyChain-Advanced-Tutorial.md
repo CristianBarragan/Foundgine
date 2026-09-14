@@ -50,12 +50,17 @@ cd src/java/samples/foundgine-supply-chain-advanced
 
 ```xml
 <dependencies>
-  <dependency><groupId>io.github.cristianbarragan</groupId><artifactId>foundgine-core</artifactId><version>${revision}</version></dependency>
-  <dependency><groupId>io.github.cristianbarragan</groupId><artifactId>foundgine-runtime</artifactId><version>${revision}</version></dependency>
-  <dependency><groupId>io.github.cristianbarragan</groupId><artifactId>foundgine-providers</artifactId><version>${revision}</version></dependency>
-  <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+  <dependency><groupId>io.github.cristianbarragan</groupId><artifactId
+    >foundgine-core</artifactId><version>${revision}</version></dependency>
+  <dependency><groupId>io.github.cristianbarragan</groupId><artifactId
+    >foundgine-runtime</artifactId><version>${revision}</version></dependency>
+  <dependency><groupId>io.github.cristianbarragan</groupId><artifactId
+    >foundgine-providers</artifactId><version>${revision}</version></dependency>
+  <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId
+    >jackson-databind</artifactId></dependency>
   <dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId></dependency>
-  <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+  <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope
+    >test</scope></dependency>
 </dependencies>
 ```
 
@@ -126,18 +131,18 @@ b.entity(EntityId.create("PlaceOrderCommand"), "PlaceOrderCommand", e -> {
 
 **Why command entities exist:** `place_order` and `cancel_order` are not CRUD on a single table —
 they are business operations with their own inputs. Modeling them as semantic entities means they
-flow through the *same* mutation engine, authorization, and evidence machinery as every other
+flow through the _same_ mutation engine, authorization, and evidence machinery as every other
 mutation, instead of being a side channel that bypasses Foundgine's boundary.
 
 The weighted aliases mirror the C# advanced sample's "weighted alias evidence" feature exactly:
 
-| Declaration | Weight | Scope |
-|---|---:|---|
-| `Supplier → Vendor` / `Seller` | 95 / 90 | Entity alias |
-| `Supplier.Country → State` | 85 | Field alias |
-| `PurchaseOrder → PO` / `POs` / `Buy` / `Buys` | 100 / 95 / 90 / 85 | Entity aliases |
-| `PurchaseOrder.ExpectedArrival → DueDate` | 90 | Field alias |
-| `PurchaseOrder.supplier → vendor` | 85 | Relationship alias |
+| Declaration                                   |             Weight | Scope              |
+| --------------------------------------------- | -----------------: | ------------------ |
+| `Supplier → Vendor` / `Seller`                |            95 / 90 | Entity alias       |
+| `Supplier.Country → State`                    |                 85 | Field alias        |
+| `PurchaseOrder → PO` / `POs` / `Buy` / `Buys` | 100 / 95 / 90 / 85 | Entity aliases     |
+| `PurchaseOrder.ExpectedArrival → DueDate`     |                 90 | Field alias        |
+| `PurchaseOrder.supplier → vendor`             |                 85 | Relationship alias |
 
 These weights are **application-declared evidence strength**, never authority — they can make a
 lexical grounding decision more confident, but they cannot create or expand a capability, and each
@@ -188,6 +193,7 @@ var config = new SemanticAuthorizationConfiguration()
 ```
 
 Concrete rules worth noticing:
+
 - `CUSTOMER` cannot read `Supplier`, `SupplierCertification`, `Warehouse`, or `InventoryLot` at all
   — those are internal supply-side entities.
 - `Supplier.RiskScore` is restricted to `ANALYST`/`SUPPLY_CHAIN_MANAGER` even for roles that can
@@ -198,7 +204,7 @@ Concrete rules worth noticing:
   caller's claims haven't reduced them to read-only.
 
 This is the same order of operations the starter's simpler `Authorization.Context` predicates
-gesture at, now enforced *by the planner itself* through a configured policy object rather than by
+gesture at, now enforced _by the planner itself_ through a configured policy object rather than by
 application code remembering to call a check.
 
 ---
@@ -246,7 +252,7 @@ order:
 3. Check the caller's role/read-only flag can place orders at all.
 4. Compute a **request fingerprint** (SHA-256 of actor + customer + sorted lines) and, under a
    per-key lock, check it against any prior use of the same idempotency key — a replay with the
-   *same* request returns the original result (`replay = true`); a replay with a *different*
+   _same_ request returns the original result (`replay = true`); a replay with a _different_
    request throws.
 5. Verify the customer belongs to the caller's tenant, and (for `CUSTOMER` role) that the actor owns
    that customer.
@@ -316,7 +322,7 @@ matching the C# sample's `MCP.Foundgine` project but with a hand-rolled transpor
 
 - `foundgine_query` — `{"tool": "capabilities"}` for capability discovery.
 - `foundgine_mutation` — `{"tool": "place_order", "actor": ..., "customerId": ..., "productId": ...,
-  "quantity": ..., "idempotencyKey": ...}` or the `cancel_order` equivalent.
+"quantity": ..., "idempotencyKey": ...}` or the `cancel_order` equivalent.
 
 ```bash
 mvn -pl samples/foundgine-supply-chain-advanced -am compile exec:java \
@@ -360,5 +366,5 @@ Not yet ported from the C# advanced sample: the ambiguity-resolution capability
 (`find_top_supplier_overdue_orders`), the PostgreSQL retrieval strategies (`pg_trgm` fuzzy,
 full-text, optional `pg_search`/BM25, optional Apache AGE graph similarity), and the GraphQL/Hot
 Chocolate surface. These remain tracked against the C# reference in
-[`../../csharp/samples/Foundgine.SupplyChain.Advanced/docs/`](../../csharp/samples/Foundgine.SupplyChain.Advanced/docs/03-Ambiguity-And-Grounding.md)
+[`../../../csharp/samples/Foundgine.SupplyChain.Advanced/docs/`](../../../csharp/samples/Foundgine.SupplyChain.Advanced/docs/03-Ambiguity-And-Grounding.md)
 as the next parity work for this module.

@@ -38,7 +38,7 @@ fixed set of MCP tools (`get_my_orders`, `place_order`, …) with fixed
 arguments, and one flat actor→token→customer authorization check. This
 sample opens that surface up — an agent can describe an arbitrary read or
 mutation shape at runtime (`ReadIntent`, `SemanticMutationIntentBuilder`),
-and can phrase requests in natural language that has to be *grounded*
+and can phrase requests in natural language that has to be _grounded_
 against the schema before it can be planned at all. Every doc in this
 folder exists because that openness introduces a question the starter
 sample never has to answer, and each doc's test files are the proof that
@@ -65,12 +65,12 @@ few extras this sample exercises optionally:
 
 ### Environment variables this sample reads
 
-| Variable | Required for | Notes |
-|---|---|---|
-| `FOUNDGINE_POSTGRES_CONNECTION` | Any retrieval test in doc `04` | Standard Npgsql connection string. Omit it and those tests skip rather than fail. |
-| `FOUNDGINE_POSTGRES_PGSEARCH=1` | `Search` (BM25) retrieval tests | Requires the ParadeDB `pg_search` extension installed on the target Postgres. |
-| `FOUNDGINE_POSTGRES_AGE=1` | `GraphSimilarity` retrieval tests | Requires the Apache AGE extension installed on the target Postgres. |
-| `SUPPLY_CHAIN_CUSTOMERS`, `SUPPLY_CHAIN_STEPS`, `SUPPLY_CHAIN_SEED` | The stochastic agent-workload runner (`run-supply-chain.ps1`) | See the sample's top-level `README.md` for the full run command. |
+| Variable                                                            | Required for                                                  | Notes                                                                             |
+| ------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `FOUNDGINE_POSTGRES_CONNECTION`                                     | Any retrieval test in doc `04`                                | Standard Npgsql connection string. Omit it and those tests skip rather than fail. |
+| `FOUNDGINE_POSTGRES_PGSEARCH=1`                                     | `Search` (BM25) retrieval tests                               | Requires the ParadeDB `pg_search` extension installed on the target Postgres.     |
+| `FOUNDGINE_POSTGRES_AGE=1`                                          | `GraphSimilarity` retrieval tests                             | Requires the Apache AGE extension installed on the target Postgres.               |
+| `SUPPLY_CHAIN_CUSTOMERS`, `SUPPLY_CHAIN_STEPS`, `SUPPLY_CHAIN_SEED` | The stochastic agent-workload runner (`run-supply-chain.ps1`) | See the sample's top-level `README.md` for the full run command.                  |
 
 None of the five concept docs above require the optional Postgres
 extensions to be readable — the tests they describe are written to skip

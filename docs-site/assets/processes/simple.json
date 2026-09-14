@@ -12,10 +12,7 @@
       "input": {
         "operation": "query",
         "resource": "customer",
-        "select": [
-          "id",
-          "name"
-        ],
+        "select": ["id", "name"],
         "where": {
           "accounts": {
             "balance": {
@@ -27,10 +24,7 @@
       "output": {
         "intent": {
           "resource": "customer",
-          "select": [
-            "id",
-            "name"
-          ],
+          "select": ["id", "name"],
           "filter": {
             "relation": "accounts",
             "field": "balance",
@@ -47,26 +41,15 @@
       "why": "Foundgine resolves customer, accounts, balance and the relationship from the application's semantic model.",
       "input": {
         "resource": "customer",
-        "relations": [
-          "accounts"
-        ],
-        "fields": [
-          "id",
-          "name"
-        ],
-        "relatedFields": [
-          "accounts.balance"
-        ]
+        "relations": ["accounts"],
+        "fields": ["id", "name"],
+        "relatedFields": ["accounts.balance"]
       },
       "output": {
         "resolvedModel": {
           "root": "Customer",
           "relationship": "Customer.Accounts",
-          "fields": [
-            "Customer.Id",
-            "Customer.Name",
-            "Account.Balance"
-          ]
+          "fields": ["Customer.Id", "Customer.Name", "Account.Balance"]
         }
       }
     },
@@ -76,18 +59,12 @@
       "boundary": "Semantic Model \u2192 Valid request",
       "why": "The requested fields, relationship and predicate must be valid before planning continues.",
       "input": {
-        "requestedFields": [
-          "Customer.Id",
-          "Customer.Name"
-        ],
+        "requestedFields": ["Customer.Id", "Customer.Name"],
         "predicate": "Account.Balance > 10000"
       },
       "output": {
         "valid": true,
-        "dependencies": [
-          "Customer",
-          "Account"
-        ],
+        "dependencies": ["Customer", "Account"],
         "predicateValid": true
       }
     },
@@ -103,11 +80,7 @@
         },
         "requested": {
           "resource": "Customer",
-          "fields": [
-            "Id",
-            "Name",
-            "Accounts.Balance"
-          ]
+          "fields": ["Id", "Name", "Accounts.Balance"]
         }
       },
       "output": {
@@ -133,24 +106,15 @@
           "to": "Account",
           "type": "exists"
         },
-        "filters": [
-          "Account.Balance > 10000",
-          "Customer.TenantId = tenant-7"
-        ],
-        "projection": [
-          "Customer.Id",
-          "Customer.Name"
-        ]
+        "filters": ["Account.Balance > 10000", "Customer.TenantId = tenant-7"],
+        "projection": ["Customer.Id", "Customer.Name"]
       },
       "output": {
         "plan": {
           "scan": "Customer",
           "relationshipFilter": "Account.Balance > 10000",
           "authorization": "Customer.TenantId = tenant-7",
-          "projection": [
-            "Id",
-            "Name"
-          ]
+          "projection": ["Id", "Name"]
         }
       }
     },
@@ -166,10 +130,7 @@
         "optimizedPlan": {
           "strategy": "relationship existence",
           "authorizationPreserved": true,
-          "projection": [
-            "Customer.Id",
-            "Customer.Name"
-          ]
+          "projection": ["Customer.Id", "Customer.Name"]
         }
       }
     },

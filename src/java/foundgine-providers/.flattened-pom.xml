@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-providers</artifactId>
   <version>2.2.1</version>
   <name>Foundgine Providers</name>
-  <description>Port of Foundgine.Providers: concrete provider and integration
-		implementations for Foundgine, including storage providers/adapters
-		and AI/model tooling integrations. Depends only on foundgine-core and
-		foundgine-runtime. Consumers choose and configure the provider(s)
-		matching their application.</description>
+  <description>Port of Foundgine.Providers: concrete provider and integration implementations for Foundgine, including storage providers/adapters and AI/model tooling integrations. Depends only on foundgine-core and foundgine-runtime. Consumers choose and configure the provider(s) matching their application.</description>
   <url>https://github.com/CristianBarragan/Foundgine/foundgine-providers</url>
   <licenses>
     <license>

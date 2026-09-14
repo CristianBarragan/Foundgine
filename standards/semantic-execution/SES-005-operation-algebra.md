@@ -1,4 +1,5 @@
 # SES-005 — Semantic Operation, Predicate, and Traversal Algebra
+
 ← [SES-004 — Semantic Operation Graph](SES-004-operation-graph.md) · [Standard Index](README.md) · [SES-006 — Candidate Retrieval, Grounding, and Semantic Resolution](SES-006-retrieval-and-resolution.md) →
 
 ---

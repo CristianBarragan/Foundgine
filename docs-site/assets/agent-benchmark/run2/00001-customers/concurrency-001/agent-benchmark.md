@@ -22,37 +22,37 @@ Estimated tokens use the current benchmark method: `max(chars / 4, words × 1.3)
 
 ## Averages
 
-| Metric | Conventional | Foundgine |
-|---|---:|---:|
-| Wall clock (ms) | 13.3 | 3.7 |
-| Model time (ms) | 0.0 | 0.0 |
-| Tool time (ms) | 11.8 | 0.0 |
-| Success rate (%) | 100.0 | 0.0 |
-| p50 wall (ms) | 13.3 | 0.0 |
-| p95 wall (ms) | 13.3 | 0.0 |
-| p99 wall (ms) | 13.3 | 0.0 |
-| Peak active HTTP requests | 0.0 | 1.0 |
-| HTTP retries | 0.0 | 0.0 |
-| Model calls | 0.0 | 0.0 |
-| Tool calls | 9.0 | 1.0 |
-| Agent/tool round trips | 9.0 | 1.0 |
-| Agent/tool payload bytes | 3372.0 | 169.0 |
-| Estimated tool-input tokens | 61.0 | 1.0 |
-| Estimated tool-output tokens | 783.0 | 42.0 |
-| Estimated context-load tokens | 1150.0 | 356.0 |
-| Provider input tokens | 0.0 | 0.0 |
-| Provider output tokens | 0.0 | 0.0 |
-| Provider total tokens | 0.0 | 0.0 |
-| Cached input tokens | 0.0 | 0.0 |
+| Metric                        | Conventional | Foundgine |
+| ----------------------------- | -----------: | --------: |
+| Wall clock (ms)               |         13.3 |       3.7 |
+| Model time (ms)               |          0.0 |       0.0 |
+| Tool time (ms)                |         11.8 |       0.0 |
+| Success rate (%)              |        100.0 |       0.0 |
+| p50 wall (ms)                 |         13.3 |       0.0 |
+| p95 wall (ms)                 |         13.3 |       0.0 |
+| p99 wall (ms)                 |         13.3 |       0.0 |
+| Peak active HTTP requests     |          0.0 |       1.0 |
+| HTTP retries                  |          0.0 |       0.0 |
+| Model calls                   |          0.0 |       0.0 |
+| Tool calls                    |          9.0 |       1.0 |
+| Agent/tool round trips        |          9.0 |       1.0 |
+| Agent/tool payload bytes      |       3372.0 |     169.0 |
+| Estimated tool-input tokens   |         61.0 |       1.0 |
+| Estimated tool-output tokens  |        783.0 |      42.0 |
+| Estimated context-load tokens |       1150.0 |     356.0 |
+| Provider input tokens         |          0.0 |       0.0 |
+| Provider output tokens        |          0.0 |       0.0 |
+| Provider total tokens         |          0.0 |       0.0 |
+| Cached input tokens           |          0.0 |       0.0 |
 
 ## Expected-state verification
 
 Each flow is compared against an explicit expected state generated from the reset baseline. The process is intentionally stateful: QUERY #1 reads the exposure graph, MUTATION #1 marks the customer reviewed, QUERY #2 verifies that intermediate state, MUTATION #2 completes the remediation follow-up, and QUERY #3 verifies the final state. The expected state preserves CustomerKey and all relationship/contract/transaction counts and exposure, with deterministic FullName transitions.
 
-| Run | Flow | Customer | Match | Differences |
-|---:|---|---:|---|---|
-| 1 | Conventional | 1 | PASS | — |
-| 1 | Foundgine | 1 | FAIL | Final state was not recorded. |
+| Run | Flow         | Customer | Match | Differences                   |
+| --: | ------------ | -------: | ----- | ----------------------------- |
+|   1 | Conventional |        1 | PASS  | —                             |
+|   1 | Foundgine    |        1 | FAIL  | Final state was not recorded. |
 
 ## Trace interpretation
 

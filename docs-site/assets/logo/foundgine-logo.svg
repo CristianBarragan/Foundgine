@@ -1,8 +1,6 @@
 <svg width="720" height="180" viewBox="0 0 720 180" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <style>
-      .word { font-family: 'Space Grotesk', 'Segoe UI', Arial, sans-serif; font-weight: 700; }
-    </style>
+    <style>.word { font-family: 'Space Grotesk', 'Segoe UI', Arial, sans-serif; font-weight: 700; }</style>
   </defs>
 
   <!-- Mark: a boundary bracket resolving into a solid node, echoing the

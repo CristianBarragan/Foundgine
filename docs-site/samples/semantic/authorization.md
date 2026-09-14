@@ -49,20 +49,20 @@ Only the accepted claims ever reach `SupplyChainAuthorizationPolicy`, and each o
 
 ## MCP adversarial matrix
 
-| Attempt | Expected |
-|---|---|
-| Cross-tenant read | Denied / conditional predicate retained |
-| Restricted field | Denied |
-| Restricted relationship | Denied |
-| Analyst mutation | Denied |
-| Operator `inventory.reconcile` | Denied |
-| Customer inventory write | Denied |
-| Authorized operator inventory update | Allowed |
-| Claim: `role`/`tenant` injection | Denied — call fails closed |
-| Claim: missing/malformed/expired reconcile evidence | Denied |
-| Claim: self-imposed `scope=read-only` | Allowed — honored, restricts the call |
-| Claim: `warehouse=<id>` scoping | Allowed — honored, narrows the result set |
-| Claim: unrecognized key | Allowed — dropped individually, call proceeds |
-| Claim: valid reconcile evidence | Allowed — honored alongside the role check |
+| Attempt                                             | Expected                                      |
+| --------------------------------------------------- | --------------------------------------------- |
+| Cross-tenant read                                   | Denied / conditional predicate retained       |
+| Restricted field                                    | Denied                                        |
+| Restricted relationship                             | Denied                                        |
+| Analyst mutation                                    | Denied                                        |
+| Operator `inventory.reconcile`                      | Denied                                        |
+| Customer inventory write                            | Denied                                        |
+| Authorized operator inventory update                | Allowed                                       |
+| Claim: `role`/`tenant` injection                    | Denied — call fails closed                    |
+| Claim: missing/malformed/expired reconcile evidence | Denied                                        |
+| Claim: self-imposed `scope=read-only`               | Allowed — honored, restricts the call         |
+| Claim: `warehouse=<id>` scoping                     | Allowed — honored, narrows the result set     |
+| Claim: unrecognized key                             | Allowed — dropped individually, call proceeds |
+| Claim: valid reconcile evidence                     | Allowed — honored alongside the role check    |
 
 The client is intentionally protocol-level and small so the security demonstration does not depend on a model provider. It is an adversarial caller, not a trusted test harness.

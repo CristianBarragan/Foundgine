@@ -83,6 +83,7 @@ $env:AGENT_MODEL = "your-model"
 ```
 
 The runner uses the benchmark compose fixture by default:
+
 - PostgreSQL: `localhost:55432`
 - Foundgine warm GraphQL: `http://localhost:4302/graphql/warm`
 
@@ -123,7 +124,6 @@ The benchmark writes:
 
 - `artifacts/agent-benchmark/agent-benchmark.json`
 - `artifacts/agent-benchmark/agent-benchmark.md`
-
 
 ## Supply Chain E2E
 

@@ -1,21 +1,21 @@
 ﻿{
-    "schemaVersion":  1,
-    "publishedUtc":  "2026-09-02T04:54:01.2996824+00:00",
-    "sourceJson":  "reports/supply-chain-report.json",
-    "sourceMarkdown":  "reports/supply-chain-report.md",
-    "seed":  20260823,
-    "steps":  25,
-    "customers":  5,
-    "success":  25,
-    "failures":  0,
-    "unexpectedUnauthorizedSuccesses":  12,
-    "averageLatencyMs":  21.889912,
-    "securityPenTest":  {
-                            "total":  14,
-                            "passed":  14,
-                            "failed":  0,
-                            "skipped":  0,
-                            "suiteDurationMs":  24935.8,
-                            "averageCaseDurationMs":  2053.4
-                        }
+  "schemaVersion": 1,
+  "publishedUtc": "2026-09-02T04:54:01.2996824+00:00",
+  "sourceJson": "reports/supply-chain-report.json",
+  "sourceMarkdown": "reports/supply-chain-report.md",
+  "seed": 20260823,
+  "steps": 25,
+  "customers": 5,
+  "success": 25,
+  "failures": 0,
+  "unexpectedUnauthorizedSuccesses": 12,
+  "averageLatencyMs": 21.889912,
+  "securityPenTest": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "suiteDurationMs": 24935.8,
+    "averageCaseDurationMs": 2053.4
+  }
 }

@@ -3,7 +3,7 @@
 Files: `Tests/GraphSecurityBoundaryTests.cs`, `Tests/OpenIntentMutationSecurityTests.cs`,
 `Tests/OpenIntentSupplyChainTests.cs`, `Tests/CapabilityBoundaryTests.cs`.
 
-The other docs in this set cover authorization *policy* (`01`), read-side
+The other docs in this set cover authorization _policy_ (`01`), read-side
 traversal correctness (`02`), refusing to guess (`03`), and where candidates
 come from (`04`). This one covers a different axis: proof that the
 **mechanisms** those policies rely on — bounded traversal, graph-level
@@ -22,7 +22,7 @@ arbitrary read or write shape at runtime: any entity, any relationship
 traversal, any depth. That flexibility is exactly what makes agentic use
 useful, and exactly what makes it a security surface: nothing stops a
 caller from asking for a traversal four levels deep, or a mutation graph
-with a forward-referencing dependency, unless something *inside* the
+with a forward-referencing dependency, unless something _inside_ the
 compiler and planner refuses it.
 
 ## Graph-level security: two boundaries, tested against the real domain
@@ -40,17 +40,17 @@ looks like real usage, not just in the core library's own unit tests.
 and throws before planning or execution if the intent's depth exceeds
 `MaxOperationGraphDepth` — the test pins this two ways: a limit of 3
 rejects the intent (with a message that names depth as the cause), and the
-*identical* intent compiled with a limit of 4 succeeds and produces exactly
+_identical_ intent compiled with a limit of 4 succeeds and produces exactly
 4 graph nodes. Testing both sides matters: it proves the limit itself
 caused the rejection, not some incidental property of the traversal shape.
 
 **Graph-level authorization.** Depth limits stop a request from being too
-*expensive*; they say nothing about whether the caller is *allowed* to see
+_expensive_; they say nothing about whether the caller is _allowed_ to see
 every node in it. `Supplier.incidents` is denied to every role except
 `Analyst` and `SupplyChainManager` (see `01-Claims-And-Authorization.md`).
 The test compiles one `ReadIntent` covering `Supplier.Name` plus
 `incidents.Severity`, then runs `SemanticAuthorizer.AuthorizeGraphWithEvidence`
-twice against the *same compiled graph* — once as `WarehouseOperator`, once
+twice against the _same compiled graph_ — once as `WarehouseOperator`, once
 as `Analyst`. For the operator, the `incidents` subtree (the
 `ComplianceIncident` node) is pruned entirely and only the `Supplier` node
 survives; for the analyst, both nodes remain. Authorization here removes a
@@ -61,7 +61,7 @@ it isn't a filter applied to rows after the fact.
 
 `OpenIntentMutationSecurityTests.cs` and `OpenIntentSupplyChainTests.cs`
 test `SemanticMutationIntentBuilder` itself — the thing a caller uses to
-*describe* a write. Because the surface is open (arbitrary entities, fields,
+_describe_ a write. Because the surface is open (arbitrary entities, fields,
 and cross-operation dependencies), the builder has to reject malformed
 authoring at build time rather than let a bad shape reach the planner:
 
@@ -72,7 +72,7 @@ authoring at build time rather than let a bad shape reach the planner:
 - **Upsert requires explicit conflict semantics.** `.Upsert(...)` without a
   `.Conflict(...)` clause throws; only once a conflict target is named does
   the operation build. Without this, "insert or update" would have no
-  defined key to decide *which* row an existing row is a conflict with.
+  defined key to decide _which_ row an existing row is a conflict with.
 - **Field and entity names are resolved before planning, not at execution.**
   `.Create("PurchaseOrder").Set("SupplirId", 1)` (misspelled) and
   `.Create("PurchseOrder")` (misspelled entity) both throw immediately —
@@ -93,14 +93,14 @@ authoring at build time rather than let a bad shape reach the planner:
 
 `OpenIntentSupplyChainTests.cs`'s fan-out case (`PurchaseOrder` ->
 `PurchaseOrderLine` + `Shipment`, all sharing one generated identity) is the
-positive-path companion to these: it proves the *legitimate* version of a
+positive-path companion to these: it proves the _legitimate_ version of a
 multi-step, dependency-ordered mutation graph plans correctly, so the
 rejections above are shown to be about the specific malformed shapes, not
 about open-intent mutations being restricted in general.
 
 ## `CapabilityBoundaryTests`: the field-leak boundary, pinned against this domain's own shape
 
-The other three test files are about what a caller is *allowed to ask for*.
+The other three test files are about what a caller is _allowed to ask for_.
 `CapabilityBoundaryTests.cs` is about a narrower and easy-to-miss failure:
 even a fully authorized, correctly-scoped query must never let a field the
 caller didn't select — or a join key that only exists to make a traversal

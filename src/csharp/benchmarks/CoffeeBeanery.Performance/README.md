@@ -99,7 +99,6 @@ The next benchmark cycle should answer four questions:
 
 For the full findings, limitations and proposed experiments, see [the checked-in benchmark reports](reports/query/).
 
-
 ## Current benchmark status — 2026-08-15
 
 The latest confirmed benchmark baseline is documented in [`reports/query/`](reports/query/).

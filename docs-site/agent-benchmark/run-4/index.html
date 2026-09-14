@@ -1,13 +1,246 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Run 4 — Graph execution / scalability | Foundgine</title><meta content="Foundgine Agent Benchmark Run 4: Measure graph execution at scale." name="description"/><meta content="article" property="og:type"/><meta content="Foundgine Agent Benchmark — Run 4" property="og:title"/><meta content="Measure graph execution at scale: can semantic traversal stay fast?" property="og:description"/><link href="https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-4/" rel="canonical"/><meta content="https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-4/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/><meta content="summary_large_image" name="twitter:card"/><meta content="Foundgine Agent Benchmark — Run 4" name="twitter:title"/><meta content="Measure graph execution at scale: can semantic traversal stay fast?" name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/><script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Agent Benchmark Run 2 — Scalability across customer tiers","description":"Foundgine Agent Benchmark Run 4: Measure graph execution at scale.","url":"https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-4/","author":{"@type":"Organization","name":"Foundgine"}}</script><link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../../assets/style.css?v=20260828-2" rel="stylesheet"/></head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav class="site-nav" id="site-nav"><a href="../../what-is-foundgine.html">What is it</a>
-<a href="../../getting-started/index.html">Getting started</a>
-<a href="../../how-it-works/index.html">How it works</a>
-<a href="../../architecture/index.html">Architecture</a>
-<a href="../../ai-agents/index.html">AI agents</a>
-<a href="../../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../../samples/index.html">Overview</a><a href="../../samples/semantic/index.html">Semantic execution</a><a href="../../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../index.html">Evidence</a><a href="../run-1/index.html">Run 1 · Baseline</a><a href="../run-2/index.html">Run 2 · Scalability</a><a href="../run-3/index.html">Run 3 · Efficiency</a><a href="index.html">Run 4 · Graph execution</a><a href="../run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../run-5b/index.html">Run 5b · Individual vs batch</a><a href="../supply-chain/index.html">Supply Chain E2E</a><a href="../../performance/index.html">Performance</a></div></div>
-<a href="../../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header><div class="page page-wide"><main class="article article-wide"><div class="run-page-hero"><span class="eyebrow">End-to-end evidence · Run 4 · 18 August 2026</span><h1>Measure graph execution at scale: can semantic traversal stay fast?</h1><p class="run-page-story">Run 4 measures the customer-exposure workflow across 10, 100, 1,000 and 10,000 customers at concurrency 8, 16, 32 and 64, comparing GraphQL + Hot Chocolate + EF Core with MCP + Foundgine.</p><div class="run-page-actions"><a class="button" href="../index.html?run=4&amp;customers=10&amp;concurrency=8#evidence-frame">Inspect the matrix evidence →</a><a class="button secondary" href="../index.html">All benchmark runs</a></div></div><div class="run-page-grid"><div><strong>Why this run exists</strong><span>Run 4 isolates graph execution performance after the earlier agent-work experiments and asks whether semantic traversal scales across larger fixtures and concurrent workloads.</span></div><div><strong>What was compared</strong><span>The same customer-exposure-review workflow through GraphQL + Hot Chocolate + EF Core and MCP + Foundgine, across the full 4 × 4 workload/concurrency matrix.</span></div><div><strong>What it means</strong><span>Run 4 is the graph-execution scalability result: the semantic path sustains materially higher throughput in the published matrix while preserving the agent-facing workflow.</span></div></div><div class="run-label">Published finding</div><div class="run-page-finding"><strong>What the evidence says</strong><p>Across the published 4 × 4 matrix, Foundgine sustained materially higher agent-flow throughput than the conventional path. At 10 customers/C8, the published RPS was about 1,488 versus 302 (4.94×). The aggregate contains 32 rows covering all 16 cells and both implementations, using only the agent samples rather than the separate single-request baseline samples.</p></div><div class="run-label">Key measurements</div><div class="run-page-metrics"><div class="run-page-metric"><small>toolCalls</small><strong>GraphQL agent vs MCP agent</strong></div><div class="run-page-metric"><small>context</small><strong>Agent-only matrix</strong></div><div class="run-page-metric"><small>success</small><strong>32 aggregate rows</strong></div><div class="run-page-metric"><small>example</small><strong>10/C8: ~302 → ~1,488 RPS</strong></div></div><section class="run-section"><div class="run-label">How to use this run</div><h2 id="read-the-finding-first-then-inspect-the-exact-evidence">Read the finding first, then inspect the exact evidence.</h2><p>This page tells the story of the experiment. The benchmark explorer contains the interactive workload/concurrency matrix and selected-cell comparison.</p><p>The benchmark distinguishes measured timings and tool calls from its estimated context-load heuristic.</p></section><p class="sitenav"><a href="../index.html">← Benchmark landing page</a> · <a href="../../how-it-works/index.html">How it works</a> · <a href="../../architecture/index.html">Architecture</a></p></main></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../../assets/site-nav.js"></script>
-</body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Run 4 — Graph execution / scalability | Foundgine</title>
+    <meta
+      content="Foundgine Agent Benchmark Run 4: Measure graph execution at scale."
+      name="description"
+    />
+    <meta content="article" property="og:type" />
+    <meta content="Foundgine Agent Benchmark — Run 4" property="og:title" />
+    <meta
+      content="Measure graph execution at scale: can semantic traversal stay fast?"
+      property="og:description"
+    />
+    <link
+      href="https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-4/"
+      rel="canonical"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-4/"
+      property="og:url"
+    />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Foundgine Agent Benchmark — Run 4" name="twitter:title" />
+    <meta
+      content="Measure graph execution at scale: can semantic traversal stay fast?"
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Agent Benchmark Run 2 — Scalability across customer tiers",
+        "description": "Foundgine Agent Benchmark Run 4: Measure graph execution at scale.",
+        "url": "https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-4/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+    <link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../../assets/style.css?v=20260828-2" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="site-nav" id="site-nav">
+          <a href="../../what-is-foundgine.html">What is it</a>
+          <a href="../../getting-started/index.html">Getting started</a>
+          <a href="../../how-it-works/index.html">How it works</a>
+          <a href="../../architecture/index.html">Architecture</a>
+          <a href="../../ai-agents/index.html">AI agents</a>
+          <a href="../../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../../samples/index.html">Overview</a
+              ><a href="../../samples/semantic/index.html">Semantic execution</a
+              ><a href="../../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../index.html">Evidence</a><a href="../run-1/index.html">Run 1 · Baseline</a
+              ><a href="../run-2/index.html">Run 2 · Scalability</a
+              ><a href="../run-3/index.html">Run 3 · Efficiency</a
+              ><a href="index.html">Run 4 · Graph execution</a
+              ><a href="../run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page page-wide">
+      <main class="article article-wide">
+        <div class="run-page-hero">
+          <span class="eyebrow">End-to-end evidence · Run 4 · 18 August 2026</span>
+          <h1>Measure graph execution at scale: can semantic traversal stay fast?</h1>
+          <p class="run-page-story">
+            Run 4 measures the customer-exposure workflow across 10, 100, 1,000 and 10,000 customers
+            at concurrency 8, 16, 32 and 64, comparing GraphQL + Hot Chocolate + EF Core with MCP +
+            Foundgine.
+          </p>
+          <div class="run-page-actions">
+            <a
+              class="button"
+              href="../index.html?run=4&amp;customers=10&amp;concurrency=8#evidence-frame"
+              >Inspect the matrix evidence →</a
+            ><a class="button secondary" href="../index.html">All benchmark runs</a>
+          </div>
+        </div>
+        <div class="run-page-grid">
+          <div>
+            <strong>Why this run exists</strong
+            ><span
+              >Run 4 isolates graph execution performance after the earlier agent-work experiments
+              and asks whether semantic traversal scales across larger fixtures and concurrent
+              workloads.</span
+            >
+          </div>
+          <div>
+            <strong>What was compared</strong
+            ><span
+              >The same customer-exposure-review workflow through GraphQL + Hot Chocolate + EF Core
+              and MCP + Foundgine, across the full 4 × 4 workload/concurrency matrix.</span
+            >
+          </div>
+          <div>
+            <strong>What it means</strong
+            ><span
+              >Run 4 is the graph-execution scalability result: the semantic path sustains
+              materially higher throughput in the published matrix while preserving the agent-facing
+              workflow.</span
+            >
+          </div>
+        </div>
+        <div class="run-label">Published finding</div>
+        <div class="run-page-finding">
+          <strong>What the evidence says</strong>
+          <p>
+            Across the published 4 × 4 matrix, Foundgine sustained materially higher agent-flow
+            throughput than the conventional path. At 10 customers/C8, the published RPS was about
+            1,488 versus 302 (4.94×). The aggregate contains 32 rows covering all 16 cells and both
+            implementations, using only the agent samples rather than the separate single-request
+            baseline samples.
+          </p>
+        </div>
+        <div class="run-label">Key measurements</div>
+        <div class="run-page-metrics">
+          <div class="run-page-metric">
+            <small>toolCalls</small><strong>GraphQL agent vs MCP agent</strong>
+          </div>
+          <div class="run-page-metric">
+            <small>context</small><strong>Agent-only matrix</strong>
+          </div>
+          <div class="run-page-metric">
+            <small>success</small><strong>32 aggregate rows</strong>
+          </div>
+          <div class="run-page-metric">
+            <small>example</small><strong>10/C8: ~302 → ~1,488 RPS</strong>
+          </div>
+        </div>
+        <section class="run-section">
+          <div class="run-label">How to use this run</div>
+          <h2 id="read-the-finding-first-then-inspect-the-exact-evidence">
+            Read the finding first, then inspect the exact evidence.
+          </h2>
+          <p>
+            This page tells the story of the experiment. The benchmark explorer contains the
+            interactive workload/concurrency matrix and selected-cell comparison.
+          </p>
+          <p>
+            The benchmark distinguishes measured timings and tool calls from its estimated
+            context-load heuristic.
+          </p>
+        </section>
+        <p class="sitenav">
+          <a href="../index.html">← Benchmark landing page</a> ·
+          <a href="../../how-it-works/index.html">How it works</a> ·
+          <a href="../../architecture/index.html">Architecture</a>
+        </p>
+      </main>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../../assets/site-nav.js"></script>
+  </body>
+</html>

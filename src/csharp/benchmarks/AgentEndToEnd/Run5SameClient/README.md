@@ -75,7 +75,6 @@ This test does **not** claim that batching is free. It measures the effect of gi
 
 It is complementary to the original Run 5 throughput benchmark.
 
-
 ## Payload interpretation
 
 A batch call is expected to have a larger individual MCP request because it

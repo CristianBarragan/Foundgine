@@ -1,4 +1,5 @@
 # SES-011 — Execution Intermediate Representation
+
 ← [SES-010 — Semantic Planning, Normalization, and Safe Rewriting](SES-010-planning-and-rewrites.md) · [Standard Index](README.md) · [SES-012 — Provider Compilation, Conformance, and Execution Boundary](SES-012-provider-boundary.md) →
 
 ---

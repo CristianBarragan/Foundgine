@@ -13,6 +13,9 @@
     <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
     <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
     <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
+    <PackageReference
+      Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+      Version="10.0.11"
+    />
   </ItemGroup>
 </Project>

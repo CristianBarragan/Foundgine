@@ -13,8 +13,8 @@ The secure execution engine for the Foundgine Hot Chocolate GraphQL adapter.
 ## Why it lives here, in Extensions
 
 `Foundgine.Extensions.GraphQL.HotChocolate` (schema adapters, query/mutation
-translation, result shaping) performs GraphQL *translation*. This folder
-performs secure *execution* on top of that translation:
+translation, result shaping) performs GraphQL _translation_. This folder
+performs secure _execution_ on top of that translation:
 
 ```text
 GraphQL

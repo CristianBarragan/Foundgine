@@ -1,5 +1,6 @@
 # SES-000 — Terminology, Normative Language, and Conformance
-← *(start of family)* · [Standard Index](README.md) · [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) →
+
+← _(start of family)_ · [Standard Index](README.md) · [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) →
 
 ---
 
@@ -39,15 +40,15 @@ Equivalent internal representations are allowed, but a security boundary MUST re
 
 The future standard SHOULD define independently certifiable profiles:
 
-| Profile | Minimum scope |
-|---|---|
-| Core | semantics, graph, algebra, resolution |
-| Secure | Core + authorization + provenance + execution gate |
-| Provider | Secure + provider fidelity and capability negotiation |
-| Mutation | Provider + atomicity/idempotency/replay/fault guarantees |
-| Agent | Mutation + transport/tool/agent equivalence |
+| Profile    | Minimum scope                                            |
+| ---------- | -------------------------------------------------------- |
+| Core       | semantics, graph, algebra, resolution                    |
+| Secure     | Core + authorization + provenance + execution gate       |
+| Provider   | Secure + provider fidelity and capability negotiation    |
+| Mutation   | Provider + atomicity/idempotency/replay/fault guarantees |
+| Agent      | Mutation + transport/tool/agent equivalence              |
 | Static/AOT | Secure/Provider requirements + generated metadata parity |
-| Full | all mandatory profiles |
+| Full       | all mandatory profiles                                   |
 
 An implementation MUST declare the profiles it claims. “Conformant” without a profile is insufficient.
 
@@ -95,4 +96,4 @@ Develop the full requirement registry, machine-readable conformance manifest, co
 
 ---
 
-← *(start of family)* · [Standard Index](README.md) · [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) →
+← _(start of family)_ · [Standard Index](README.md) · [SES-001 — Architectural Model and Trust Boundaries](SES-001-architectural-model.md) →

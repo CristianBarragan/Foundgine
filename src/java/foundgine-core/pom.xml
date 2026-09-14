@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -14,13 +16,7 @@
   <packaging>jar</packaging>
 
   <name>Foundgine Core</name>
-  <description>
-    Port of Foundgine.Core: the foundational, provider-independent semantic
-    layer. Defines the semantic model, metadata, intent contracts and
-    serialization, intermediate representation, provider-neutral execution
-    contracts, planning primitives, and core abstractions/identifiers used
-    by the rest of the platform.
-  </description>
+  <description>Port of Foundgine.Core: the foundational, provider-independent semantic layer. Defines the semantic model, metadata, intent contracts and serialization, intermediate representation, provider-neutral execution contracts, planning primitives, and core abstractions/identifiers used by the rest of the platform.</description>
 
   <dependencies>
     <dependency>

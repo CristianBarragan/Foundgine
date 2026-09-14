@@ -11,7 +11,6 @@ This sample deliberately separates four concerns:
 
 Generated numeric identities remain internal metadata implementation details. Application semantic configuration uses logical names and resolves them against the discovered graph.
 
-
 ## Security proving-ground traversals
 
 The sample exposes two application-level logical traversals:

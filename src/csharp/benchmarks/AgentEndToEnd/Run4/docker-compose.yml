@@ -34,8 +34,8 @@ services:
       timeout: 5s
       retries: 30
       start_period: 5s
-      
-    restart: "no"           
+
+    restart: "no"
   graphql-ef:
     build:
       context: ../../../../..

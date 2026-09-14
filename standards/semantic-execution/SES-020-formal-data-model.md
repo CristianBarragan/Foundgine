@@ -1,4 +1,5 @@
 # SES-020 — Formal Semantic Execution Data Model
+
 ← [SES-019 — Future Development Roadmap and Open Research Problems](SES-019-future-development-roadmap.md) · [Standard Index](README.md) · [SES-021 — Lifecycle and Security State Machines](SES-021-state-machines.md) →
 
 ---

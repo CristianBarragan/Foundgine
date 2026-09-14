@@ -78,5 +78,3 @@ public sealed class RelationshipJoinOrderingRuleTests
             RelationshipCardinality: cardinality);
     }
 }
-
-

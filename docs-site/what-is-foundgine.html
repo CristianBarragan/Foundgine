@@ -1,31 +1,315 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>What is Foundgine? | Foundgine</title><meta content="Understand Foundgine as the semantic execution boundary between caller intent, application meaning, authorization and physical execution." name="description"/><link href="https://cristianbarragan.github.io/Foundgine/what-is-foundgine.html" rel="canonical"/>
-<meta content="What is Foundgine? | Foundgine" property="og:title"/><meta content="Understand Foundgine as the semantic execution boundary between caller intent, application meaning, authorization and physical execution." property="og:description"/><meta content="website" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/what-is-foundgine.html" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="What is Foundgine? | Foundgine" name="twitter:title"/><meta content="Understand Foundgine as the semantic execution boundary between caller intent, application meaning, authorization and physical execution." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="assets/style.css" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"What is Foundgine? | Foundgine","description":"Understand Foundgine as the semantic execution boundary between caller intent, application meaning, authorization and physical execution.","url":"https://cristianbarragan.github.io/Foundgine/what-is-foundgine.html","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a aria-current="page" class="nav-current" href="what-is-foundgine.html">What is it</a>
-<a href="getting-started/index.html">Getting started</a>
-<a href="how-it-works/index.html">How it works</a>
-<a href="architecture/index.html">Architecture</a>
-<a href="ai-agents/index.html">AI agents</a>
-<a href="security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="samples/index.html">Overview</a><a href="samples/semantic/index.html">Semantic execution</a><a href="samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="agent-benchmark/index.html">Evidence</a><a href="agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="performance/index.html">Performance</a></div></div>
-<a href="packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page has-toc"><main class="article"><span class="eyebrow">Concept · the boundary</span><h1>What is Foundgine?</h1><p class="subtitle">Foundgine is the layer between application meaning and physical execution. Callers express intent; the application remains the authority.</p>
-<section><h2 id="the-problem">The problem</h2><p>Modern applications expose the same business data through multiple surfaces: APIs, GraphQL, automation, JSON, MCP and AI agents. If each surface builds its own validation, authorization and data-access path, the application accumulates duplicated security and execution logic.</p></section>
-<section><h2 id="the-foundgine-model">The Foundgine model</h2><p>Foundgine introduces one provider-independent semantic boundary. The semantic model describes what the application exposes; intent describes what the caller wants; authorization decides what the current trusted context may exercise; planning turns that decision into an executable form.</p><p class="diagram-frame"><img alt="Foundgine semantic execution boundary separating caller intent from application semantics, authorization and physical providers." src="assets/what-is-foundgine-plantuml-01.svg"/></p></section>
-<section><h2 id="semantic-model-versus-persistence-model">Semantic model versus persistence model</h2><p>A persistence model describes storage. A semantic model describes application meaning. They can intentionally differ in fields, relationships, aliases and capabilities. This lets the application expose business concepts without making database structure its public contract.</p><pre>Persistence model  →  how data is stored
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>What is Foundgine? | Foundgine</title>
+    <meta
+      content="Understand Foundgine as the semantic execution boundary between caller intent, application meaning, authorization and physical execution."
+      name="description"
+    />
+    <link
+      href="https://cristianbarragan.github.io/Foundgine/what-is-foundgine.html"
+      rel="canonical"
+    />
+    <meta content="What is Foundgine? | Foundgine" property="og:title" />
+    <meta
+      content="Understand Foundgine as the semantic execution boundary between caller intent, application meaning, authorization and physical execution."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/what-is-foundgine.html"
+      property="og:url"
+    />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="What is Foundgine? | Foundgine" name="twitter:title" />
+    <meta
+      content="Understand Foundgine as the semantic execution boundary between caller intent, application meaning, authorization and physical execution."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="assets/style.css" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "What is Foundgine? | Foundgine",
+        "description": "Understand Foundgine as the semantic execution boundary between caller intent, application meaning, authorization and physical execution.",
+        "url": "https://cristianbarragan.github.io/Foundgine/what-is-foundgine.html",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a aria-current="page" class="nav-current" href="what-is-foundgine.html">What is it</a>
+          <a href="getting-started/index.html">Getting started</a>
+          <a href="how-it-works/index.html">How it works</a>
+          <a href="architecture/index.html">Architecture</a>
+          <a href="ai-agents/index.html">AI agents</a>
+          <a href="security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="samples/index.html">Overview</a
+              ><a href="samples/semantic/index.html">Semantic execution</a
+              ><a href="samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="agent-benchmark/index.html">Evidence</a
+              ><a href="agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page has-toc">
+      <main class="article">
+        <span class="eyebrow">Concept · the boundary</span>
+        <h1>What is Foundgine?</h1>
+        <p class="subtitle">
+          Foundgine is the layer between application meaning and physical execution. Callers express
+          intent; the application remains the authority.
+        </p>
+        <section>
+          <h2 id="the-problem">The problem</h2>
+          <p>
+            Modern applications expose the same business data through multiple surfaces: APIs,
+            GraphQL, automation, JSON, MCP and AI agents. If each surface builds its own validation,
+            authorization and data-access path, the application accumulates duplicated security and
+            execution logic.
+          </p>
+        </section>
+        <section>
+          <h2 id="the-foundgine-model">The Foundgine model</h2>
+          <p>
+            Foundgine introduces one provider-independent semantic boundary. The semantic model
+            describes what the application exposes; intent describes what the caller wants;
+            authorization decides what the current trusted context may exercise; planning turns that
+            decision into an executable form.
+          </p>
+          <p class="diagram-frame">
+            <img
+              alt="Foundgine semantic execution boundary separating caller intent from application semantics, authorization and physical providers."
+              src="assets/what-is-foundgine-plantuml-01.svg"
+            />
+          </p>
+        </section>
+        <section>
+          <h2 id="semantic-model-versus-persistence-model">
+            Semantic model versus persistence model
+          </h2>
+          <p>
+            A persistence model describes storage. A semantic model describes application meaning.
+            They can intentionally differ in fields, relationships, aliases and capabilities. This
+            lets the application expose business concepts without making database structure its
+            public contract.
+          </p>
+          <pre>
+Persistence model  →  how data is stored
 Semantic model     →  what the application exposes
 Intent             →  what the caller asks for
-Authorization      →  what this trusted context may exercise</pre></section>
-<section><h2 id="why-it-matters-for-ai">Why it matters for AI</h2><p>An AI model can propose a useful operation without becoming the authority over database schema, tenant identity, credentials or business invariants. Capability discovery helps the model form valid intent; the server still resolves and authorizes the actual request.</p><p>This matters even more as the number of tools grows. Routing every capability through the same semantic and authorization boundary avoids creating a separate security surface for every tool.</p></section>
-<section><h2 id="what-foundgine-is-and-is-not">What Foundgine is — and is not</h2><div class="table-wrap"><table><thead><tr><th>Foundgine is</th><th>Foundgine is not</th></tr></thead><tbody><tr><td>Semantic execution boundary</td><td>ORM replacement</td></tr><tr><td>Provider-independent planning/runtime layer</td><td>Database</td></tr><tr><td>Application-controlled semantic authorization</td><td>Identity provider or authorization server</td></tr><tr><td>Execution substrate for multiple callers</td><td>General autonomous-agent framework</td></tr><tr><td>Capability surface for agents</td><td>Model provider</td></tr></tbody></table></div></section>
-<section><h2 id="ambiguity-is-a-result-not-a-silent-guess">Ambiguity is a result, not a silent guess</h2><p>Free-form language can match more than one legal meaning. Retrieval scores are evidence, not truth. When two semantically distinct interpretations remain genuinely ambiguous, Foundgine can return a clarification requirement instead of authorizing the top-scored guess.</p><p>See <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/GROUNDING-DECISIONS.md">Grounding decisions</a> for the detailed model and <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/LEXICAL-GROUNDING.md">Lexical grounding</a> for the retrieval side.</p></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-home" href="index.html">Documentation home</a><a class="page-nav-link next" href="getting-started/index.html"><span>Next</span><strong>Getting started →</strong></a></nav></main><aside aria-label="On this page" class="toc"><div class="toc-label">On this page</div><ol><li class=""><a href="#the-problem">The problem</a></li><li class=""><a href="#the-foundgine-model">The Foundgine model</a></li><li class=""><a href="#semantic-model-versus-persistence-model">Semantic model versus persistence model</a></li><li class=""><a href="#why-it-matters-for-ai">Why it matters for AI</a></li><li class=""><a href="#what-foundgine-is-and-is-not">What Foundgine is — and is not</a></li><li class=""><a href="#ambiguity-is-a-result-not-a-silent-guess">Ambiguity is a result, not a silent guess</a></li></ol><div class="toc-return"><a href="index.html">↑ Documentation home</a></div></aside></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="assets/site-nav.js"></script><script src="assets/toc.js"></script></body></html>
+Authorization      →  what this trusted context may exercise</pre>
+        </section>
+        <section>
+          <h2 id="why-it-matters-for-ai">Why it matters for AI</h2>
+          <p>
+            An AI model can propose a useful operation without becoming the authority over database
+            schema, tenant identity, credentials or business invariants. Capability discovery helps
+            the model form valid intent; the server still resolves and authorizes the actual
+            request.
+          </p>
+          <p>
+            This matters even more as the number of tools grows. Routing every capability through
+            the same semantic and authorization boundary avoids creating a separate security surface
+            for every tool.
+          </p>
+        </section>
+        <section>
+          <h2 id="what-foundgine-is-and-is-not">What Foundgine is — and is not</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Foundgine is</th>
+                  <th>Foundgine is not</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Semantic execution boundary</td>
+                  <td>ORM replacement</td>
+                </tr>
+                <tr>
+                  <td>Provider-independent planning/runtime layer</td>
+                  <td>Database</td>
+                </tr>
+                <tr>
+                  <td>Application-controlled semantic authorization</td>
+                  <td>Identity provider or authorization server</td>
+                </tr>
+                <tr>
+                  <td>Execution substrate for multiple callers</td>
+                  <td>General autonomous-agent framework</td>
+                </tr>
+                <tr>
+                  <td>Capability surface for agents</td>
+                  <td>Model provider</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section>
+          <h2 id="ambiguity-is-a-result-not-a-silent-guess">
+            Ambiguity is a result, not a silent guess
+          </h2>
+          <p>
+            Free-form language can match more than one legal meaning. Retrieval scores are evidence,
+            not truth. When two semantically distinct interpretations remain genuinely ambiguous,
+            Foundgine can return a clarification requirement instead of authorizing the top-scored
+            guess.
+          </p>
+          <p>
+            See
+            <a
+              href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/GROUNDING-DECISIONS.md"
+              >Grounding decisions</a
+            >
+            for the detailed model and
+            <a
+              href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/LEXICAL-GROUNDING.md"
+              >Lexical grounding</a
+            >
+            for the retrieval side.
+          </p>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-home" href="index.html">Documentation home</a
+          ><a class="page-nav-link next" href="getting-started/index.html"
+            ><span>Next</span><strong>Getting started →</strong></a
+          >
+        </nav>
+      </main>
+      <aside aria-label="On this page" class="toc">
+        <div class="toc-label">On this page</div>
+        <ol>
+          <li class=""><a href="#the-problem">The problem</a></li>
+          <li class=""><a href="#the-foundgine-model">The Foundgine model</a></li>
+          <li class="">
+            <a href="#semantic-model-versus-persistence-model"
+              >Semantic model versus persistence model</a
+            >
+          </li>
+          <li class=""><a href="#why-it-matters-for-ai">Why it matters for AI</a></li>
+          <li class="">
+            <a href="#what-foundgine-is-and-is-not">What Foundgine is — and is not</a>
+          </li>
+          <li class="">
+            <a href="#ambiguity-is-a-result-not-a-silent-guess"
+              >Ambiguity is a result, not a silent guess</a
+            >
+          </li>
+        </ol>
+        <div class="toc-return"><a href="index.html">↑ Documentation home</a></div>
+      </aside>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="assets/site-nav.js"></script>
+    <script src="assets/toc.js"></script>
+  </body>
+</html>

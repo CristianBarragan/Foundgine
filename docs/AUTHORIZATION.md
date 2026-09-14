@@ -11,7 +11,6 @@ A policy can therefore describe a domain such as:
 
 ![PlantUML diagram: AUTHORIZATION, diagram 2](assets/authorization-plantuml-02.svg)
 
-
 ## Authorization in the canonical lifecycle
 
 Authorization is stage 7 of the canonical lifecycle: **Caller → Intent → Semantic Model → Semantic Operation Graph → Retrieval → Resolution → Authorization → Plan Binding → Execution IR → Provider → Execution → Evidence**. Retrieval can discover candidates, but authorization evaluates the resolved operation graph under the trusted semantic contract.

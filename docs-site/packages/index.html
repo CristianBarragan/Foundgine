@@ -1,35 +1,240 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Foundgine Packages | .NET</title><meta content="Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions." name="description"/><link href="https://cristianbarragan.github.io/Foundgine/packages/" rel="canonical"/>
-<meta content="Foundgine Packages | .NET" property="og:title"/><meta content="Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions." property="og:description"/><meta content="website" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/packages/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="Foundgine Packages | .NET" name="twitter:title"/><meta content="Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../assets/style.css" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Foundgine Packages | .NET","description":"Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions.","url":"https://cristianbarragan.github.io/Foundgine/packages/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a href="../what-is-foundgine.html">What is it</a>
-<a href="../getting-started/index.html">Getting started</a>
-<a href="../how-it-works/index.html">How it works</a>
-<a href="../architecture/index.html">Architecture</a>
-<a href="../ai-agents/index.html">AI agents</a>
-<a href="../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../samples/index.html">Overview</a><a href="../samples/semantic/index.html">Semantic execution</a><a href="../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../agent-benchmark/index.html">Evidence</a><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="../performance/index.html">Performance</a></div></div>
-<a href="index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page has-toc"><main class="article"><span class="eyebrow">Packages · choose by boundary</span><h1>Four packages, clear responsibilities.</h1><p class="subtitle">The current package surface is consolidated around four architectural boundaries. Start with the runtime and providers for a normal application.</p>
-<section><h2 id="the-package-shape">The package shape</h2><p>The source tree is organized around <strong>Core → Runtime → Providers</strong>, with <strong>Extensions</strong> for optional framework integrations.</p><pre>Foundgine.Core
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Foundgine Packages | .NET</title>
+    <meta
+      content="Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions."
+      name="description"
+    />
+    <link href="https://cristianbarragan.github.io/Foundgine/packages/" rel="canonical" />
+    <meta content="Foundgine Packages | .NET" property="og:title" />
+    <meta
+      content="Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="https://cristianbarragan.github.io/Foundgine/packages/" property="og:url" />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Foundgine Packages | .NET" name="twitter:title" />
+    <meta
+      content="Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../assets/style.css" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Foundgine Packages | .NET",
+        "description": "Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions.",
+        "url": "https://cristianbarragan.github.io/Foundgine/packages/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a href="../what-is-foundgine.html">What is it</a>
+          <a href="../getting-started/index.html">Getting started</a>
+          <a href="../how-it-works/index.html">How it works</a>
+          <a href="../architecture/index.html">Architecture</a>
+          <a href="../ai-agents/index.html">AI agents</a>
+          <a href="../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../samples/index.html">Overview</a
+              ><a href="../samples/semantic/index.html">Semantic execution</a
+              ><a href="../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../agent-benchmark/index.html">Evidence</a
+              ><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page has-toc">
+      <main class="article">
+        <span class="eyebrow">Packages · choose by boundary</span>
+        <h1>Four packages, clear responsibilities.</h1>
+        <p class="subtitle">
+          The current package surface is consolidated around four architectural boundaries. Start
+          with the runtime and providers for a normal application.
+        </p>
+        <section>
+          <h2 id="the-package-shape">The package shape</h2>
+          <p>
+            The source tree is organized around <strong>Core → Runtime → Providers</strong>, with
+            <strong>Extensions</strong> for optional framework integrations.
+          </p>
+          <pre>
+Foundgine.Core
       ↓
 Foundgine.Runtime
       ↓
 Foundgine.Providers
       ↘
-Foundgine.Extensions  (optional framework integrations)</pre></section>
-<section><h2 id="current-publishable-packages">Current publishable packages</h2><div class="table-wrap"><table><thead><tr><th>Package</th><th>Role</th><th>Use it when</th></tr></thead><tbody><tr><td><strong>Foundgine.Core</strong></td><td>Provider-independent semantic model, metadata, intent, planning and execution contracts.</td><td>You build semantic models, integrations or custom providers.</td></tr><tr><td><strong>Foundgine.Runtime</strong></td><td>Application-facing orchestration, authorization, plan approval, routing and execution.</td><td>You are building a normal Foundgine application.</td></tr><tr><td><strong>Foundgine.Providers</strong></td><td>Concrete storage, AI/model, MCP, AOT and other provider integrations.</td><td>You need physical infrastructure or agent/tool integrations.</td></tr><tr><td><strong>Foundgine.Extensions</strong></td><td>Optional framework adapters, currently including Hot Chocolate GraphQL integration.</td><td>You need GraphQL/Hot Chocolate integration.</td></tr></tbody></table></div></section>
-<section><h2 id="install-the-normal-application-stack">Install the normal application stack</h2><pre>dotnet add package Foundgine.Runtime --version 2.2.1
-dotnet add package Foundgine.Providers --version 2.2.1</pre><p><code>Foundgine.Core</code> is the provider-independent foundation and is brought in by the higher-level packages. Add it directly when your code intentionally targets its contracts.</p></section>
-<section><h2 id="java-maven">Java / Maven</h2><p>A Java port of the same four packages is published to Maven Central under the <code>io.github.cristianbarragan</code> namespace.</p><pre>&lt;dependency&gt;
+Foundgine.Extensions  (optional framework integrations)</pre>
+        </section>
+        <section>
+          <h2 id="current-publishable-packages">Current publishable packages</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Package</th>
+                  <th>Role</th>
+                  <th>Use it when</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Foundgine.Core</strong></td>
+                  <td>
+                    Provider-independent semantic model, metadata, intent, planning and execution
+                    contracts.
+                  </td>
+                  <td>You build semantic models, integrations or custom providers.</td>
+                </tr>
+                <tr>
+                  <td><strong>Foundgine.Runtime</strong></td>
+                  <td>
+                    Application-facing orchestration, authorization, plan approval, routing and
+                    execution.
+                  </td>
+                  <td>You are building a normal Foundgine application.</td>
+                </tr>
+                <tr>
+                  <td><strong>Foundgine.Providers</strong></td>
+                  <td>Concrete storage, AI/model, MCP, AOT and other provider integrations.</td>
+                  <td>You need physical infrastructure or agent/tool integrations.</td>
+                </tr>
+                <tr>
+                  <td><strong>Foundgine.Extensions</strong></td>
+                  <td>
+                    Optional framework adapters, currently including Hot Chocolate GraphQL
+                    integration.
+                  </td>
+                  <td>You need GraphQL/Hot Chocolate integration.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section>
+          <h2 id="install-the-normal-application-stack">Install the normal application stack</h2>
+          <pre>
+dotnet add package Foundgine.Runtime --version 2.2.1
+dotnet add package Foundgine.Providers --version 2.2.1</pre>
+          <p>
+            <code>Foundgine.Core</code> is the provider-independent foundation and is brought in by
+            the higher-level packages. Add it directly when your code intentionally targets its
+            contracts.
+          </p>
+        </section>
+        <section>
+          <h2 id="java-maven">Java / Maven</h2>
+          <p>
+            A Java port of the same four packages is published to Maven Central under the
+            <code>io.github.cristianbarragan</code> namespace.
+          </p>
+          <pre>
+&lt;dependency&gt;
   &lt;groupId&gt;io.github.cristianbarragan&lt;/groupId&gt;
   &lt;artifactId&gt;foundgine-runtime&lt;/artifactId&gt;
   &lt;version&gt;2.2.1&lt;/version&gt;
@@ -38,8 +243,68 @@ dotnet add package Foundgine.Providers --version 2.2.1</pre><p><code>Foundgine.C
   &lt;groupId&gt;io.github.cristianbarragan&lt;/groupId&gt;
   &lt;artifactId&gt;foundgine-providers&lt;/artifactId&gt;
   &lt;version&gt;2.2.1&lt;/version&gt;
-&lt;/dependency&gt;</pre><p><code>foundgine-core</code> is the provider-independent foundation and is brought in transitively by the higher-level artifacts. Add it directly when your code intentionally targets its contracts. <code>foundgine-extensions</code> is available the same way for optional framework integrations.</p></section>
-<section><h2 id="optional-integrations">Optional integrations</h2><p>Add <code>Foundgine.Extensions</code> when you expose Foundgine through Hot Chocolate GraphQL. Choose the relevant capabilities inside <code>Foundgine.Providers</code> for SQL/PostgreSQL, InMemory, AI/model tooling, MCP or retrieval integrations.</p></section>
-<section><h2 id="package-boundary-rule">Package boundary rule</h2><p>Provider-specific concerns such as SQL syntax, PostgreSQL extensions, GraphQL parsing, MCP transport and model-provider integration should not leak into the provider-independent semantic contracts.</p></section>
-<section><h2 id="go-deeper">Go deeper</h2><p>Read the package READMEs in <a href="https://github.com/CristianBarragan/Foundgine/tree/main/src"><code>src/</code></a> for API-level detail, or return to <a href="../architecture/index.html">Architecture</a> to see where each package fits.</p></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-link prev" href="../performance/index.html"><span>Previous</span><strong>← Performance</strong></a><a class="page-nav-home" href="../index.html">Documentation home</a></nav></main><aside aria-label="On this page" class="toc"><div class="toc-label">On this page</div><ol><li class=""><a href="#the-package-shape">The package shape</a></li><li class=""><a href="#current-publishable-packages">Current publishable packages</a></li><li class=""><a href="#install-the-normal-application-stack">Install the normal application stack</a></li><li class=""><a href="#java-maven">Java / Maven</a></li><li class=""><a href="#optional-integrations">Optional integrations</a></li><li class=""><a href="#package-boundary-rule">Package boundary rule</a></li><li class=""><a href="#go-deeper">Go deeper</a></li></ol><div class="toc-return"><a href="../index.html">↑ Documentation home</a></div></aside></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../assets/site-nav.js"></script><script src="../assets/toc.js"></script></body></html>
+&lt;/dependency&gt;</pre>
+          <p>
+            <code>foundgine-core</code> is the provider-independent foundation and is brought in
+            transitively by the higher-level artifacts. Add it directly when your code intentionally
+            targets its contracts. <code>foundgine-extensions</code> is available the same way for
+            optional framework integrations.
+          </p>
+        </section>
+        <section>
+          <h2 id="optional-integrations">Optional integrations</h2>
+          <p>
+            Add <code>Foundgine.Extensions</code> when you expose Foundgine through Hot Chocolate
+            GraphQL. Choose the relevant capabilities inside <code>Foundgine.Providers</code> for
+            SQL/PostgreSQL, InMemory, AI/model tooling, MCP or retrieval integrations.
+          </p>
+        </section>
+        <section>
+          <h2 id="package-boundary-rule">Package boundary rule</h2>
+          <p>
+            Provider-specific concerns such as SQL syntax, PostgreSQL extensions, GraphQL parsing,
+            MCP transport and model-provider integration should not leak into the
+            provider-independent semantic contracts.
+          </p>
+        </section>
+        <section>
+          <h2 id="go-deeper">Go deeper</h2>
+          <p>
+            Read the package READMEs in
+            <a href="https://github.com/CristianBarragan/Foundgine/tree/main/src"
+              ><code>src/</code></a
+            >
+            for API-level detail, or return to
+            <a href="../architecture/index.html">Architecture</a> to see where each package fits.
+          </p>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-link prev" href="../performance/index.html"
+            ><span>Previous</span><strong>← Performance</strong></a
+          ><a class="page-nav-home" href="../index.html">Documentation home</a>
+        </nav>
+      </main>
+      <aside aria-label="On this page" class="toc">
+        <div class="toc-label">On this page</div>
+        <ol>
+          <li class=""><a href="#the-package-shape">The package shape</a></li>
+          <li class=""><a href="#current-publishable-packages">Current publishable packages</a></li>
+          <li class="">
+            <a href="#install-the-normal-application-stack">Install the normal application stack</a>
+          </li>
+          <li class=""><a href="#java-maven">Java / Maven</a></li>
+          <li class=""><a href="#optional-integrations">Optional integrations</a></li>
+          <li class=""><a href="#package-boundary-rule">Package boundary rule</a></li>
+          <li class=""><a href="#go-deeper">Go deeper</a></li>
+        </ol>
+        <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>
+      </aside>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../assets/site-nav.js"></script>
+    <script src="../assets/toc.js"></script>
+  </body>
+</html>

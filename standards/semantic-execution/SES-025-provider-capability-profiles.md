@@ -1,4 +1,5 @@
 # SES-025 — Provider Capability and Fidelity Profiles
+
 ← [SES-024 — Authority Algebra, Delegation, and Attenuation](SES-024-authority-and-delegation.md) · [Standard Index](README.md) · [SES-026 — Proof, Attestation, and Verification](SES-026-proof-and-attestation.md) →
 
 ---

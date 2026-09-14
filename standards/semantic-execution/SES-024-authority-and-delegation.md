@@ -1,4 +1,5 @@
 # SES-024 — Authority Algebra, Delegation, and Attenuation
+
 ← [SES-023 — Versioning, Negotiation, and Compatibility](SES-023-versioning-and-compatibility.md) · [Standard Index](README.md) · [SES-025 — Provider Capability and Fidelity Profiles](SES-025-provider-capability-profiles.md) →
 
 ---

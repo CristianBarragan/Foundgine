@@ -641,7 +641,7 @@ jobs:
           for package in "${packages[@]}"; do
             unzip -t "$package" >/dev/null
           done
-          
+
       - name: NuGet login (OIDC)
         uses: NuGet/login@v1
         id: nuget-login

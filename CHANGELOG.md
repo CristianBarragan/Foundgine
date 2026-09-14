@@ -13,7 +13,7 @@
   as `2.0.1` and/or the Java line as `2.2.0`, even though 2.2.0 already
   aligned the two ecosystems onto a single shared version number. The
   `docs-site` install snippet (`dotnet add package Foundgine.Runtime/Providers
-  --version 2.0.1`) and the homepage hero badge (`v2.0.1`) had the same
+--version 2.0.1`) and the homepage hero badge (`v2.0.1`) had the same
   problem. All now read `2.2.1` consistently.
 
 ### CI

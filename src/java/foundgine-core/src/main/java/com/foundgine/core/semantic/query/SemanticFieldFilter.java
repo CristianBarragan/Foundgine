@@ -4,8 +4,8 @@ import com.foundgine.core.abstractions.FieldId;
 import com.foundgine.core.semantic.SemanticValue;
 
 public record SemanticFieldFilter(FieldId field, SemanticFilterOperator operator, Object value)
-		implements SemanticFilterExpression {
-	public SemanticValue semanticValue() {
-		return SemanticValue.from(value);
-	}
+        implements SemanticFilterExpression {
+    public SemanticValue semanticValue() {
+        return SemanticValue.from(value);
+    }
 }

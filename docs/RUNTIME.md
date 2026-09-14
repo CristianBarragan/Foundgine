@@ -2,7 +2,6 @@
 
 The Foundgine runtime coordinates semantic requests, planning, provider execution, and results.
 
-
 ## Canonical execution lifecycle
 
 Runtime implements the latter half of the canonical lifecycle:

@@ -1,6 +1,6 @@
 # Foundgine Supply Chain (Java) — Starter Sample
 
-The Java counterpart to [`Foundgine.SupplyChain`](../../csharp/samples/Foundgine.SupplyChain/README.md).
+The Java counterpart to [`Foundgine.SupplyChain`](../../../csharp/samples/Foundgine.SupplyChain/README.md).
 
 It demonstrates the same application-controlled boundary using the Java packages published under
 `io.github.cristianbarragan` (`foundgine-core`, `foundgine-runtime`, `foundgine-providers`) instead of

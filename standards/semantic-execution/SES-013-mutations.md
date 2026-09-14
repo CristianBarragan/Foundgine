@@ -1,4 +1,5 @@
 # SES-013 — Semantic Mutation Model and High-Assurance State Change
+
 ← [SES-012 — Provider Compilation, Conformance, and Execution Boundary](SES-012-provider-boundary.md) · [Standard Index](README.md) · [SES-014 — Authorization-Safe Plan Caching](SES-014-plan-caching.md) →
 
 ---

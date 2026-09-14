@@ -10,22 +10,22 @@ namespace Foundgine.SupplyChain.Advanced.Tests.Grounding;
 /// </see>
 /// against the real
 /// generated Supply Chain semantic contract (see docs/GROUNDING-DECISIONS.md).
-/// 
+///
 /// This is not a retrieval-provider test — no Elasticsearch or pgvector is
 /// involved, and the two tests below use a fixed <see cref="FakeLexicalSource"/>
 /// instead. The point is narrower: given candidates a retrieval provider could
 /// plausibly return for this exact schema, does the resolver correctly tell a
 /// materially ambiguous business term apart from two pieces of evidence for the
 /// same term?
-/// 
+///
 /// "Show me our active suppliers" is a realistic operator question, and
 /// "active" is genuinely ambiguous against this schema:
-/// 
+///
 ///   - a supplier with an open purchase order right now
 ///     (PurchaseOrder.Status == Open, reached via Supplier.purchaseOrders); or
 ///   - a supplier whose certification hasn't lapsed
 ///     (SupplierCertification.ValidTo, reached via Supplier.certifications).
-/// 
+///
 /// Both are legitimate, both are structurally valid against the frozen
 /// contract, and they are not the same meaning — a supplier can satisfy one
 /// and not the other. A resolver that just returns the top-scored candidate

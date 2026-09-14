@@ -1,4 +1,5 @@
 # SES-022 — Transport-Neutral Wire Protocol
+
 ← [SES-021 — Lifecycle and Security State Machines](SES-021-state-machines.md) · [Standard Index](README.md) · [SES-023 — Versioning, Negotiation, and Compatibility](SES-023-versioning-and-compatibility.md) →
 
 ---

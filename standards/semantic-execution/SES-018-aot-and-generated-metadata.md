@@ -1,4 +1,5 @@
 # SES-018 — AOT, Generated Metadata, and Deterministic Compilation
+
 ← [SES-017 — Execution Evidence, Errors, and Observability](SES-017-evidence-and-observability.md) · [Standard Index](README.md) · [SES-019 — Future Development Roadmap and Open Research Problems](SES-019-future-development-roadmap.md) →
 
 ---

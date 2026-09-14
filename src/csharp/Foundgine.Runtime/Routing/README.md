@@ -25,7 +25,7 @@ pipeline.
 ## Honesty note
 
 Foundgine does not ship a background-worker or scheduler runtime.
-`TaskContract` is the *decision*; actually spinning up an isolated or
+`TaskContract` is the _decision_; actually spinning up an isolated or
 background worker per the contract is host-owned infrastructure, the same
 division `Foundgine.Runtime.ControlPlane.Recovery` uses for authority
 infrastructure.

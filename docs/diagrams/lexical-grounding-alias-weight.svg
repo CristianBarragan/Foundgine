@@ -1,28 +1,182 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="980" viewBox="0 0 900 980">
-<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 z" fill="#333"/></marker></defs>
-<rect width="900" height="980" fill="white"/>
-<text x="450" y="35" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold">Weighted Alias Evidence — Scoped Lexical Grounding</text>
-<rect x="300" y="65" width="300" height="52" rx="14" fill="white" stroke="#333" stroke-width="2"/><text x="450" y="97" text-anchor="middle" font-family="Arial" font-size="15">Frozen semantic contract</text>
-<line x1="450" y1="117" x2="450" y2="150" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<polygon points="450,150 590,205 450,260 310,205" fill="white" stroke="#333" stroke-width="2"/><text x="450" y="201" text-anchor="middle" font-family="Arial" font-size="14">Lexical grounding active?</text>
-<line x1="310" y1="205" x2="155" y2="205" stroke="#333" stroke-width="2" marker-end="url(#a)"/><text x="230" y="194" text-anchor="middle" font-family="Arial" font-size="13">no</text>
-<rect x="35" y="230" width="240" height="62" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="155" y="257" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="155">Weight feature is inert</tspan><tspan x="155" dy="20">no lexical evidence</tspan></text>
-<line x1="450" y1="260" x2="450" y2="305" stroke="#333" stroke-width="2" marker-end="url(#a)"/><text x="465" y="286" font-family="Arial" font-size="13">yes</text>
-<rect x="270" y="305" width="360" height="58" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="450" y="330" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="450">Only aliases matched by the current</tspan><tspan x="450" dy="20">grounding path are evidence</tspan></text>
-<line x1="450" y1="363" x2="450" y2="405" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<rect x="270" y="405" width="360" height="58" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="450" y="430" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="450">Known model with certainty?</tspan><tspan x="450" dy="20">Yes → model evidence = 100</tspan></text>
-<line x1="450" y1="463" x2="450" y2="505" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<rect x="60" y="505" width="220" height="72" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="170" y="532" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="170">Entity alias</tspan><tspan x="170" dy="20">entity scope only</tspan></text>
-<rect x="340" y="505" width="220" height="72" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="450" y="532" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="450">Field alias</tspan><tspan x="450" dy="20">field scope only</tspan></text>
-<rect x="620" y="505" width="220" height="72" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="730" y="532" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="730">Relationship alias</tspan><tspan x="730" dy="20">relationship scope only</tspan></text>
-<line x1="450" y1="505" x2="170" y2="505" stroke="#333" stroke-width="2" marker-end="url(#a)"/><line x1="450" y1="505" x2="450" y2="505" stroke="#333" stroke-width="2"/><line x1="450" y1="505" x2="730" y2="505" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<line x1="170" y1="577" x2="170" y2="620" stroke="#333" stroke-width="2" marker-end="url(#a)"/><line x1="450" y1="577" x2="450" y2="620" stroke="#333" stroke-width="2" marker-end="url(#a)"/><line x1="730" y1="577" x2="730" y2="620" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<rect x="230" y="620" width="440" height="65" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="450" y="647" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="450">Never average field/relationship weight</tspan><tspan x="450" dy="20">into entity/table weight</tspan></text>
-<line x1="450" y1="685" x2="450" y2="725" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<polygon points="450,725 600,780 450,835 300,780" fill="white" stroke="#333" stroke-width="2"/><text x="450" y="776" text-anchor="middle" font-family="Arial" font-size="14">Every grounded scope ≥ minimum?</text>
-<line x1="300" y1="780" x2="145" y2="780" stroke="#333" stroke-width="2" marker-end="url(#a)"/><text x="220" y="769" font-family="Arial" font-size="13">no</text>
-<rect x="30" y="810" width="230" height="62" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="145" y="837" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="145">Inconclusive</tspan><tspan x="145" dy="20">do not narrow solely from weight</tspan></text>
-<line x1="600" y1="780" x2="755" y2="780" stroke="#333" stroke-width="2" marker-end="url(#a)"/><text x="680" y="769" font-family="Arial" font-size="13">yes</text>
-<rect x="640" y="810" width="230" height="62" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="755" y="837" text-anchor="middle" font-family="Arial" font-size="14"><tspan x="755">Conclusive evidence</tspan><tspan x="755" dy="20">within its declared scopes</tspan></text>
-<rect x="270" y="895" width="360" height="55" rx="12" fill="white" stroke="#333" stroke-width="2"/><text x="450" y="918" text-anchor="middle" font-family="Arial" font-size="13"><tspan x="450">Authorization remains separate</tspan><tspan x="450" dy="18">weight never grants capability</tspan></text>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L9,3 L0,6 z" fill="#333" />
+    </marker>
+  </defs>
+  <rect width="900" height="980" fill="white" />
+  <text x="450" y="35" text-anchor="middle" font-family="Arial" font-size="24" font-weight="bold">Weighted Alias Evidence — Scoped Lexical Grounding</text>
+  <rect
+    x="300"
+    y="65"
+    width="300"
+    height="52"
+    rx="14"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="450" y="97" text-anchor="middle" font-family="Arial" font-size="15">Frozen semantic contract</text>
+  <line x1="450" y1="117" x2="450" y2="150" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <polygon points="450,150 590,205 450,260 310,205" fill="white" stroke="#333" stroke-width="2" />
+  <text x="450" y="201" text-anchor="middle" font-family="Arial" font-size="14">Lexical grounding active?</text>
+  <line x1="310" y1="205" x2="155" y2="205" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <text x="230" y="194" text-anchor="middle" font-family="Arial" font-size="13">no</text>
+  <rect
+    x="35"
+    y="230"
+    width="240"
+    height="62"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="155" y="257" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="155">Weight feature is inert</tspan>
+    <tspan x="155" dy="20">no lexical evidence</tspan>
+  </text>
+  <line x1="450" y1="260" x2="450" y2="305" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <text x="465" y="286" font-family="Arial" font-size="13">yes</text>
+  <rect
+    x="270"
+    y="305"
+    width="360"
+    height="58"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="450" y="330" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="450">Only aliases matched by the current</tspan>
+    <tspan x="450" dy="20">grounding path are evidence</tspan>
+  </text>
+  <line x1="450" y1="363" x2="450" y2="405" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <rect
+    x="270"
+    y="405"
+    width="360"
+    height="58"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="450" y="430" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="450">Known model with certainty?</tspan>
+    <tspan x="450" dy="20">Yes → model evidence = 100</tspan>
+  </text>
+  <line x1="450" y1="463" x2="450" y2="505" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <rect
+    x="60"
+    y="505"
+    width="220"
+    height="72"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="170" y="532" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="170">Entity alias</tspan>
+    <tspan x="170" dy="20">entity scope only</tspan>
+  </text>
+  <rect
+    x="340"
+    y="505"
+    width="220"
+    height="72"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="450" y="532" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="450">Field alias</tspan>
+    <tspan x="450" dy="20">field scope only</tspan>
+  </text>
+  <rect
+    x="620"
+    y="505"
+    width="220"
+    height="72"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="730" y="532" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="730">Relationship alias</tspan>
+    <tspan x="730" dy="20">relationship scope only</tspan>
+  </text>
+  <line x1="450" y1="505" x2="170" y2="505" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <line x1="450" y1="505" x2="450" y2="505" stroke="#333" stroke-width="2" />
+  <line x1="450" y1="505" x2="730" y2="505" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <line x1="170" y1="577" x2="170" y2="620" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <line x1="450" y1="577" x2="450" y2="620" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <line x1="730" y1="577" x2="730" y2="620" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <rect
+    x="230"
+    y="620"
+    width="440"
+    height="65"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="450" y="647" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="450">Never average field/relationship weight</tspan>
+    <tspan x="450" dy="20">into entity/table weight</tspan>
+  </text>
+  <line x1="450" y1="685" x2="450" y2="725" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <polygon points="450,725 600,780 450,835 300,780" fill="white" stroke="#333" stroke-width="2" />
+  <text x="450" y="776" text-anchor="middle" font-family="Arial" font-size="14">Every grounded scope ≥ minimum?</text>
+  <line x1="300" y1="780" x2="145" y2="780" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <text x="220" y="769" font-family="Arial" font-size="13">no</text>
+  <rect
+    x="30"
+    y="810"
+    width="230"
+    height="62"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="145" y="837" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="145">Inconclusive</tspan>
+    <tspan x="145" dy="20">do not narrow solely from weight</tspan>
+  </text>
+  <line x1="600" y1="780" x2="755" y2="780" stroke="#333" stroke-width="2" marker-end="url(#a)" />
+  <text x="680" y="769" font-family="Arial" font-size="13">yes</text>
+  <rect
+    x="640"
+    y="810"
+    width="230"
+    height="62"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="755" y="837" text-anchor="middle" font-family="Arial" font-size="14">
+    <tspan x="755">Conclusive evidence</tspan>
+    <tspan x="755" dy="20">within its declared scopes</tspan>
+  </text>
+  <rect
+    x="270"
+    y="895"
+    width="360"
+    height="55"
+    rx="12"
+    fill="white"
+    stroke="#333"
+    stroke-width="2"
+  />
+  <text x="450" y="918" text-anchor="middle" font-family="Arial" font-size="13">
+    <tspan x="450">Authorization remains separate</tspan>
+    <tspan x="450" dy="18">weight never grants capability</tspan>
+  </text>
 </svg>

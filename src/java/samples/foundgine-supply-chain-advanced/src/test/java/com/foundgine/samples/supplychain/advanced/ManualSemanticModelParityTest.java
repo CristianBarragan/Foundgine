@@ -1,13 +1,14 @@
 package com.foundgine.samples.supplychain.advanced;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.foundgine.core.abstractions.EntityId;
 import com.foundgine.core.abstractions.FieldId;
 import com.foundgine.core.semantic.*;
 import com.foundgine.samples.supplychain.advanced.semantics.ManualSupplyChainSemanticModel;
 import com.foundgine.samples.supplychain.advanced.semantics.SupplyChainSemanticModel;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /** Content-level port of the C# ManualSemanticModelTests. */
 class ManualSemanticModelParityTest {
@@ -29,30 +30,62 @@ class ManualSemanticModelParityTest {
 
         assertTrue(product.effectiveAliases().stream().anyMatch(a -> a.name().equals("Item")));
         assertTrue(product.effectiveAliases().stream().anyMatch(a -> a.name().equals("Item2")));
-        var sku = product.fields().stream().filter(f -> f.name().equals("Sku")).findFirst().orElseThrow();
+        var sku =
+                product.fields().stream()
+                        .filter(f -> f.name().equals("Sku"))
+                        .findFirst()
+                        .orElseThrow();
         assertTrue(sku.effectiveAliases().stream().anyMatch(a -> a.name().equals("PartNumber")));
-        assertTrue(sku.effectiveConstraints().stream().anyMatch(c -> c.kind() == SemanticConstraintKind.PATTERN));
-        var safetyStock = product.fields().stream().filter(f -> f.name().equals("SafetyStock")).findFirst().orElseThrow();
+        assertTrue(
+                sku.effectiveConstraints().stream()
+                        .anyMatch(c -> c.kind() == SemanticConstraintKind.PATTERN));
+        var safetyStock =
+                product.fields().stream()
+                        .filter(f -> f.name().equals("SafetyStock"))
+                        .findFirst()
+                        .orElseThrow();
         assertTrue((safetyStock.capabilities() & SemanticFieldCapabilities.WRITABLE) != 0);
-        assertTrue(safetyStock.effectiveConstraints().stream().anyMatch(c -> c.kind() == SemanticConstraintKind.RANGE));
-        assertTrue(product.relationships().stream().anyMatch(r -> r.name().equals("components") && r.target().equals(component.id())));
-        assertTrue(component.relationships().stream().anyMatch(r -> r.name().equals("componentProduct") && r.target().equals(product.id())));
+        assertTrue(
+                safetyStock.effectiveConstraints().stream()
+                        .anyMatch(c -> c.kind() == SemanticConstraintKind.RANGE));
+        assertTrue(
+                product.relationships().stream()
+                        .anyMatch(
+                                r ->
+                                        r.name().equals("components")
+                                                && r.target().equals(component.id())));
+        assertTrue(
+                component.relationships().stream()
+                        .anyMatch(
+                                r ->
+                                        r.name().equals("componentProduct")
+                                                && r.target().equals(product.id())));
     }
 
     @Test
     void untypedSemanticEntitiesDoNotRequireClrModel() {
         var entityId = EntityId.create("IntentOnly");
         var fieldId = FieldId.create("IntentOnly", "ExternalId");
-        var model = new SemanticModelBuilder()
-                .entity(entityId, "IntentOnly", e -> e
-                        .identity(fieldId, "ExternalId")
-                        .field(fieldId, "ExternalId", String.class, null, SemanticFieldCapabilities.DEFAULT)
-                        .alias("intent-only"))
-                .build();
+        var model =
+                new SemanticModelBuilder()
+                        .entity(
+                                entityId,
+                                "IntentOnly",
+                                e ->
+                                        e.identity(fieldId, "ExternalId")
+                                                .field(
+                                                        fieldId,
+                                                        "ExternalId",
+                                                        String.class,
+                                                        null,
+                                                        SemanticFieldCapabilities.DEFAULT)
+                                                .alias("intent-only"))
+                        .build();
         var entity = model.get(entityId);
         assertNull(entity.modelType());
         assertEquals("ExternalId", entity.identity().name());
-        assertTrue(entity.effectiveAliases().stream().anyMatch(a -> a.name().equals("intent-only")));
+        assertTrue(
+                entity.effectiveAliases().stream().anyMatch(a -> a.name().equals("intent-only")));
     }
 
     @Test
@@ -63,7 +96,8 @@ class ManualSemanticModelParityTest {
         assertEquals(2, manual.entities().size());
         assertEquals(17, generated.entities().size());
         assertTrue(generated.entities().stream().anyMatch(e -> e.name().equals("Product")));
-        assertTrue(generated.entities().stream().anyMatch(e -> e.name().equals("ProductComponent")));
+        assertTrue(
+                generated.entities().stream().anyMatch(e -> e.name().equals("ProductComponent")));
         var frozen = generated.freeze();
         assertTrue(frozen.isFrozen());
         assertNotNull(frozen.createSnapshot());

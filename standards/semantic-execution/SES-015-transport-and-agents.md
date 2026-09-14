@@ -1,4 +1,5 @@
 # SES-015 — Transport, Agent, and Tool Boundaries
+
 ← [SES-014 — Authorization-Safe Plan Caching](SES-014-plan-caching.md) · [Standard Index](README.md) · [SES-016 — Resource Limits, Complexity, and Denial-of-Service Controls](SES-016-resource-governance.md) →
 
 ---

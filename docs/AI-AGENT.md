@@ -2,7 +2,6 @@
 
 Foundgine's AI integration is deliberately small: it exposes semantic execution as tools without making Foundgine depend on a particular LLM provider or agent framework.
 
-
 ## AI agents use the same canonical lifecycle
 
 An agent is another untrusted caller. It does not receive a special execution path:

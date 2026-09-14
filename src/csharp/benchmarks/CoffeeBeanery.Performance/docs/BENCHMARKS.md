@@ -2,11 +2,11 @@
 
 The benchmark compares the same PostgreSQL-backed graph workload across:
 
-| Service | Read path | Write path | Cache |
-|---|---|---|---|
-| Hot Chocolate + EF Core | EF Core `Include` graph | EF Core `SaveChangesAsync` graph insert | EF Core/ASP.NET runtime only |
-| Foundgine cold | Semantic model -> authorization -> planner -> SQL compiler -> execution | GraphQL mutation adapter -> nested mutation planner -> SQL mutation compiler -> dependency-aware execution | No provider-plan cache |
-| Foundgine warm | Same Foundgine pipeline | Same Foundgine mutation pipeline | Provider execution plan cached for reads |
+| Service                 | Read path                                                               | Write path                                                                                                 | Cache                                    |
+| ----------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Hot Chocolate + EF Core | EF Core `Include` graph                                                 | EF Core `SaveChangesAsync` graph insert                                                                    | EF Core/ASP.NET runtime only             |
+| Foundgine cold          | Semantic model -> authorization -> planner -> SQL compiler -> execution | GraphQL mutation adapter -> nested mutation planner -> SQL mutation compiler -> dependency-aware execution | No provider-plan cache                   |
+| Foundgine warm          | Same Foundgine pipeline                                                 | Same Foundgine mutation pipeline                                                                           | Provider execution plan cached for reads |
 
 ## Correctness comes first
 
@@ -30,7 +30,6 @@ The fixture contains 1,000 customers, 4 relationships per customer, 3 contracts 
 
 ### Mutation — whole graph create
 
-
 The loader creates:
 
 `Customer -> CustomerBankingRelationship -> Contract -> 2 Transactions`
@@ -46,7 +45,6 @@ The Foundgine warm configuration caches only the provider execution plan for the
 The corrected loader performs a real upsert against existing deterministic customer rows using `CustomerKey` as the conflict identity, then immediately executes the exact same `QueryTop50` full graph. Batch sizes represent multiple existing-row upserts in one GraphQL request. One latency sample covers the complete upsert + refetch operation.
 
 The read half is intentionally identical to the standalone query workload, so the combined result can be compared directly with the query baseline.
-
 
 ## Current performance baseline — 2026-08-15
 

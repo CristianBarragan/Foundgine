@@ -1,4 +1,5 @@
 # SES-008 — Semantic Authorization Model
+
 ← [SES-007 — Logical Traversal and Path Expansion](SES-007-logical-traversal.md) · [Standard Index](README.md) · [SES-009 — Authorization Provenance and Security Proof](SES-009-authorization-provenance.md) →
 
 ---
