@@ -1,6 +1,6 @@
-# Foundgine 2.0.1 — Website AI reference
+# Foundgine 2.2.1 (.NET & Java) — Website AI reference
 
-Foundgine is a **programmable semantic execution platform for .NET**. It creates one application-controlled boundary between caller intent and physical execution.
+Foundgine is a **programmable semantic execution platform, implemented for .NET and Java**. It creates one application-controlled boundary between caller intent and physical execution, expressed through language-idiomatic mechanisms in each implementation.
 
 ## Canonical lifecycle
 
@@ -26,7 +26,7 @@ Caller → Intent → Semantic Model → Semantic Operation Graph
 
 ## AI and MCP
 
-AI agents are untrusted callers. MCP and AI integrations expose capabilities but do not grant authority. Identity, tenant context, secrets and application policy remain host-owned.
+AI agents are untrusted callers. MCP and AI integrations expose capabilities but do not grant authority. Identity, tenant context, secrets and application policy remain host-owned. MCP adapters exist in both .NET and Java; GraphQL and `Microsoft.Extensions.AI` adapters are currently .NET-only.
 
 ## Security
 
@@ -59,6 +59,6 @@ execution
 
 ## Current release
 
-**2.0.1 · .NET 9**
+**2.2.1 · .NET 9 and Java 21**
 
-For implementation truth, use the active source tree, tests and package READMEs.
+For implementation truth, use the active source tree, tests and package READMEs under `src/csharp/` and `src/java/`.

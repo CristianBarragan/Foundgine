@@ -3,11 +3,16 @@ package com.foundgine.core.security.penetration;
 import com.foundgine.core.semantic.security.warrants.*;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Hostile parity coverage for the warrant trust boundary itself.
@@ -100,5 +105,21 @@ class WarrantTrustBoundaryPenetrationParityTest {
         // state is not a distributed replay barrier.
         assertDoesNotThrow(() ->
                 SecurityWarrantReplayGuard.consume(w, instanceB, Instant.now()));
+    }
+
+    @Test
+    void durableReplayStoreSharesConsumptionAcrossInstances() throws IOException {
+        Path path = Files.createTempFile("foundgine-replay-", ".log");
+        Path lockPath = Path.of(path + ".lock");
+        try {
+            var instanceA = new FileSecurityWarrantReplayStore(path.toString());
+            var instanceB = new FileSecurityWarrantReplayStore(path.toString());
+
+            assertTrue(instanceA.tryConsume("warrant", "nonce"));
+            assertFalse(instanceB.tryConsume("warrant", "nonce"));
+        } finally {
+            Files.deleteIfExists(path);
+            Files.deleteIfExists(lockPath);
+        }
     }
 }

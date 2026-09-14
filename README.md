@@ -60,11 +60,12 @@ Retrieval can discover candidates and evidence, but **retrieval is not authoriza
 
 The fastest path is the Supply Chain sample pair:
 
-- **Starter:** [`src/csharp/samples/Foundgine.SupplyChain`](src/csharp/samples/Foundgine.SupplyChain) — the smallest realistic application boundary.
-  - [Build it step by step](src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md)
-  - [Understand why it is structured this way](src/csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
-- **Advanced:** [`src/csharp/samples/Foundgine.SupplyChain.Advanced`](src/csharp/samples/Foundgine.SupplyChain.Advanced) — richer semantics, grounding, retrieval, authorization and adversarial testing.
-  - Start at [`docs/00-Overview-And-Setup.md`](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) and follow 01–05.
+- **Starter:** the smallest realistic application boundary.
+  - .NET — [`src/csharp/samples/Foundgine.SupplyChain`](src/csharp/samples/Foundgine.SupplyChain): [Build it step by step](src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md) · [Understand why it is structured this way](src/csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
+  - Java — [`src/java/samples/foundgine-supply-chain`](src/java/samples/foundgine-supply-chain): [Build it step by step](src/java/samples/foundgine-supply-chain/SupplyChain-Starter-Tutorial.md) · [Understand why it is structured this way](src/java/samples/foundgine-supply-chain/Foundgine-SupplyChain-Explained.md)
+- **Advanced:** richer semantics, grounding, retrieval, authorization and adversarial testing.
+  - .NET — [`src/csharp/samples/Foundgine.SupplyChain.Advanced`](src/csharp/samples/Foundgine.SupplyChain.Advanced): start at [`docs/00-Overview-And-Setup.md`](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) and follow 01–05.
+  - Java — [`src/java/samples/foundgine-supply-chain-advanced`](src/java/samples/foundgine-supply-chain-advanced): [`SupplyChain-Advanced-Tutorial.md`](src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md).
 
 For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://cristianbarragan.github.io/Foundgine/docs-site/).
 
@@ -77,7 +78,7 @@ Two callers can ask for the same thing in different words:
 
 Foundgine does not treat the paraphrase as a fuzzy guess at a *different* operation. In the Supply Chain semantic contract, `Buy`/`Buys` are declared aliases of `PurchaseOrder`, and `Seller` is a declared alias of `Supplier`. Both sentences are grounded onto the **same canonical semantic identities** before authorization or planning ever runs — the diagram below follows one request all the way from words to a database call.
 
-*Tests:* [`SupplyChainGroundingAliasTests.cs`](src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](src/csharp/tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics).
+*Tests:* .NET — [`SupplyChainGroundingAliasTests.cs`](src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](src/csharp/tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics). Java — [`SupplyChainGroundingAliasParityTest.java`](src/java/samples/foundgine-supply-chain-advanced/src/test/java/com/foundgine/samples/supplychain/advanced/SupplyChainGroundingAliasParityTest.java) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingParityTest.java`](src/java/foundgine-core/src/test/java/com/foundgine/core/semantic/resolution/SemanticAliasSynonymGroundingParityTest.java) (core semantics).
 
 <p align="center"><img src="docs/assets/overdue-purchase-orders-alias-flow.svg" alt="Foundgine alias-matched Supply Chain request from caller intent through semantic resolution, authorization, planning, PostgreSQL execution and evidence." width="100%"></p>
 
@@ -186,12 +187,10 @@ The standard is the authority — see [`SES-104`](standards/semantic-execution/S
 for the current implementation gap matrix and [`conformance/known-gaps.json`](standards/semantic-execution/conformance/known-gaps.json)
 for the machine-readable status of every tracked item.
 
-## Release 2.0.3
+## Release 2.2.1
 
-**Current release: 2.0.3 · .NET 9**
+**Current release: 2.2.1 · .NET 9 and Java 21**
 
-The 2.0.3 release adds candidate truncation diagnostics to semantic lexical grounding: when a token's candidate set is cut down to `candidateLimit` before graph search ever runs, the resolver now records the cut and, if the highest-scoring discarded candidate was within the ambiguity margin of what was kept, requires clarification instead of silently committing to an interpretation that was never actually checked against a competing meaning. It builds on the 2.0.2 release, which fixed the compact-name lexical fallback (e.g. `purchase order` → `purchaseorder`) so it is reliably reached instead of being starved of retrieval-timeout budget by exhaustive per-token lookups.
-
-See [`CHANGELOG.md`](CHANGELOG.md) for the release notes.
+The .NET and Java implementations ship as aligned, same-numbered releases. See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes, including what changed in 2.2.1 and every release before it.
 
 Foundgine is licensed under the Apache License 2.0.

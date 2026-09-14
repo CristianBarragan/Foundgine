@@ -55,8 +55,21 @@ class FoundgineAotProcessorParityTest {
                 source.toString());
         assertEquals(0, result);
 
-        Path generatedFile = generated.resolve("fixture/generated/GeneratedFoundgineMetadata.java");
-        assertTrue(Files.exists(generatedFile));
+        Path generatedFile = generated.resolve(
+                Path.of(
+                        "fixture",
+                        "generated",
+                        "GeneratedFoundgineMetadata.java"));
+
+        assertTrue(
+                Files.exists(generatedFile),
+                "Generated metadata source was not created: "
+                        + generatedFile
+                        + "\nGenerated directory contents:\n"
+                        + Files.walk(generated)
+                                .map(Path::toString)
+                                .sorted()
+                                .collect(java.util.stream.Collectors.joining("\n")));
         String text = Files.readString(generatedFile);
         assertTrue(text.contains("new EntityId("));
         assertTrue(text.contains("new FieldId(11L)"));

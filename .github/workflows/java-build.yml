@@ -33,6 +33,34 @@ jobs:
         working-directory: src/java
         run: mvn -B -ntp verify
 
+
+
+  java-security-penetration:
+    name: Java Security Penetration Gate
+    runs-on: ubuntu-latest
+    needs:
+      - java-build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run standalone Java penetration suite
+        working-directory: src/java/security/pentest
+        env:
+          SKIP_LIVE: "true"
+        run: |
+          chmod +x run-all.sh
+          ./run-all.sh
+
   java-postgres-e2e:
     name: Java PostgreSQL E2E
     runs-on: ubuntu-latest

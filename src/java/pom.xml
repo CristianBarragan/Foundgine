@@ -72,7 +72,7 @@
       changing it here. flatten-maven-plugin (below) resolves it to a
       concrete version in the installed/deployed POM.
     -->
-    <revision>2.2.0</revision>
+    <revision>2.2.1</revision>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -102,6 +102,7 @@
     <module>samples/foundgine-supply-chain-advanced</module>
     <module>benchmarks/foundgine-agent</module>
     <module>security/foundgine-redteam</module>
+
   </modules>
 
   <dependencyManagement>
@@ -210,7 +211,7 @@
     </pluginManagement>
     <plugins>
       <!--
-        Resolves ${revision} to a literal version (e.g. 2.2.0) in the POM
+        Resolves ${revision} to a literal version (e.g. 2.2.1) in the POM
         that actually gets installed/deployed, so downstream consumers never
         see the property placeholder. Every module inherits this via the
         parent's <build> section.

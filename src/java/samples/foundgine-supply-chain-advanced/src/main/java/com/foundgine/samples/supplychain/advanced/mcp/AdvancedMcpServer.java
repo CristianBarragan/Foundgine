@@ -3,6 +3,8 @@ package com.foundgine.samples.supplychain.advanced.mcp;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.foundgine.samples.supplychain.advanced.ambiguity.AmbiguityConnectionStrings;
+import com.foundgine.samples.supplychain.advanced.ambiguity.TopSupplierOverdueOrdersService;
 import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import com.foundgine.samples.supplychain.advanced.data.SupplyChainData;
 import com.foundgine.samples.supplychain.advanced.mutation.AdvancedMcpFacade;
@@ -13,8 +15,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.sql.DriverManager;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -30,11 +34,17 @@ import java.util.concurrent.CompletionStage;
  * </p>
  *
  * <p>
- * Only the two tools exposed by {@link AdvancedMcpFacade} are wired up:
+ * The two generic tools exposed by {@link AdvancedMcpFacade}, plus one
+ * hand-registered demo capability, are wired up:
  * </p>
  * <ul>
  * <li>{@code foundgine_query} — arguments: {@code {"intentJson": "..."}}</li>
  * <li>{@code foundgine_mutation} — arguments: {@code {"mutationJson": "..."}}</li>
+ * <li>{@code find_top_supplier_overdue_orders} — arguments:
+ * {@code {"actor": "...", "state": "...", "supplierName": "..." (optional)}}.
+ * Backed directly by Postgres via
+ * {@link com.foundgine.samples.supplychain.advanced.ambiguity.TopSupplierOverdueOrdersService},
+ * not by {@link AdvancedMcpFacade} — see {@link #findTopSupplierOverdueOrders}.</li>
  * </ul>
  *
  * <p>
@@ -97,6 +107,7 @@ public final class AdvancedMcpServer {
                 case "foundgine_mutation" -> facade.mutationTools()
                         .foundgineMutation(arguments.path("mutationJson").asText("{}"))
                         .thenApply(this::toJson);
+                case "find_top_supplier_overdue_orders" -> findTopSupplierOverdueOrders(arguments);
                 default -> null;
             };
 
@@ -122,6 +133,36 @@ public final class AdvancedMcpServer {
             } catch (IOException io) {
                 exchange.close();
             }
+        }
+    }
+
+    // The ambiguity-resolution demo capability from the Foundgine walkthrough
+    // (docs-site/walkthrough/index.html): "top supplier in <state>" is not a
+    // database key, so it is resolved through ranked candidates + evidence
+    // rather than guessed. Unlike foundgine_query/foundgine_mutation above,
+    // this is a hand-registered tool that talks directly to Postgres via
+    // TopSupplierOverdueOrdersService, exactly as the C# MCP.Foundgine
+    // sample registers it outside the generic Foundgine dispatch. Requires
+    // FOUNDGINE_POSTGRES_CONNECTION_STRING (see AmbiguityConnectionStrings);
+    // if it's unset, only this one tool fails — the rest of the server
+    // (which runs against in-memory SupplyChainData) is unaffected.
+    private CompletionStage<String> findTopSupplierOverdueOrders(JsonNode arguments) {
+        String jdbcUrl = AmbiguityConnectionStrings.jdbcUrl("FOUNDGINE_POSTGRES_CONNECTION_STRING");
+        if (jdbcUrl == null) {
+            return CompletableFuture.failedFuture(new IllegalStateException(
+                    "FOUNDGINE_POSTGRES_CONNECTION_STRING is required for find_top_supplier_overdue_orders."));
+        }
+
+        String actor = arguments.path("actor").asText("");
+        String state = arguments.path("state").asText("");
+        String supplierName = arguments.hasNonNull("supplierName") ? arguments.path("supplierName").asText() : null;
+
+        try (var connection = DriverManager.getConnection(jdbcUrl)) {
+            var service = new TopSupplierOverdueOrdersService(connection);
+            var result = service.findTopSupplierOverdueOrders(actor, state, supplierName);
+            return CompletableFuture.completedFuture(toJson(result));
+        } catch (Exception e) {
+            return CompletableFuture.failedFuture(e);
         }
     }
 
