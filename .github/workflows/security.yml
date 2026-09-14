@@ -1,17 +1,15 @@
 name: Security
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - v*
-  pull_request:
-    branches:
-      - main
   schedule:
     - cron: 0 6 * * 1
   workflow_dispatch: {}
+  # Runs push/PR/tag checks by being called from build.yml's `security-gate`
+  # job instead of triggering independently, so `publish-nuget` can actually
+  # gate on it via `needs:` — GitHub Actions `needs:` cannot reference a job
+  # in a different top-level workflow run. The schedule above still runs
+  # this workflow's own weekly audit independently of any push.
+  workflow_call: {}
 
 permissions:
   contents: read

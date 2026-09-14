@@ -120,6 +120,7 @@ jobs:
     needs:
       - java-build
       - java-postgres-e2e
+      - java-security-penetration
     runs-on: ubuntu-latest
     environment: production
     permissions:

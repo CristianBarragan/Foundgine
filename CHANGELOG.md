@@ -28,6 +28,16 @@
   `security/pentest`, landing in `security/` (no `pom.xml`) instead of
   `src/java`, which also broke the script's live-check paths
   (`run-nmap.sh`/`run-zap.sh`) whenever `SKIP_LIVE` was unset.
+- `publish-nuget` (`build.yml`) previously did not wait on
+  `supplychain-sample-tests`, `supplychain-semantic-sample-tests`, or any
+  `security.yml` job before publishing to NuGet — the latter was structurally
+  impossible, since `needs:` cannot reference a job in a different top-level
+  workflow. `security.yml` now also triggers via `workflow_call` (its
+  `schedule`/`workflow_dispatch` triggers are unchanged), `build.yml` calls it
+  through a new `security-gate` job, and `publish-nuget` now depends on all of
+  the above plus `security-gate`.
+- `publish-maven` (`java-build.yml`) previously did not wait on
+  `java-security-penetration` before publishing to Maven Central. It now does.
 
 ### Release
 
