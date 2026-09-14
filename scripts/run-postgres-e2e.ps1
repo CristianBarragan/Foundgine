@@ -34,7 +34,7 @@ try {
     $env:FOUNDGINE_POSTGRES_CONNECTION_STRING = $connectionString
 
     Write-Host "Running PostgreSQL E2E tests..."
-    dotnet test .\tests\Foundgine.E2E.Tests\Foundgine.E2E.Tests.csproj `
+    dotnet test .\src\csharp\tests\Foundgine.E2E.Tests\Foundgine.E2E.Tests.csproj `
         --configuration Release `
         --filter "FullyQualifiedName~Foundgine.E2E.Tests" `
         --logger "console;verbosity=normal"

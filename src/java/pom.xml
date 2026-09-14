@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Foundgine — Java implementation
+
+  Module layout:
+
+    foundgine-core          [core semantic execution boundary]
+    foundgine-extensions    [transport adapters, layered independently]
+    foundgine-providers     [storage/execution providers]
+    foundgine-runtime       [application-facing runtime]
+    */src/test/java         [test suites]
+    samples/*               [sample applications]
+    benchmarks/*            [performance benchmarks]
+    security/foundgine-redteam [security test suite]
+
+  Modules are added to this parent in dependency order (Core first, since
+  everything else depends on it).
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.github.cristianbarragan</groupId>
+  <artifactId>foundgine-parent</artifactId>
+  <version>${revision}</version>
+  <packaging>pom</packaging>
+
+  <name>Foundgine</name>
+  <description>
+    Foundgine: an application-controlled semantic execution boundary for AI
+    agents and other callers.
+  </description>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <!--
+    url/scm/developers below are required by Maven Central for every
+    published artifact. Values mirror RepositoryUrl/Authors/Company in
+    ../../Directory.Build.props on the C# side.
+  -->
+  <url>https://github.com/CristianBarragan/Foundgine</url>
+
+  <scm>
+    <connection>scm:git:https://github.com/CristianBarragan/Foundgine.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/CristianBarragan/Foundgine.git</developerConnection>
+    <url>https://github.com/CristianBarragan/Foundgine</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Foundgine</name>
+      <organization>Foundgine</organization>
+      <organizationUrl>https://github.com/CristianBarragan/Foundgine</organizationUrl>
+    </developer>
+  </developers>
+
+  <properties>
+    <!--
+      Single source of truth for the release version across every module in
+      this reactor (the Java equivalent of VersionPrefix in
+      ../../Directory.Build.props for src/csharp). Every module's <parent>
+      version and every intra-repo <dependency> version below reference this
+      property instead of a hardcoded literal, so a release only requires
+      changing it here. flatten-maven-plugin (below) resolves it to a
+      concrete version in the installed/deployed POM.
+    -->
+    <revision>2.2.1</revision>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!--
+      GPG signing is only meaningful (and only has a key available) during an
+      actual Central release. It defaults to skipped so that a plain
+      `mvn verify`/`mvn install` — run locally or in the java-build CI job on
+      every push/PR — never shells out to gpg. The tag-triggered
+      publish-maven CI job flips this back on via `-Prelease` (see the
+      "release" profile below), at which point GPG_PRIVATE_KEY /
+      GPG_PASSPHRASE are present.
+    -->
+    <gpg.skip>true</gpg.skip>
+
+    <jackson.version>2.18.9</jackson.version>
+    <junit.version>5.10.3</junit.version>
+    <postgresql.version>42.7.12</postgresql.version>
+  </properties>
+
+  <modules>
+    <module>foundgine-core</module>
+    <module>foundgine-runtime</module>
+    <module>foundgine-providers</module>
+    <module>foundgine-extensions</module>
+    <module>foundgine-aot-generator</module>
+    <module>samples/foundgine-supply-chain</module>
+    <module>samples/foundgine-supply-chain-advanced</module>
+    <module>benchmarks/foundgine-agent</module>
+    <module>security/foundgine-redteam</module>
+
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.13.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>1.6.0</version>
+        </plugin>
+        <!--
+          Declared here (managed, not activated) so only foundgine-core,
+          foundgine-runtime, foundgine-providers, and foundgine-extensions
+          opt in below with an empty <plugin> block. Every other module
+          (samples, benchmarks, the AOT generator, the red-team suite) has
+          no distributionManagement and never references these plugins, so
+          a plain `mvn deploy` run against them does nothing — publishing
+          only happens for the 4 modules that explicitly enable it.
+        -->
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.8.0</version>
+          <extensions>true</extensions>
+          <configuration>
+            <!-- Server id whose credentials are supplied via settings.xml (see java-build.yml). -->
+            <publishingServerId>central</publishingServerId>
+            <autoPublish>true</autoPublish>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>3.2.7</version>
+          <configuration>
+            <skip>${gpg.skip}</skip>
+          </configuration>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.3.1</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar-no-fork</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.10.0</version>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <!--
+        Resolves ${revision} to a literal version (e.g. 2.2.1) in the POM
+        that actually gets installed/deployed, so downstream consumers never
+        see the property placeholder. Every module inherits this via the
+        parent's <build> section.
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+          <!--
+            "oss" (not "resolveCiFriendliesOnly") is required for Central
+            publishing: it expands name/description/url/scm/developers
+            (which only exist on the parent POM, inherited by children)
+            into each module's flattened POM, and fully resolves dependency
+            versions that come from a BOM import (e.g. junit-bom) rather
+            than leaving them blank. resolveCiFriendliesOnly only resolves
+            the ${revision} placeholder and left both of those missing,
+            which is what Central's validator rejected the deployment for.
+          -->
+          <flattenMode>oss</flattenMode>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten-clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!--
+        The parent POM itself (packaging=pom) is never published to Central
+        — only the 4 real jar modules are, via central-publishing-maven-plugin
+        activated in their own poms. Without this, `mvn ... -am deploy`
+        pulls foundgine-parent into the reactor (as a build dependency of
+        the 4 real modules) and the default maven-deploy-plugin binding
+        tries to deploy it too, failing with "repository element was not
+        specified in distributionManagement" since this POM has none.
+        inherited=false so this skip does NOT propagate to the child
+        modules, which must still deploy.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!--
+    Activated with `-Prelease` by the tag-triggered publish-maven CI job
+    only. It just flips gpg.skip back to false; the plugin is otherwise
+    already declared (managed) above, and central-publishing-maven-plugin
+    only does anything on the `deploy` goal, which normal
+    `verify`/`install` runs never reach.
+  -->
+  <profiles>
+    <profile>
+      <id>release</id>
+      <properties>
+        <gpg.skip>false</gpg.skip>
+      </properties>
+    </profile>
+  </profiles>
+</project>

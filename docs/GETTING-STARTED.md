@@ -158,7 +158,7 @@ The model can call semantic tools:
 
 The model is an untrusted producer of intent.
 
-For package-specific details, see the `README.md` in each `src/Foundgine.*` project.
+For package-specific details, see the `README.md` in each `src/csharp/Foundgine.*` project.
 
 ---
 

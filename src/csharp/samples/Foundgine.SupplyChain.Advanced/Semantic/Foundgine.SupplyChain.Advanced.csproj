@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- These directories contain separate projects. Keep their source
+         files out of the main sample assembly. -->
+    <Compile Remove="Tests/**/*.cs" />
+    <None Remove="Tests/**/*.cs" />
+    <Compile Remove="Api/Mcp/**/*.cs" />
+    <None Remove="Api/Mcp/**/*.cs" />
+    <Compile Remove="McpClient/**/*.cs" />
+    <None Remove="McpClient/**/*.cs" />
+    <Compile Remove="Benchmarks/**/*.cs" />
+    <None Remove="Benchmarks/**/*.cs" />
+    <ProjectReference Include="../../../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all"
+                      SkipGetTargetFrameworkProperties="true"
+                      UndefineProperties="TargetFramework" />
+  </ItemGroup>
+</Project>

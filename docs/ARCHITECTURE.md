@@ -60,7 +60,7 @@ Changing the contract, authorization evidence, execution IR, provider, or securi
 
 ### Reads and mutations share the boundary model
 
-Reads use `SemanticOperationGraph` → `SemanticPlan` → `ExecutionIR`. Mutations use `SemanticMutationOperationGraph` → mutation planning → execution security/conformance, with the same principle: semantic meaning is resolved and authorized before provider-specific work, and execution artifacts retain security provenance.
+Reads use `SemanticOperationGraph` → `SemanticPlan` → `ExecutionIR`. Mutations use `SemanticMutationOperationGraph` → mutation planning → execution src/csharp/security/conformance, with the same principle: semantic meaning is resolved and authorized before provider-specific work, and execution artifacts retain security provenance.
 
 This is why GraphQL, MCP, JSON, AI tools and direct C# callers do not need separate authorization architectures. They converge before the security-sensitive planning boundary.
 

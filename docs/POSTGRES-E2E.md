@@ -54,14 +54,14 @@ PowerShell:
 
 ```powershell
 $env:FOUNDGINE_POSTGRES_CONNECTION_STRING="Host=localhost;Port=55432;Database=foundgine_e2e;Username=foundgine;Password=foundgine"
-dotnet test .\tests\Foundgine.E2E.Tests\Foundgine.E2E.Tests.csproj --configuration Release --filter "FullyQualifiedName~Postgres"
+dotnet test .\src\csharp\tests\Foundgine.E2E.Tests\Foundgine.E2E.Tests.csproj --configuration Release --filter "FullyQualifiedName~Postgres"
 ```
 
 Bash:
 
 ```bash
 export FOUNDGINE_POSTGRES_CONNECTION_STRING='Host=localhost;Port=55432;Database=foundgine_e2e;Username=foundgine;Password=foundgine'
-dotnet test tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj --configuration Release --filter "FullyQualifiedName~Postgres"
+dotnet test src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj --configuration Release --filter "FullyQualifiedName~Postgres"
 ```
 
 One command:

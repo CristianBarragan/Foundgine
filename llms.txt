@@ -1,6 +1,6 @@
-# Foundgine 2.0.1
+# Foundgine 2.2.1 (.NET & Java)
 
-Foundgine is a **programmable semantic execution platform for .NET**. It creates an application-controlled boundary between structured caller intent and physical execution.
+Foundgine is a **programmable semantic execution platform, implemented for .NET and Java**. It creates an application-controlled boundary between structured caller intent and physical execution. Both implementations share the same architecture and vocabulary, expressed through language-idiomatic mechanisms.
 
 ## Canonical lifecycle
 
@@ -26,9 +26,9 @@ Retrieval is candidate discovery, not authorization.
 
 ## Adapters and providers
 
-Intent can originate from application code, JSON, GraphQL, MCP or AI tools. These are adapters/consumers of the semantic boundary.
+Intent can originate from application code, JSON, GraphQL, MCP or AI tools. These are adapters/consumers of the semantic boundary. GraphQL and `Microsoft.Extensions.AI` adapters are currently .NET-only; JSON intent and MCP adapters exist in both .NET and Java.
 
-Current providers include `Foundgine.Providers.Storage.Sql` for SQL/PostgreSQL and a deliberately limited `Foundgine.Providers.Storage.InMemory` provider. PostgreSQL retrieval includes relational lookup, `pg_trgm`, native full text, optional `pg_search`/BM25 and optional Apache AGE graph similarity. Vector retrieval is not currently implemented.
+Current providers include `Foundgine.Providers.Storage.Sql` (`foundgine-providers` in Java) for SQL/PostgreSQL and a deliberately limited InMemory provider, in both implementations. PostgreSQL retrieval includes relational lookup, `pg_trgm`, native full text, optional `pg_search`/BM25 and optional Apache AGE graph similarity, also in both implementations. Vector retrieval is not currently implemented.
 
 ## AI
 
@@ -40,7 +40,7 @@ AI → semantic capability / intent → Foundgine → resolve → authorize → 
 
 ## MCP
 
-`Foundgine.Providers.Tools.MCP` is a transport/capability adapter. Discovery is advisory. The host supplies trusted security context and every actual request is resolved and authorized.
+`Foundgine.Providers.Tools.MCP` (`com.foundgine.providers.tools.mcp` in Java) is a transport/capability adapter. Discovery is advisory. The host supplies trusted security context and every actual request is resolved and authorized.
 
 ## Security
 
@@ -64,9 +64,13 @@ Identity, tenant, audience, secrets and other authority remain host-owned.
 
 ## Current evidence
 
-The `Foundgine.SupplyChain` sample and AgentEndToEnd benchmark demonstrate an agent-facing business workload through MCP, semantic execution, authorization, ExecutionIR and PostgreSQL. The associated PenTest suite contains 14 deterministic cases: 7 MCP and 7 GraphQL. Benchmark pages separate measured performance from modeled efficiency estimates.
+The `Foundgine.SupplyChain` sample and AgentEndToEnd benchmark demonstrate an agent-facing business workload through MCP, semantic execution, authorization, ExecutionIR and PostgreSQL, in .NET. The associated PenTest suite contains 14 deterministic cases: 7 MCP and 7 GraphQL. Benchmark pages separate measured performance from modeled efficiency estimates.
+
+The Java port (`src/java/samples/foundgine-supply-chain-advanced`) demonstrates the same MCP → semantic model → authorization → mutation engine → PostgreSQL path with claims-based authorization, high-assurance `place_order`/`cancel_order`, and adversarial invariants (recursive supplier-risk/BOM traversal, tenant isolation). The AgentEndToEnd/PenTest benchmark harness and the ambiguity-resolution capability have not yet been ported to Java.
 
 ## Packages
+
+.NET (NuGet):
 
 - `Foundgine` — runtime facade
 - `Foundgine.Core.Abstractions` — stable contracts and identifiers
@@ -83,12 +87,19 @@ The `Foundgine.SupplyChain` sample and AgentEndToEnd benchmark demonstrate an ag
 - `Foundgine.Providers.Models` — `Microsoft.Extensions.AI` integration
 - `Foundgine.Runtime.ControlPlane` — optional authority/recovery control-plane infrastructure
 
+Java (Maven, groupId `io.github.cristianbarragan`):
+
+- `foundgine-core` — provider-independent semantic model, metadata, intent, planning and execution contracts
+- `foundgine-runtime` — application-facing orchestration, authorization, and the mutation engine, including an optional `controlplane` package (authority/recovery, tool registry, approvals, audit log, risk scoring)
+- `foundgine-providers` — SQL/PostgreSQL and InMemory storage providers, MCP tools, and the `foundgine-aot-generator` annotation processor
+- `foundgine-extensions` — optional caller-facing adapters
+
 ## Standard
 
-Foundgine's architecture is specified independently of this implementation as the SES (Semantic Execution) standard under `standards/semantic-execution/`, starting from its `README.md` index. The standard, not this reference implementation, is the authority for conformance claims.
+Foundgine's architecture is specified independently of this implementation as the SES (Semantic Execution) standard under `standards/semantic-execution/`, starting from its `README.md` index. The standard, not either reference implementation, is the authority for conformance claims.
 
 ## Current release
 
-**2.0.1 · .NET 9**
+**2.2.1 · .NET 9 and Java 21**
 
-For implementation truth, use the active source tree, tests, `docs/CURRENT-STATUS.md`, and package READMEs.
+For implementation truth, use the active source tree, tests, `docs/CURRENT-STATUS.md`, and package READMEs under `src/csharp/` and `src/java/`.

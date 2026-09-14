@@ -1,3 +1,115 @@
+# =========================
+# Java / Maven
+# =========================
+
+# Maven build output
+target/
+*/target/
+**/target/
+
+# Compiled Java classes
+*.class
+
+# Maven generated files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# =========================
+# IDEs
+# =========================
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# VS Code
+.vscode/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# =========================
+# Java tooling
+# =========================
+
+# Gradle (if ever used)
+.gradle/
+build/
+
+# Java crash logs
+hs_err_pid*
+replay_pid*
+
+# =========================
+# OS
+# =========================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# =========================
+# Logs / temporary files
+# =========================
+
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# =========================
+# Environment / local config
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# Local Maven repository if accidentally created in repo
+.m2/
+
+# =========================
+# Foundgine generated output
+# =========================
+
+# Annotation-processor generated sources
+generated/
+generated-sources/
+
+# Java compiler generated output
+classes/
+
+# Test reports
+surefire-reports/
+failsafe-reports/
+
+# Coverage
+.jacoco/
+*.exec
+
 # =====================
 # .NET / Visual Studio build output
 # =====================
@@ -29,6 +141,7 @@ bld/
 *.userosscache
 *.sln.docstates
 *.suo
+*.sln.iml
 
 # MSBuild / NuGet caches and generated files
 *.dll
@@ -58,31 +171,21 @@ project.nuget.cache
 [Bb]uild[Ll]og.*
 BenchmarkDotNet.Artifacts/
 
-# Rider
-*.sln.iml
-
 # OS files
 .DS_Store
 Thumbs.db
-# Benchmark generated artifacts
-benchmarks/AgentEndToEnd/*/artifacts/
 
 # Benchmark generated output
-benchmarks/**/artifacts/
-benchmarks/**/results/
-benchmarks/**/reports/
+# (benchmarks now live under src/csharp/benchmarks — keep this in sync with
+# that layout or these rules silently stop matching)
+src/csharp/benchmarks/**/artifacts/
+src/csharp/benchmarks/**/results/
+src/csharp/benchmarks/**/reports/
 
 # Microsoft Office temporary/lock files
 ~$*
 **/~$*
 
-# Microsoft Office temporary lock files
-~$*
-**/~$*
 # Local/editor temporary files
 *.tmp
 **/*.tmp
-# .NET build output
-**/bin/
-**/obj/
-# Generated benchmark artifacts

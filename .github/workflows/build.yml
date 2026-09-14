@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -33,10 +33,10 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
 
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
 
       - name: Pack NuGet packages
         shell: bash
@@ -54,7 +54,7 @@ jobs:
           rm -rf artifacts/nuget
           mkdir -p artifacts/nuget
 
-          dotnet pack Foundgine.sln \
+          dotnet pack src/csharp/Foundgine.sln \
             --no-restore \
             --configuration Release \
             --output artifacts/nuget \
@@ -133,7 +133,7 @@ jobs:
           echo "NuGet package validation passed."
 
       - name: Upload NuGet artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nuget-packages
           path: artifacts/nuget/*
@@ -147,7 +147,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -157,18 +157,56 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
 
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
 
       - name: Run unit tests
+        shell: bash
         run: |
-          dotnet test Foundgine.sln \
-            --no-build \
-            --configuration Release \
-            --filter "FullyQualifiedName!~Foundgine.E2E.Tests&FullyQualifiedName!~Foundgine.SupplyChain.PenTest.Tests" \
-            --logger "console;verbosity=normal"
+          set -euo pipefail
+
+          # Foundgine.E2E.Tests needs a live PostgreSQL instance and is run by
+          # the "Integration Tests — PostgreSQL 17" job; the PenTest suite is
+          # not wired into CI yet. Everything else in src/csharp is a plain
+          # unit/component test project and should run here.
+          #
+          # NOTE: these are excluded by NOT invoking their .csproj below,
+          # rather than via `dotnet test --filter`. A `--filter` that matches
+          # zero tests in a given project is treated as a failure by the SDK,
+          # which previously made this job fail even when every other test
+          # passed.
+          exclude=(
+            "src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj"
+            "src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj"
+          )
+
+          mapfile -t all_tests < <(find src/csharp -name '*.Tests.csproj' | sort)
+
+          status=0
+          for project in "${all_tests[@]}"; do
+            skip=false
+            for ex in "${exclude[@]}"; do
+              if [[ "$project" == "$ex" ]]; then
+                skip=true
+                break
+              fi
+            done
+            if [[ "$skip" == true ]]; then
+              echo "Skipping $project (covered by a dedicated job elsewhere in this workflow)"
+              continue
+            fi
+
+            echo "::group::dotnet test $project"
+            dotnet test "$project" \
+              --no-build \
+              --configuration Release \
+              --logger "console;verbosity=normal" || status=$?
+            echo "::endgroup::"
+          done
+
+          exit $status
 
   supplychain-sample-tests:
     name: SupplyChain Sample Tests
@@ -178,7 +216,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -188,13 +226,13 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore sample
-        run: dotnet restore benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln
+        run: dotnet restore src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln
 
       - name: Build sample
-        run: dotnet build benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Foundgine.SupplyChain.sln --no-restore --configuration Release
 
       - name: Run SupplyChain tests
-        run: dotnet test benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
+        run: dotnet test src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
   supplychain-semantic-sample-tests:
     name: SupplyChain EndToEnd — Semantic Cases
@@ -204,7 +242,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -214,13 +252,13 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore sample
-        run: dotnet restore samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln
+        run: dotnet restore src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln
 
       - name: Build sample
-        run: dotnet build samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.sln --no-restore --configuration Release
 
       - name: Run semantic SupplyChain tests
-        run: dotnet test samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
+        run: dotnet test src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
   integration-tests:
     needs:
@@ -230,7 +268,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
@@ -238,10 +276,10 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore
-        run: dotnet restore Foundgine.sln
+        run: dotnet restore src/csharp/Foundgine.sln
 
       - name: Build
-        run: dotnet build Foundgine.sln --no-restore --configuration Release
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
 
       - name: Start PostgreSQL 17
         env:
@@ -265,7 +303,7 @@ jobs:
       - name: Run PostgreSQL E2E
         run: |
           dotnet test \
-            tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj \
+            src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj \
             --no-build \
             --configuration Release \
             --filter "FullyQualifiedName~Foundgine.E2E.Tests" \
@@ -297,7 +335,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -311,7 +349,7 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = 'Stop'
-          $benchmarkScript = Join-Path "${{ github.workspace }}" 'benchmarks/AgentEndToEnd/run-all-agent-benchmarks.ps1'
+          $benchmarkScript = Join-Path "${{ github.workspace }}" 'src/csharp/benchmarks/AgentEndToEnd/run-all-agent-benchmarks.ps1'
           & $benchmarkScript -Smoke
           if ($LASTEXITCODE -ne 0) {
             throw "Agent benchmark smoke test failed with exit code $LASTEXITCODE."
@@ -322,7 +360,7 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = 'Stop'
-          $supplyChainScript = Join-Path "${{ github.workspace }}" 'samples/Foundgine.SupplyChain.Advanced/run-supply-chain.ps1'
+          $supplyChainScript = Join-Path "${{ github.workspace }}" 'src/csharp/samples/Foundgine.SupplyChain.Advanced/run-supply-chain.ps1'
           & $supplyChainScript
           if ($LASTEXITCODE -ne 0) {
             throw "Supply Chain E2E benchmark failed with exit code $LASTEXITCODE."
@@ -331,7 +369,7 @@ jobs:
       - name: Verify smoke test left no artifacts behind
         shell: pwsh
         run: |
-          $benchmarkRoot = Join-Path "${{ github.workspace }}" 'benchmarks/AgentEndToEnd'
+          $benchmarkRoot = Join-Path "${{ github.workspace }}" 'src/csharp/benchmarks/AgentEndToEnd'
           $leftover = Get-ChildItem -Path $benchmarkRoot -Directory |
             Where-Object { Test-Path (Join-Path $_.FullName 'artifacts') } |
             ForEach-Object { Join-Path $_.FullName 'artifacts' }
@@ -347,7 +385,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -361,9 +399,9 @@ jobs:
         run: |
           set -euo pipefail
           projects=(
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
-            "benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
           )
           for project in "${projects[@]}"; do
             echo "Restoring $project"
@@ -375,9 +413,9 @@ jobs:
         run: |
           set -euo pipefail
           projects=(
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
-            "benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
           )
           for project in "${projects[@]}"; do
             echo "Building $project"
@@ -423,7 +461,7 @@ jobs:
           POSTGRES_HOST_PORT: "55433"
         run: |
           set -euo pipefail
-          COMPOSE=benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
+          COMPOSE=src/csharp/benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
           PROJECT=foundgine-performance-smoke-hc
           cleanup() {
             docker compose -p "$PROJECT" -f "$COMPOSE" down -v --remove-orphans || true
@@ -454,7 +492,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -468,9 +506,9 @@ jobs:
         run: |
           set -euo pipefail
           projects=(
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
-            "benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
           )
           for project in "${projects[@]}"; do
             echo "Restoring $project"
@@ -482,9 +520,9 @@ jobs:
         run: |
           set -euo pipefail
           projects=(
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
-            "benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
-            "benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
+            "src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
           )
           for project in "${projects[@]}"; do
             echo "Building $project"
@@ -530,7 +568,7 @@ jobs:
           POSTGRES_HOST_PORT: "55434"
         run: |
           set -euo pipefail
-          COMPOSE=benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
+          COMPOSE=src/csharp/benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
           PROJECT=foundgine-performance-smoke-fg
           cleanup() {
             docker compose -p "$PROJECT" -f "$COMPOSE" down -v --remove-orphans || true
@@ -553,16 +591,25 @@ jobs:
             -e BENCHMARK_REPORT_DIRECTORY=/reports \
             loader
 
+  security-gate:
+    name: Security Gate
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+
   publish-nuget:
     name: Publish NuGet packages
     if: startsWith(github.ref, 'refs/tags/v')
     needs:
       - build-pack
       - unit-tests
+      - supplychain-sample-tests
+      - supplychain-semantic-sample-tests
       - integration-tests
       - benchmark-build-hotchocolate
       - benchmark-build-foundgine
       - agent-benchmark-smoke
+      - security-gate
     runs-on: ubuntu-latest
     environment: production
     permissions:

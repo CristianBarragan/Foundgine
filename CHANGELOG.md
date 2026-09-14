@@ -1,5 +1,118 @@
 # Changelog
 
+## Unreleased
+
+## 2.2.1 — September 14, 2026
+
+### Documentation
+
+- Fixed version drift across public docs and the website: several pages
+  (`ai.seo.md`, `docs/CURRENT-STATUS.md`, `docs/README.md`, `docs/PUBLIC-API.md`,
+  `llms.txt`, `llms-full.md`, `docs-site/llms.txt`, `docs-site/llms-full.md`,
+  and 21 `docs-site/**/index.html` page footers) still described the .NET line
+  as `2.0.1` and/or the Java line as `2.2.0`, even though 2.2.0 already
+  aligned the two ecosystems onto a single shared version number. The
+  `docs-site` install snippet (`dotnet add package Foundgine.Runtime/Providers
+  --version 2.0.1`) and the homepage hero badge (`v2.0.1`) had the same
+  problem. All now read `2.2.1` consistently.
+
+### CI
+
+- Fixed `.github/workflows/java-build.yml`'s `java-security-penetration` job,
+  which called `mvn -pl security/pentest -am verify` — `security/pentest`
+  has never been a Maven module (it's the live-scanner script directory, no
+  `pom.xml`), so the job failed outright. It now runs
+  `security/pentest/run-all.sh` with `SKIP_LIVE=true`.
+- Fixed the same underlying bug inside `run-all.sh` itself, plus a second,
+  previously-latent one: `ROOT` only climbed one directory from
+  `security/pentest`, landing in `security/` (no `pom.xml`) instead of
+  `src/java`, which also broke the script's live-check paths
+  (`run-nmap.sh`/`run-zap.sh`) whenever `SKIP_LIVE` was unset.
+- `publish-nuget` (`build.yml`) previously did not wait on
+  `supplychain-sample-tests`, `supplychain-semantic-sample-tests`, or any
+  `security.yml` job before publishing to NuGet — the latter was structurally
+  impossible, since `needs:` cannot reference a job in a different top-level
+  workflow. `security.yml` now also triggers via `workflow_call` (its
+  `schedule`/`workflow_dispatch` triggers are unchanged), `build.yml` calls it
+  through a new `security-gate` job, and `publish-nuget` now depends on all of
+  the above plus `security-gate`.
+- `publish-maven` (`java-build.yml`) previously did not wait on
+  `java-security-penetration` before publishing to Maven Central. It now does.
+
+### Release
+
+- Version: `2.2.1`
+- Target framework: `.NET 9` / Java 21
+- License: Apache License, Version 2.0
+
+## 2.2.0 — September 14, 2026
+
+### Security
+
+- Resolved the open question in `docs/SECURITY.md` ("the semantic API's
+  response verbosity"): `SupplyChainMcpTools.PolicyProbe` (the sample
+  `policy_probe` MCP tool under `src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp`)
+  now only returns its full `kind`/predicate/named-claim decision detail
+  when the host is running in a development environment
+  (`IHostEnvironment.IsDevelopment()`). In every other environment it logs
+  the full decision server-side via `ILogger`, keyed by a short opaque
+  correlation id, and returns only `{ allowed: false, reference: <id> }` —
+  matching the correlation-id pattern `MCP.Foundgine/Program.cs`'s `Execute`
+  helper already used for the execution API, so a caller probing many
+  `attack` variants can no longer use the response shape to map policy
+  boundaries.
+
+### Release
+
+- The C# NuGet packages and Java Maven artifacts now ship as aligned,
+  same-numbered releases: `Foundgine.Core`/`foundgine-core`,
+  `Foundgine.Runtime`/`foundgine-runtime`,
+  `Foundgine.Providers`/`foundgine-providers`, and
+  `Foundgine.Extensions`/`foundgine-extensions`.
+- Corrected the NuGet package metadata's license expression from `MIT` to
+  `Apache-2.0`. The packaged `LICENSE` file was always the Apache License,
+  2.0 text; only the `PackageLicenseExpression` in `Directory.Build.props`
+  disagreed with it. Added an equivalent `<licenses>` declaration to the
+  Java `src/java/pom.xml` parent so both ecosystems advertise the same
+  license.
+- The Java build previously hardcoded `2.0.0-SNAPSHOT` as a literal string
+  in ten separate `pom.xml` files (the parent's own `<version>`, every
+  module's `<parent>` reference, and most intra-repo `<dependency>`
+  versions), even though a `<revision>` property already existed and was
+  already used correctly in a few places (e.g. the sample projects'
+  annotation-processor path). That property was otherwise dead — nothing
+  read it. `src/java/pom.xml` now sets `<version>${revision}</version>` on
+  the parent itself, every module and intra-repo dependency below it
+  references `${revision}`, and `flatten-maven-plugin` resolves that
+  property into a concrete version in any installed/deployed POM. This
+  makes `revision` the single source of truth for the Java release version,
+  the equivalent of `VersionPrefix` in `../../Directory.Build.props` for
+  the C# tree.
+- Added missing `<description>` elements to the `foundgine-runtime` and
+  `foundgine-providers` POMs (mirroring `Foundgine.Runtime` and
+  `Foundgine.Providers` on the C# side); `foundgine-core` and
+  `foundgine-extensions` already had one.
+- Version: `2.2.0`
+- Target framework: `.NET 9` / Java 21
+- License: Apache License, Version 2.0
+
+## 2.1.0 — September 8, 2026
+
+### Samples
+
+- Added a generic, authorization-focused MCP server (`Foundgine.SupplyChain.Advanced.Mcp.Api` under `src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp`) exposing `describe_capabilities`, `read_entity`, `read_relationship`, `write_entity`, and `policy_probe` tools directly against the sample's composed semantic model. This is additive: it runs standalone and is not wired into the Supply Chain E2E harness.
+
+### Fixed
+
+- The commit that added the generic MCP server also deleted `src/csharp/samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine` (the Postgres-backed MCP server the Supply Chain E2E `Agent` and `run-supply-chain.ps1` actually depend on — `get_order`, `get_inventory`, `list_suppliers`, and the rest of the Agent's tool contract) along with its `docker-compose.yml` service and solution entries, without updating the harness. This broke `run-supply-chain.ps1` at step 3/8 with `no such service: mcp-foundgine`. Restored the `MCP.Foundgine` project, its `docker-compose.yml` service, and its `Foundgine.sln` entries so the Supply Chain E2E + PenTest harness runs again.
+- Reverted an unrelated, uncommitted in-progress edit to `src/csharp/benchmarks/AgentEndToEnd/Run5/docker-compose.yml` that had stripped its `mcp-foundgine` service block while the project files were left in place, which would have broken Run5 the same way.
+
+### Release
+
+- Version: `2.1.0`
+- Target framework: `.NET 9`
+- License: MIT
+
 ## 2.0.3 — September 7, 2026
 
 ### Semantic grounding
@@ -67,3 +180,5 @@
 - Version: `2.0.1`
 - Target framework: `.NET 9`
 - License: MIT
+
+- Java parity: added Runtime plan-approval E2E tests covering successful approved execution, semantic-version tampering, and plan-fingerprint tampering.

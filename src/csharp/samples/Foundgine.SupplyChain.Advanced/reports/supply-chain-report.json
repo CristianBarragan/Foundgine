@@ -1,0 +1,491 @@
+﻿{
+    "schemaVersion":  2,
+    "utc":  "2026-09-02T04:53:33.1227865+00:00",
+    "seed":  20260823,
+    "steps":  25,
+    "customers":  5,
+    "mcp":  "http://localhost:4422/mcp",
+    "summary":  {
+                    "success":  25,
+                    "failures":  0,
+                    "expectedAllowed":  13,
+                    "unexpectedUnauthorizedSuccesses":  12,
+                    "avgLatencyMs":  21.889912
+                },
+    "efficiencyEstimate":  {
+                               "method":  "Standalone heuristic (chars/4 vs words*1.3, same as Run1/Program.cs TokenEstimator) applied to this run\u0027s actual MCP request/response payloads. No conventional flow was executed for comparison, so the conventional side is MODELED, not measured.",
+                               "measuredFoundgine":  {
+                                                         "toolCalls":  25,
+                                                         "roundTrips":  25,
+                                                         "totalEstimatedContextLoadTokens":  1921,
+                                                         "avgEstimatedContextLoadTokensPerCall":  76.8
+                                                     },
+                               "modeledConventional":  {
+                                                           "stepsPerCapabilityMultiplier":  4,
+                                                           "estimatedToolCalls":  100,
+                                                           "estimatedRoundTrips":  100,
+                                                           "roundTripsPerCapability":  4,
+                                                           "estimatedContextLoadTokens":  7684
+                                                       },
+                               "modeledToolCallReductionPercent":  75,
+                               "modeledContextLoadReductionPercent":  75,
+                               "caveats":  [
+                                               "MODELED, not measured: no conventional REST/GraphQL flow was actually executed for this workload.",
+                                               "The 4x step multiplier (discover/authorize/execute/verify) mirrors the choreography measured directly in Run1; it is not re-derived from this workload.",
+                                               "Token counts are a payload-size heuristic, not a real tokenizer or provider-reported count.",
+                                               "For a measured comparison, see the AgentEndToEnd Run1-5 reports, which execute both flows against the same fixture."
+                                           ]
+                           },
+    "records":  [
+                    {
+                        "Step":  1,
+                        "Actor":  "customer5",
+                        "Capability":  "list_suppliers",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  307.7866,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  198,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer5\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027list_suppliers\\u0027.\"}],\"isError\":true},\"id\":\"08eb4936bd964b63a64fbe0c7ce1cc2c\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  2,
+                        "Actor":  "carol",
+                        "Capability":  "update_shipment",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  20.8286,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  199,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"carol\",\"shipmentId\":1,\"status\":\"Out for Delivery\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027update_shipment\\u0027.\"}],\"isError\":true},\"id\":\"7c178b51b1124d7eaa299139e66032f3\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  3,
+                        "Actor":  "customer4",
+                        "Capability":  "get_inventory",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  5.3893,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  197,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer4\",\"productId\":2}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027get_inventory\\u0027.\"}],\"isError\":true},\"id\":\"352ebe5de61b49e28c2966252af494c8\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  4,
+                        "Actor":  "admin",
+                        "Capability":  "get_my_orders",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  70.1166,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  231,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"admin\",\"customerId\":1}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022customerId\\u0022:1,\\u0022orders\\u0022:[],\\u0022plan\\u0022:\\u0022753ab685a593301d66b9c856\\u0022}\"}]},\"id\":\"3072783fa34042fa9bea49018c644f03\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  5,
+                        "Actor":  "bob",
+                        "Capability":  "cancel_order",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  15.4187,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  196,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"bob\",\"customerId\":2,\"orderId\":2}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027cancel_order\\u0027.\"}],\"isError\":true},\"id\":\"55dae6c0e3884f45a5a4f3d0b2559c7b\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  6,
+                        "Actor":  "alice",
+                        "Capability":  "get_inventory",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  4.2875,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  197,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"alice\",\"productId\":7}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027get_inventory\\u0027.\"}],\"isError\":true},\"id\":\"a8e8628da2384dd4b3c745b5baa0bdab\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  7,
+                        "Actor":  "bob",
+                        "Capability":  "update_shipment",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  3.9286,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  199,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"bob\",\"shipmentId\":6,\"status\":\"Out for Delivery\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027update_shipment\\u0027.\"}],\"isError\":true},\"id\":\"8dbeca8d8a8f46ae8fe541125ac2c914\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  8,
+                        "Actor":  "customer3",
+                        "Capability":  "list_customers",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  4.101,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  198,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer3\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027list_customers\\u0027.\"}],\"isError\":true},\"id\":\"67cb94d135a6426b9f7ae241b313b4b5\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  9,
+                        "Actor":  "alice",
+                        "Capability":  "get_my_orders",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  4.8317,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  231,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"alice\",\"customerId\":1}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022customerId\\u0022:1,\\u0022orders\\u0022:[],\\u0022plan\\u0022:\\u0022753ab685a593301d66b9c856\\u0022}\"}]},\"id\":\"943fb94364e443aca06a3879a7d9a8ff\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  10,
+                        "Actor":  "bob",
+                        "Capability":  "find_top_supplier_overdue_orders",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  23.835,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  830,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"bob\",\"state\":\"CA\",\"supplierName\":\"Northstar Supply\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022status\\u0022:\\u0022resolved\\u0022,\\u0022state\\u0022:\\u0022CA\\u0022,\\u0022resolvedBy\\u0022:\\u0022explicit-name\\u0022,\\u0022supplier\\u0022:{\\u0022id\\u0022:3,\\u0022name\\u0022:\\u0022Northstar Supply\\u0022,\\u0022state\\u0022:\\u0022CA\\u0022,\\u0022totalOrderValue\\u0022:300000.00},\\u0022evidence\\u0022:{\\u0022strategy\\u0022:\\u0022relational\\u0022,\\u0022orderBy\\u0022:\\u0022total_order_value desc\\u0022,\\u0022rank\\u0022:1,\\u0022marginOverRunnerUp\\u0022:0.00},\\u0022authorization\\u0022:{\\u0022decision\\u0022:\\u0022allow\\u0022,\\u0022deniedFields\\u0022:[\\u0022Supplier.NegotiatedCost\\u0022]},\\u0022overduePurchaseOrders\\u0022:[],\\u0022rowCount\\u0022:0,\\u0022plan\\u0022:\\u002225224e84f9168e4473b14ea8\\u0022}\"}]},\"id\":\"a440f925313f41828fd97507b47b7f98\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  11,
+                        "Actor":  "customer2",
+                        "Capability":  "get_my_orders",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  4.2646,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  231,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer2\",\"customerId\":2}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022customerId\\u0022:2,\\u0022orders\\u0022:[],\\u0022plan\\u0022:\\u0022753ab685a593301d66b9c856\\u0022}\"}]},\"id\":\"b98b3020c6254ce2a2ddf52a33c547d8\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  12,
+                        "Actor":  "customer5",
+                        "Capability":  "cancel_order",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  6.4356,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  196,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer5\",\"customerId\":5,\"orderId\":5}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027cancel_order\\u0027.\"}],\"isError\":true},\"id\":\"1fb58cd8139d401198314ff2fc60dc12\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  13,
+                        "Actor":  "admin",
+                        "Capability":  "find_top_supplier_overdue_orders",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  7.6461,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  281,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"admin\",\"state\":\"NY\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022status\\u0022:\\u0022not_found\\u0022,\\u0022state\\u0022:\\u0022NY\\u0022,\\u0022reason\\u0022:\\u0022No suppliers found in state \\\\u0027NY\\\\u0027.\\u0022}\"}]},\"id\":\"6b4f23153f0e46d9bc08cb9d05d6a4d5\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  14,
+                        "Actor":  "customer3",
+                        "Capability":  "create_shipment",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  10.334,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  199,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer3\",\"orderId\":9,\"carrierId\":1,\"warehouseId\":1,\"trackingNumber\":\"TRK-20260823-13\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027create_shipment\\u0027.\"}],\"isError\":true},\"id\":\"4180d5da1637454997b6d509b8038cc1\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  15,
+                        "Actor":  "alice",
+                        "Capability":  "get_my_orders",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  4.434,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  231,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"alice\",\"customerId\":1}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022customerId\\u0022:1,\\u0022orders\\u0022:[],\\u0022plan\\u0022:\\u0022753ab685a593301d66b9c856\\u0022}\"}]},\"id\":\"ed22ea4f878f45af84edf56394b31122\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  16,
+                        "Actor":  "carol",
+                        "Capability":  "find_top_supplier_overdue_orders",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  3.1834,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  216,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"carol\",\"state\":\"NY\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027find_top_supplier_overdue_orders\\u0027.\"}],\"isError\":true},\"id\":\"322e5dfa679043ae9b6679b0f3d0d6a0\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  17,
+                        "Actor":  "customer4",
+                        "Capability":  "get_my_orders",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  4.0898,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  231,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer4\",\"customerId\":4}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022customerId\\u0022:4,\\u0022orders\\u0022:[],\\u0022plan\\u0022:\\u0022753ab685a593301d66b9c856\\u0022}\"}]},\"id\":\"4b93642b64214d0db2adefa0868717e5\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  18,
+                        "Actor":  "customer5",
+                        "Capability":  "update_shipment",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  3.4995,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  199,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer5\",\"shipmentId\":15,\"status\":\"Out for Delivery\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027update_shipment\\u0027.\"}],\"isError\":true},\"id\":\"048c92771cee4ddb90fb752bcd4cd883\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  19,
+                        "Actor":  "customer4",
+                        "Capability":  "create_shipment",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  4.3913,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  199,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer4\",\"orderId\":6,\"carrierId\":2,\"warehouseId\":2,\"trackingNumber\":\"TRK-20260823-18\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027create_shipment\\u0027.\"}],\"isError\":true},\"id\":\"0b84d28f5fe54855bf05a8146ae12da7\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  20,
+                        "Actor":  "dave",
+                        "Capability":  "get_order",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  3.8199,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  193,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"dave\",\"customerId\":1,\"orderId\":13}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027get_order\\u0027.\"}],\"isError\":true},\"id\":\"d04ec4f81abe490f8cc337e3aeca286e\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  21,
+                        "Actor":  "customer5",
+                        "Capability":  "get_order",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  6.3812,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  193,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer5\",\"customerId\":5,\"orderId\":19}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027get_order\\u0027.\"}],\"isError\":true},\"id\":\"2db226c6feb345b0a0a2716342095c0d\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  22,
+                        "Actor":  "admin",
+                        "Capability":  "find_top_supplier_overdue_orders",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  6.2366,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  832,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"admin\",\"state\":\"CA\",\"supplierName\":\"Northstar Supply\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\u0022status\\u0022:\\u0022resolved\\u0022,\\u0022state\\u0022:\\u0022CA\\u0022,\\u0022resolvedBy\\u0022:\\u0022explicit-name\\u0022,\\u0022supplier\\u0022:{\\u0022id\\u0022:3,\\u0022name\\u0022:\\u0022Northstar Supply\\u0022,\\u0022state\\u0022:\\u0022CA\\u0022,\\u0022totalOrderValue\\u0022:300000.00,\\u0022negotiatedCost\\u0022:240000.00},\\u0022evidence\\u0022:{\\u0022strategy\\u0022:\\u0022relational\\u0022,\\u0022orderBy\\u0022:\\u0022total_order_value desc\\u0022,\\u0022rank\\u0022:1,\\u0022marginOverRunnerUp\\u0022:0.00},\\u0022authorization\\u0022:{\\u0022decision\\u0022:\\u0022allow\\u0022,\\u0022deniedFields\\u0022:[]},\\u0022overduePurchaseOrders\\u0022:[],\\u0022rowCount\\u0022:0,\\u0022plan\\u0022:\\u002225224e84f9168e4473b14ea8\\u0022}\"}]},\"id\":\"713c679e8c4040b3aebc2b0286e6975e\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  23,
+                        "Actor":  "customer5",
+                        "Capability":  "get_inventory",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  3.7176,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  197,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer5\",\"productId\":8}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027get_inventory\\u0027.\"}],\"isError\":true},\"id\":\"e69124bc6abb44f99893520da777ec7a\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  24,
+                        "Actor":  "customer3",
+                        "Capability":  "find_top_supplier_overdue_orders",
+                        "ExpectedAllowed":  false,
+                        "Success":  true,
+                        "LatencyMs":  4.1885,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  216,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"customer3\",\"state\":\"CA\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027find_top_supplier_overdue_orders\\u0027.\"}],\"isError\":true},\"id\":\"fecb5fe31f254ccabffbd24d8caea726\",\"jsonrpc\":\"2.0\"}\n\n"
+                    },
+                    {
+                        "Step":  25,
+                        "Actor":  "carol",
+                        "Capability":  "create_shipment",
+                        "ExpectedAllowed":  true,
+                        "Success":  true,
+                        "LatencyMs":  14.1021,
+                        "OrdersBefore":  0,
+                        "OrdersAfter":  0,
+                        "ResponseBytes":  199,
+                        "Error":  null,
+                        "RequestText":  "{\"actor\":\"carol\",\"orderId\":4,\"carrierId\":2,\"warehouseId\":1,\"trackingNumber\":\"TRK-20260823-24\"}",
+                        "ResponseText":  "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"An error occurred invoking \\u0027create_shipment\\u0027.\"}],\"isError\":true},\"id\":\"e674ce034f9549bdbf3470d92d1a1833\",\"jsonrpc\":\"2.0\"}\n\n"
+                    }
+                ],
+    "securityPenTest":  {
+                            "schemaVersion":  1,
+                            "sourceProject":  "src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj",
+                            "suiteDurationMs":  24935.8,
+                            "measuredFrom":  "xUnit TRX UnitTestResult durations",
+                            "summary":  {
+                                            "total":  14,
+                                            "passed":  14,
+                                            "failed":  0,
+                                            "skipped":  0,
+                                            "totalCaseDurationMs":  28747.4,
+                                            "averageCaseDurationMs":  2053.4
+                                        },
+                            "cases":  [
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.McpPenetrationTests.No_credentials_are_rejected",
+                                              "transport":  "MCP",
+                                              "outcome":  "Passed",
+                                              "durationMs":  20.1
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.McpPenetrationTests.Injection_payload_in_tracking_number_is_stored_as_literal_text_not_executed",
+                                              "transport":  "MCP",
+                                              "outcome":  "Passed",
+                                              "durationMs":  147.5
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.GraphPenetrationTests.Customer_cannot_escalate_to_a_warehouse_only_capability",
+                                              "transport":  "GraphQL",
+                                              "outcome":  "Passed",
+                                              "durationMs":  50
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.McpPenetrationTests.Customer_can_read_own_order",
+                                              "transport":  "MCP",
+                                              "outcome":  "Passed",
+                                              "durationMs":  1499.4
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.GraphPenetrationTests.Customer_cannot_read_another_customers_order_scope_idor",
+                                              "transport":  "GraphQL",
+                                              "outcome":  "Passed",
+                                              "durationMs":  54.5
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.GraphPenetrationTests.Wrong_token_for_a_real_actor_is_rejected",
+                                              "transport":  "GraphQL",
+                                              "outcome":  "Passed",
+                                              "durationMs":  13824.5
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.GraphPenetrationTests.Unknown_actor_and_known_actor_with_wrong_token_give_identical_errors",
+                                              "transport":  "GraphQL",
+                                              "outcome":  "Passed",
+                                              "durationMs":  53
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.GraphPenetrationTests.No_credentials_are_rejected",
+                                              "transport":  "GraphQL",
+                                              "outcome":  "Passed",
+                                              "durationMs":  39.6
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.McpPenetrationTests.Customer_cannot_read_another_customers_order_scope_idor",
+                                              "transport":  "MCP",
+                                              "outcome":  "Passed",
+                                              "durationMs":  11551.1
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.McpPenetrationTests.Unknown_actor_and_known_actor_with_wrong_token_give_identical_errors",
+                                              "transport":  "MCP",
+                                              "outcome":  "Passed",
+                                              "durationMs":  826.9
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.McpPenetrationTests.Wrong_token_for_a_real_actor_is_rejected",
+                                              "transport":  "MCP",
+                                              "outcome":  "Passed",
+                                              "durationMs":  15
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.GraphPenetrationTests.Authorization_failure_does_not_leak_internal_exception_details",
+                                              "transport":  "GraphQL",
+                                              "outcome":  "Passed",
+                                              "durationMs":  515.3
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.GraphPenetrationTests.Injection_payload_in_tracking_number_is_stored_as_literal_text_not_executed",
+                                              "transport":  "GraphQL",
+                                              "outcome":  "Passed",
+                                              "durationMs":  135
+                                          },
+                                          {
+                                              "name":  "Foundgine.SupplyChain.PenTest.Tests.McpPenetrationTests.Customer_cannot_escalate_to_a_warehouse_only_capability",
+                                              "transport":  "MCP",
+                                              "outcome":  "Passed",
+                                              "durationMs":  15.5
+                                          }
+                                      ]
+                        }
+}

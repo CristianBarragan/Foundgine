@@ -1,6 +1,6 @@
 # Foundgine documentation
 
-This directory contains the **current** Foundgine documentation for the 2.0.1 release line.
+This directory contains the **current** Foundgine documentation, covering both implementations, released together as **2.2.1**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
 
 The repository itself is the source of truth. Documentation describes implemented architecture and tested behavior; it does not use old release notes or historical benchmark snapshots as current product guidance.
 
@@ -29,7 +29,7 @@ This is the reading path — each page ends with a link to the next one, so you 
 19. [Roadmap](ROADMAP.md) — what's next, and what's deliberately out of scope.
 20. [Migration](MIGRATION.md) — moving code over from the archived V1/Graphgine projects.
 
-Package-specific architecture and usage guidance lives in the `README.md` of every project under `src/`.
+Package-specific architecture and usage guidance lives in the `README.md` of every project under `src/csharp/` and `src/java/`. Java sample tutorials live alongside each sample under `src/java/samples/*`.
 
 ## Documentation rules
 
@@ -39,5 +39,3 @@ The documentation follows four rules:
 2. **Implemented and planned are separated.** A planned feature is not documented as a shipped capability.
 3. **Transport and provider boundaries stay explicit.** GraphQL, MCP, JSON, AI, and SQL are adapters/providers around the semantic core.
 4. **Historical material stays out of the active guide.** Release notes, old benchmark runs, and implementation diaries are not part of the current documentation set.
-
-Package-specific architecture and usage guidance lives in the `README.md` of every project under `src/`.

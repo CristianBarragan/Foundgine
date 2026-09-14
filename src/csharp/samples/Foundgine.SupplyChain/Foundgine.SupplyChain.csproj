@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
+
+    <ProjectReference
+      Include="../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+      PrivateAssets="all"
+      SkipGetTargetFrameworkProperties="true"
+      UndefineProperties="TargetFramework" />
+  </ItemGroup>
+</Project>

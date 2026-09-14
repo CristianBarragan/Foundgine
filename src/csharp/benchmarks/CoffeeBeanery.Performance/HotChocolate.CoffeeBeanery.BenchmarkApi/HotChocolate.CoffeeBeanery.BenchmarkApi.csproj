@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Keep EF Core versions strictly aligned -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.19" />
+
+    <!-- Update Hot Chocolate to align with your target framework -->
+    <PackageReference Include="HotChocolate.AspNetCore" Version="14.3.2" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" Version="14.3.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+
+    <ProjectReference Include="../CoffeeBeanery.Database/CoffeeBeanery.Database.csproj" />
+  </ItemGroup>
+</Project>

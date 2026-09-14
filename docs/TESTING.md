@@ -35,7 +35,7 @@ Security.Authority
 E2E
 ```
 
-Exact test project names are visible under `tests/`.
+Exact test project names are visible under `src/csharp/tests/`.
 
 ## What the tests should prove
 
