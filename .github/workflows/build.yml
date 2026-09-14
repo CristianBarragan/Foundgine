@@ -591,16 +591,25 @@ jobs:
             -e BENCHMARK_REPORT_DIRECTORY=/reports \
             loader
 
+  security-gate:
+    name: Security Gate
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+
   publish-nuget:
     name: Publish NuGet packages
     if: startsWith(github.ref, 'refs/tags/v')
     needs:
       - build-pack
       - unit-tests
+      - supplychain-sample-tests
+      - supplychain-semantic-sample-tests
       - integration-tests
       - benchmark-build-hotchocolate
       - benchmark-build-foundgine
       - agent-benchmark-smoke
+      - security-gate
     runs-on: ubuntu-latest
     environment: production
     permissions:

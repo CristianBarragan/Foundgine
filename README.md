@@ -9,7 +9,12 @@
 [![Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/build.yml?branch=main&job=integration-tests&label=Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/build.yml)
 [![Performance (Hot Chocolate)](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/build.yml?branch=main&job=benchmark-build-hotchocolate&label=Performance%20%28Hot%20Chocolate%29)](https://github.com/CristianBarragan/Foundgine/actions/workflows/build.yml)
 [![Performance (Foundgine)](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/build.yml?branch=main&job=benchmark-build-foundgine&label=Performance%20%28Foundgine%29)](https://github.com/CristianBarragan/Foundgine/actions/workflows/build.yml)
-[![Security Audit](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/build.yml?branch=main&job=security-penetration&label=Security%20Audit)](https://github.com/CristianBarragan/Foundgine/actions/workflows/build.yml)
+[![Security Audit](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/security.yml?branch=main&job=security-penetration&label=Security%20Audit)](https://github.com/CristianBarragan/Foundgine/actions/workflows/security.yml)
+
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.cristianbarragan/foundgine-core?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.cristianbarragan/foundgine-core)
+[![Java Unit Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-build&label=Java%20Unit%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
+[![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
+[![Java Security Audit](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Audit)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 
 # Foundgine
 
@@ -78,7 +83,10 @@ Two callers can ask for the same thing in different words:
 
 Foundgine does not treat the paraphrase as a fuzzy guess at a *different* operation. In the Supply Chain semantic contract, `Buy`/`Buys` are declared aliases of `PurchaseOrder`, and `Seller` is a declared alias of `Supplier`. Both sentences are grounded onto the **same canonical semantic identities** before authorization or planning ever runs — the diagram below follows one request all the way from words to a database call.
 
-*Tests:* .NET — [`SupplyChainGroundingAliasTests.cs`](src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](src/csharp/tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics). Java — [`SupplyChainGroundingAliasParityTest.java`](src/java/samples/foundgine-supply-chain-advanced/src/test/java/com/foundgine/samples/supplychain/advanced/SupplyChainGroundingAliasParityTest.java) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingParityTest.java`](src/java/foundgine-core/src/test/java/com/foundgine/core/semantic/resolution/SemanticAliasSynonymGroundingParityTest.java) (core semantics).
+*Tests:* 
+
+ - .NET — [`SupplyChainGroundingAliasTests.cs`](src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](src/csharp/tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics). 
+ - Java — [`SupplyChainGroundingAliasParityTest.java`](src/java/samples/foundgine-supply-chain-advanced/src/test/java/com/foundgine/samples/supplychain/advanced/SupplyChainGroundingAliasParityTest.java) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingParityTest.java`](src/java/foundgine-core/src/test/java/com/foundgine/core/semantic/resolution/SemanticAliasSynonymGroundingParityTest.java) (core semantics).
 
 <p align="center"><img src="docs/assets/overdue-purchase-orders-alias-flow.svg" alt="Foundgine alias-matched Supply Chain request from caller intent through semantic resolution, authorization, planning, PostgreSQL execution and evidence." width="100%"></p>
 
