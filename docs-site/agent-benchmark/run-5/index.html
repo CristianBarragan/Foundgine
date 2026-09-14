@@ -1,25 +1,288 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Run 5 — High-Assurance Postgres / TransferFunds | Foundgine</title>
-<meta content="Foundgine Agent Benchmark Run 5: Test the capability boundary: high-assurance TransferFunds through the same MCP protocol" name="description"/>
-<meta content="article" property="og:type"/><meta content="Foundgine Agent Benchmark — Run 5" property="og:title"/><meta content="Test the capability boundary: high-assurance TransferFunds through the same MCP protocol" property="og:description"/>
-<link href="https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-5/" rel="canonical"/><meta content="https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-5/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/><meta content="summary_large_image" name="twitter:card"/><meta content="Foundgine Agent Benchmark — Run 5" name="twitter:title"/><meta content="Test the capability boundary: high-assurance TransferFunds through the same MCP protocol" name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/><script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Agent Benchmark Run 5 — High-assurance Postgres TransferFunds","description":"Foundgine Agent Benchmark Run 5: Test the capability boundary: high-assurance TransferFunds through the same MCP protocol","url":"https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-5/","author":{"@type":"Organization","name":"Foundgine"}}</script><link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../../assets/style.css?v=20260828-2" rel="stylesheet"/>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav class="site-nav" id="site-nav"><a href="../../what-is-foundgine.html">What is it</a>
-<a href="../../getting-started/index.html">Getting started</a>
-<a href="../../how-it-works/index.html">How it works</a>
-<a href="../../architecture/index.html">Architecture</a>
-<a href="../../ai-agents/index.html">AI agents</a>
-<a href="../../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../../samples/index.html">Overview</a><a href="../../samples/semantic/index.html">Semantic execution</a><a href="../../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../index.html">Evidence</a><a href="../run-1/index.html">Run 1 · Baseline</a><a href="../run-2/index.html">Run 2 · Scalability</a><a href="../run-3/index.html">Run 3 · Efficiency</a><a href="../run-4/index.html">Run 4 · Graph execution</a><a href="index.html">Run 5 · High-assurance TransferFunds</a><a href="../run-5b/index.html">Run 5b · Individual vs batch</a><a href="../supply-chain/index.html">Supply Chain E2E</a><a href="../../performance/index.html">Performance</a></div></div>
-<a href="../../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page page-wide"><main class="article article-wide"><div class="run-page-hero"><span class="eyebrow">End-to-end evidence · Run 5 · 18 August 2026</span><h1>Test the capability boundary: high-assurance TransferFunds through the same MCP protocol</h1><p class="run-page-story">Run 5 asks a different architectural question. The operation is a high-assurance TransferFunds capability with tenant isolation, ownership, authorization revalidation, frozen-account checks, available-funds and daily-limit checks, idempotency, audit evidence and an atomic transaction. Both paths expose the same capability through MCP. The conventional path uses a purpose-built MCP tool backed by EF Core; the Foundgine path uses MCP + Foundgine High-Assurance Postgres. MCP is the common agent-facing protocol — the experiment changes what happens behind MCP.</p><div class="run-page-actions"><a class="button" href="../index.html?run=5&amp;customers=10000&amp;concurrency=64#evidence-frame">Inspect the matrix evidence →</a><a class="button secondary" href="../index.html">All five runs</a></div></div>
-<div class="run5-boundary"><div class="run-label">Same protocol. Different execution boundary.</div><h2 id="both-paths-use-mcp">Both paths use MCP</h2><p>MCP is deliberately held constant. The experiment compares the implementation behind the agent-facing protocol.</p><div class="run5-paths"><div class="run5-path"><span class="run5-path-label">Conventional</span><strong>AI agent → MCP → purpose-built tool → EF Core → PostgreSQL</strong><span>A handcrafted MCP operation contains the application-specific transfer implementation.</span></div><div class="run5-path foundgine"><span class="run5-path-label">Foundgine</span><strong>AI agent → MCP → semantic capability → Foundgine → PostgreSQL</strong><span>The capability is exposed semantically while the execution boundary owns planning and controlled execution.</span></div></div></div>
-<div class="run-page-grid"><div><strong>Why this run exists</strong><span>This is the test of whether semantic execution is useful beyond graph reads. The interesting comparison is not 'which endpoint is faster?' but whether an agent can consume a business capability without every capability becoming another handcrafted endpoint and orchestration contract.</span></div><div><strong>What was compared</strong><span>MCP + conventional EF Core implementation versus MCP + Foundgine High-Assurance Postgres.</span></div><div><strong>What it means</strong><span>Semantic execution can carry a richer high-assurance capability without increasing the agent tool-call count, but the current endpoint still has a C64 scalability limitation. Run 5b is the controlled follow-up that isolates request shape and tests batching with the same client.</span></div></div>
-<div class="run-label">Published finding</div><div class="run-page-finding"><strong>What the evidence says</strong><p>After applying the runner's native batch accounting, Foundgine delivered higher logical-transfer throughput in every published Run 5 cell. Across the 16 cells it sustained about 2.02–3.87× the MCP + EF Core logical RPS (mean about 3.00×). At 10,000 customers/C64, Foundgine averaged about 3,633 logical transfers/s versus 1,638. The raw MCP request wall time was about 89.8 ms versus 33.3 ms, but the requests are not equivalent units: Foundgine carries 8 transfers per batch request while EF Core carries one. Both paths recorded zero failures.</p></div>
-<div class="run-label">Key measurements</div><div class="run-page-metrics"><div class="run-page-metric"><small>toolCalls</small><strong>1 → 1</strong></div><div class="run-page-metric"><small>rps</small><strong>Foundgine ~2.02–3.87× logical RPS</strong></div><div class="run-page-metric"><small>c64</small><strong>10k/C64: 1,638 vs 3,633 logical transfers/s</strong></div><div class="run-page-metric"><small>wallC64</small><strong>33.3 vs 89.8 ms/request (1 op vs 8-op batch)</strong></div><div class="run-page-metric"><small>failures</small><strong>0 published</strong></div></div>
-<section class="run-section"><div class="run-label">How to use this run</div><h2 id="read-the-finding-first-then-inspect-the-exact-evidence">Read the finding first, then inspect the exact evidence.</h2><p>This page tells the story of the experiment. The benchmark explorer contains the interactive workload/concurrency matrix and selected-cell comparison.</p><p>The benchmark distinguishes measured timings and tool calls from its estimated context-load heuristic.</p><p><a href="../run-5b/index.html">Run 5b →</a> is a controlled follow-up that holds the client fixed and isolates individual MCP calls versus one semantic batch call, to test whether the C64 behaviour above is tied to this specific endpoint or to batching generally.</p></section>
-<p class="sitenav"><a href="../index.html">← Benchmark landing page</a> · <a href="../run-5b/index.html">Run 5b</a> · <a href="../../how-it-works/index.html">How it works</a> · <a href="../../architecture/index.html">Architecture</a></p></main></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../../assets/site-nav.js"></script>
-</body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Run 5 — High-Assurance Postgres / TransferFunds | Foundgine</title>
+    <meta
+      content="Foundgine Agent Benchmark Run 5: Test the capability boundary: high-assurance TransferFunds through the same MCP protocol"
+      name="description"
+    />
+    <meta content="article" property="og:type" />
+    <meta content="Foundgine Agent Benchmark — Run 5" property="og:title" />
+    <meta
+      content="Test the capability boundary: high-assurance TransferFunds through the same MCP protocol"
+      property="og:description"
+    />
+    <link
+      href="https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-5/"
+      rel="canonical"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-5/"
+      property="og:url"
+    />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Foundgine Agent Benchmark — Run 5" name="twitter:title" />
+    <meta
+      content="Test the capability boundary: high-assurance TransferFunds through the same MCP protocol"
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Agent Benchmark Run 5 — High-assurance Postgres TransferFunds",
+        "description": "Foundgine Agent Benchmark Run 5: Test the capability boundary: high-assurance TransferFunds through the same MCP protocol",
+        "url": "https://cristianbarragan.github.io/Foundgine/agent-benchmark/run-5/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+    <link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../../assets/style.css?v=20260828-2" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="site-nav" id="site-nav">
+          <a href="../../what-is-foundgine.html">What is it</a>
+          <a href="../../getting-started/index.html">Getting started</a>
+          <a href="../../how-it-works/index.html">How it works</a>
+          <a href="../../architecture/index.html">Architecture</a>
+          <a href="../../ai-agents/index.html">AI agents</a>
+          <a href="../../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../../samples/index.html">Overview</a
+              ><a href="../../samples/semantic/index.html">Semantic execution</a
+              ><a href="../../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../index.html">Evidence</a><a href="../run-1/index.html">Run 1 · Baseline</a
+              ><a href="../run-2/index.html">Run 2 · Scalability</a
+              ><a href="../run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../run-4/index.html">Run 4 · Graph execution</a
+              ><a href="index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page page-wide">
+      <main class="article article-wide">
+        <div class="run-page-hero">
+          <span class="eyebrow">End-to-end evidence · Run 5 · 18 August 2026</span>
+          <h1>
+            Test the capability boundary: high-assurance TransferFunds through the same MCP protocol
+          </h1>
+          <p class="run-page-story">
+            Run 5 asks a different architectural question. The operation is a high-assurance
+            TransferFunds capability with tenant isolation, ownership, authorization revalidation,
+            frozen-account checks, available-funds and daily-limit checks, idempotency, audit
+            evidence and an atomic transaction. Both paths expose the same capability through MCP.
+            The conventional path uses a purpose-built MCP tool backed by EF Core; the Foundgine
+            path uses MCP + Foundgine High-Assurance Postgres. MCP is the common agent-facing
+            protocol — the experiment changes what happens behind MCP.
+          </p>
+          <div class="run-page-actions">
+            <a
+              class="button"
+              href="../index.html?run=5&amp;customers=10000&amp;concurrency=64#evidence-frame"
+              >Inspect the matrix evidence →</a
+            ><a class="button secondary" href="../index.html">All five runs</a>
+          </div>
+        </div>
+        <div class="run5-boundary">
+          <div class="run-label">Same protocol. Different execution boundary.</div>
+          <h2 id="both-paths-use-mcp">Both paths use MCP</h2>
+          <p>
+            MCP is deliberately held constant. The experiment compares the implementation behind the
+            agent-facing protocol.
+          </p>
+          <div class="run5-paths">
+            <div class="run5-path">
+              <span class="run5-path-label">Conventional</span
+              ><strong>AI agent → MCP → purpose-built tool → EF Core → PostgreSQL</strong
+              ><span
+                >A handcrafted MCP operation contains the application-specific transfer
+                implementation.</span
+              >
+            </div>
+            <div class="run5-path foundgine">
+              <span class="run5-path-label">Foundgine</span
+              ><strong>AI agent → MCP → semantic capability → Foundgine → PostgreSQL</strong
+              ><span
+                >The capability is exposed semantically while the execution boundary owns planning
+                and controlled execution.</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="run-page-grid">
+          <div>
+            <strong>Why this run exists</strong
+            ><span
+              >This is the test of whether semantic execution is useful beyond graph reads. The
+              interesting comparison is not 'which endpoint is faster?' but whether an agent can
+              consume a business capability without every capability becoming another handcrafted
+              endpoint and orchestration contract.</span
+            >
+          </div>
+          <div>
+            <strong>What was compared</strong
+            ><span
+              >MCP + conventional EF Core implementation versus MCP + Foundgine High-Assurance
+              Postgres.</span
+            >
+          </div>
+          <div>
+            <strong>What it means</strong
+            ><span
+              >Semantic execution can carry a richer high-assurance capability without increasing
+              the agent tool-call count, but the current endpoint still has a C64 scalability
+              limitation. Run 5b is the controlled follow-up that isolates request shape and tests
+              batching with the same client.</span
+            >
+          </div>
+        </div>
+        <div class="run-label">Published finding</div>
+        <div class="run-page-finding">
+          <strong>What the evidence says</strong>
+          <p>
+            After applying the runner's native batch accounting, Foundgine delivered higher
+            logical-transfer throughput in every published Run 5 cell. Across the 16 cells it
+            sustained about 2.02–3.87× the MCP + EF Core logical RPS (mean about 3.00×). At 10,000
+            customers/C64, Foundgine averaged about 3,633 logical transfers/s versus 1,638. The raw
+            MCP request wall time was about 89.8 ms versus 33.3 ms, but the requests are not
+            equivalent units: Foundgine carries 8 transfers per batch request while EF Core carries
+            one. Both paths recorded zero failures.
+          </p>
+        </div>
+        <div class="run-label">Key measurements</div>
+        <div class="run-page-metrics">
+          <div class="run-page-metric"><small>toolCalls</small><strong>1 → 1</strong></div>
+          <div class="run-page-metric">
+            <small>rps</small><strong>Foundgine ~2.02–3.87× logical RPS</strong>
+          </div>
+          <div class="run-page-metric">
+            <small>c64</small><strong>10k/C64: 1,638 vs 3,633 logical transfers/s</strong>
+          </div>
+          <div class="run-page-metric">
+            <small>wallC64</small><strong>33.3 vs 89.8 ms/request (1 op vs 8-op batch)</strong>
+          </div>
+          <div class="run-page-metric"><small>failures</small><strong>0 published</strong></div>
+        </div>
+        <section class="run-section">
+          <div class="run-label">How to use this run</div>
+          <h2 id="read-the-finding-first-then-inspect-the-exact-evidence">
+            Read the finding first, then inspect the exact evidence.
+          </h2>
+          <p>
+            This page tells the story of the experiment. The benchmark explorer contains the
+            interactive workload/concurrency matrix and selected-cell comparison.
+          </p>
+          <p>
+            The benchmark distinguishes measured timings and tool calls from its estimated
+            context-load heuristic.
+          </p>
+          <p>
+            <a href="../run-5b/index.html">Run 5b →</a> is a controlled follow-up that holds the
+            client fixed and isolates individual MCP calls versus one semantic batch call, to test
+            whether the C64 behaviour above is tied to this specific endpoint or to batching
+            generally.
+          </p>
+        </section>
+        <p class="sitenav">
+          <a href="../index.html">← Benchmark landing page</a> ·
+          <a href="../run-5b/index.html">Run 5b</a> ·
+          <a href="../../how-it-works/index.html">How it works</a> ·
+          <a href="../../architecture/index.html">Architecture</a>
+        </p>
+      </main>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../../assets/site-nav.js"></script>
+  </body>
+</html>

@@ -6,43 +6,208 @@
   "status_values": ["missing", "partial", "implemented-unproven", "proven", "not-applicable"],
 
   "roadmap_backlog": [
-    {"id": "SES-RM-01", "category": "foundational", "text": "Formal semantic contract schema.", "status": "missing"},
-    {"id": "SES-RM-02", "category": "foundational", "text": "Canonical SOG serialization and hashing.", "status": "missing"},
-    {"id": "SES-RM-03", "category": "foundational", "text": "Formal operation algebra and equivalence rules.", "status": "missing"},
-    {"id": "SES-RM-04", "category": "foundational", "text": "Deterministic resolution/abstention protocol.", "status": "missing"},
-    {"id": "SES-RM-05", "category": "foundational", "text": "Authority algebra and delegation model.", "status": "missing"},
-    {"id": "SES-RM-06", "category": "foundational", "text": "Provenance/attestation format.", "status": "missing"},
-    {"id": "SES-RM-07", "category": "foundational", "text": "Version negotiation and compatibility rules.", "status": "missing"},
-    {"id": "SES-RM-08", "category": "foundational", "text": "Versioned Execution IR and verifier.", "status": "missing"},
-    {"id": "SES-RM-09", "category": "foundational", "text": "Provider capability/fidelity protocol.", "status": "missing"},
+    {
+      "id": "SES-RM-01",
+      "category": "foundational",
+      "text": "Formal semantic contract schema.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-02",
+      "category": "foundational",
+      "text": "Canonical SOG serialization and hashing.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-03",
+      "category": "foundational",
+      "text": "Formal operation algebra and equivalence rules.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-04",
+      "category": "foundational",
+      "text": "Deterministic resolution/abstention protocol.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-05",
+      "category": "foundational",
+      "text": "Authority algebra and delegation model.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-06",
+      "category": "foundational",
+      "text": "Provenance/attestation format.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-07",
+      "category": "foundational",
+      "text": "Version negotiation and compatibility rules.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-08",
+      "category": "foundational",
+      "text": "Versioned Execution IR and verifier.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-09",
+      "category": "foundational",
+      "text": "Provider capability/fidelity protocol.",
+      "status": "missing"
+    },
 
-    {"id": "SES-RM-10", "category": "security", "text": "Cryptographic provenance profile.", "status": "missing"},
-    {"id": "SES-RM-11", "category": "security", "text": "Policy freshness/revocation protocol.", "status": "missing"},
-    {"id": "SES-RM-12", "category": "security", "text": "Agent authority and tool delegation.", "status": "missing"},
-    {"id": "SES-RM-13", "category": "security", "text": "Continuous adversarial/fuzzing corpus.", "status": "missing"},
-    {"id": "SES-RM-14", "category": "security", "text": "Cross-provider differential security testing.", "status": "missing"},
-    {"id": "SES-RM-15", "category": "security", "text": "Evidence tamper protection and privacy controls.", "status": "missing"},
+    {
+      "id": "SES-RM-10",
+      "category": "security",
+      "text": "Cryptographic provenance profile.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-11",
+      "category": "security",
+      "text": "Policy freshness/revocation protocol.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-12",
+      "category": "security",
+      "text": "Agent authority and tool delegation.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-13",
+      "category": "security",
+      "text": "Continuous adversarial/fuzzing corpus.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-14",
+      "category": "security",
+      "text": "Cross-provider differential security testing.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-15",
+      "category": "security",
+      "text": "Evidence tamper protection and privacy controls.",
+      "status": "missing"
+    },
 
-    {"id": "SES-RM-16", "category": "scale-and-reliability", "text": "Semantic cost model.", "status": "missing"},
-    {"id": "SES-RM-17", "category": "scale-and-reliability", "text": "Adaptive resource governance.", "status": "missing"},
-    {"id": "SES-RM-18", "category": "scale-and-reliability", "text": "Distributed execution lineage.", "status": "missing"},
-    {"id": "SES-RM-19", "category": "scale-and-reliability", "text": "Cancellation/backpressure propagation.", "status": "missing"},
-    {"id": "SES-RM-20", "category": "scale-and-reliability", "text": "Distributed cache coherence.", "status": "missing"},
-    {"id": "SES-RM-21", "category": "scale-and-reliability", "text": "Mutation workflow/compensation profile.", "status": "missing"},
-    {"id": "SES-RM-22", "category": "scale-and-reliability", "text": "Concurrency and conflict semantics.", "status": "missing"},
+    {
+      "id": "SES-RM-16",
+      "category": "scale-and-reliability",
+      "text": "Semantic cost model.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-17",
+      "category": "scale-and-reliability",
+      "text": "Adaptive resource governance.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-18",
+      "category": "scale-and-reliability",
+      "text": "Distributed execution lineage.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-19",
+      "category": "scale-and-reliability",
+      "text": "Cancellation/backpressure propagation.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-20",
+      "category": "scale-and-reliability",
+      "text": "Distributed cache coherence.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-21",
+      "category": "scale-and-reliability",
+      "text": "Mutation workflow/compensation profile.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-22",
+      "category": "scale-and-reliability",
+      "text": "Concurrency and conflict semantics.",
+      "status": "missing"
+    },
 
-    {"id": "SES-RM-23", "category": "semantic-completeness", "text": "Temporal semantics.", "status": "missing"},
-    {"id": "SES-RM-24", "category": "semantic-completeness", "text": "Units/measurement semantics.", "status": "missing"},
-    {"id": "SES-RM-25", "category": "semantic-completeness", "text": "Locale/multilingual semantics.", "status": "missing"},
-    {"id": "SES-RM-26", "category": "semantic-completeness", "text": "Null/duplicate/order equivalence.", "status": "missing"},
-    {"id": "SES-RM-27", "category": "semantic-completeness", "text": "Recursive and correlated graph operations.", "status": "missing"},
-    {"id": "SES-RM-28", "category": "semantic-completeness", "text": "Side-effect and nondeterminism classification.", "status": "missing"},
+    {
+      "id": "SES-RM-23",
+      "category": "semantic-completeness",
+      "text": "Temporal semantics.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-24",
+      "category": "semantic-completeness",
+      "text": "Units/measurement semantics.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-25",
+      "category": "semantic-completeness",
+      "text": "Locale/multilingual semantics.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-26",
+      "category": "semantic-completeness",
+      "text": "Null/duplicate/order equivalence.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-27",
+      "category": "semantic-completeness",
+      "text": "Recursive and correlated graph operations.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-28",
+      "category": "semantic-completeness",
+      "text": "Side-effect and nondeterminism classification.",
+      "status": "missing"
+    },
 
-    {"id": "SES-RM-29", "category": "ecosystem", "text": "Portable conformance vectors.", "status": "missing"},
-    {"id": "SES-RM-30", "category": "ecosystem", "text": "Independent certification tooling.", "status": "missing"},
-    {"id": "SES-RM-31", "category": "ecosystem", "text": "Provider profiles for SQL, document, graph, search, vector, and hybrid engines.", "status": "missing"},
-    {"id": "SES-RM-32", "category": "ecosystem", "text": "Transport profiles for MCP, GraphQL, REST/RPC and future agent protocols.", "status": "missing"},
-    {"id": "SES-RM-33", "category": "ecosystem", "text": "Standard governance and change-control process.", "status": "missing"}
+    {
+      "id": "SES-RM-29",
+      "category": "ecosystem",
+      "text": "Portable conformance vectors.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-30",
+      "category": "ecosystem",
+      "text": "Independent certification tooling.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-31",
+      "category": "ecosystem",
+      "text": "Provider profiles for SQL, document, graph, search, vector, and hybrid engines.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-32",
+      "category": "ecosystem",
+      "text": "Transport profiles for MCP, GraphQL, REST/RPC and future agent protocols.",
+      "status": "missing"
+    },
+    {
+      "id": "SES-RM-33",
+      "category": "ecosystem",
+      "text": "Standard governance and change-control process.",
+      "status": "missing"
+    }
   ],
 
   "registry_and_test_coverage_gaps": [

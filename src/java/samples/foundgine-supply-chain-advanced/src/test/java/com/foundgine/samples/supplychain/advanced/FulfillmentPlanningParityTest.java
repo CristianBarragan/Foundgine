@@ -1,21 +1,22 @@
 package com.foundgine.samples.supplychain.advanced;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import com.foundgine.samples.supplychain.advanced.data.SupplyChainData;
 import com.foundgine.samples.supplychain.advanced.domain.Domain.*;
 import com.foundgine.samples.supplychain.advanced.scenarios.Scenarios;
+
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class FulfillmentPlanningParityTest {
     private static Authorization.Context tenantA() {
-        return new Authorization.Context("tenant-a", Set.of(1, 2),
-                Authorization.Role.SUPPLY_CHAIN_MANAGER, false);
+        return new Authorization.Context(
+                "tenant-a", Set.of(1, 2), Authorization.Role.SUPPLY_CHAIN_MANAGER, false);
     }
 
     @Test
@@ -23,10 +24,21 @@ class FulfillmentPlanningParityTest {
         var data = SupplyChainData.seed();
         var risks = Scenarios.fulfillment(data, LocalDate.of(2026, 8, 27), tenantA());
 
-        var inventoryForProduct4 = data.inventory.stream()
-                .filter(x -> x.productId() == 4 && tenantA().allowedWarehouses().contains(x.warehouseId()))
-                .map(x -> x.onHand().subtract(x.reserved()).subtract(x.quarantined()).max(BigDecimal.ZERO))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        var inventoryForProduct4 =
+                data.inventory.stream()
+                        .filter(
+                                x ->
+                                        x.productId() == 4
+                                                && tenantA()
+                                                        .allowedWarehouses()
+                                                        .contains(x.warehouseId()))
+                        .map(
+                                x ->
+                                        x.onHand()
+                                                .subtract(x.reserved())
+                                                .subtract(x.quarantined())
+                                                .max(BigDecimal.ZERO))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         assertEquals(new BigDecimal("40"), inventoryForProduct4);
         assertTrue(risks.stream().noneMatch(x -> x.productId() == 4));

@@ -27,7 +27,6 @@ The repository now documents:
 
 The older create-then-select rows remain in the repository as historical benchmark artifacts, but they must not be used as the new upsert baseline.
 
-
 ## Current results — 2026-08-15 (corrected)
 
 An earlier version of this note, and the 2026-08-15 report it pointed to, claimed query performance had

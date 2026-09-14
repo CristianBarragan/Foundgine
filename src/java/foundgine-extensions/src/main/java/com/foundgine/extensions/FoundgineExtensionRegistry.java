@@ -10,7 +10,9 @@ public final class FoundgineExtensionRegistry {
         this.extensions = Collections.unmodifiableMap(new LinkedHashMap<>(extensions));
     }
 
-    public static Builder builder() { return new Builder(); }
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public Optional<FoundgineExtension> find(String id) {
         if (id == null || id.isBlank()) return Optional.empty();

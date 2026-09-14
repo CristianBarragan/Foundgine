@@ -14,27 +14,21 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Provider adapter that keeps PostgreSQL physical execution behind the Runtime
- * mutation boundary.
+ * Provider adapter that keeps PostgreSQL physical execution behind the Runtime mutation boundary.
  */
-public final class PostgresAdvancedMutationProvider
-        implements IMutationBatchExecutionProvider {
+public final class PostgresAdvancedMutationProvider implements IMutationBatchExecutionProvider {
 
     private final PostgresSupplyChainStore store;
     private final Authorization.Context auth;
 
-    public PostgresAdvancedMutationProvider(
-            Connection connection,
-            Authorization.Context auth) {
+    public PostgresAdvancedMutationProvider(Connection connection, Authorization.Context auth) {
 
         this.store = new PostgresSupplyChainStore(connection);
         this.auth = Objects.requireNonNull(auth);
     }
 
     @Override
-    public MutationBatchResult executeBatch(
-            ExecutionMutationIR ir,
-            ExecutionContext context) {
+    public MutationBatchResult executeBatch(ExecutionMutationIR ir, ExecutionContext context) {
 
         var results = new ArrayList<MutationResult>();
 
@@ -43,42 +37,42 @@ public final class PostgresAdvancedMutationProvider
 
             switch (op.entity().name()) {
                 case "PlaceOrderCommand" -> {
-                    var r = store.placeOrder(
-                            (String) values.get("Actor"),
-                            auth,
-                            number(values, "CustomerId"),
-                            number(values, "ProductId"),
-                            number(values, "Quantity"),
-                            (String) values.get("IdempotencyKey"));
+                    var r =
+                            store.placeOrder(
+                                    (String) values.get("Actor"),
+                                    auth,
+                                    number(values, "CustomerId"),
+                                    number(values, "ProductId"),
+                                    number(values, "Quantity"),
+                                    (String) values.get("IdempotencyKey"));
 
-                    results.add(new MutationResult(
-                            1,
-                            Map.of(
-                                    FieldId.create(
-                                            "PlaceOrderCommand",
-                                            "OrderId"),
-                                    r.orderId())));
+                    results.add(
+                            new MutationResult(
+                                    1,
+                                    Map.of(
+                                            FieldId.create("PlaceOrderCommand", "OrderId"),
+                                            r.orderId())));
                 }
 
                 case "CancelOrderCommand" -> {
-                    var r = store.cancelOrder(
-                            (String) values.get("Actor"),
-                            auth,
-                            number(values, "OrderId"),
-                            (String) values.get("IdempotencyKey"));
+                    var r =
+                            store.cancelOrder(
+                                    (String) values.get("Actor"),
+                                    auth,
+                                    number(values, "OrderId"),
+                                    (String) values.get("IdempotencyKey"));
 
-                    results.add(new MutationResult(
-                            1,
-                            Map.of(
-                                    FieldId.create(
-                                            "CancelOrderCommand",
-                                            "OrderId"),
-                                    r.orderId())));
+                    results.add(
+                            new MutationResult(
+                                    1,
+                                    Map.of(
+                                            FieldId.create("CancelOrderCommand", "OrderId"),
+                                            r.orderId())));
                 }
 
-                default -> throw new IllegalArgumentException(
-                        "Unknown Advanced mutation command: "
-                                + op.entity().name());
+                default ->
+                        throw new IllegalArgumentException(
+                                "Unknown Advanced mutation command: " + op.entity().name());
             }
         }
 
@@ -97,38 +91,32 @@ public final class PostgresAdvancedMutationProvider
                                 + "correlated command fields.");
             }
 
-            out.put(
-                    knownFieldName(op.entity().name(), f.column()),
-                    f.value());
+            out.put(knownFieldName(op.entity().name(), f.column()), f.value());
         }
 
         return out;
     }
 
-    private static String knownFieldName(
-            String entity,
-            ColumnId id) {
+    private static String knownFieldName(String entity, ColumnId id) {
 
-        for (String n : List.of(
-                "Actor",
-                "CustomerId",
-                "ProductId",
-                "Quantity",
-                "IdempotencyKey",
-                "OrderId")) {
+        for (String n :
+                List.of(
+                        "Actor",
+                        "CustomerId",
+                        "ProductId",
+                        "Quantity",
+                        "IdempotencyKey",
+                        "OrderId")) {
 
             if (ColumnId.create(entity, n).equals(id)) {
                 return n;
             }
         }
 
-        throw new IllegalArgumentException(
-                "Unknown command field " + id.value());
+        throw new IllegalArgumentException("Unknown command field " + id.value());
     }
 
-    private static int number(
-            Map<String, Object> values,
-            String key) {
+    private static int number(Map<String, Object> values, String key) {
 
         return ((Number) values.get(key)).intValue();
     }

@@ -1,4 +1,5 @@
 # SES-021 — Lifecycle and Security State Machines
+
 ← [SES-020 — Formal Semantic Execution Data Model](SES-020-formal-data-model.md) · [Standard Index](README.md) · [SES-022 — Transport-Neutral Wire Protocol](SES-022-wire-protocol.md) →
 
 ---

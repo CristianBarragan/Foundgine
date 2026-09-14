@@ -31,6 +31,7 @@ Usage
 Missing input files are skipped, not fatal — run whichever benchmarks you
 have and this script will summarize what's available.
 """
+
 import argparse
 import json
 import sys
@@ -71,8 +72,10 @@ def measured_headline(repo_root: Path):
 
 def supply_chain_summary(repo_root: Path):
     for candidate in [
-        repo_root / "src/csharp/samples/Foundgine.SupplyChain.Advanced/reports/supply-chain-report.json",
-        repo_root / "docs-site/assets/agent-benchmark/supply-chain/supply-chain-report.json",
+        repo_root
+        / "src/csharp/samples/Foundgine.SupplyChain.Advanced/reports/supply-chain-report.json",
+        repo_root
+        / "docs-site/assets/agent-benchmark/supply-chain/supply-chain-report.json",
     ]:
         report = load_json(candidate)
         if report and "efficiencyEstimate" in report:
@@ -84,16 +87,29 @@ def supply_chain_summary(repo_root: Path):
                 "kind": "modeled",
                 "sourceFile": str(candidate.relative_to(repo_root)),
                 "method": est.get("method"),
-                "estimatedToolCallReductionPercent": est.get("modeledToolCallReductionPercent") or est.get("estimatedToolCallReductionPercent"),
-                "estimatedContextLoadReductionPercent": est.get("modeledContextLoadReductionPercent") or est.get("estimatedContextLoadReductionPercent"),
+                "estimatedToolCallReductionPercent": est.get(
+                    "modeledToolCallReductionPercent"
+                )
+                or est.get("estimatedToolCallReductionPercent"),
+                "estimatedContextLoadReductionPercent": est.get(
+                    "modeledContextLoadReductionPercent"
+                )
+                or est.get("estimatedContextLoadReductionPercent"),
                 # "How many round trips would this take without Foundgine?"
                 # One MCP round trip per successful capability call versus a
                 # modeled discover/authorize/execute/verify choreography.
-                "measuredFoundgineRoundTrips": measured_foundgine.get("roundTrips") or measured_foundgine.get("toolCalls"),
-                "modeledConventionalRoundTrips": modeled_conventional.get("estimatedRoundTrips") or modeled_conventional.get("estimatedToolCalls"),
+                "measuredFoundgineRoundTrips": measured_foundgine.get("roundTrips")
+                or measured_foundgine.get("toolCalls"),
+                "modeledConventionalRoundTrips": modeled_conventional.get(
+                    "estimatedRoundTrips"
+                )
+                or modeled_conventional.get("estimatedToolCalls"),
                 "roundTripsPerCapability": {
                     "foundgine": 1,
-                    "modeledConventional": modeled_conventional.get("roundTripsPerCapability") or modeled_conventional.get("stepsPerCapabilityMultiplier"),
+                    "modeledConventional": modeled_conventional.get(
+                        "roundTripsPerCapability"
+                    )
+                    or modeled_conventional.get("stepsPerCapabilityMultiplier"),
                 },
                 "measuredFoundgine": measured_foundgine,
                 "modeledConventional": modeled_conventional,
@@ -104,8 +120,10 @@ def supply_chain_summary(repo_root: Path):
 
 def semantic_pipeline_summary(repo_root: Path):
     for candidate in [
-        repo_root / "src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Benchmarks/reports/pipeline-benchmark.json",
-        repo_root / "docs-site/assets/agent-benchmark/semantic-pipeline/pipeline-benchmark.json",
+        repo_root
+        / "src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Benchmarks/reports/pipeline-benchmark.json",
+        repo_root
+        / "docs-site/assets/agent-benchmark/semantic-pipeline/pipeline-benchmark.json",
     ]:
         report = load_json(candidate)
         if report and "efficiencyEstimate" in report:
@@ -121,14 +139,32 @@ def semantic_pipeline_summary(repo_root: Path):
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--repo-root", default=None, help="Repo root (defaults to three levels up from this script)")
-    parser.add_argument("--out", default=None, help="Output path (defaults to docs-site/assets/agent-benchmark/reduction-summary.json)")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--repo-root",
+        default=None,
+        help="Repo root (defaults to three levels up from this script)",
+    )
+    parser.add_argument(
+        "--out",
+        default=None,
+        help="Output path (defaults to docs-site/assets/agent-benchmark/reduction-summary.json)",
+    )
     args = parser.parse_args()
 
     script_dir = Path(__file__).resolve().parent
-    repo_root = Path(args.repo_root).resolve() if args.repo_root else (script_dir / "../../..").resolve()
-    out_path = Path(args.out).resolve() if args.out else repo_root / "docs-site/assets/agent-benchmark/reduction-summary.json"
+    repo_root = (
+        Path(args.repo_root).resolve()
+        if args.repo_root
+        else (script_dir / "../../..").resolve()
+    )
+    out_path = (
+        Path(args.out).resolve()
+        if args.out
+        else repo_root / "docs-site/assets/agent-benchmark/reduction-summary.json"
+    )
 
     summary = {
         "schemaVersion": 1,
@@ -143,7 +179,12 @@ def main() -> int:
         ),
         "measured": measured_headline(repo_root),
         "modeled": [
-            x for x in [supply_chain_summary(repo_root), semantic_pipeline_summary(repo_root)] if x is not None
+            x
+            for x in [
+                supply_chain_summary(repo_root),
+                semantic_pipeline_summary(repo_root),
+            ]
+            if x is not None
         ],
     }
 
@@ -151,9 +192,13 @@ def main() -> int:
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
-    found = 1 + len(summary["modeled"]) if summary["measured"] else len(summary["modeled"])
-    print(f"Wrote {out_path} ({found} source(s) found: "
-          f"measured={'yes' if summary['measured'] else 'no'}, modeled={len(summary['modeled'])})")
+    found = (
+        1 + len(summary["modeled"]) if summary["measured"] else len(summary["modeled"])
+    )
+    print(
+        f"Wrote {out_path} ({found} source(s) found: "
+        f"measured={'yes' if summary['measured'] else 'no'}, modeled={len(summary['modeled'])})"
+    )
     return 0
 
 

@@ -1,4 +1,5 @@
 # SES-006 — Candidate Retrieval, Grounding, and Semantic Resolution
+
 ← [SES-005 — Semantic Operation, Predicate, and Traversal Algebra](SES-005-operation-algebra.md) · [Standard Index](README.md) · [SES-007 — Logical Traversal and Path Expansion](SES-007-logical-traversal.md) →
 
 ---

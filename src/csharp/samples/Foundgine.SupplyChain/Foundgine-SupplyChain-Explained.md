@@ -1,8 +1,8 @@
 # Foundgine Supply Chain Starter — Every Concept, Explained
 
 This is a companion to `SupplyChain-Starter-Tutorial.md`. It exists because that
-tutorial *shows* you each file, but doesn't always stop to explain *why the
-concept exists* or *what you need installed/configured before it will work*.
+tutorial _shows_ you each file, but doesn't always stop to explain _why the
+concept exists_ or _what you need installed/configured before it will work_.
 Read this alongside the tutorial, in the same order (sections match the
 tutorial's numbered steps).
 
@@ -13,11 +13,12 @@ tutorial's numbered steps).
 Foundgine sits between "an AI agent calling a tool" and "SQL running against
 your database." Its whole point is that **no layer above the SQL compiler is
 allowed to know column names, table names, or write raw SQL** — everything is
-expressed as *semantic* operations (read this entity, filtered by this field,
+expressed as _semantic_ operations (read this entity, filtered by this field,
 traversing this relationship) that only get turned into SQL at the very last
 step, by a compiler that knows your schema.
 
 Why does that matter in practice?
+
 - An LLM-driven agent calling `place_order` can't SQL-inject anything — there
   is no SQL for it to inject into. It can only invoke named, typed capabilities.
 - If you rename a column (`email` → `email_address`), you edit **one
@@ -30,10 +31,10 @@ Why does that matter in practice?
 
 ## 1. Prerequisites — what each one is for
 
-| Requirement | Why you need it |
-|---|---|
-| **.NET 9 SDK** | Foundgine's generator is a Roslyn *source generator*, which only runs inside a .NET/Roslyn compilation. You cannot use an older SDK — Roslyn incremental generators need a modern SDK/compiler. |
-| **Docker Desktop** | The sample stores data in real PostgreSQL, not an in-memory fake, so the SQL compiler output is exercised against a real engine (real types, real constraints, real query plans). |
+| Requirement                     | Why you need it                                                                                                                                                                                                                        |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **.NET 9 SDK**                  | Foundgine's generator is a Roslyn _source generator_, which only runs inside a .NET/Roslyn compilation. You cannot use an older SDK — Roslyn incremental generators need a modern SDK/compiler.                                        |
+| **Docker Desktop**              | The sample stores data in real PostgreSQL, not an in-memory fake, so the SQL compiler output is exercised against a real engine (real types, real constraints, real query plans).                                                      |
 | **Git clone with project refs** | Because `Foundgine.Core/Runtime/Providers` are still evolving alongside the sample, the tutorial deliberately uses `<ProjectReference>` instead of published NuGet versions, so you always build against the exact source in the repo. |
 
 **Verify** with `dotnet --version` / `docker --version` before doing anything
@@ -51,8 +52,8 @@ to an SDK version mismatch or Docker not running.
 - **`Foundgine.Runtime`** — the orchestration layer that actually executes a
   plan and exposes application-facing APIs (execution context, control
   plane). Sits between Core and Providers.
-- **`Foundgine.Providers`** — the part that *does* know Postgres exists (via
-  `Foundgine.Providers.Storage.Sql`), *does* know MCP exists (via
+- **`Foundgine.Providers`** — the part that _does_ know Postgres exists (via
+  `Foundgine.Providers.Storage.Sql`), _does_ know MCP exists (via
   `Foundgine.Providers.Tools.MCP`), and contains the **AOT generator** as a
   sub-project (`Foundgine.Providers.Aot.Generator`).
 - **`Foundgine.Extensions`** — optional, only if you also want a GraphQL
@@ -60,7 +61,7 @@ to an SDK version mismatch or Docker not running.
   use it.
 
 **Why a Roslyn analyzer instead of a normal NuGet dependency for the
-generator?** Because a source generator has to run *during your build*, as an
+generator?** Because a source generator has to run _during your build_, as an
 `Analyzer` item, not as a regular assembly reference — that's what the
 `OutputItemType="Analyzer" / ReferenceOutputAssembly="false"` incantation in
 the `.csproj` is doing. It tells MSBuild "run this project's code as a
@@ -73,23 +74,24 @@ compiler plugin against my source, but don't link its assembly into my app."
 This is the part people most often try to collapse into one file, and it's
 worth understanding why the tutorial keeps them separate:
 
-1. **`Domain/Models.cs`** (`[FoundgineModel]`) is the *vocabulary* your
+1. **`Domain/Models.cs`** (`[FoundgineModel]`) is the _vocabulary_ your
    application and your AI agent talk in — "Customer", "SalesOrder". This
    layer should be stable even if you migrate databases entirely.
 2. **`Domain/StorageModels.cs`** (`[FoundgineEntity]` / `[FoundgineField]` /
-   `[FoundgineRelationship]`) is the *actual schema* — real table names, real
+   `[FoundgineRelationship]`) is the _actual schema_ — real table names, real
    column names, real foreign keys. This layer changes whenever your DBA
    changes something.
 3. **`Domain/Mappings.cs`** (`[FoundgineModelEntityMap]`) is a **firewall**
-   between the two. It's intentionally the *only* file allowed to `using`
+   between the two. It's intentionally the _only_ file allowed to `using`
    both the `Models` and `Storage` namespaces. If you ever find yourself
    importing `Domain.Storage` from your application layer, that's a sign the
    boundary is leaking.
 
 **IDs matter, and here's the actual rule, precisely:**
+
 - `[FoundgineModel(..., Id = N)]` — unique across all models.
 - `[FoundgineEntity(..., Id = N)]` — unique across all entities.
-- `[FoundgineField(..., Id = N)]` — unique *within its entity* (two different
+- `[FoundgineField(..., Id = N)]` — unique _within its entity_ (two different
   entities can reuse field id `1` for their primary key, that's fine and
   is exactly what the sample does — every `Id` column is field `1`).
 - `[FoundgineRelationship(..., Id = N)]` — unique across the **whole model**,
@@ -103,7 +105,7 @@ metadata here means wrong SQL later, so the generator fails loudly and early.
 
 **Checkpoint discipline:** the tutorial tells you to `dotnet build` right
 after step 5, before writing any application code. Do this. If your
-attributes are malformed, you want the compiler to tell you *now*, not three
+attributes are malformed, you want the compiler to tell you _now_, not three
 files later when a query mysteriously returns nothing.
 
 ---
@@ -111,6 +113,7 @@ files later when a query mysteriously returns nothing.
 ## 6. Why there's no semantic-model file to write — and why the mapping still is
 
 ### The short version
+
 Earlier revisions of this sample had you hand-write
 `Semantics/SupplyChainSemanticModel.cs` — a "front door" file so nothing in
 `Infrastructure`/`Application` imported `Foundgine.Generated` directly or
@@ -121,6 +124,7 @@ code (`SupplyChainQueryRepository`, `SupplyChainMutationRepository`,
 for the wrapper to do.
 
 ### Why it became unnecessary
+
 The wrapper originally earned its place two ways:
 
 1. **`EntityId` passthrough properties** (`Customer`, `SalesOrder`, …) — low
@@ -164,7 +168,7 @@ public static class Customer
 }
 ```
 
-Once that existed, the wrapper's *entire remaining content* was one-line
+Once that existed, the wrapper's _entire remaining content_ was one-line
 aliases with zero logic in them — `SupplyChainSemanticModel.Customer =>
 GeneratedSemanticModel.Customer.Entity`, `SupplyChainSemanticModel.Metadata
 => GeneratedMetadata.Registry`, and so on. A file that only renames things
@@ -187,7 +191,7 @@ GeneratedSemanticModel.Shipment.Relationships.Order
 
 **What this buys you as you onboard new entities:** add a
 `[FoundgineRelationship]` property, rebuild, and the accessor
-(`GeneratedSemanticModel.<Model>.Relationships.<Name>`) just *exists* —
+(`GeneratedSemanticModel.<Model>.Relationships.<Name>`) just _exists_ —
 no wrapper file to touch, no lookup call to write, and a typo is a compile
 error (unknown member) instead of a `Single()` throw at app startup.
 
@@ -210,7 +214,7 @@ if (!modelEntityMap.TryGetValue(model.ToDisplayString(), out var entity) || ...)
 
 Skip the mapping for a model and you still get raw metadata for its entity
 (plannable by name), but you lose every compile-time-checked accessor for
-it. So removing the hand-written wrapper made the mapping *more* load-bearing,
+it. So removing the hand-written wrapper made the mapping _more_ load-bearing,
 not less: with no wrapper standing between application code and the
 generator's output, `Domain/Mappings.cs` is the one file that determines
 what application code is even allowed to reference by name.
@@ -249,18 +253,18 @@ dotnet test src/csharp/tests/Foundgine.Aot.Tests
   is written around "is this actor allowed to invoke this capability," which
   maps naturally onto that.
 - **`actor` + `token` on every single call.** This is deliberately
-  *stateless* — there's no session, no cookie. Every MCP tool call must prove
+  _stateless_ — there's no session, no cookie. Every MCP tool call must prove
   identity fresh. That's what makes `o.Stateless = true` in `Program.cs`
   consistent with the auth model.
 - **Ownership checks are separate from capability checks.** `Demand()` does
   two different things: "is `alice` allowed to call `get_order` at all" and,
-  separately, "is `alice` allowed to call it *for customerId=2*." Collapsing
+  separately, "is `alice` allowed to call it _for customerId=2_." Collapsing
   these into one check is a common real-world bug (you can end up granting
-  capability-holders access to *any* customer's data by accident) — the
+  capability-holders access to _any_ customer's data by accident) — the
   sample keeps them as two distinct steps precisely to avoid that.
 - **Constant-time token comparison (`FixedTimeEquals`).** A naive `token ==
-  expectedToken` string comparison in C# short-circuits on the first
-  mismatched character, which leaks *how many characters were correct* via
+expectedToken` string comparison in C# short-circuits on the first
+  mismatched character, which leaks _how many characters were correct_ via
   response timing. This is a real (if narrow) attack — the fixed-time
   compare closes it.
 - **Same error message whether the actor exists or not.** Otherwise you've
@@ -298,10 +302,10 @@ dotnet test src/csharp/tests/Foundgine.Aot.Tests
   This matches "every call carries its own actor+token" from step 7.
 - **`/health` vs `/health/ready`.** `/health` just says the process is up.
   `/health/ready` actually opens a Postgres connection and runs `SELECT 1` —
-  it's checking a *dependency*, not just the process. Point your
+  it's checking a _dependency_, not just the process. Point your
   orchestrator's readiness probe at `/health/ready`, and its liveness probe
   at `/health`.
-- **The seed schema is the *only* place table/column names need to match
+- **The seed schema is the _only_ place table/column names need to match
   your `StorageName` attributes.** Nothing else in the app cares what the
   columns are called — that's the whole point of the `Domain/StorageModels.cs`
   / `Domain/Mappings.cs` split from step 4–5.
@@ -314,6 +318,7 @@ dotnet test src/csharp/tests/Foundgine.Aot.Tests
 ## 12. Where the starter stops, on purpose
 
 The tutorial is explicit that it's not implementing:
+
 - Claim-based (as opposed to capability-name-based) authorization,
 - The full `PlaceOrder` inventory/idempotency guarantee logic,
 - Ambiguity resolution for vague natural-language questions,

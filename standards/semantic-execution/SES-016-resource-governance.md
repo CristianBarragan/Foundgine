@@ -1,4 +1,5 @@
 # SES-016 — Resource Limits, Complexity, and Denial-of-Service Controls
+
 ← [SES-015 — Transport, Agent, and Tool Boundaries](SES-015-transport-and-agents.md) · [Standard Index](README.md) · [SES-017 — Execution Evidence, Errors, and Observability](SES-017-evidence-and-observability.md) →
 
 ---

@@ -1,19 +1,17 @@
 package com.foundgine.core.semantic.planning;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.foundgine.core.abstractions.EntityId;
 import com.foundgine.core.abstractions.FieldId;
 import com.foundgine.core.abstractions.RelationshipId;
 import com.foundgine.core.semantic.RelationshipCardinality;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * Port of {@code RelationshipTraversalOptimizationRuleTests}
- * (Foundgine.Planning.Tests).
- */
+/** Port of {@code RelationshipTraversalOptimizationRuleTests} (Foundgine.Planning.Tests). */
 class RelationshipTraversalOptimizationRuleParityTest {
 
     @Test
@@ -23,8 +21,12 @@ class RelationshipTraversalOptimizationRuleParityTest {
 
         var optimized = new RelationshipTraversalOptimizationRule().apply(plan);
 
-        assertEquals(RelationshipTraversalMode.SINGLE_HOP, optimized.root().children().get(0).traversalMode());
-        assertEquals(RelationshipCardinality.ONE, optimized.root().children().get(0).relationshipCardinality());
+        assertEquals(
+                RelationshipTraversalMode.SINGLE_HOP,
+                optimized.root().children().get(0).traversalMode());
+        assertEquals(
+                RelationshipCardinality.ONE,
+                optimized.root().children().get(0).relationshipCardinality());
     }
 
     @Test
@@ -34,7 +36,9 @@ class RelationshipTraversalOptimizationRuleParityTest {
 
         var optimized = new RelationshipTraversalOptimizationRule().apply(plan);
 
-        assertEquals(RelationshipTraversalMode.SET_BASED, optimized.root().children().get(0).traversalMode());
+        assertEquals(
+                RelationshipTraversalMode.SET_BASED,
+                optimized.root().children().get(0).traversalMode());
     }
 
     @Test
@@ -58,14 +62,15 @@ class RelationshipTraversalOptimizationRuleParityTest {
     }
 
     private static SemanticPlan plan(SemanticPlanNode child) {
-        return new SemanticPlan(new SemanticPlanNode(
-                1,
-                ExecutionOperation.SCAN,
-                new EntityId(1),
-                List.of(new FieldId(1)),
-                null,
-                null,
-                List.of(child)));
+        return new SemanticPlan(
+                new SemanticPlanNode(
+                        1,
+                        ExecutionOperation.SCAN,
+                        new EntityId(1),
+                        List.of(new FieldId(1)),
+                        null,
+                        null,
+                        List.of(child)));
     }
 
     private static SemanticPlanNode node(int id, RelationshipCardinality cardinality) {

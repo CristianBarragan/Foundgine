@@ -1,8 +1,8 @@
 package com.foundgine.extensions;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class FoundgineExtensionRegistryParityTest {
     @Test
@@ -28,7 +28,10 @@ class FoundgineExtensionRegistryParityTest {
 
     private static FoundgineExtension extension(String id) {
         return new FoundgineExtension() {
-            @Override public String id() { return id; }
+            @Override
+            public String id() {
+                return id;
+            }
         };
     }
 }

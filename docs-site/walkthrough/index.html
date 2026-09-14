@@ -1,91 +1,310 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>From Natural Language to Authorized Execution | Foundgine Walkthrough</title><meta content="A single request — 'show me overdue purchase orders from our top supplier in Texas' — traced through every Foundgine layer with the concrete payload at each step." name="description"/><link href="https://cristianbarragan.github.io/Foundgine/../" rel="canonical"/>
-<meta content="From Natural Language to Authorized Execution | Foundgine Walkthrough" property="og:title"/><meta content="A single request traced through every Foundgine layer with the concrete payload at each step." property="og:description"/><meta content="website" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/../" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="From Natural Language to Authorized Execution | Foundgine Walkthrough" name="twitter:title"/><meta content="A single request traced through every Foundgine layer with the concrete payload at each step." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../assets/style.css" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"From Natural Language to Authorized Execution | Foundgine Walkthrough","description":"A single request traced through every Foundgine layer with the concrete payload at each step.","url":"https://cristianbarragan.github.io/Foundgine/../","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a href="../what-is-foundgine.html">What is it</a>
-<a href="../getting-started/index.html">Getting started</a>
-<a href="../how-it-works/index.html">How it works</a>
-<a href="../architecture/index.html">Architecture</a>
-<a href="../ai-agents/index.html">AI agents</a>
-<a href="../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../samples/index.html">Overview</a><a href="../samples/semantic/index.html">Semantic execution</a><a href="../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../agent-benchmark/index.html">Evidence</a><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="../performance/index.html">Performance</a></div></div>
-<a href="../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page has-toc"><main class="article">
-<span class="eyebrow">Worked example · one request, every layer</span>
-<h1>Follow one sentence all the way to a result.</h1>
-<p class="subtitle">Everything above this page describes the pipeline in the abstract. This page runs <strong>one concrete request</strong> through it, layer by layer, so you can see exactly what data exists at each stage — and exactly where authorization is checked.</p>
-<p><strong>Want to run this instead of reading it?</strong> The exact "top supplier" request on this page — plus the case where candidates tie and Foundgine asks the agent to choose instead of guessing — is wired into a reproducible, seeded benchmark against a real PostgreSQL database: see the <a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a> page for the working code.</p>
-<div class="process-header">
-<span class="eyebrow">The request</span>
-<h2 id="show-me-overdue-purchase-orders-from-our-top-supplier-in-texas-and-how-many-days-late-each-one-is">"Show me overdue purchase orders from our top supplier in Texas, and how many days late each one is."</h2>
-<p>This sentence is typed by a purchasing manager into an AI agent connected to a Supply Chain application through <code>Foundgine.MCP</code>. It is deliberately imprecise: <strong>"top supplier"</strong> is not a database key, and <strong>"overdue"</strong> is not a column. Foundgine's job is to turn that sentence into one authorized, provider-independent execution — without ever letting the model write SQL or decide what the caller is allowed to see.</p>
-<div class="process-meta"><span><strong>Domain</strong>Supply Chain sample (PurchaseOrder, Supplier)</span><span><strong>Caller</strong>AI agent acting for a purchasing-manager user, tenant-7</span></div>
-</div>
-<div class="process-rail"><span>1</span><i aria-hidden="true">→</i><span>2</span><i aria-hidden="true">→</i><span>3</span><i aria-hidden="true">→</i><span>4</span><i aria-hidden="true">→</i><span>5</span><i aria-hidden="true">→</i><span>6</span><i aria-hidden="true">→</i><span>7</span><i aria-hidden="true">→</i><span>8</span><i aria-hidden="true">→</i><span>9</span><i aria-hidden="true">→</i><span>10</span><i aria-hidden="true">→</i><span>11</span><i aria-hidden="true">→</i><span>12</span></div>
-<div class="process-steps">
-<article class="process-step">
-<div class="process-step-marker">1</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 1 · Caller</span><h2 id="the-raw-sentence-arrives">The raw sentence arrives</h2></div>
-<p class="process-boundary">Untrusted caller → Foundgine</p>
-<p>Foundgine treats the agent exactly like an API client or a GraphQL client: an untrusted caller. Nothing about the sentence is trusted yet — not the words, not the implied filters, not the fact that it came from an internal tool.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>From Natural Language to Authorized Execution | Foundgine Walkthrough</title>
+    <meta
+      content="A single request — 'show me overdue purchase orders from our top supplier in Texas' — traced through every Foundgine layer with the concrete payload at each step."
+      name="description"
+    />
+    <link href="https://cristianbarragan.github.io/Foundgine/../" rel="canonical" />
+    <meta
+      content="From Natural Language to Authorized Execution | Foundgine Walkthrough"
+      property="og:title"
+    />
+    <meta
+      content="A single request traced through every Foundgine layer with the concrete payload at each step."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="https://cristianbarragan.github.io/Foundgine/../" property="og:url" />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta
+      content="From Natural Language to Authorized Execution | Foundgine Walkthrough"
+      name="twitter:title"
+    />
+    <meta
+      content="A single request traced through every Foundgine layer with the concrete payload at each step."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../assets/style.css" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "From Natural Language to Authorized Execution | Foundgine Walkthrough",
+        "description": "A single request traced through every Foundgine layer with the concrete payload at each step.",
+        "url": "https://cristianbarragan.github.io/Foundgine/../",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a href="../what-is-foundgine.html">What is it</a>
+          <a href="../getting-started/index.html">Getting started</a>
+          <a href="../how-it-works/index.html">How it works</a>
+          <a href="../architecture/index.html">Architecture</a>
+          <a href="../ai-agents/index.html">AI agents</a>
+          <a href="../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../samples/index.html">Overview</a
+              ><a href="../samples/semantic/index.html">Semantic execution</a
+              ><a href="../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../agent-benchmark/index.html">Evidence</a
+              ><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page has-toc">
+      <main class="article">
+        <span class="eyebrow">Worked example · one request, every layer</span>
+        <h1>Follow one sentence all the way to a result.</h1>
+        <p class="subtitle">
+          Everything above this page describes the pipeline in the abstract. This page runs
+          <strong>one concrete request</strong> through it, layer by layer, so you can see exactly
+          what data exists at each stage — and exactly where authorization is checked.
+        </p>
+        <p>
+          <strong>Want to run this instead of reading it?</strong> The exact "top supplier" request
+          on this page — plus the case where candidates tie and Foundgine asks the agent to choose
+          instead of guessing — is wired into a reproducible, seeded benchmark against a real
+          PostgreSQL database: see the
+          <a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a> page for the
+          working code.
+        </p>
+        <div class="process-header">
+          <span class="eyebrow">The request</span>
+          <h2
+            id="show-me-overdue-purchase-orders-from-our-top-supplier-in-texas-and-how-many-days-late-each-one-is"
+          >
+            "Show me overdue purchase orders from our top supplier in Texas, and how many days late
+            each one is."
+          </h2>
+          <p>
+            This sentence is typed by a purchasing manager into an AI agent connected to a Supply
+            Chain application through <code>Foundgine.MCP</code>. It is deliberately imprecise:
+            <strong>"top supplier"</strong> is not a database key, and <strong>"overdue"</strong> is
+            not a column. Foundgine's job is to turn that sentence into one authorized,
+            provider-independent execution — without ever letting the model write SQL or decide what
+            the caller is allowed to see.
+          </p>
+          <div class="process-meta">
+            <span><strong>Domain</strong>Supply Chain sample (PurchaseOrder, Supplier)</span
+            ><span
+              ><strong>Caller</strong>AI agent acting for a purchasing-manager user, tenant-7</span
+            >
+          </div>
+        </div>
+        <div class="process-rail">
+          <span>1</span><i aria-hidden="true">→</i><span>2</span><i aria-hidden="true">→</i
+          ><span>3</span><i aria-hidden="true">→</i><span>4</span><i aria-hidden="true">→</i
+          ><span>5</span><i aria-hidden="true">→</i><span>6</span><i aria-hidden="true">→</i
+          ><span>7</span><i aria-hidden="true">→</i><span>8</span><i aria-hidden="true">→</i
+          ><span>9</span><i aria-hidden="true">→</i><span>10</span><i aria-hidden="true">→</i
+          ><span>11</span><i aria-hidden="true">→</i><span>12</span>
+        </div>
+        <div class="process-steps">
+          <article class="process-step">
+            <div class="process-step-marker">1</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 1 · Caller</span>
+                <h2 id="the-raw-sentence-arrives">The raw sentence arrives</h2>
+              </div>
+              <p class="process-boundary">Untrusted caller → Foundgine</p>
+              <p>
+                Foundgine treats the agent exactly like an API client or a GraphQL client: an
+                untrusted caller. Nothing about the sentence is trusted yet — not the words, not the
+                implied filters, not the fact that it came from an internal tool.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "caller": "ai-agent",
   "channel": "mcp",
   "actor": { "id": "agent-42", "tenantId": "tenant-7" },
   "message": "Show me overdue purchase orders from
               our top supplier in Texas, and how many
               days late each one is."
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "status": "received",
   "next": "capability discovery (advisory)"
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">2</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 2 · Intent</span><h2 id="the-model-produces-structured-intent-not-sql">The model produces structured intent, not SQL</h2></div>
-<p class="process-boundary">Sentence → Structured intent</p>
-<p>The agent calls <code>foundgine_capabilities</code> to see what it may ask for — that description is advisory, never a credential (see <a href="../ai-agents/index.html">AI agents</a>). It then emits structured intent. Two words in the sentence stay unresolved on purpose: <code>"top supplier"</code> and <code>"overdue"</code> are recorded as language, not as IDs or booleans, because the model does not get to decide what those mean.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">2</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 2 · Intent</span>
+                <h2 id="the-model-produces-structured-intent-not-sql">
+                  The model produces structured intent, not SQL
+                </h2>
+              </div>
+              <p class="process-boundary">Sentence → Structured intent</p>
+              <p>
+                The agent calls <code>foundgine_capabilities</code> to see what it may ask for —
+                that description is advisory, never a credential (see
+                <a href="../ai-agents/index.html">AI agents</a>). It then emits structured intent.
+                Two words in the sentence stay unresolved on purpose:
+                <code>"top supplier"</code> and <code>"overdue"</code> are recorded as language, not
+                as IDs or booleans, because the model does not get to decide what those mean.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "capabilities": ["purchaseOrder.query", "supplier.query"]
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "operation": "query",
   "resource": "purchaseOrder",
   "select": ["id", "expectedDate", "receivedDate"],
   "where": { "status": "overdue" },
   "supplierRank": { "state": "TX", "rank": "top" }
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">3</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 3 · Semantic Model</span><h2 id="words-become-application-meaning">Words become application meaning</h2></div>
-<p class="process-boundary">Structured intent → Semantic Model (<code>Foundgine.Semantics</code>)</p>
-<p><code>purchaseOrder</code>, <code>supplier</code> and the <code>Supplier</code> relationship are looked up against the application-defined semantic model, not against database tables. <code>"overdue"</code> is resolved here too: the model defines it as a named predicate, not something the caller can redefine.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">3</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 3 · Semantic Model</span>
+                <h2 id="words-become-application-meaning">Words become application meaning</h2>
+              </div>
+              <p class="process-boundary">
+                Structured intent → Semantic Model (<code>Foundgine.Semantics</code>)
+              </p>
+              <p>
+                <code>purchaseOrder</code>, <code>supplier</code> and the
+                <code>Supplier</code> relationship are looked up against the application-defined
+                semantic model, not against database tables. <code>"overdue"</code> is resolved here
+                too: the model defines it as a named predicate, not something the caller can
+                redefine.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "resource": "purchaseOrder",
   "relation": "supplier",
   "namedPredicate": "overdue"
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "resolvedModel": {
     "root": "PurchaseOrder",
     "relationship": "PurchaseOrder.Supplier",
@@ -94,116 +313,201 @@
                "PurchaseOrder.ExpectedDate",
                "PurchaseOrder.ReceivedDate"]
   }
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">4</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 4 · Semantic Operation Graph</span><h2 id="the-request-becomes-one-graph-including-the-ambiguous-part">The request becomes one graph, including the ambiguous part</h2></div>
-<p class="process-boundary">Semantic Model → Semantic Operation Graph</p>
-<p>Foundgine builds one graph for the whole request. Because <code>"top supplier"</code> cannot be resolved from the semantic model alone, the graph carries an explicit <em>candidate node</em> that must be settled by retrieval before the rest of the graph can be authorized or planned.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">4</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 4 · Semantic Operation Graph</span>
+                <h2 id="the-request-becomes-one-graph-including-the-ambiguous-part">
+                  The request becomes one graph, including the ambiguous part
+                </h2>
+              </div>
+              <p class="process-boundary">Semantic Model → Semantic Operation Graph</p>
+              <p>
+                Foundgine builds one graph for the whole request. Because
+                <code>"top supplier"</code> cannot be resolved from the semantic model alone, the
+                graph carries an explicit <em>candidate node</em> that must be settled by retrieval
+                before the rest of the graph can be authorized or planned.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "resolvedModel": { "root": "PurchaseOrder" },
   "supplierRank": { "state": "TX", "rank": "top" }
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "graph": {
     "candidateNode": "Supplier(state=TX, rank=top:1)",
     "scanNode": "PurchaseOrder(supplierId=$candidate)",
     "filterNode": "PurchaseOrder.IsOverdue"
   }
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">5</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 5 · Retrieval</span><h2 id="top-supplier-in-texas-gets-an-answer-but-no-authority">"Top supplier in Texas" gets an answer — but no authority</h2></div>
-<p class="process-boundary">Candidate node → Ranked candidates + evidence</p>
-<p>A <code>Foundgine.Sql</code> retrieval strategy (relational lookup, ranked by total order value) resolves the candidate node to a real supplier. This step only produces candidates and evidence. It cannot grant access to anything — the result still has to pass through resolution and authorization below.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">5</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 5 · Retrieval</span>
+                <h2 id="top-supplier-in-texas-gets-an-answer-but-no-authority">
+                  "Top supplier in Texas" gets an answer — but no authority
+                </h2>
+              </div>
+              <p class="process-boundary">Candidate node → Ranked candidates + evidence</p>
+              <p>
+                A <code>Foundgine.Sql</code> retrieval strategy (relational lookup, ranked by total
+                order value) resolves the candidate node to a real supplier. This step only produces
+                candidates and evidence. It cannot grant access to anything — the result still has
+                to pass through resolution and authorization below.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "strategy": "relational",
   "filter": { "state": "TX" },
   "orderBy": "totalOrderValue desc",
   "limit": 1
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "candidates": [
     { "id": "sup-118", "name": "Lonestar Components",
       "totalOrderValue": 482000 }
   ],
   "evidence": { "strategy": "relational", "rank": 1 }
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">6</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 6 · Resolution</span><h2 id="the-graph-is-finalized-against-a-real-target">The graph is finalized against a real target</h2></div>
-<p class="process-boundary">Candidates + Semantic Operation Graph → Resolved, valid request</p>
-<p>The candidate supplier is bound into the graph, and Foundgine validates that every field, relationship and predicate the request touches is real, typed and traversable. If <code>"top supplier"</code> had matched nothing, or matched ambiguously, resolution would stop here and tell the agent its own words were ambiguous — it would not guess (see <a href="../ai-agents/index.html">Grounding decisions</a>).</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">6</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 6 · Resolution</span>
+                <h2 id="the-graph-is-finalized-against-a-real-target">
+                  The graph is finalized against a real target
+                </h2>
+              </div>
+              <p class="process-boundary">
+                Candidates + Semantic Operation Graph → Resolved, valid request
+              </p>
+              <p>
+                The candidate supplier is bound into the graph, and Foundgine validates that every
+                field, relationship and predicate the request touches is real, typed and
+                traversable. If <code>"top supplier"</code> had matched nothing, or matched
+                ambiguously, resolution would stop here and tell the agent its own words were
+                ambiguous — it would not guess (see
+                <a href="../ai-agents/index.html">Grounding decisions</a>).
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "candidateSupplierId": "sup-118",
   "requestedFields": ["PurchaseOrder.Id",
                        "PurchaseOrder.ExpectedDate",
                        "PurchaseOrder.ReceivedDate"]
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "valid": true,
   "boundSupplierId": "sup-118",
   "dependencies": ["PurchaseOrder", "Supplier"]
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">7</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 7 · Authorization</span><h2 id="the-decision-that-everything-downstream-must-honor">The decision that everything downstream must honor</h2></div>
-<p class="process-boundary">Resolved request → Authorized request + evidence</p>
-<p>This is where "is this caller allowed to do this" gets answered — once, centrally, regardless of which tool or transport the agent used. Here it constrains the request to the caller's tenant and strips a field the requester's role cannot see.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">7</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 7 · Authorization</span>
+                <h2 id="the-decision-that-everything-downstream-must-honor">
+                  The decision that everything downstream must honor
+                </h2>
+              </div>
+              <p class="process-boundary">Resolved request → Authorized request + evidence</p>
+              <p>
+                This is where "is this caller allowed to do this" gets answered — once, centrally,
+                regardless of which tool or transport the agent used. Here it constrains the request
+                to the caller's tenant and strips a field the requester's role cannot see.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "subject": { "id": "agent-42", "tenantId": "tenant-7",
                "role": "purchasing-viewer" },
   "requested": { "resource": "PurchaseOrder",
                  "fields": ["Id", "ExpectedDate",
                             "ReceivedDate",
                             "Supplier.NegotiatedCost"] }
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "decision": "allow",
   "deniedFields": ["Supplier.NegotiatedCost"],
   "constraints": [
     { "field": "PurchaseOrder.TenantId",
       "operator": "eq", "value": "tenant-7" }
   ]
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">8</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 8 · Plan Binding</span><h2 id="the-authorization-decision-is-welded-to-the-plan">The authorization decision is welded to the plan</h2></div>
-<p class="process-boundary">Authorized graph → Provider-independent plan + AuthorizationBinding</p>
-<p>Foundgine turns the authorized graph into a logical plan that still knows nothing about PostgreSQL. Critically, the plan carries an <code>AuthorizationBinding</code> — a fingerprint of the step 7 decision. Any later optimization can change the plan's shape, but it cannot change what was authorized.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">8</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 8 · Plan Binding</span>
+                <h2 id="the-authorization-decision-is-welded-to-the-plan">
+                  The authorization decision is welded to the plan
+                </h2>
+              </div>
+              <p class="process-boundary">
+                Authorized graph → Provider-independent plan + AuthorizationBinding
+              </p>
+              <p>
+                Foundgine turns the authorized graph into a logical plan that still knows nothing
+                about PostgreSQL. Critically, the plan carries an
+                <code>AuthorizationBinding</code> — a fingerprint of the step 7 decision. Any later
+                optimization can change the plan's shape, but it cannot change what was authorized.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "scan": "PurchaseOrder",
   "join": { "to": "Supplier", "id": "sup-118" },
   "filters": ["PurchaseOrder.IsOverdue",
               "PurchaseOrder.TenantId = tenant-7"],
   "projection": ["Id", "ExpectedDate", "ReceivedDate"]
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "plan": { "scan": "PurchaseOrder",
             "supplierId": "sup-118",
             "projection": ["Id", "ExpectedDate",
@@ -212,23 +516,39 @@
     "fingerprint": "auth:9f21c...",
     "deniedFields": ["Supplier.NegotiatedCost"]
   }
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">9</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 9 · Execution IR</span><h2 id="the-controlled-intermediate-form-at-the-provider-boundary">The controlled intermediate form at the provider boundary</h2></div>
-<p class="process-boundary">Bound plan → ExecutionIR</p>
-<p><code>Foundgine.Execution</code> lowers the plan into <code>ExecutionIR</code>: an explicit, inspectable operator tree that still carries the authorization binding forward. This is the last representation before any provider-specific syntax appears.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">9</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 9 · Execution IR</span>
+                <h2 id="the-controlled-intermediate-form-at-the-provider-boundary">
+                  The controlled intermediate form at the provider boundary
+                </h2>
+              </div>
+              <p class="process-boundary">Bound plan → ExecutionIR</p>
+              <p>
+                <code>Foundgine.Execution</code> lowers the plan into <code>ExecutionIR</code>: an
+                explicit, inspectable operator tree that still carries the authorization binding
+                forward. This is the last representation before any provider-specific syntax
+                appears.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "plan": "PurchaseOrder scan + supplier=sup-118
            + tenant filter + IsOverdue",
   "authorizationBinding": "auth:9f21c..."
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "ir": {
     "op": "Scan", "entity": "PurchaseOrder",
     "filters": ["SupplierId = sup-118",
@@ -236,65 +556,114 @@
     "project": ["Id", "ExpectedDate", "ReceivedDate"],
     "authorizationBinding": "auth:9f21c..."
   }
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">10</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 10 · Provider</span><h2 id="only-now-does-postgresql-enter-the-picture">Only now does PostgreSQL enter the picture</h2></div>
-<p class="process-boundary">ExecutionIR → Provider plan + security proof</p>
-<p><code>Foundgine.Sql</code> compiles the ExecutionIR into a parameterized command. Before anything runs, the final execution gate checks that the compiled plan's fingerprint still matches the <code>AuthorizationBinding</code> from step 8 — if authority changed in between, execution fails closed instead of running a stale decision.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">10</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 10 · Provider</span>
+                <h2 id="only-now-does-postgresql-enter-the-picture">
+                  Only now does PostgreSQL enter the picture
+                </h2>
+              </div>
+              <p class="process-boundary">ExecutionIR → Provider plan + security proof</p>
+              <p>
+                <code>Foundgine.Sql</code> compiles the ExecutionIR into a parameterized command.
+                Before anything runs, the final execution gate checks that the compiled plan's
+                fingerprint still matches the <code>AuthorizationBinding</code> from step 8 — if
+                authority changed in between, execution fails closed instead of running a stale
+                decision.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "provider": "PostgreSQL",
   "ir": { "entity": "PurchaseOrder",
           "authorizationBinding": "auth:9f21c..." }
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "command": { "kind": "parameterized SQL",
     "parameters": { "supplier_0": "sup-118",
                      "tenant_0": "tenant-7" } },
   "securityProof": { "fingerprintMatches": true,
                       "gate": "passed" }
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">11</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 11 · Execution</span><h2 id="the-database-runs-the-command-it-was-given">The database runs the command it was given</h2></div>
-<p class="process-boundary">Provider plan → PostgreSQL → rows</p>
-<p>The provider executes the parameterized command. The agent never held database credentials, never wrote SQL, and never saw a raw connection string — the only thing that crossed the boundary was the authorized, security-proofed command from step 10.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">11</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 11 · Execution</span>
+                <h2 id="the-database-runs-the-command-it-was-given">
+                  The database runs the command it was given
+                </h2>
+              </div>
+              <p class="process-boundary">Provider plan → PostgreSQL → rows</p>
+              <p>
+                The provider executes the parameterized command. The agent never held database
+                credentials, never wrote SQL, and never saw a raw connection string — the only thing
+                that crossed the boundary was the authorized, security-proofed command from step 10.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "parameters": { "supplier_0": "sup-118",
                    "tenant_0": "tenant-7" }
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "rows": [
     { "id": "po-7734", "expectedDate": "2026-08-12",
       "receivedDate": null },
     { "id": "po-7791", "expectedDate": "2026-08-20",
       "receivedDate": null }
   ]
-}</code></pre></div>
-</div>
-</div>
-</article>
-<article class="process-step">
-<div class="process-step-marker">12</div>
-<div class="process-step-body">
-<div class="process-step-heading"><span class="eyebrow">Step 12 · Evidence</span><h2 id="the-agent-gets-an-answer-it-can-also-verify">The agent gets an answer it can also verify</h2></div>
-<p class="process-boundary">Rows → Caller, with evidence</p>
-<p>The rows are shaped back into the answer (days-late computed from <code>expectedDate</code>), and returned together with execution evidence: what was authorized, which fields were denied, which provider ran it, and how many rows came back. The agent can now answer in plain language — but everything it says is traceable back to one authorization decision.</p>
-<div class="payload-grid">
-<div class="payload-card"><div class="payload-label">Incoming payload</div><pre><code>{
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="process-step">
+            <div class="process-step-marker">12</div>
+            <div class="process-step-body">
+              <div class="process-step-heading">
+                <span class="eyebrow">Step 12 · Evidence</span>
+                <h2 id="the-agent-gets-an-answer-it-can-also-verify">
+                  The agent gets an answer it can also verify
+                </h2>
+              </div>
+              <p class="process-boundary">Rows → Caller, with evidence</p>
+              <p>
+                The rows are shaped back into the answer (days-late computed from
+                <code>expectedDate</code>), and returned together with execution evidence: what was
+                authorized, which fields were denied, which provider ran it, and how many rows came
+                back. The agent can now answer in plain language — but everything it says is
+                traceable back to one authorization decision.
+              </p>
+              <div class="payload-grid">
+                <div class="payload-card">
+                  <div class="payload-label">Incoming payload</div>
+                  <pre><code>{
   "rows": 2, "authorization": "allow"
-}</code></pre></div>
-<div class="payload-card"><div class="payload-label">Produced payload</div><pre><code>{
+}</code></pre>
+                </div>
+                <div class="payload-card">
+                  <div class="payload-label">Produced payload</div>
+                  <pre><code>{
   "data": [
     { "id": "po-7734", "daysLate": 19 },
     { "id": "po-7791", "daysLate": 11 }
@@ -303,20 +672,166 @@
     "supplier": "Lonestar Components (sup-118)",
     "deniedFields": ["Supplier.NegotiatedCost"],
     "provider": "PostgreSQL", "rowCount": 2 }
-}</code></pre></div>
-</div>
-</div>
-</article>
-</div>
-<div class="process-takeaway"><strong>The key idea:</strong> the agent supplied one sentence. Foundgine supplied the meaning, the ambiguity resolution, the authorization decision and the execution — and none of those four things ever lived in the model's output. Change the caller to an API client or a GraphQL client and steps 1–2 change shape; steps 3–12 do not.</div>
-<section><h2 id="where-each-step-lives-in-the-codebase">Where each step lives in the codebase</h2><table><thead><tr><th>Steps</th><th>Package</th></tr></thead><tbody>
-<tr><td>1–2 · Caller, Intent</td><td><code>Foundgine.MCP</code> / <code>Foundgine.AI</code> / <code>Foundgine.Intent.Json</code></td></tr>
-<tr><td>3–4 · Semantic Model, Operation Graph</td><td><code>Foundgine.Semantics</code></td></tr>
-<tr><td>5 · Retrieval</td><td><code>Foundgine.Sql</code> retrieval strategies</td></tr>
-<tr><td>6–7 · Resolution, Authorization</td><td><code>Foundgine.Semantics</code></td></tr>
-<tr><td>8–9 · Plan Binding, Execution IR</td><td><code>Foundgine.Planning</code> / <code>Foundgine.Execution</code></td></tr>
-<tr><td>10–11 · Provider, Execution</td><td><code>Foundgine.Sql</code> / <code>Foundgine.InMemory</code></td></tr>
-<tr><td>12 · Evidence</td><td><code>Foundgine.Execution</code></td></tr>
-</tbody></table><p>This is one instance of the same canonical pipeline described on the <a href="../architecture/index.html">Architecture</a> page — see the full canonical architecture diagram there for the general-case shape, including parallel retrieval strategies.</p></section>
-<section><h2 id="next">Next</h2><p>Read <a href="../ai-agents/index.html">AI agents</a> for the general boundary this example lives inside, or <a href="../security/index.html">Security</a> for how authorization and provider conformance are enforced. See this exact "top supplier" case wired into a reproducible, seeded benchmark — including the case where candidates tie and Foundgine asks the agent to choose instead of guessing — on the <a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a> page.</p></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-link prev" href="../how-it-works/index.html"><span>Previous</span><strong>← How it works</strong></a><a class="page-nav-home" href="../index.html">Documentation home</a><a class="page-nav-link next" href="../architecture/index.html"><span>Next</span><strong>Architecture →</strong></a></nav></main><aside aria-label="On this page" class="toc"><div class="toc-label">On this page</div><ol><li class=""><a href="#show-me-overdue-purchase-orders-from-our-top-supplier-in-texas-and-how-many-days-late-each-one-is">"Show me overdue purchase orders from our top supplier in Texas, and how many days late each one is."</a></li><li class=""><a href="#the-raw-sentence-arrives">The raw sentence arrives</a></li><li class=""><a href="#the-model-produces-structured-intent-not-sql">The model produces structured intent, not SQL</a></li><li class=""><a href="#words-become-application-meaning">Words become application meaning</a></li><li class=""><a href="#the-request-becomes-one-graph-including-the-ambiguous-part">The request becomes one graph, including the ambiguous part</a></li><li class=""><a href="#top-supplier-in-texas-gets-an-answer-but-no-authority">"Top supplier in Texas" gets an answer — but no authority</a></li><li class=""><a href="#the-graph-is-finalized-against-a-real-target">The graph is finalized against a real target</a></li><li class=""><a href="#the-decision-that-everything-downstream-must-honor">The decision that everything downstream must honor</a></li><li class=""><a href="#the-authorization-decision-is-welded-to-the-plan">The authorization decision is welded to the plan</a></li><li class=""><a href="#the-controlled-intermediate-form-at-the-provider-boundary">The controlled intermediate form at the provider boundary</a></li><li class=""><a href="#only-now-does-postgresql-enter-the-picture">Only now does PostgreSQL enter the picture</a></li><li class=""><a href="#the-database-runs-the-command-it-was-given">The database runs the command it was given</a></li><li class=""><a href="#the-agent-gets-an-answer-it-can-also-verify">The agent gets an answer it can also verify</a></li><li class=""><a href="#where-each-step-lives-in-the-codebase">Where each step lives in the codebase</a></li></ol><div class="toc-return"><a href="../index.html">↑ Documentation home</a></div></aside></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../assets/site-nav.js"></script><script src="../assets/toc.js"></script></body></html>
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="process-takeaway">
+          <strong>The key idea:</strong> the agent supplied one sentence. Foundgine supplied the
+          meaning, the ambiguity resolution, the authorization decision and the execution — and none
+          of those four things ever lived in the model's output. Change the caller to an API client
+          or a GraphQL client and steps 1–2 change shape; steps 3–12 do not.
+        </div>
+        <section>
+          <h2 id="where-each-step-lives-in-the-codebase">Where each step lives in the codebase</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Steps</th>
+                <th>Package</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1–2 · Caller, Intent</td>
+                <td>
+                  <code>Foundgine.MCP</code> / <code>Foundgine.AI</code> /
+                  <code>Foundgine.Intent.Json</code>
+                </td>
+              </tr>
+              <tr>
+                <td>3–4 · Semantic Model, Operation Graph</td>
+                <td><code>Foundgine.Semantics</code></td>
+              </tr>
+              <tr>
+                <td>5 · Retrieval</td>
+                <td><code>Foundgine.Sql</code> retrieval strategies</td>
+              </tr>
+              <tr>
+                <td>6–7 · Resolution, Authorization</td>
+                <td><code>Foundgine.Semantics</code></td>
+              </tr>
+              <tr>
+                <td>8–9 · Plan Binding, Execution IR</td>
+                <td><code>Foundgine.Planning</code> / <code>Foundgine.Execution</code></td>
+              </tr>
+              <tr>
+                <td>10–11 · Provider, Execution</td>
+                <td><code>Foundgine.Sql</code> / <code>Foundgine.InMemory</code></td>
+              </tr>
+              <tr>
+                <td>12 · Evidence</td>
+                <td><code>Foundgine.Execution</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            This is one instance of the same canonical pipeline described on the
+            <a href="../architecture/index.html">Architecture</a> page — see the full canonical
+            architecture diagram there for the general-case shape, including parallel retrieval
+            strategies.
+          </p>
+        </section>
+        <section>
+          <h2 id="next">Next</h2>
+          <p>
+            Read <a href="../ai-agents/index.html">AI agents</a> for the general boundary this
+            example lives inside, or <a href="../security/index.html">Security</a> for how
+            authorization and provider conformance are enforced. See this exact "top supplier" case
+            wired into a reproducible, seeded benchmark — including the case where candidates tie
+            and Foundgine asks the agent to choose instead of guessing — on the
+            <a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a> page.
+          </p>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-link prev" href="../how-it-works/index.html"
+            ><span>Previous</span><strong>← How it works</strong></a
+          ><a class="page-nav-home" href="../index.html">Documentation home</a
+          ><a class="page-nav-link next" href="../architecture/index.html"
+            ><span>Next</span><strong>Architecture →</strong></a
+          >
+        </nav>
+      </main>
+      <aside aria-label="On this page" class="toc">
+        <div class="toc-label">On this page</div>
+        <ol>
+          <li class="">
+            <a
+              href="#show-me-overdue-purchase-orders-from-our-top-supplier-in-texas-and-how-many-days-late-each-one-is"
+              >"Show me overdue purchase orders from our top supplier in Texas, and how many days
+              late each one is."</a
+            >
+          </li>
+          <li class=""><a href="#the-raw-sentence-arrives">The raw sentence arrives</a></li>
+          <li class="">
+            <a href="#the-model-produces-structured-intent-not-sql"
+              >The model produces structured intent, not SQL</a
+            >
+          </li>
+          <li class="">
+            <a href="#words-become-application-meaning">Words become application meaning</a>
+          </li>
+          <li class="">
+            <a href="#the-request-becomes-one-graph-including-the-ambiguous-part"
+              >The request becomes one graph, including the ambiguous part</a
+            >
+          </li>
+          <li class="">
+            <a href="#top-supplier-in-texas-gets-an-answer-but-no-authority"
+              >"Top supplier in Texas" gets an answer — but no authority</a
+            >
+          </li>
+          <li class="">
+            <a href="#the-graph-is-finalized-against-a-real-target"
+              >The graph is finalized against a real target</a
+            >
+          </li>
+          <li class="">
+            <a href="#the-decision-that-everything-downstream-must-honor"
+              >The decision that everything downstream must honor</a
+            >
+          </li>
+          <li class="">
+            <a href="#the-authorization-decision-is-welded-to-the-plan"
+              >The authorization decision is welded to the plan</a
+            >
+          </li>
+          <li class="">
+            <a href="#the-controlled-intermediate-form-at-the-provider-boundary"
+              >The controlled intermediate form at the provider boundary</a
+            >
+          </li>
+          <li class="">
+            <a href="#only-now-does-postgresql-enter-the-picture"
+              >Only now does PostgreSQL enter the picture</a
+            >
+          </li>
+          <li class="">
+            <a href="#the-database-runs-the-command-it-was-given"
+              >The database runs the command it was given</a
+            >
+          </li>
+          <li class="">
+            <a href="#the-agent-gets-an-answer-it-can-also-verify"
+              >The agent gets an answer it can also verify</a
+            >
+          </li>
+          <li class="">
+            <a href="#where-each-step-lives-in-the-codebase"
+              >Where each step lives in the codebase</a
+            >
+          </li>
+        </ol>
+        <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>
+      </aside>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../assets/site-nav.js"></script>
+    <script src="../assets/toc.js"></script>
+  </body>
+</html>

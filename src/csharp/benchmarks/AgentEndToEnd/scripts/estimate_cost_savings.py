@@ -24,6 +24,7 @@ Usage
     python3 estimate_cost_savings.py agent-benchmark.json --calls-per-day 100000
     python3 estimate_cost_savings.py agent-benchmark.json --input-price 3 --output-price 15
 """
+
 import argparse
 import json
 import sys
@@ -33,7 +34,7 @@ import sys
 # prices change; these defaults are a starting point, not a live lookup.
 REFERENCE_MODELS = {
     "haiku-4.5": (1, 5),
-    "sonnet-5-intro": (2, 10),   # through Aug 31, 2026
+    "sonnet-5-intro": (2, 10),  # through Aug 31, 2026
     "sonnet-5-standard": (3, 15),  # from Sep 1, 2026
     "opus-5": (5, 25),
 }
@@ -92,7 +93,9 @@ def _flow_runs(report: dict, flow_title: str):
 def flow_io_split(runs: list, flow_title: str) -> dict:
     """Return avg {input_tokens, output_tokens} per run for a flow, split by
     the input/output billing convention described in the module docstring."""
-    overhead = estimate_tokens(SYSTEM_PROMPTS.get(flow_title, "")) + estimate_tokens(SCENARIO_REQUEST)
+    overhead = estimate_tokens(SYSTEM_PROMPTS.get(flow_title, "")) + estimate_tokens(
+        SCENARIO_REQUEST
+    )
     tool_in_totals, tool_out_totals = [], []
     for run in runs:
         trace = run.get("Trace") or []
@@ -101,8 +104,12 @@ def flow_io_split(runs: list, flow_title: str) -> dict:
         tool_in_totals.append(ti)
         tool_out_totals.append(to)
     n = len(runs) or 1
-    avg_tool_in = sum(tool_in_totals) / n   # model-generated tool call args -> OUTPUT tokens
-    avg_tool_out = sum(tool_out_totals) / n  # tool results fed back next turn -> INPUT tokens
+    avg_tool_in = (
+        sum(tool_in_totals) / n
+    )  # model-generated tool call args -> OUTPUT tokens
+    avg_tool_out = (
+        sum(tool_out_totals) / n
+    )  # tool results fed back next turn -> INPUT tokens
     return {
         "input_tokens": overhead + avg_tool_out,
         "output_tokens": avg_tool_in,
@@ -110,12 +117,34 @@ def flow_io_split(runs: list, flow_title: str) -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("report", help="Path to agent-benchmark.json")
-    parser.add_argument("--calls-per-day", type=float, default=100_000, help="Agent calls/day to project (default: 100,000)")
-    parser.add_argument("--input-price", type=float, default=None, help="USD per million input tokens (overrides --model)")
-    parser.add_argument("--output-price", type=float, default=None, help="USD per million output tokens (overrides --model)")
-    parser.add_argument("--model", choices=list(REFERENCE_MODELS), default=None, help="Use a reference model's price instead of custom prices")
+    parser.add_argument(
+        "--calls-per-day",
+        type=float,
+        default=100_000,
+        help="Agent calls/day to project (default: 100,000)",
+    )
+    parser.add_argument(
+        "--input-price",
+        type=float,
+        default=None,
+        help="USD per million input tokens (overrides --model)",
+    )
+    parser.add_argument(
+        "--output-price",
+        type=float,
+        default=None,
+        help="USD per million output tokens (overrides --model)",
+    )
+    parser.add_argument(
+        "--model",
+        choices=list(REFERENCE_MODELS),
+        default=None,
+        help="Use a reference model's price instead of custom prices",
+    )
     args = parser.parse_args()
 
     with open(args.report, "r", encoding="utf-8") as f:
@@ -124,7 +153,10 @@ def main() -> int:
     conv_runs = _flow_runs(report, "Conventional application/AI flow")
     found_runs = _flow_runs(report, "Foundgine semantic flow")
     if not conv_runs or not found_runs:
-        print("Report needs per-run Trace data for both flows (either a 'Flows' array or a flat 'Results' array with a 'Flow' field).", file=sys.stderr)
+        print(
+            "Report needs per-run Trace data for both flows (either a 'Flows' array or a flat 'Results' array with a 'Flow' field).",
+            file=sys.stderr,
+        )
         return 1
 
     conv = flow_io_split(conv_runs, "Conventional application/AI flow")
@@ -139,25 +171,37 @@ def main() -> int:
         pin, pout = REFERENCE_MODELS[args.model]
         price_sets.append((args.model, pin, pout))
     else:
-        price_sets = [(name, pin, pout) for name, (pin, pout) in REFERENCE_MODELS.items()]
+        price_sets = [
+            (name, pin, pout) for name, (pin, pout) in REFERENCE_MODELS.items()
+        ]
 
     print("=" * 78)
     print(" Estimated $ savings from token-load reduction (heuristic, see caveats)")
     print("=" * 78)
-    print(f"Conventional: ~{conv['input_tokens']:.0f} input + ~{conv['output_tokens']:.0f} output tokens/call")
-    print(f"Foundgine:    ~{found['input_tokens']:.0f} input + ~{found['output_tokens']:.0f} output tokens/call")
+    print(
+        f"Conventional: ~{conv['input_tokens']:.0f} input + ~{conv['output_tokens']:.0f} output tokens/call"
+    )
+    print(
+        f"Foundgine:    ~{found['input_tokens']:.0f} input + ~{found['output_tokens']:.0f} output tokens/call"
+    )
     print(f"Projected at {args.calls_per_day:,.0f} agent calls/day\n")
 
     for name, pin, pout in price_sets:
-        conv_cost = conv["input_tokens"] / 1e6 * pin + conv["output_tokens"] / 1e6 * pout
-        found_cost = found["input_tokens"] / 1e6 * pin + found["output_tokens"] / 1e6 * pout
+        conv_cost = (
+            conv["input_tokens"] / 1e6 * pin + conv["output_tokens"] / 1e6 * pout
+        )
+        found_cost = (
+            found["input_tokens"] / 1e6 * pin + found["output_tokens"] / 1e6 * pout
+        )
         saved = conv_cost - found_cost
         pct = (saved / conv_cost * 100) if conv_cost else 0
         day = saved * args.calls_per_day
         month = day * 30
         year = day * 365
         print(f"--- {name} (${pin}/${pout} per MTok) ---")
-        print(f"  per call: conventional ${conv_cost:.6f} | foundgine ${found_cost:.6f} | saved ${saved:.6f} ({pct:.1f}%)")
+        print(
+            f"  per call: conventional ${conv_cost:.6f} | foundgine ${found_cost:.6f} | saved ${saved:.6f} ({pct:.1f}%)"
+        )
         print(f"  saves ${day:,.2f}/day | ${month:,.0f}/month | ${year:,.0f}/year\n")
 
     print("Caveats:")

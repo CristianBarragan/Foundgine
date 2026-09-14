@@ -1,26 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>AI Agents with Foundgine | .NET</title><meta content="Give AI agents application capabilities through Foundgine without giving the model database authority." name="description"/><link href="https://cristianbarragan.github.io/Foundgine/ai-agents/" rel="canonical"/>
-<meta content="AI Agents with Foundgine | .NET" property="og:title"/><meta content="Give AI agents application capabilities through Foundgine without giving the model database authority." property="og:description"/><meta content="website" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/ai-agents/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="AI Agents with Foundgine | .NET" name="twitter:title"/><meta content="Give AI agents application capabilities through Foundgine without giving the model database authority." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../assets/style.css" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"AI Agents with Foundgine | .NET","description":"Give AI agents application capabilities through Foundgine without giving the model database authority.","url":"https://cristianbarragan.github.io/Foundgine/ai-agents/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a href="../what-is-foundgine.html">What is it</a>
-<a href="../getting-started/index.html">Getting started</a>
-<a href="../how-it-works/index.html">How it works</a>
-<a href="../architecture/index.html">Architecture</a>
-<a href="index.html">AI agents</a>
-<a href="../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../samples/index.html">Overview</a><a href="../samples/semantic/index.html">Semantic execution</a><a href="../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../agent-benchmark/index.html">Evidence</a><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="../performance/index.html">Performance</a></div></div>
-<a href="../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page has-toc"><main class="article"><span class="eyebrow">AI agents · controlled capabilities</span><h1>Give agents capabilities, not database authority.</h1><p class="subtitle">An agent can propose intent. The application decides what that intent means, who may exercise it, and how it executes.</p>
-<section><h2 id="the-problem-with-tool-sprawl">The problem with tool sprawl</h2><p>Replacing generated SQL with many individual tools only helps if those tools share the same security boundary. Otherwise each tool can grow its own authorization, tenant filtering and query logic.</p><p class="diagram-frame diagram-frame-wide"><img alt="Comparison of fragmented agent tools with independent security logic versus a single Foundgine semantic execution boundary shared by many agent capabilities." src="assets/agent-tool-boundary.svg"/></p></section>
-<section><h2 id="the-foundgine-pattern">The Foundgine pattern</h2><p>An AI agent is an untrusted caller. Its model output becomes structured intent and enters the same lifecycle as any other caller:</p><pre>AI agent
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>AI Agents with Foundgine | .NET</title>
+    <meta
+      content="Give AI agents application capabilities through Foundgine without giving the model database authority."
+      name="description"
+    />
+    <link href="https://cristianbarragan.github.io/Foundgine/ai-agents/" rel="canonical" />
+    <meta content="AI Agents with Foundgine | .NET" property="og:title" />
+    <meta
+      content="Give AI agents application capabilities through Foundgine without giving the model database authority."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="https://cristianbarragan.github.io/Foundgine/ai-agents/" property="og:url" />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="AI Agents with Foundgine | .NET" name="twitter:title" />
+    <meta
+      content="Give AI agents application capabilities through Foundgine without giving the model database authority."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../assets/style.css" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "AI Agents with Foundgine | .NET",
+        "description": "Give AI agents application capabilities through Foundgine without giving the model database authority.",
+        "url": "https://cristianbarragan.github.io/Foundgine/ai-agents/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a href="../what-is-foundgine.html">What is it</a>
+          <a href="../getting-started/index.html">Getting started</a>
+          <a href="../how-it-works/index.html">How it works</a>
+          <a href="../architecture/index.html">Architecture</a>
+          <a href="index.html">AI agents</a>
+          <a href="../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../samples/index.html">Overview</a
+              ><a href="../samples/semantic/index.html">Semantic execution</a
+              ><a href="../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../agent-benchmark/index.html">Evidence</a
+              ><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page has-toc">
+      <main class="article">
+        <span class="eyebrow">AI agents · controlled capabilities</span>
+        <h1>Give agents capabilities, not database authority.</h1>
+        <p class="subtitle">
+          An agent can propose intent. The application decides what that intent means, who may
+          exercise it, and how it executes.
+        </p>
+        <section>
+          <h2 id="the-problem-with-tool-sprawl">The problem with tool sprawl</h2>
+          <p>
+            Replacing generated SQL with many individual tools only helps if those tools share the
+            same security boundary. Otherwise each tool can grow its own authorization, tenant
+            filtering and query logic.
+          </p>
+          <p class="diagram-frame diagram-frame-wide">
+            <img
+              alt="Comparison of fragmented agent tools with independent security logic versus a single Foundgine semantic execution boundary shared by many agent capabilities."
+              src="assets/agent-tool-boundary.svg"
+            />
+          </p>
+        </section>
+        <section>
+          <h2 id="the-foundgine-pattern">The Foundgine pattern</h2>
+          <p>
+            An AI agent is an untrusted caller. Its model output becomes structured intent and
+            enters the same lifecycle as any other caller:
+          </p>
+          <pre>
+AI agent
    ↓
 capability discovery / structured intent
    ↓
@@ -31,9 +188,103 @@ Foundgine
    ├─ plan
    └─ execute
    ↓
-provider</pre></section>
-<section><h2 id="capability-discovery-is-advisory">Capability discovery is advisory</h2><p>Capability discovery tells the agent what the application exposes and how to form valid requests. It does not grant permission. Every actual request is resolved and authorized again using the trusted execution context supplied by the host.</p></section>
-<section><h2 id="host-owned-security">Host-owned security</h2><div class="table-wrap"><table><thead><tr><th>Concern</th><th>Owner</th></tr></thead><tbody><tr><td>Authentication and identity</td><td>Host/application identity system</td></tr><tr><td>Tenant and actor context</td><td>Host/application</td></tr><tr><td>Semantic authorization</td><td>Foundgine policy</td></tr><tr><td>Physical data access</td><td>Provider boundary</td></tr><tr><td>Model selection and orchestration</td><td>AI application</td></tr></tbody></table></div></section>
-<section><h2 id="what-the-ai-integration-provides">What the AI integration provides</h2><p><code>Foundgine.Providers</code> contains the AI/model integration with <code>Microsoft.Extensions.AI</code> and the MCP tooling integration. These integrations expose capabilities; they do not become the source of application authority.</p></section>
-<section><h2 id="what-foundgine-does-not-provide">What Foundgine does not provide</h2><p>Foundgine is not a general autonomous-agent framework. Model choice, memory, orchestration, deployment and autonomous behavior remain in the surrounding application. For the detailed agent boundary, read <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/AI-AGENT.md">AI agents</a>.</p></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-link prev" href="../architecture/index.html"><span>Previous</span><strong>← Architecture</strong></a><a class="page-nav-home" href="../index.html">Documentation home</a><a class="page-nav-link next" href="../security/index.html"><span>Next</span><strong>Security →</strong></a></nav></main><aside aria-label="On this page" class="toc"><div class="toc-label">On this page</div><ol><li class=""><a href="#the-problem-with-tool-sprawl">The problem with tool sprawl</a></li><li class=""><a href="#the-foundgine-pattern">The Foundgine pattern</a></li><li class=""><a href="#capability-discovery-is-advisory">Capability discovery is advisory</a></li><li class=""><a href="#host-owned-security">Host-owned security</a></li><li class=""><a href="#what-the-ai-integration-provides">What the AI integration provides</a></li><li class=""><a href="#what-foundgine-does-not-provide">What Foundgine does not provide</a></li></ol><div class="toc-return"><a href="../index.html">↑ Documentation home</a></div></aside></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../assets/site-nav.js"></script><script src="../assets/toc.js"></script></body></html>
+provider</pre>
+        </section>
+        <section>
+          <h2 id="capability-discovery-is-advisory">Capability discovery is advisory</h2>
+          <p>
+            Capability discovery tells the agent what the application exposes and how to form valid
+            requests. It does not grant permission. Every actual request is resolved and authorized
+            again using the trusted execution context supplied by the host.
+          </p>
+        </section>
+        <section>
+          <h2 id="host-owned-security">Host-owned security</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Concern</th>
+                  <th>Owner</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Authentication and identity</td>
+                  <td>Host/application identity system</td>
+                </tr>
+                <tr>
+                  <td>Tenant and actor context</td>
+                  <td>Host/application</td>
+                </tr>
+                <tr>
+                  <td>Semantic authorization</td>
+                  <td>Foundgine policy</td>
+                </tr>
+                <tr>
+                  <td>Physical data access</td>
+                  <td>Provider boundary</td>
+                </tr>
+                <tr>
+                  <td>Model selection and orchestration</td>
+                  <td>AI application</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section>
+          <h2 id="what-the-ai-integration-provides">What the AI integration provides</h2>
+          <p>
+            <code>Foundgine.Providers</code> contains the AI/model integration with
+            <code>Microsoft.Extensions.AI</code> and the MCP tooling integration. These integrations
+            expose capabilities; they do not become the source of application authority.
+          </p>
+        </section>
+        <section>
+          <h2 id="what-foundgine-does-not-provide">What Foundgine does not provide</h2>
+          <p>
+            Foundgine is not a general autonomous-agent framework. Model choice, memory,
+            orchestration, deployment and autonomous behavior remain in the surrounding application.
+            For the detailed agent boundary, read
+            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/AI-AGENT.md"
+              >AI agents</a
+            >.
+          </p>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-link prev" href="../architecture/index.html"
+            ><span>Previous</span><strong>← Architecture</strong></a
+          ><a class="page-nav-home" href="../index.html">Documentation home</a
+          ><a class="page-nav-link next" href="../security/index.html"
+            ><span>Next</span><strong>Security →</strong></a
+          >
+        </nav>
+      </main>
+      <aside aria-label="On this page" class="toc">
+        <div class="toc-label">On this page</div>
+        <ol>
+          <li class=""><a href="#the-problem-with-tool-sprawl">The problem with tool sprawl</a></li>
+          <li class=""><a href="#the-foundgine-pattern">The Foundgine pattern</a></li>
+          <li class="">
+            <a href="#capability-discovery-is-advisory">Capability discovery is advisory</a>
+          </li>
+          <li class=""><a href="#host-owned-security">Host-owned security</a></li>
+          <li class="">
+            <a href="#what-the-ai-integration-provides">What the AI integration provides</a>
+          </li>
+          <li class="">
+            <a href="#what-foundgine-does-not-provide">What Foundgine does not provide</a>
+          </li>
+        </ol>
+        <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>
+      </aside>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../assets/site-nav.js"></script>
+    <script src="../assets/toc.js"></script>
+  </body>
+</html>

@@ -63,11 +63,7 @@
       "why": "Foundgine resolves each relationship and field against the application model instead of asking the caller to understand the storage graph.",
       "input": {
         "root": "Customer",
-        "traversal": [
-          "bankingRelationships",
-          "contracts",
-          "transactions"
-        ],
+        "traversal": ["bankingRelationships", "contracts", "transactions"],
         "fields": [
           "Id",
           "Name",
@@ -106,12 +102,7 @@
       "output": {
         "valid": true,
         "aggregateValid": true,
-        "dependencies": [
-          "Customer",
-          "CustomerBankingRelationship",
-          "Contract",
-          "Transaction"
-        ]
+        "dependencies": ["Customer", "CustomerBankingRelationship", "Contract", "Transaction"]
       }
     },
     {
@@ -125,12 +116,7 @@
           "tenantId": "tenant-7"
         },
         "customerId": "customer-104",
-        "requestedPaths": [
-          "Customer",
-          "CustomerBankingRelationship",
-          "Contract",
-          "Transaction"
-        ]
+        "requestedPaths": ["Customer", "CustomerBankingRelationship", "Contract", "Transaction"]
       },
       "output": {
         "decision": "allow",
@@ -146,9 +132,7 @@
             "value": "tenant-7"
           }
         ],
-        "deniedFields": [
-          "Customer.InternalRiskScore"
-        ]
+        "deniedFields": ["Customer.InternalRiskScore"]
       }
     },
     {
@@ -173,21 +157,9 @@
       "output": {
         "plan": {
           "root": "Customer",
-          "joins": [
-            "CustomerBankingRelationship",
-            "Contract",
-            "Transaction"
-          ],
-          "filters": [
-            "customer id",
-            "active contract",
-            "last 90 days",
-            "tenant"
-          ],
-          "groupBy": [
-            "Customer.Id",
-            "Contract.Id"
-          ],
+          "joins": ["CustomerBankingRelationship", "Contract", "Transaction"],
+          "filters": ["customer id", "active contract", "last 90 days", "tenant"],
+          "groupBy": ["Customer.Id", "Contract.Id"],
           "aggregate": "SUM(Transaction.Amount)"
         }
       }
@@ -199,12 +171,7 @@
       "why": "The planner can push filters toward the relevant relationship, reduce unnecessary columns and choose an execution shape without changing the semantic result.",
       "input": {
         "plan": {
-          "filters": [
-            "customer id",
-            "active contract",
-            "last 90 days",
-            "tenant"
-          ],
+          "filters": ["customer id", "active contract", "last 90 days", "tenant"],
           "projection": [
             "Customer.Id",
             "Customer.Name",
@@ -309,9 +276,7 @@
         },
         "evidence": {
           "authorized": true,
-          "authorizationConstraints": [
-            "tenant-7"
-          ],
+          "authorizationConstraints": ["tenant-7"],
           "provider": "PostgreSQL",
           "relationshipsTraversed": 3
         }

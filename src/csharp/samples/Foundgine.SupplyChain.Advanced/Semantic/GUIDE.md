@@ -46,7 +46,6 @@ These tests are the acceptance criteria for the migration: the architecture is o
 successful if the security behavior remains intact while the old generated semantic
 model disappears.
 
-
 ## Boundary proof — metadata producer and semantic consumer
 
 Semantic authoring remains open: callers may use the model-independent builder when an intent has no CLR type, or the typed builder when property-level CLR validation is useful. A semantic intent is never required to have a CLR model.
@@ -54,7 +53,7 @@ Semantic authoring remains open: callers may use the model-independent builder w
 The sample deliberately keeps its structural declarations on the CLR domain types. The AOT generator observes `[FoundgineEntity]`, `[FoundgineField]`, and `[FoundgineRelationship]` declarations and emits `GeneratedMetadata.Registry`. `GeneratedMetadata.Build()` exposes that registry as `IMetadataCatalog`; the semantic layer consumes only that catalog.
 
 This is the intended producer boundary: a future EF, database, or other metadata producer can replace the implementation without changing `SupplyChainSemanticModel`.
+
 ### Structural metadata contract
 
 The AOT producer is a compile-time structural contract, not a passive serializer. Relationship declarations are rejected when the target entity, navigation target, foreign-key property, principal-key property, or key types are inconsistent. This keeps invalid topology out of `GeneratedMetadata.Registry` before semantic discovery or authorization can consume it.
-

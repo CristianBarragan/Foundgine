@@ -5,5 +5,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface FoundgineEvent {
-	String occurredAtField() default "";
+    String occurredAtField() default "";
 }

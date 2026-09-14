@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Explicit high-assurance contract for the PostgreSQL TransferFunds fixture.
- * A declaration is evidence only when every required invariant is satisfied;
- * missing obligations fail closed.
+ * Explicit high-assurance contract for the PostgreSQL TransferFunds fixture. A declaration is
+ * evidence only when every required invariant is satisfied; missing obligations fail closed.
  */
 public record PostgresMutationSecurityConformance(
         boolean usesSingleTransaction,
@@ -24,20 +23,173 @@ public record PostgresMutationSecurityConformance(
         boolean enforcesReplayProtection) {
 
     public static final PostgresMutationSecurityConformance TRANSFER_FUNDS =
-            new PostgresMutationSecurityConformance(true, true, true, true, true, true, true,
-                    true, true, true, true);
+            new PostgresMutationSecurityConformance(
+                    true, true, true, true, true, true, true, true, true, true, true);
 
-    public PostgresMutationSecurityConformance withSingleTransaction(boolean v) { return copy(v, locksMutationRowsDeterministically, revalidatesAuthorizationAtExecution, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, persistsAuditInsideTransaction, emitsExecutionReceipt, enforcesOwnership, enforcesDailyLimit, enforcesTenantIsolation, enforcesReplayProtection); }
-    public PostgresMutationSecurityConformance withLocks(boolean v) { return copy(usesSingleTransaction, v, revalidatesAuthorizationAtExecution, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, persistsAuditInsideTransaction, emitsExecutionReceipt, enforcesOwnership, enforcesDailyLimit, enforcesTenantIsolation, enforcesReplayProtection); }
-    public PostgresMutationSecurityConformance withRuntimeAuthorization(boolean v) { return copy(usesSingleTransaction, locksMutationRowsDeterministically, v, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, persistsAuditInsideTransaction, emitsExecutionReceipt, enforcesOwnership, enforcesDailyLimit, enforcesTenantIsolation, enforcesReplayProtection); }
-    public PostgresMutationSecurityConformance withIdempotency(boolean v) { return copy(usesSingleTransaction, locksMutationRowsDeterministically, revalidatesAuthorizationAtExecution, v, v, persistsAuditInsideTransaction, emitsExecutionReceipt, enforcesOwnership, enforcesDailyLimit, enforcesTenantIsolation, enforcesReplayProtection); }
-    public PostgresMutationSecurityConformance withReplay(boolean v) { return copy(usesSingleTransaction, locksMutationRowsDeterministically, revalidatesAuthorizationAtExecution, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, persistsAuditInsideTransaction, emitsExecutionReceipt, enforcesOwnership, enforcesDailyLimit, enforcesTenantIsolation, v); }
-    public PostgresMutationSecurityConformance withAudit(boolean v) { return copy(usesSingleTransaction, locksMutationRowsDeterministically, revalidatesAuthorizationAtExecution, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, v, emitsExecutionReceipt, enforcesOwnership, enforcesDailyLimit, enforcesTenantIsolation, enforcesReplayProtection); }
-    public PostgresMutationSecurityConformance withReceipt(boolean v) { return copy(usesSingleTransaction, locksMutationRowsDeterministically, revalidatesAuthorizationAtExecution, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, persistsAuditInsideTransaction, v, enforcesOwnership, enforcesDailyLimit, enforcesTenantIsolation, enforcesReplayProtection); }
-    public PostgresMutationSecurityConformance withOwnership(boolean v) { return copy(usesSingleTransaction, locksMutationRowsDeterministically, revalidatesAuthorizationAtExecution, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, persistsAuditInsideTransaction, emitsExecutionReceipt, v, enforcesDailyLimit, enforcesTenantIsolation, enforcesReplayProtection); }
-    public PostgresMutationSecurityConformance withDailyLimit(boolean v) { return copy(usesSingleTransaction, locksMutationRowsDeterministically, revalidatesAuthorizationAtExecution, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, persistsAuditInsideTransaction, emitsExecutionReceipt, enforcesOwnership, v, enforcesTenantIsolation, enforcesReplayProtection); }
-    public PostgresMutationSecurityConformance withTenantIsolation(boolean v) { return copy(usesSingleTransaction, locksMutationRowsDeterministically, revalidatesAuthorizationAtExecution, serializesIdempotencyKeys, persistsIdempotencyInsideTransaction, persistsAuditInsideTransaction, emitsExecutionReceipt, enforcesOwnership, enforcesDailyLimit, v, enforcesReplayProtection); }
-    private PostgresMutationSecurityConformance copy(boolean a, boolean b, boolean c, boolean d, boolean e, boolean f, boolean g, boolean h, boolean i, boolean j, boolean k) { return new PostgresMutationSecurityConformance(a,b,c,d,e,f,g,h,i,j,k); }
+    public PostgresMutationSecurityConformance withSingleTransaction(boolean v) {
+        return copy(
+                v,
+                locksMutationRowsDeterministically,
+                revalidatesAuthorizationAtExecution,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                persistsAuditInsideTransaction,
+                emitsExecutionReceipt,
+                enforcesOwnership,
+                enforcesDailyLimit,
+                enforcesTenantIsolation,
+                enforcesReplayProtection);
+    }
+
+    public PostgresMutationSecurityConformance withLocks(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                v,
+                revalidatesAuthorizationAtExecution,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                persistsAuditInsideTransaction,
+                emitsExecutionReceipt,
+                enforcesOwnership,
+                enforcesDailyLimit,
+                enforcesTenantIsolation,
+                enforcesReplayProtection);
+    }
+
+    public PostgresMutationSecurityConformance withRuntimeAuthorization(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                locksMutationRowsDeterministically,
+                v,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                persistsAuditInsideTransaction,
+                emitsExecutionReceipt,
+                enforcesOwnership,
+                enforcesDailyLimit,
+                enforcesTenantIsolation,
+                enforcesReplayProtection);
+    }
+
+    public PostgresMutationSecurityConformance withIdempotency(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                locksMutationRowsDeterministically,
+                revalidatesAuthorizationAtExecution,
+                v,
+                v,
+                persistsAuditInsideTransaction,
+                emitsExecutionReceipt,
+                enforcesOwnership,
+                enforcesDailyLimit,
+                enforcesTenantIsolation,
+                enforcesReplayProtection);
+    }
+
+    public PostgresMutationSecurityConformance withReplay(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                locksMutationRowsDeterministically,
+                revalidatesAuthorizationAtExecution,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                persistsAuditInsideTransaction,
+                emitsExecutionReceipt,
+                enforcesOwnership,
+                enforcesDailyLimit,
+                enforcesTenantIsolation,
+                v);
+    }
+
+    public PostgresMutationSecurityConformance withAudit(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                locksMutationRowsDeterministically,
+                revalidatesAuthorizationAtExecution,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                v,
+                emitsExecutionReceipt,
+                enforcesOwnership,
+                enforcesDailyLimit,
+                enforcesTenantIsolation,
+                enforcesReplayProtection);
+    }
+
+    public PostgresMutationSecurityConformance withReceipt(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                locksMutationRowsDeterministically,
+                revalidatesAuthorizationAtExecution,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                persistsAuditInsideTransaction,
+                v,
+                enforcesOwnership,
+                enforcesDailyLimit,
+                enforcesTenantIsolation,
+                enforcesReplayProtection);
+    }
+
+    public PostgresMutationSecurityConformance withOwnership(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                locksMutationRowsDeterministically,
+                revalidatesAuthorizationAtExecution,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                persistsAuditInsideTransaction,
+                emitsExecutionReceipt,
+                v,
+                enforcesDailyLimit,
+                enforcesTenantIsolation,
+                enforcesReplayProtection);
+    }
+
+    public PostgresMutationSecurityConformance withDailyLimit(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                locksMutationRowsDeterministically,
+                revalidatesAuthorizationAtExecution,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                persistsAuditInsideTransaction,
+                emitsExecutionReceipt,
+                enforcesOwnership,
+                v,
+                enforcesTenantIsolation,
+                enforcesReplayProtection);
+    }
+
+    public PostgresMutationSecurityConformance withTenantIsolation(boolean v) {
+        return copy(
+                usesSingleTransaction,
+                locksMutationRowsDeterministically,
+                revalidatesAuthorizationAtExecution,
+                serializesIdempotencyKeys,
+                persistsIdempotencyInsideTransaction,
+                persistsAuditInsideTransaction,
+                emitsExecutionReceipt,
+                enforcesOwnership,
+                enforcesDailyLimit,
+                v,
+                enforcesReplayProtection);
+    }
+
+    private PostgresMutationSecurityConformance copy(
+            boolean a,
+            boolean b,
+            boolean c,
+            boolean d,
+            boolean e,
+            boolean f,
+            boolean g,
+            boolean h,
+            boolean i,
+            boolean j,
+            boolean k) {
+        return new PostgresMutationSecurityConformance(a, b, c, d, e, f, g, h, i, j, k);
+    }
 
     public List<String> requiredInvariants() {
         return List.of(
@@ -56,9 +208,12 @@ public record PostgresMutationSecurityConformance(
     public List<String> missingRequirements() {
         var missing = new ArrayList<String>();
         if (!usesSingleTransaction) missing.add(SecurityInvariantIds.ATOMIC_MUTATION);
-        if (!locksMutationRowsDeterministically) missing.add(SecurityInvariantIds.MUTATION_ROW_LOCKING);
-        if (!revalidatesAuthorizationAtExecution) missing.add(SecurityInvariantIds.RUNTIME_AUTHORIZATION);
-        if (!serializesIdempotencyKeys || !persistsIdempotencyInsideTransaction) missing.add(SecurityInvariantIds.IDEMPOTENCY);
+        if (!locksMutationRowsDeterministically)
+            missing.add(SecurityInvariantIds.MUTATION_ROW_LOCKING);
+        if (!revalidatesAuthorizationAtExecution)
+            missing.add(SecurityInvariantIds.RUNTIME_AUTHORIZATION);
+        if (!serializesIdempotencyKeys || !persistsIdempotencyInsideTransaction)
+            missing.add(SecurityInvariantIds.IDEMPOTENCY);
         if (!enforcesReplayProtection) missing.add(SecurityInvariantIds.REPLAY_PROTECTION);
         if (!persistsAuditInsideTransaction) missing.add(SecurityInvariantIds.AUDIT_REQUIRED);
         if (!emitsExecutionReceipt) missing.add(SecurityInvariantIds.EXECUTION_EVIDENCE_REQUIRED);
@@ -68,11 +223,15 @@ public record PostgresMutationSecurityConformance(
         return missing.stream().distinct().sorted().toList();
     }
 
-    public boolean isSatisfied() { return missingRequirements().isEmpty(); }
+    public boolean isSatisfied() {
+        return missingRequirements().isEmpty();
+    }
 
     public void ensureSatisfied() {
         var missing = missingRequirements();
         if (!missing.isEmpty())
-            throw new IllegalStateException("PostgreSQL high-assurance mutation contract failed: missing " + String.join(", ", missing));
+            throw new IllegalStateException(
+                    "PostgreSQL high-assurance mutation contract failed: missing "
+                            + String.join(", ", missing));
     }
 }

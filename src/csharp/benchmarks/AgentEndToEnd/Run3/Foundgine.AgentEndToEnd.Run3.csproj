@@ -14,6 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj" />
+    <ProjectReference
+      Include="../../CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
+    />
   </ItemGroup>
 </Project>

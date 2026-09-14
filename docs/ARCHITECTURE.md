@@ -64,7 +64,6 @@ Reads use `SemanticOperationGraph` → `SemanticPlan` → `ExecutionIR`. Mutatio
 
 This is why GraphQL, MCP, JSON, AI tools and direct C# callers do not need separate authorization architectures. They converge before the security-sensitive planning boundary.
 
-
 ## Layer 1 — Intent
 
 Intent is what the caller wants.
@@ -310,8 +309,8 @@ the other, or both.
 
 ### A legal path is not necessarily the intended one
 
-"Canonical semantic interpretation" above still only answers *is this
-mapping legal*. It does not answer *is this mapping what the caller meant*,
+"Canonical semantic interpretation" above still only answers _is this
+mapping legal_. It does not answer _is this mapping what the caller meant_,
 and those can come apart: a single expression can be structurally valid
 against two different fields, values, relationships, or root entities at
 once, and retrieval score alone cannot break that tie in a principled way.

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Foundgine — Java implementation
 
@@ -16,9 +16,11 @@
   Modules are added to this parent in dependency order (Core first, since
   everything else depends on it).
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.cristianbarragan</groupId>
@@ -27,10 +29,7 @@
   <packaging>pom</packaging>
 
   <name>Foundgine</name>
-  <description>
-    Foundgine: an application-controlled semantic execution boundary for AI
-    agents and other callers.
-  </description>
+  <description>Foundgine: an application-controlled semantic execution boundary for AI agents and other callers.</description>
 
   <licenses>
     <license>
@@ -102,7 +101,6 @@
     <module>samples/foundgine-supply-chain-advanced</module>
     <module>benchmarks/foundgine-agent</module>
     <module>security/foundgine-redteam</module>
-
   </modules>
 
   <dependencyManagement>

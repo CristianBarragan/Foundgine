@@ -83,6 +83,7 @@ $env:AGENT_MODEL = "your-model"
 ```
 
 The runner uses the benchmark compose fixture by default:
+
 - PostgreSQL: `localhost:55432`
 - Foundgine warm GraphQL: `http://localhost:4302/graphql/warm`
 

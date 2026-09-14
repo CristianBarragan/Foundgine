@@ -110,4 +110,3 @@ ALTER TABLE banking.authorization_context_tombstone
     ADD COLUMN IF NOT EXISTS integrity_key_id text NOT NULL DEFAULT 'migration-required';
 ALTER TABLE banking.authorization_context_tombstone
     ADD COLUMN IF NOT EXISTS integrity_tag text NOT NULL DEFAULT repeat('0', 64);
-

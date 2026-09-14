@@ -1,96 +1,674 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
-<head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Supply Chain E2E — Agent → MCP → Foundgine → PostgreSQL | Foundgine</title>
-<meta content="Foundgine Supply Chain end-to-end benchmark: an agent-like workload through MCP, semantic execution, authorization, transactional mutations and PostgreSQL." name="description"/>
-<link href="https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/" rel="canonical"/>
-<meta content="article" property="og:type"/><meta content="Supply Chain E2E — Agent → MCP → Foundgine → PostgreSQL" property="og:title"/><meta content="An agent-like workload through MCP, semantic execution, authorization, transactional mutations and PostgreSQL." property="og:description"/><meta content="https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/" property="og:url"/><meta content="Foundgine" property="og:site_name"/>
-<meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="Supply Chain E2E — Agent → MCP → Foundgine → PostgreSQL" name="twitter:title"/><meta content="An agent-like workload through MCP, semantic execution, authorization, transactional mutations and PostgreSQL." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Supply Chain E2E — Agent to Foundgine to PostgreSQL","description":"Foundgine Supply Chain end-to-end benchmark: an agent-like workload through MCP, semantic execution, authorization, transactional mutations and PostgreSQL.","url":"https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-<link href="../../assets/style.css?v=20260828-2" rel="stylesheet"/>
-<link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml"/>
-<style>
-.report-hero{padding:5rem 0 2.5rem}.eyebrow{letter-spacing:.08em;text-transform:uppercase;font:600 .78rem/1.4 'IBM Plex Mono',monospace}.report-hero h1{max-width:900px;font-size:clamp(2.5rem,6vw,5rem);line-height:.98;margin:.7rem 0 1.2rem}.subtitle{max-width:850px;font-size:1.18rem;line-height:1.65}.scope-grid,.flow-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:2rem 0}.scope-card,.flow-card,.metric-card,.report-panel{border:1px solid var(--border,#ddd);border-radius:14px;padding:1.25rem;background:var(--surface,#fff)}.scope-card strong,.flow-card strong{display:block;margin-bottom:.45rem}.scope-card span,.flow-card span{display:block;line-height:1.55;color:var(--muted,#666)}.flow{display:flex;flex-wrap:wrap;gap:.65rem;align-items:center;margin:1.5rem 0 2.5rem}.flow-step{padding:.65rem .9rem;border:1px solid var(--border,#ddd);border-radius:999px;font-weight:600}.flow-arrow{opacity:.5}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.8rem;margin:1.5rem 0}.metric-card small{display:block;text-transform:uppercase;letter-spacing:.06em;font:600 .68rem 'IBM Plex Mono',monospace;opacity:.65}.metric-card strong{display:block;font-size:1.55rem;margin-top:.35rem}.finding{border-left:4px solid currentColor;padding:1rem 1.25rem;margin:2rem 0;background:color-mix(in srgb,currentColor 5%,transparent)}.report-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.5rem 0}.report-table{width:100%;border-collapse:collapse;margin-top:1rem}.report-table th,.report-table td{padding:.7rem .55rem;border-bottom:1px solid var(--border,#ddd);text-align:left;vertical-align:top}.status-ok{font-weight:700}.status-bad{font-weight:700}.mono{font-family:'IBM Plex Mono',monospace;font-size:.86rem}.note{font-size:.9rem;color:var(--muted,#666);line-height:1.55}.section{margin:3.5rem 0}.loading{padding:2rem 0}.error{border:1px solid #b33;padding:1rem;border-radius:12px}.badge{display:inline-block;padding:.3rem .55rem;border-radius:999px;border:1px solid var(--border,#ddd);font:600 .72rem 'IBM Plex Mono',monospace}@media(max-width:850px){.scope-grid,.flow-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
-</style>
-</head>
-<body>
-<header class="site-header"><div class="site-header-inner"><a class="brand" href="../../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav class="site-nav" id="site-nav"><a href="../../what-is-foundgine.html">What is it</a>
-<a href="../../getting-started/index.html">Getting started</a>
-<a href="../../how-it-works/index.html">How it works</a>
-<a href="../../architecture/index.html">Architecture</a>
-<a href="../../ai-agents/index.html">AI agents</a>
-<a href="../../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../../samples/index.html">Overview</a><a href="../../samples/semantic/index.html">Semantic execution</a><a href="../../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../index.html">Evidence</a><a href="../run-1/index.html">Run 1 · Baseline</a><a href="../run-2/index.html">Run 2 · Scalability</a><a href="../run-3/index.html">Run 3 · Efficiency</a><a href="../run-4/index.html">Run 4 · Graph execution</a><a href="../run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../run-5b/index.html">Run 5b · Individual vs batch</a><a href="index.html">Supply Chain E2E</a><a href="../../performance/index.html">Performance</a></div></div>
-<a href="../../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<main class="page page-wide"><article class="article article-wide">
-<section class="report-hero"><div class="eyebrow">Agent benchmark · Supply Chain E2E · Reproducible workload</div><h1>Agent → MCP → Foundgine → PostgreSQL</h1><p class="subtitle">A stateful end-to-end benchmark that exercises an AI-agent-like workload through the MCP capability boundary, Foundgine semantic execution, authorization and transactional PostgreSQL state.</p><p class="note">This is the working code behind the <a href="../../walkthrough/index.html">"top supplier in Texas" walkthrough</a> — same request, same ambiguity resolution, run against a real seeded PostgreSQL database instead of narrated step by step.</p><div class="report-actions"><a class="button" href="../index.html">← Back to benchmark</a><a class="button secondary" href="../../walkthrough/index.html">Read the walkthrough it implements →</a><a class="button secondary" href="../../assets/agent-benchmark/supply-chain/supply-chain-report.md">Read Markdown report</a><a class="button secondary" href="../../assets/agent-benchmark/supply-chain/supply-chain-report.json">Raw JSON report</a></div></section>
-<section class="section"><div class="run-label">What this benchmark covers</div><h2 id="it-tests-the-execution-boundary-not-just-database-speed">It tests the execution boundary, not just database speed.</h2><p>The workload deliberately mixes valid, invalid and unauthorized operations. It checks that business capabilities remain application-controlled as they cross MCP, semantic planning, authorization, execution and PostgreSQL.</p><div class="scope-grid"><div class="scope-card"><strong>Agent workload</strong><span>Stochastic operations across up to five customer identities plus Bob, Carol, Dave and Admin.</span></div><div class="scope-card"><strong>Semantic graph</strong><span>Customer, Order, OrderItem, Product, Supplier, Category, Inventory, Warehouse, Shipment and Carrier relationships.</span></div><div class="scope-card"><strong>Authorization</strong><span>Role and customer-ownership rules are exercised on reads and mutations.</span></div><div class="scope-card"><strong>High-assurance mutation</strong><span>PlaceOrder validates ownership, quantity, inventory, server-side pricing, atomic writes and replay protection.</span></div><div class="scope-card"><strong>State integrity</strong><span>Successful mutations must produce expected state while denied operations must not mutate PostgreSQL.</span></div><div class="scope-card"><strong>Execution evidence</strong><span>Semantic plans are lowered through Foundgine ExecutionIR and receipts include a plan fingerprint.</span></div></div></section>
-<section class="section"><div class="run-label">Execution path</div><h2 id="one-capability-boundary-several-controlled-layers">One capability boundary, several controlled layers.</h2><div class="flow"><span class="flow-step">AI agent</span><span class="flow-arrow">→</span><span class="flow-step">MCP</span><span class="flow-arrow">→</span><span class="flow-step">Foundgine semantics</span><span class="flow-arrow">→</span><span class="flow-step">Authorization</span><span class="flow-arrow">→</span><span class="flow-step">Planner</span><span class="flow-arrow">→</span><span class="flow-step">ExecutionIR</span><span class="flow-arrow">→</span><span class="flow-step">Npgsql</span><span class="flow-arrow">→</span><span class="flow-step">PostgreSQL</span></div></section>
-<section class="section"><div class="run-label">Ambiguity resolution · "top supplier in &lt;state&gt;"</div><h2 id="calculated-evidence-no-candidates-at-all-a-tie-or-a-closed-loop-never-a-guess">Calculated evidence, no candidates at all, a tie, or a closed loop — never a guess.</h2><p>The <a href="../../walkthrough/index.html">Foundgine walkthrough</a> traces one request — <em>"show me overdue purchase orders from our top supplier in Texas"</em> — through every layer, including the step where <strong>"top supplier" is not a database key</strong> and has to be resolved through ranked candidates and evidence before anything downstream may execute. This benchmark's <code>find_top_supplier_overdue_orders(actor, state, supplierName?)</code> capability brings that exact case into the Supply Chain E2E workload, seeded so all four outcomes get exercised on every run.</p><div class="scope-grid"><div class="scope-card"><strong>Case A · Calculated evidence → execution</strong><span>State <code>TX</code>: Acme Industrial (482,000) unambiguously outranks Globex Components (210,000). Resolution binds the graph to Acme, authorizes it, and executes the overdue-purchase-order query — the response carries the rows plus evidence: rank, margin over the runner-up, and a plan fingerprint.</span></div><div class="scope-card"><strong>Case B · Candidates, no assurance → ask, don't guess</strong><span>State <code>CA</code>: Northstar Supply and Southline Parts tie at 300,000. Resolution stops before authorization or execution and returns <code>clarification_needed</code> with the tied candidates and suggested refinements — name the supplier, give a tiebreak criterion, or narrow the region — instead of picking one.</span></div><div class="scope-card"><strong>Case C · No candidates at all</strong><span>State <code>NY</code> has no seeded suppliers. Retrieval returns zero candidates, so the response is <code>not_found</code> — there is nothing to resolve, authorize or execute.</span></div><div class="scope-card"><strong>Case D · Closing the loop</strong><span>State <code>CA</code> plus an explicit <code>supplierName</code>: the agent has already been told the candidates are tied and comes back with a specific name. The name is validated against the real candidate set — an unmatched name still returns <code>not_found</code>, never a guess — and once matched resolves and executes exactly like Case A, marked <code>resolvedBy: "explicit-name"</code>.</span></div></div><p class="note">Every resolved response also exercises field-level authorization from step 7 of the walkthrough: the commercially sensitive <code>Supplier.NegotiatedCost</code> field is stripped and listed under <code>deniedFields</code> for every actor except Admin, even though the capability call itself was allowed. The agent workload picks randomly among all four shapes on each occurrence, so a single run exercises every outcome. Bob (purchasing/customer service) and Admin are authorized for it; every other actor is expected to be denied at the MCP boundary.</p></section>
-<section class="section" id="live-report"><div class="run-label">Published report</div><h2 id="latest-supply-chain-e2e-result">Latest Supply Chain E2E result</h2><div class="loading" id="report">Loading the published report…</div></section>
-<section class="section" id="round-trip-estimate"><div class="run-label">Modeled comparison · no live conventional flow</div><h2 id="without-foundgine-how-many-round-trips-to-fetch-the-same-data">Without Foundgine: how many round trips to fetch the same data?</h2><p>This workload only executes the Foundgine path — there is no conventional REST/GraphQL flow running side by side to measure directly here. The panel below models what a conventional discover → authorize → execute → verify choreography would need to reach the same result, using the same 4-step count measured directly in Run 1. It is an <strong>estimate, not a measurement</strong> — see the caveats inline.</p><div class="loading" id="round-trip-panel">Loading the round-trip estimate…</div></section>
-<section class="section"><div class="run-label">High-assurance PlaceOrder</div><h2 id="the-first-vertical-slice">The first vertical slice</h2><div class="scope-grid"><div class="scope-card"><strong>1 · Authorization</strong><span>Verify the actor is permitted to place the order.</span></div><div class="scope-card"><strong>2 · Ownership</strong><span>Customer actors can only place orders for an allowed customer identity.</span></div><div class="scope-card"><strong>3 · Validation</strong><span>Resolve products and reject invalid quantities or unavailable inventory.</span></div><div class="scope-card"><strong>4 · Server-side pricing</strong><span>Pricing remains application/database controlled rather than agent supplied.</span></div><div class="scope-card"><strong>5 · Atomic mutation</strong><span>Order, order items and inventory reservation are committed as one transaction.</span></div><div class="scope-card"><strong>6 · Replay protection</strong><span>Idempotency prevents duplicate order placement from the same replay key.</span></div></div></section>
-<section class="section"><div class="run-label">How to read the result</div><h2 id="the-supply-chain-run-is-the-final-application-layer">The Supply Chain run is the final application layer</h2><p>This page should be read after the repository verification gates: unit tests establish deterministic contracts; PostgreSQL integration tests exercise the real provider; authorization and adversarial-input penetration tests attack the security boundary; and the performance smoke test proves the benchmark stack can execute real traffic without errors. The Supply Chain workload then composes those concerns into one agent-facing business workflow.</p><div class="scope-grid"><div class="scope-card"><strong>Correctness</strong><span>Valid operations succeed and invalid operations fail without silently changing protected state.</span></div><div class="scope-card"><strong>Security</strong><span>Role and ownership constraints remain application-controlled rather than agent-controlled.</span></div><div class="scope-card"><strong>Execution</strong><span>Intent crosses semantic planning and ExecutionIR before reaching the PostgreSQL provider.</span></div></div><p class="note">The repository gate definitions and exact local commands are documented in <code>samples/Foundgine.SupplyChain.Advanced/VERIFY-GATES.md</code>.</p></section>
-<section class="section report-panel"><div class="run-label">Reproduction</div><h2 id="run-it-yourself">Run it yourself</h2><pre class="mono"><code>cd samples/Foundgine.SupplyChain.Advanced
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Supply Chain E2E — Agent → MCP → Foundgine → PostgreSQL | Foundgine</title>
+    <meta
+      content="Foundgine Supply Chain end-to-end benchmark: an agent-like workload through MCP, semantic execution, authorization, transactional mutations and PostgreSQL."
+      name="description"
+    />
+    <link
+      href="https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/"
+      rel="canonical"
+    />
+    <meta content="article" property="og:type" />
+    <meta content="Supply Chain E2E — Agent → MCP → Foundgine → PostgreSQL" property="og:title" />
+    <meta
+      content="An agent-like workload through MCP, semantic execution, authorization, transactional mutations and PostgreSQL."
+      property="og:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/"
+      property="og:url"
+    />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Supply Chain E2E — Agent → MCP → Foundgine → PostgreSQL" name="twitter:title" />
+    <meta
+      content="An agent-like workload through MCP, semantic execution, authorization, transactional mutations and PostgreSQL."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Supply Chain E2E — Agent to Foundgine to PostgreSQL",
+        "description": "Foundgine Supply Chain end-to-end benchmark: an agent-like workload through MCP, semantic execution, authorization, transactional mutations and PostgreSQL.",
+        "url": "https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+    <link href="../../assets/style.css?v=20260828-2" rel="stylesheet" />
+    <link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <style>
+      .report-hero {
+        padding: 5rem 0 2.5rem;
+      }
+      .eyebrow {
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font:
+          600 0.78rem/1.4 "IBM Plex Mono",
+          monospace;
+      }
+      .report-hero h1 {
+        max-width: 900px;
+        font-size: clamp(2.5rem, 6vw, 5rem);
+        line-height: 0.98;
+        margin: 0.7rem 0 1.2rem;
+      }
+      .subtitle {
+        max-width: 850px;
+        font-size: 1.18rem;
+        line-height: 1.65;
+      }
+      .scope-grid,
+      .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      .scope-card,
+      .flow-card,
+      .metric-card,
+      .report-panel {
+        border: 1px solid var(--border, #ddd);
+        border-radius: 14px;
+        padding: 1.25rem;
+        background: var(--surface, #fff);
+      }
+      .scope-card strong,
+      .flow-card strong {
+        display: block;
+        margin-bottom: 0.45rem;
+      }
+      .scope-card span,
+      .flow-card span {
+        display: block;
+        line-height: 1.55;
+        color: var(--muted, #666);
+      }
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        align-items: center;
+        margin: 1.5rem 0 2.5rem;
+      }
+      .flow-step {
+        padding: 0.65rem 0.9rem;
+        border: 1px solid var(--border, #ddd);
+        border-radius: 999px;
+        font-weight: 600;
+      }
+      .flow-arrow {
+        opacity: 0.5;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin: 1.5rem 0;
+      }
+      .metric-card small {
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font:
+          600 0.68rem "IBM Plex Mono",
+          monospace;
+        opacity: 0.65;
+      }
+      .metric-card strong {
+        display: block;
+        font-size: 1.55rem;
+        margin-top: 0.35rem;
+      }
+      .finding {
+        border-left: 4px solid currentColor;
+        padding: 1rem 1.25rem;
+        margin: 2rem 0;
+        background: color-mix(in srgb, currentColor 5%, transparent);
+      }
+      .report-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        margin: 1.5rem 0;
+      }
+      .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      .report-table th,
+      .report-table td {
+        padding: 0.7rem 0.55rem;
+        border-bottom: 1px solid var(--border, #ddd);
+        text-align: left;
+        vertical-align: top;
+      }
+      .status-ok {
+        font-weight: 700;
+      }
+      .status-bad {
+        font-weight: 700;
+      }
+      .mono {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.86rem;
+      }
+      .note {
+        font-size: 0.9rem;
+        color: var(--muted, #666);
+        line-height: 1.55;
+      }
+      .section {
+        margin: 3.5rem 0;
+      }
+      .loading {
+        padding: 2rem 0;
+      }
+      .error {
+        border: 1px solid #b33;
+        padding: 1rem;
+        border-radius: 12px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.3rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid var(--border, #ddd);
+        font:
+          600 0.72rem "IBM Plex Mono",
+          monospace;
+      }
+      @media (max-width: 850px) {
+        .scope-grid,
+        .flow-grid {
+          grid-template-columns: 1fr;
+        }
+        .metrics {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="site-nav" id="site-nav">
+          <a href="../../what-is-foundgine.html">What is it</a>
+          <a href="../../getting-started/index.html">Getting started</a>
+          <a href="../../how-it-works/index.html">How it works</a>
+          <a href="../../architecture/index.html">Architecture</a>
+          <a href="../../ai-agents/index.html">AI agents</a>
+          <a href="../../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../../samples/index.html">Overview</a
+              ><a href="../../samples/semantic/index.html">Semantic execution</a
+              ><a href="../../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../index.html">Evidence</a><a href="../run-1/index.html">Run 1 · Baseline</a
+              ><a href="../run-2/index.html">Run 2 · Scalability</a
+              ><a href="../run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="index.html">Supply Chain E2E</a
+              ><a href="../../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <main class="page page-wide">
+      <article class="article article-wide">
+        <section class="report-hero">
+          <div class="eyebrow">Agent benchmark · Supply Chain E2E · Reproducible workload</div>
+          <h1>Agent → MCP → Foundgine → PostgreSQL</h1>
+          <p class="subtitle">
+            A stateful end-to-end benchmark that exercises an AI-agent-like workload through the MCP
+            capability boundary, Foundgine semantic execution, authorization and transactional
+            PostgreSQL state.
+          </p>
+          <p class="note">
+            This is the working code behind the
+            <a href="../../walkthrough/index.html">"top supplier in Texas" walkthrough</a> — same
+            request, same ambiguity resolution, run against a real seeded PostgreSQL database
+            instead of narrated step by step.
+          </p>
+          <div class="report-actions">
+            <a class="button" href="../index.html">← Back to benchmark</a
+            ><a class="button secondary" href="../../walkthrough/index.html"
+              >Read the walkthrough it implements →</a
+            ><a
+              class="button secondary"
+              href="../../assets/agent-benchmark/supply-chain/supply-chain-report.md"
+              >Read Markdown report</a
+            ><a
+              class="button secondary"
+              href="../../assets/agent-benchmark/supply-chain/supply-chain-report.json"
+              >Raw JSON report</a
+            >
+          </div>
+        </section>
+        <section class="section">
+          <div class="run-label">What this benchmark covers</div>
+          <h2 id="it-tests-the-execution-boundary-not-just-database-speed">
+            It tests the execution boundary, not just database speed.
+          </h2>
+          <p>
+            The workload deliberately mixes valid, invalid and unauthorized operations. It checks
+            that business capabilities remain application-controlled as they cross MCP, semantic
+            planning, authorization, execution and PostgreSQL.
+          </p>
+          <div class="scope-grid">
+            <div class="scope-card">
+              <strong>Agent workload</strong
+              ><span
+                >Stochastic operations across up to five customer identities plus Bob, Carol, Dave
+                and Admin.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>Semantic graph</strong
+              ><span
+                >Customer, Order, OrderItem, Product, Supplier, Category, Inventory, Warehouse,
+                Shipment and Carrier relationships.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>Authorization</strong
+              ><span>Role and customer-ownership rules are exercised on reads and mutations.</span>
+            </div>
+            <div class="scope-card">
+              <strong>High-assurance mutation</strong
+              ><span
+                >PlaceOrder validates ownership, quantity, inventory, server-side pricing, atomic
+                writes and replay protection.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>State integrity</strong
+              ><span
+                >Successful mutations must produce expected state while denied operations must not
+                mutate PostgreSQL.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>Execution evidence</strong
+              ><span
+                >Semantic plans are lowered through Foundgine ExecutionIR and receipts include a
+                plan fingerprint.</span
+              >
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <div class="run-label">Execution path</div>
+          <h2 id="one-capability-boundary-several-controlled-layers">
+            One capability boundary, several controlled layers.
+          </h2>
+          <div class="flow">
+            <span class="flow-step">AI agent</span><span class="flow-arrow">→</span
+            ><span class="flow-step">MCP</span><span class="flow-arrow">→</span
+            ><span class="flow-step">Foundgine semantics</span><span class="flow-arrow">→</span
+            ><span class="flow-step">Authorization</span><span class="flow-arrow">→</span
+            ><span class="flow-step">Planner</span><span class="flow-arrow">→</span
+            ><span class="flow-step">ExecutionIR</span><span class="flow-arrow">→</span
+            ><span class="flow-step">Npgsql</span><span class="flow-arrow">→</span
+            ><span class="flow-step">PostgreSQL</span>
+          </div>
+        </section>
+        <section class="section">
+          <div class="run-label">Ambiguity resolution · "top supplier in &lt;state&gt;"</div>
+          <h2 id="calculated-evidence-no-candidates-at-all-a-tie-or-a-closed-loop-never-a-guess">
+            Calculated evidence, no candidates at all, a tie, or a closed loop — never a guess.
+          </h2>
+          <p>
+            The <a href="../../walkthrough/index.html">Foundgine walkthrough</a> traces one request
+            — <em>"show me overdue purchase orders from our top supplier in Texas"</em> — through
+            every layer, including the step where
+            <strong>"top supplier" is not a database key</strong> and has to be resolved through
+            ranked candidates and evidence before anything downstream may execute. This benchmark's
+            <code>find_top_supplier_overdue_orders(actor, state, supplierName?)</code> capability
+            brings that exact case into the Supply Chain E2E workload, seeded so all four outcomes
+            get exercised on every run.
+          </p>
+          <div class="scope-grid">
+            <div class="scope-card">
+              <strong>Case A · Calculated evidence → execution</strong
+              ><span
+                >State <code>TX</code>: Acme Industrial (482,000) unambiguously outranks Globex
+                Components (210,000). Resolution binds the graph to Acme, authorizes it, and
+                executes the overdue-purchase-order query — the response carries the rows plus
+                evidence: rank, margin over the runner-up, and a plan fingerprint.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>Case B · Candidates, no assurance → ask, don't guess</strong
+              ><span
+                >State <code>CA</code>: Northstar Supply and Southline Parts tie at 300,000.
+                Resolution stops before authorization or execution and returns
+                <code>clarification_needed</code> with the tied candidates and suggested refinements
+                — name the supplier, give a tiebreak criterion, or narrow the region — instead of
+                picking one.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>Case C · No candidates at all</strong
+              ><span
+                >State <code>NY</code> has no seeded suppliers. Retrieval returns zero candidates,
+                so the response is <code>not_found</code> — there is nothing to resolve, authorize
+                or execute.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>Case D · Closing the loop</strong
+              ><span
+                >State <code>CA</code> plus an explicit <code>supplierName</code>: the agent has
+                already been told the candidates are tied and comes back with a specific name. The
+                name is validated against the real candidate set — an unmatched name still returns
+                <code>not_found</code>, never a guess — and once matched resolves and executes
+                exactly like Case A, marked <code>resolvedBy: "explicit-name"</code>.</span
+              >
+            </div>
+          </div>
+          <p class="note">
+            Every resolved response also exercises field-level authorization from step 7 of the
+            walkthrough: the commercially sensitive <code>Supplier.NegotiatedCost</code> field is
+            stripped and listed under <code>deniedFields</code> for every actor except Admin, even
+            though the capability call itself was allowed. The agent workload picks randomly among
+            all four shapes on each occurrence, so a single run exercises every outcome. Bob
+            (purchasing/customer service) and Admin are authorized for it; every other actor is
+            expected to be denied at the MCP boundary.
+          </p>
+        </section>
+        <section class="section" id="live-report">
+          <div class="run-label">Published report</div>
+          <h2 id="latest-supply-chain-e2e-result">Latest Supply Chain E2E result</h2>
+          <div class="loading" id="report">Loading the published report…</div>
+        </section>
+        <section class="section" id="round-trip-estimate">
+          <div class="run-label">Modeled comparison · no live conventional flow</div>
+          <h2 id="without-foundgine-how-many-round-trips-to-fetch-the-same-data">
+            Without Foundgine: how many round trips to fetch the same data?
+          </h2>
+          <p>
+            This workload only executes the Foundgine path — there is no conventional REST/GraphQL
+            flow running side by side to measure directly here. The panel below models what a
+            conventional discover → authorize → execute → verify choreography would need to reach
+            the same result, using the same 4-step count measured directly in Run 1. It is an
+            <strong>estimate, not a measurement</strong> — see the caveats inline.
+          </p>
+          <div class="loading" id="round-trip-panel">Loading the round-trip estimate…</div>
+        </section>
+        <section class="section">
+          <div class="run-label">High-assurance PlaceOrder</div>
+          <h2 id="the-first-vertical-slice">The first vertical slice</h2>
+          <div class="scope-grid">
+            <div class="scope-card">
+              <strong>1 · Authorization</strong
+              ><span>Verify the actor is permitted to place the order.</span>
+            </div>
+            <div class="scope-card">
+              <strong>2 · Ownership</strong
+              ><span>Customer actors can only place orders for an allowed customer identity.</span>
+            </div>
+            <div class="scope-card">
+              <strong>3 · Validation</strong
+              ><span>Resolve products and reject invalid quantities or unavailable inventory.</span>
+            </div>
+            <div class="scope-card">
+              <strong>4 · Server-side pricing</strong
+              ><span
+                >Pricing remains application/database controlled rather than agent supplied.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>5 · Atomic mutation</strong
+              ><span
+                >Order, order items and inventory reservation are committed as one
+                transaction.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>6 · Replay protection</strong
+              ><span>Idempotency prevents duplicate order placement from the same replay key.</span>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <div class="run-label">How to read the result</div>
+          <h2 id="the-supply-chain-run-is-the-final-application-layer">
+            The Supply Chain run is the final application layer
+          </h2>
+          <p>
+            This page should be read after the repository verification gates: unit tests establish
+            deterministic contracts; PostgreSQL integration tests exercise the real provider;
+            authorization and adversarial-input penetration tests attack the security boundary; and
+            the performance smoke test proves the benchmark stack can execute real traffic without
+            errors. The Supply Chain workload then composes those concerns into one agent-facing
+            business workflow.
+          </p>
+          <div class="scope-grid">
+            <div class="scope-card">
+              <strong>Correctness</strong
+              ><span
+                >Valid operations succeed and invalid operations fail without silently changing
+                protected state.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>Security</strong
+              ><span
+                >Role and ownership constraints remain application-controlled rather than
+                agent-controlled.</span
+              >
+            </div>
+            <div class="scope-card">
+              <strong>Execution</strong
+              ><span
+                >Intent crosses semantic planning and ExecutionIR before reaching the PostgreSQL
+                provider.</span
+              >
+            </div>
+          </div>
+          <p class="note">
+            The repository gate definitions and exact local commands are documented in
+            <code>samples/Foundgine.SupplyChain.Advanced/VERIFY-GATES.md</code>.
+          </p>
+        </section>
+        <section class="section report-panel">
+          <div class="run-label">Reproduction</div>
+          <h2 id="run-it-yourself">Run it yourself</h2>
+          <pre class="mono"><code>cd samples/Foundgine.SupplyChain.Advanced
 $env:SUPPLY_CHAIN_CUSTOMERS="5"
 $env:SUPPLY_CHAIN_STEPS="25"
 $env:SUPPLY_CHAIN_SEED="20260823"
 ./run-supply-chain.ps1
 
-./publish-supply-chain-report.ps1</code></pre><p class="note">The runner writes the local JSON and Markdown report under <code>reports/</code>. The publish script copies those artifacts into the website's <code>docs-site/assets/agent-benchmark/supply-chain/</code> asset folder used by this page.</p></section>
-</article></main>
-<script>
-const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const fmt=(v,d=1)=>typeof v==='number'?v.toLocaleString(undefined,{maximumFractionDigits:d}):'—';
-function renderRoundTripEstimate(report,runsData){
- const el=document.getElementById('round-trip-panel');
- const MULT=4; // discover -> authorize -> execute -> verify, the same choreography measured directly in Run 1
- const est=report.efficiencyEstimate;
- let foundgineRoundTrips,modeledConventionalRoundTrips,method;
- if(est){
-  foundgineRoundTrips=(est.measuredFoundgine&&(est.measuredFoundgine.roundTrips??est.measuredFoundgine.toolCalls))||0;
-  modeledConventionalRoundTrips=(est.modeledConventional&&(est.modeledConventional.estimatedRoundTrips??est.modeledConventional.estimatedToolCalls))||0;
-  method=est.method||'';
- } else {
-  // This published report predates the efficiencyEstimate field — derive
-  // the same estimate client-side from this report's own successful-op
-  // count, using the documented 4-step conventional choreography.
-  foundgineRoundTrips=(report.summary&&report.summary.success)||0;
-  modeledConventionalRoundTrips=foundgineRoundTrips*MULT;
-  method=`Derived client-side from this report's ${foundgineRoundTrips} successful operations × a modeled ${MULT}-step conventional choreography (discover → authorize → execute → verify) — the same multiplier measured directly in Run 1. No conventional flow was executed for this workload.`;
- }
- const reductionPct=modeledConventionalRoundTrips>0?(1-foundgineRoundTrips/modeledConventionalRoundTrips)*100:0;
+./publish-supply-chain-report.ps1</code></pre>
+          <p class="note">
+            The runner writes the local JSON and Markdown report under <code>reports/</code>. The
+            publish script copies those artifacts into the website's
+            <code>docs-site/assets/agent-benchmark/supply-chain/</code> asset folder used by this
+            page.
+          </p>
+        </section>
+      </article>
+    </main>
+    <script>
+      const esc = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m],
+        );
+      const fmt = (v, d = 1) =>
+        typeof v === "number" ? v.toLocaleString(undefined, { maximumFractionDigits: d }) : "—";
+      function renderRoundTripEstimate(report, runsData) {
+        const el = document.getElementById("round-trip-panel");
+        const MULT = 4; // discover -> authorize -> execute -> verify, the same choreography measured directly in Run 1
+        const est = report.efficiencyEstimate;
+        let foundgineRoundTrips, modeledConventionalRoundTrips, method;
+        if (est) {
+          foundgineRoundTrips =
+            (est.measuredFoundgine &&
+              (est.measuredFoundgine.roundTrips ?? est.measuredFoundgine.toolCalls)) ||
+            0;
+          modeledConventionalRoundTrips =
+            (est.modeledConventional &&
+              (est.modeledConventional.estimatedRoundTrips ??
+                est.modeledConventional.estimatedToolCalls)) ||
+            0;
+          method = est.method || "";
+        } else {
+          // This published report predates the efficiencyEstimate field — derive
+          // the same estimate client-side from this report's own successful-op
+          // count, using the documented 4-step conventional choreography.
+          foundgineRoundTrips = (report.summary && report.summary.success) || 0;
+          modeledConventionalRoundTrips = foundgineRoundTrips * MULT;
+          method = `Derived client-side from this report's ${foundgineRoundTrips} successful operations × a modeled ${MULT}-step conventional choreography (discover → authorize → execute → verify) — the same multiplier measured directly in Run 1. No conventional flow was executed for this workload.`;
+        }
+        const reductionPct =
+          modeledConventionalRoundTrips > 0
+            ? (1 - foundgineRoundTrips / modeledConventionalRoundTrips) * 100
+            : 0;
 
- // Proportion against the measured runs: Run 1-3 measure a live
- // conventional-vs-Foundgine tool-call reduction for the same kind of
- // question ("fewer round trips for the same result"). Run 5/5b compare
- // execution architecture and call shape instead, so they're left out
- // of this specific comparison rather than blended in misleadingly.
- let comparisonHtml='';
- if(runsData&&Array.isArray(runsData.runs)){
-  const rows=runsData.runs.filter(r=>['1','2','3'].includes(r.id)).map(r=>{
-   const m=/(\d[\d,]*)\s*→\s*(\d[\d,]*)/.exec((r.metrics&&r.metrics.toolCalls)||'');
-   if(!m)return null;
-   const a=+m[1].replace(/,/g,''),b=+m[2].replace(/,/g,'');
-   const pct=a>0?(1-b/a)*100:null;
-   return pct==null?null:{id:r.id,short:r.short,a,b,pct};
-  }).filter(Boolean);
-  if(rows.length){
-   comparisonHtml=`<div class="table-wrap" style="margin-top:1rem"><table class="report-table"><thead><tr><th>Run</th><th>Measured tool calls</th><th>Measured reduction</th></tr></thead><tbody>${rows.map(r=>`<tr><td>Run ${esc(r.id)} · ${esc(r.short)}</td><td class="mono">${r.a} → ${r.b}</td><td>${fmt(r.pct,1)}%</td></tr>`).join('')}<tr><td><strong>Supply Chain E2E</strong></td><td class="mono">${modeledConventionalRoundTrips} → ${foundgineRoundTrips}</td><td><strong>${fmt(reductionPct,1)}% (modeled)</strong></td></tr></tbody></table></div><p class="note">Run 1–3 measure tool-call reduction with a live conventional flow running next to Foundgine, for a comparable "fewer round trips for the same result" question. Run 5 and 5b test execution architecture and call shape rather than round-trip count, so they are left out of this table. The Supply Chain row is modeled, not measured.</p>`;
-  }
- }
+        // Proportion against the measured runs: Run 1-3 measure a live
+        // conventional-vs-Foundgine tool-call reduction for the same kind of
+        // question ("fewer round trips for the same result"). Run 5/5b compare
+        // execution architecture and call shape instead, so they're left out
+        // of this specific comparison rather than blended in misleadingly.
+        let comparisonHtml = "";
+        if (runsData && Array.isArray(runsData.runs)) {
+          const rows = runsData.runs
+            .filter((r) => ["1", "2", "3"].includes(r.id))
+            .map((r) => {
+              const m = /(\d[\d,]*)\s*→\s*(\d[\d,]*)/.exec(
+                (r.metrics && r.metrics.toolCalls) || "",
+              );
+              if (!m) return null;
+              const a = +m[1].replace(/,/g, ""),
+                b = +m[2].replace(/,/g, "");
+              const pct = a > 0 ? (1 - b / a) * 100 : null;
+              return pct == null ? null : { id: r.id, short: r.short, a, b, pct };
+            })
+            .filter(Boolean);
+          if (rows.length) {
+            comparisonHtml = `<div class="table-wrap" style="margin-top:1rem"><table class="report-table"><thead><tr><th>Run</th><th>Measured tool calls</th><th>Measured reduction</th></tr></thead><tbody>${rows.map((r) => `<tr><td>Run ${esc(r.id)} · ${esc(r.short)}</td><td class="mono">${r.a} → ${r.b}</td><td>${fmt(r.pct, 1)}%</td></tr>`).join("")}<tr><td><strong>Supply Chain E2E</strong></td><td class="mono">${modeledConventionalRoundTrips} → ${foundgineRoundTrips}</td><td><strong>${fmt(reductionPct, 1)}% (modeled)</strong></td></tr></tbody></table></div><p class="note">Run 1–3 measure tool-call reduction with a live conventional flow running next to Foundgine, for a comparable "fewer round trips for the same result" question. Run 5 and 5b test execution architecture and call shape rather than round-trip count, so they are left out of this table. The Supply Chain row is modeled, not measured.</p>`;
+          }
+        }
 
- el.innerHTML=`<div class="metrics"><div class="metric-card"><small>Foundgine round trips</small><strong>${fmt(foundgineRoundTrips,0)}</strong></div><div class="metric-card"><small>Modeled without Foundgine</small><strong>${fmt(modeledConventionalRoundTrips,0)}</strong></div><div class="metric-card"><small>Round trips / capability</small><strong>1 vs ${MULT}</strong></div><div class="metric-card"><small>Modeled reduction</small><strong>${fmt(reductionPct,1)}%</strong></div></div><p class="note">${esc(method)}</p>${comparisonHtml}`;
-}
-Promise.all([
- fetch('../../assets/agent-benchmark/supply-chain/supply-chain-report.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('No published report yet.');return r.json()}),
- fetch('../../assets/agent-benchmark/runs.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)
-]).then(([r,runsData])=>{renderRoundTripEstimate(r,runsData);const s=r.summary||{};const records=Array.isArray(r.records)?r.records:[];const unexpected=records.filter(x=>!x.ExpectedAllowed&&x.Success);const denied=records.filter(x=>!x.ExpectedAllowed);document.getElementById('report').innerHTML=`<div class="metrics"><div class="metric-card"><small>Customers</small><strong>${esc(r.customers)}</strong></div><div class="metric-card"><small>Steps</small><strong>${esc(r.steps)}</strong></div><div class="metric-card"><small>Successful</small><strong>${esc(s.success)}</strong></div><div class="metric-card"><small>Unexpected successes</small><strong>${esc(s.unexpectedSuccesses)}</strong></div><div class="metric-card"><small>Avg latency</small><strong>${fmt(s.avgLatencyMs)} ms</strong></div></div><div class="finding"><strong>Security signal</strong><p>${unexpected.length===0?'No unexpected unauthorized successes were recorded in the published run.':'The published run contains unexpected unauthorized successes and should be investigated before treating it as a passing security result.'}</p></div>${r.securityPenTest?`<div class="finding"><strong>Security PenTest regression measurement</strong><p>The existing Foundgine.SupplyChain.PenTest xUnit cases were executed against the same PostgreSQL instance used by this E2E run. Individual timings come from the xUnit TRX results; this is measured execution, not a modeled estimate.</p><div class="metrics"><div class="metric-card"><small>Cases</small><strong>${esc(r.securityPenTest.summary&&r.securityPenTest.summary.total)}</strong></div><div class="metric-card"><small>Passed</small><strong>${esc(r.securityPenTest.summary&&r.securityPenTest.summary.passed)}</strong></div><div class="metric-card"><small>Failed</small><strong>${esc(r.securityPenTest.summary&&r.securityPenTest.summary.failed)}</strong></div><div class="metric-card"><small>Avg case latency</small><strong>${fmt(r.securityPenTest.summary&&r.securityPenTest.summary.averageCaseDurationMs)} ms</strong></div><div class="metric-card"><small>Suite wall time</small><strong>${fmt(r.securityPenTest.suiteDurationMs)} ms</strong></div></div><table class="report-table"><thead><tr><th>Transport</th><th>Case</th><th>Outcome</th><th>Duration</th></tr></thead><tbody>${(r.securityPenTest.cases||[]).map(x=>`<tr><td>${esc(x.transport)}</td><td class="mono">${esc(x.name)}</td><td class="${x.outcome==='Passed'?'status-ok':'status-bad'}">${esc(x.outcome)}</td><td>${fmt(x.durationMs)} ms</td></tr>`).join('')}</tbody></table></div>`:''}<div class="report-panel"><div class="badge">seed ${esc(r.seed)} · ${esc(r.utc)}</div><table class="report-table"><thead><tr><th>Step</th><th>Actor</th><th>Capability</th><th>Expected</th><th>Result</th><th>Latency</th></tr></thead><tbody>${records.map(x=>`<tr><td>${esc(x.Step)}</td><td>${esc(x.Actor)}</td><td class="mono">${esc(x.Capability)}</td><td>${x.ExpectedAllowed?'Allowed':'Denied'}</td><td class="${x.Success?'status-ok':'status-bad'}">${x.Success?'Success':'Failure'}</td><td>${fmt(x.LatencyMs)} ms</td></tr>`).join('')}</tbody></table><p class="note">${denied.length} operations were expected to be denied. The table is generated directly from the published JSON report; it is not a manually transcribed summary.</p></div>`}).catch(e=>{document.getElementById('report').innerHTML=`<div class="error"><strong>Report not published yet.</strong><p>${esc(e.message)}</p><p>Run the Supply Chain benchmark, then run <code>publish-supply-chain-report.ps1</code>.</p></div>`;document.getElementById('round-trip-panel').innerHTML=`<div class="error"><strong>Round-trip estimate unavailable.</strong><p>${esc(e.message)}</p></div>`;});
-</script>
-<script src="../../assets/site-nav.js"></script>
-</body></html>
+        el.innerHTML = `<div class="metrics"><div class="metric-card"><small>Foundgine round trips</small><strong>${fmt(foundgineRoundTrips, 0)}</strong></div><div class="metric-card"><small>Modeled without Foundgine</small><strong>${fmt(modeledConventionalRoundTrips, 0)}</strong></div><div class="metric-card"><small>Round trips / capability</small><strong>1 vs ${MULT}</strong></div><div class="metric-card"><small>Modeled reduction</small><strong>${fmt(reductionPct, 1)}%</strong></div></div><p class="note">${esc(method)}</p>${comparisonHtml}`;
+      }
+      Promise.all([
+        fetch("../../assets/agent-benchmark/supply-chain/supply-chain-report.json", {
+          cache: "no-store",
+        }).then((r) => {
+          if (!r.ok) throw new Error("No published report yet.");
+          return r.json();
+        }),
+        fetch("../../assets/agent-benchmark/runs.json", { cache: "no-store" })
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null),
+      ])
+        .then(([r, runsData]) => {
+          renderRoundTripEstimate(r, runsData);
+          const s = r.summary || {};
+          const records = Array.isArray(r.records) ? r.records : [];
+          const unexpected = records.filter((x) => !x.ExpectedAllowed && x.Success);
+          const denied = records.filter((x) => !x.ExpectedAllowed);
+          document.getElementById("report").innerHTML =
+            `<div class="metrics"><div class="metric-card"><small>Customers</small><strong>${esc(r.customers)}</strong></div><div class="metric-card"><small>Steps</small><strong>${esc(r.steps)}</strong></div><div class="metric-card"><small>Successful</small><strong>${esc(s.success)}</strong></div><div class="metric-card"><small>Unexpected successes</small><strong>${esc(s.unexpectedSuccesses)}</strong></div><div class="metric-card"><small>Avg latency</small><strong>${fmt(s.avgLatencyMs)} ms</strong></div></div><div class="finding"><strong>Security signal</strong><p>${unexpected.length === 0 ? "No unexpected unauthorized successes were recorded in the published run." : "The published run contains unexpected unauthorized successes and should be investigated before treating it as a passing security result."}</p></div>${r.securityPenTest ? `<div class="finding"><strong>Security PenTest regression measurement</strong><p>The existing Foundgine.SupplyChain.PenTest xUnit cases were executed against the same PostgreSQL instance used by this E2E run. Individual timings come from the xUnit TRX results; this is measured execution, not a modeled estimate.</p><div class="metrics"><div class="metric-card"><small>Cases</small><strong>${esc(r.securityPenTest.summary && r.securityPenTest.summary.total)}</strong></div><div class="metric-card"><small>Passed</small><strong>${esc(r.securityPenTest.summary && r.securityPenTest.summary.passed)}</strong></div><div class="metric-card"><small>Failed</small><strong>${esc(r.securityPenTest.summary && r.securityPenTest.summary.failed)}</strong></div><div class="metric-card"><small>Avg case latency</small><strong>${fmt(r.securityPenTest.summary && r.securityPenTest.summary.averageCaseDurationMs)} ms</strong></div><div class="metric-card"><small>Suite wall time</small><strong>${fmt(r.securityPenTest.suiteDurationMs)} ms</strong></div></div><table class="report-table"><thead><tr><th>Transport</th><th>Case</th><th>Outcome</th><th>Duration</th></tr></thead><tbody>${(r.securityPenTest.cases || []).map((x) => `<tr><td>${esc(x.transport)}</td><td class="mono">${esc(x.name)}</td><td class="${x.outcome === "Passed" ? "status-ok" : "status-bad"}">${esc(x.outcome)}</td><td>${fmt(x.durationMs)} ms</td></tr>`).join("")}</tbody></table></div>` : ""}<div class="report-panel"><div class="badge">seed ${esc(r.seed)} · ${esc(r.utc)}</div><table class="report-table"><thead><tr><th>Step</th><th>Actor</th><th>Capability</th><th>Expected</th><th>Result</th><th>Latency</th></tr></thead><tbody>${records.map((x) => `<tr><td>${esc(x.Step)}</td><td>${esc(x.Actor)}</td><td class="mono">${esc(x.Capability)}</td><td>${x.ExpectedAllowed ? "Allowed" : "Denied"}</td><td class="${x.Success ? "status-ok" : "status-bad"}">${x.Success ? "Success" : "Failure"}</td><td>${fmt(x.LatencyMs)} ms</td></tr>`).join("")}</tbody></table><p class="note">${denied.length} operations were expected to be denied. The table is generated directly from the published JSON report; it is not a manually transcribed summary.</p></div>`;
+        })
+        .catch((e) => {
+          document.getElementById("report").innerHTML =
+            `<div class="error"><strong>Report not published yet.</strong><p>${esc(e.message)}</p><p>Run the Supply Chain benchmark, then run <code>publish-supply-chain-report.ps1</code>.</p></div>`;
+          document.getElementById("round-trip-panel").innerHTML =
+            `<div class="error"><strong>Round-trip estimate unavailable.</strong><p>${esc(e.message)}</p></div>`;
+        });
+    </script>
+    <script src="../../assets/site-nav.js"></script>
+  </body>
+</html>

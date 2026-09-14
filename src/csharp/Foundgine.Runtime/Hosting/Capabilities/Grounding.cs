@@ -30,7 +30,7 @@ public sealed class Grounding : IFoundgineCapability
             sp.GetRequiredService<SemanticContractSnapshot>(),
             sp.GetRequiredService<SemanticLexicalResolver>()));
     }
-        
+
 }
 
 /// <summary>Fluent <c>Use</c>/<c>Disable</c> surface for <see cref="Grounding"/>.</summary>

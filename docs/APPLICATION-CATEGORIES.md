@@ -105,7 +105,7 @@ See [AI agents](AI-AGENT.md) for the boundary this draws in detail.
 
 Writes where the cost of a wrong authorization decision is high enough to
 justify explicit dependency ordering, replay protection, deterministic
-locking, and an execution receipt — deliberately *not* inferred from
+locking, and an execution receipt — deliberately _not_ inferred from
 natural language.
 
 - `src/csharp/benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Banking` — a `TransferFunds` mutation
@@ -141,7 +141,7 @@ in for a correctly understood one.
   against a real generated semantic contract.
 
 These categories are not mutually exclusive — the two SupplyChain samples alone
-touch categories 1, 2, and 5 at once. They are meant as a map of *why* a
+touch categories 1, 2, and 5 at once. They are meant as a map of _why_ a
 given piece of architecture exists, not a menu of separate products.
 
 ---

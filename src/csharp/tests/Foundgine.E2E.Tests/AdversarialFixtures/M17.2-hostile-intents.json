@@ -1,31 +1,51 @@
 [
   {
     "id": "tenant-scope-normal",
-    "json": {"rootEntity":"Customer","selections":[{"field":"Id"},{"field":"Name"}]},
+    "json": { "rootEntity": "Customer", "selections": [{ "field": "Id" }, { "field": "Name" }] },
     "tenantId": 7,
     "expected": "one-row"
   },
   {
     "id": "cross-tenant-filter",
-    "json": {"rootEntity":"Customer","selections":[{"field":"Id"},{"field":"Name"}],"filter":{"kind":"field","field":"TenantId","operator":"Eq","value":8}},
+    "json": {
+      "rootEntity": "Customer",
+      "selections": [{ "field": "Id" }, { "field": "Name" }],
+      "filter": { "kind": "field", "field": "TenantId", "operator": "Eq", "value": 8 }
+    },
     "tenantId": 7,
     "expected": "zero-rows"
   },
   {
     "id": "sql-shaped-value",
-    "json": {"rootEntity":"Customer","selections":[{"field":"Id"},{"field":"Name"}],"filter":{"kind":"field","field":"Name","operator":"Eq","value":"' OR 1=1 --"}},
+    "json": {
+      "rootEntity": "Customer",
+      "selections": [{ "field": "Id" }, { "field": "Name" }],
+      "filter": { "kind": "field", "field": "Name", "operator": "Eq", "value": "' OR 1=1 --" }
+    },
     "tenantId": 7,
     "expected": "zero-rows"
   },
   {
     "id": "execution-control-injection",
-    "json": {"rootEntity":"Customer","selections":[{"field":"Id"}],"tenantId":8,"provider":"postgres","authorization":"allow-all","sql":"DROP TABLE Customer"},
+    "json": {
+      "rootEntity": "Customer",
+      "selections": [{ "field": "Id" }],
+      "tenantId": 8,
+      "provider": "postgres",
+      "authorization": "allow-all",
+      "sql": "DROP TABLE Customer"
+    },
     "tenantId": 7,
     "expected": "reject"
   },
   {
     "id": "identity-substitution",
-    "json": {"rootEntity":"Customer","selections":[{"field":"Id"}],"userId":"administrator","tenantId":"victim"},
+    "json": {
+      "rootEntity": "Customer",
+      "selections": [{ "field": "Id" }],
+      "userId": "administrator",
+      "tenantId": "victim"
+    },
     "tenantId": 7,
     "expected": "reject"
   }

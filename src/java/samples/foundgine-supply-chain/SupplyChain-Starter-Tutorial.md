@@ -1,9 +1,9 @@
 # Building the Foundgine Supply Chain "Starter" Sample (Java) — Step by Step
 
 This is the Java counterpart to
-[`SupplyChain-Starter-Tutorial.md`](../../csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md).
+[`SupplyChain-Starter-Tutorial.md`](../../../csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md).
 It walks you through building `src/java/samples/foundgine-supply-chain` from an empty Maven
-module, piece by piece, so you understand *why* every file exists — not just how to run it. By the
+module, piece by piece, so you understand _why_ every file exists — not just how to run it. By the
 end you'll have a small Maven module whose domain, storage-facing metadata, and authorization are
 generated and checked at compile time by the same kind of AOT annotation processor the C# sample
 uses at build time, just implemented as a Java `javax.annotation.processing.Processor` instead of a
@@ -13,7 +13,7 @@ Roslyn source generator.
 > below matches that module, so you can always cross-check against the real files if you get stuck.
 >
 > See also: [`Foundgine-SupplyChain-Explained.md`](./Foundgine-SupplyChain-Explained.md) in this
-> same folder, which walks through *why* each concept below exists.
+> same folder, which walks through _why_ each concept below exists.
 
 ---
 
@@ -68,12 +68,12 @@ mvn -version
 Foundgine's Java port publishes the same four architectural boundaries as the .NET packages, under
 the `io.github.cristianbarragan` groupId:
 
-| Artifact | Role |
-|---|---|
-| `foundgine-core` | Contracts, semantic model, metadata, planning, serialization |
-| `foundgine-runtime` | Orchestration, execution, application-facing APIs |
-| `foundgine-providers` | Storage (PostgreSQL), MCP, and AOT provider implementations |
-| `foundgine-extensions` | Optional caller-facing adapters |
+| Artifact               | Role                                                         |
+| ---------------------- | ------------------------------------------------------------ |
+| `foundgine-core`       | Contracts, semantic model, metadata, planning, serialization |
+| `foundgine-runtime`    | Orchestration, execution, application-facing APIs            |
+| `foundgine-providers`  | Storage (PostgreSQL), MCP, and AOT provider implementations  |
+| `foundgine-extensions` | Optional caller-facing adapters                              |
 
 For a normal application the minimum footprint is `foundgine-runtime` + `foundgine-providers` —
 `foundgine-core` comes along transitively. Create the module skeleton next to the other Java
@@ -88,10 +88,12 @@ Add a `pom.xml` that joins the reactor as a child of `src/java/pom.xml`, exactly
 module:
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -155,7 +157,7 @@ module:
 ```
 
 > **Why a compile-time annotation processor?** Just like the C# Roslyn generator, Foundgine needs
-> to know your entities, fields, and relationships *before* it can plan a query. The
+> to know your entities, fields, and relationships _before_ it can plan a query. The
 > `foundgine-aot-generator` annotation processor reads `@FoundgineEntity` (and friends) at compile
 > time and emits a generated metadata class you use directly in code — no runtime reflection.
 
@@ -212,6 +214,7 @@ public final class SupplyChainDomain {
 ```
 
 **What matters here:**
+
 - `@FoundgineEntity(name = "...")` registers a Java `record` as a semantic entity under a stable
   name — the annotation-processor equivalent of C#'s `[FoundgineModel]`/`[FoundgineEntity]`.
 - `@FoundgineSemanticDimension("...")` tags a component as a semantically meaningful dimension
@@ -322,7 +325,7 @@ public final class Scenarios {
 **What matters here:** a bill-of-materials graph can legitimately contain cycles in adversarial or
 malformed input (`Product 1 → 2 → 3 → 1`), and a naive recursive traversal over it would loop
 forever. `recursiveSupplierRisk` tracks the current path (`path`) as well as everything ever visited
-(`visited`) so a repeated node on the *current* path is reported as a detected cycle instead of
+(`visited`) so a repeated node on the _current_ path is reported as a detected cycle instead of
 causing unbounded recursion — the same invariant the advanced sample's
 `ScenariosAdversarialInvariants` and `RecursiveSupplierRiskParityTest` verify end to end against a
 live semantic model and PostgreSQL.

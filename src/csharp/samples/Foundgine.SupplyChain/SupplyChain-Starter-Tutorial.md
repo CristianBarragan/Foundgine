@@ -1,7 +1,7 @@
 # Building the Foundgine Supply Chain "Starter" Sample — Step by Step
 
 This walks you through building `src/csharp/samples/Foundgine.SupplyChain` from an empty
-folder, piece by piece, so you understand *why* every file exists — not just
+folder, piece by piece, so you understand _why_ every file exists — not just
 how to run it. By the end you'll have a single ASP.NET Core project that
 exposes an MCP server backed by PostgreSQL, with every read and write routed
 through Foundgine's semantic execution boundary instead of hand-written SQL.
@@ -11,7 +11,7 @@ through Foundgine's semantic execution boundary instead of hand-written SQL.
 > against the real files if you get stuck.
 >
 > See also: `Foundgine-SupplyChain-Explained.md` in this same folder, which
-> walks through *why* each concept below exists and what's required to set it
+> walks through _why_ each concept below exists and what's required to set it
 > up, section by section.
 
 ---
@@ -36,7 +36,7 @@ AI agent / MCP client
 
 The caller never writes SQL and never touches a connection string. It calls a
 named capability with an `actor`, a `token`, and some arguments. Foundgine
-turns that into a provider-neutral execution plan, and only *then* does SQL
+turns that into a provider-neutral execution plan, and only _then_ does SQL
 get generated and run.
 
 ---
@@ -63,12 +63,12 @@ docker --version
 
 Foundgine ships as **4 publishable NuGet packages**:
 
-| Package | Role |
-|---|---|
-| `Foundgine.Core` | Contracts, semantic model, metadata, planning, serialization |
-| `Foundgine.Runtime` | Orchestration, execution, control-plane, application-facing APIs |
-| `Foundgine.Providers` | Storage (PostgreSQL), MCP, AI/model, and AOT provider implementations |
-| `Foundgine.Extensions` | Optional caller-facing adapters (e.g. GraphQL/Hot Chocolate) |
+| Package                | Role                                                                  |
+| ---------------------- | --------------------------------------------------------------------- |
+| `Foundgine.Core`       | Contracts, semantic model, metadata, planning, serialization          |
+| `Foundgine.Runtime`    | Orchestration, execution, control-plane, application-facing APIs      |
+| `Foundgine.Providers`  | Storage (PostgreSQL), MCP, AI/model, and AOT provider implementations |
+| `Foundgine.Extensions` | Optional caller-facing adapters (e.g. GraphQL/Hot Chocolate)          |
 
 For a normal application the **minimum footprint** is `Foundgine.Runtime` +
 `Foundgine.Providers` — `Foundgine.Core` comes along transitively, and you
@@ -115,18 +115,20 @@ source, and add the AOT generator as an analyzer:
 
     <!-- The Roslyn source generator that turns your [FoundgineModel]/[FoundgineEntity]
          attributes into a compiled metadata registry at build time. -->
-    <ProjectReference Include="../../src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false"
-                      PrivateAssets="all"
-                      SkipGetTargetFrameworkProperties="true"
-                      UndefineProperties="TargetFramework" />
+    <ProjectReference
+      Include="../../src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+      PrivateAssets="all"
+      SkipGetTargetFrameworkProperties="true"
+      UndefineProperties="TargetFramework"
+    />
   </ItemGroup>
 </Project>
 ```
 
 > **Why a build-time generator?** Foundgine needs to know your entities,
-> fields, and relationships *before* it can plan a query. Rather than
+> fields, and relationships _before_ it can plan a query. Rather than
 > reflecting over your types at runtime (slow, and AOT-hostile), the
 > `Foundgine.Providers.Aot.Generator` analyzer reads your attributes at
 > compile time and emits a `GeneratedMetadata`/`GeneratedSemanticModel` class
@@ -219,6 +221,7 @@ public sealed class Carrier { public int Id { get; init; } public string Name { 
 ```
 
 **What matters here:**
+
 - `[FoundgineModel("Name", Id = N)]` registers the type as a semantic entity
   under a stable name and numeric id.
 - `[FoundgineConnection]` marks a navigation you want to traverse
@@ -232,7 +235,7 @@ public sealed class Carrier { public int Id { get; init; } public string Name { 
 
 ## 4. Define the storage (ERP) entities
 
-Your domain model describes *meaning*; your storage entities describe the
+Your domain model describes _meaning_; your storage entities describe the
 actual PostgreSQL tables and columns. Keeping them separate means a column
 rename never leaks into your application code. Create
 `Domain/StorageModels.cs`:
@@ -351,6 +354,7 @@ public sealed class CarrierERP
 ```
 
 **What matters here:**
+
 - `StorageName` on the entity is the **table name**; on each field it's the
   **column name**. This is the only place SQL naming exists.
 - `[FoundgineRelationship(typeof(Target), "LocalKey", "TargetKey", ...)]`
@@ -477,7 +481,7 @@ public interface ISupplyChainMutations
 
 Now `Application/Authorization.cs`. This is the security boundary: every MCP
 tool call carries an `actor` and a `token`, and nothing runs until the actor
-authenticates *and* is explicitly allowed to run that specific capability
+authenticates _and_ is explicitly allowed to run that specific capability
 against that specific customer:
 
 ```csharp
@@ -568,7 +572,7 @@ public sealed class SupplyChainAuthorizer : ICapabilityAuthorizer
 }
 ```
 
-**Why this order matters:** authorization runs *before* any query is built.
+**Why this order matters:** authorization runs _before_ any query is built.
 A denied request never reaches the planner, never reaches SQL, and never
 touches PostgreSQL.
 
@@ -761,6 +765,7 @@ public sealed class SupplyChainQueryRepository : ISupplyChainQueries
 ```
 
 **What matters here:**
+
 - `GeneratedSemanticModel.SalesOrder.CustomerId.Eq(customerId)` is a
   strongly-typed filter generated straight from your `[FoundgineField]`
   attributes — you never write a raw column name or a WHERE clause.
@@ -992,6 +997,7 @@ dotnet run
 ```
 
 The app now exposes:
+
 - MCP: `http://localhost:5000/mcp` (or whatever port `dotnet run` prints)
 - Health: `/health` and `/health/ready`
 

@@ -6,9 +6,9 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Repeatable(FoundgineConnectionMaps.class)
 public @interface FoundgineConnectionMap {
-	Class<?> model();
+    Class<?> model();
 
-	String connectionMember();
+    String connectionMember();
 
-	Class<?> entity();
+    Class<?> entity();
 }

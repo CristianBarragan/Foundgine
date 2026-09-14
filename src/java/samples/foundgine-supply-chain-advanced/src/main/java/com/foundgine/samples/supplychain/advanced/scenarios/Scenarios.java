@@ -9,18 +9,28 @@ import java.time.LocalDate;
 import java.util.*;
 
 public final class Scenarios {
-    public record SupplierRisk(int productId, Integer supplierId, int depth, boolean cycleDetected,
-                               List<Integer> path) {}
+    public record SupplierRisk(
+            int productId,
+            Integer supplierId,
+            int depth,
+            boolean cycleDetected,
+            List<Integer> path) {}
 
-    public record FulfillmentRisk(int productId, String sku, BigDecimal demand, BigDecimal available,
-                                  BigDecimal inbound, BigDecimal shortage, Set<Integer> suppliers) {}
+    public record FulfillmentRisk(
+            int productId,
+            String sku,
+            BigDecimal demand,
+            BigDecimal available,
+            BigDecimal inbound,
+            BigDecimal shortage,
+            Set<Integer> suppliers) {}
 
     /**
      * Port of C# SupplyChainScenarios.RecursiveSupplierRisk.
      *
-     * <p>The authorization context is deliberately part of the scenario API:
-     * supplier exposures are filtered by tenant while traversing, rather than
-     * being filtered after an already-authorized result has been constructed.
+     * <p>The authorization context is deliberately part of the scenario API: supplier exposures are
+     * filtered by tenant while traversing, rather than being filtered after an already-authorized
+     * result has been constructed.
      */
     public static List<SupplierRisk> recursiveSupplierRisk(
             SupplyChainData d, int root, int maxDepth, Authorization.Context auth) {
@@ -66,25 +76,31 @@ public final class Scenarios {
         }
 
         for (int child : graph.getOrDefault(product, List.of())) {
-            List<Integer> supplierIds = d.purchaseOrderLines.stream()
-                    .filter(line -> line.productId() == child)
-                    .map(line -> d.purchaseOrders.stream()
-                            .filter(po -> po.id() == line.purchaseOrderId())
-                            .map(PurchaseOrder::supplierId)
-                            .findFirst()
-                            .orElse(null))
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .toList();
+            List<Integer> supplierIds =
+                    d.purchaseOrderLines.stream()
+                            .filter(line -> line.productId() == child)
+                            .map(
+                                    line ->
+                                            d.purchaseOrders.stream()
+                                                    .filter(po -> po.id() == line.purchaseOrderId())
+                                                    .map(PurchaseOrder::supplierId)
+                                                    .findFirst()
+                                                    .orElse(null))
+                            .filter(Objects::nonNull)
+                            .distinct()
+                            .toList();
 
             for (int supplierId : supplierIds) {
-                boolean sameTenant = d.suppliers.stream()
-                        .filter(supplier -> supplier.id() == supplierId)
-                        .findFirst()
-                        .map(supplier -> supplier.tenantId().equals(auth.tenantId()))
-                        .orElse(false);
+                boolean sameTenant =
+                        d.suppliers.stream()
+                                .filter(supplier -> supplier.id() == supplierId)
+                                .findFirst()
+                                .map(supplier -> supplier.tenantId().equals(auth.tenantId()))
+                                .orElse(false);
                 if (sameTenant) {
-                    result.add(new SupplierRisk(child, supplierId, depth + 1, false, List.copyOf(path)));
+                    result.add(
+                            new SupplierRisk(
+                                    child, supplierId, depth + 1, false, List.copyOf(path)));
                 }
             }
 
@@ -97,12 +113,12 @@ public final class Scenarios {
     /**
      * Port of C# SupplyChainScenarios.FulfillmentPlanning.
      *
-     * <p>Demand is restricted to open customer orders. Inventory is reduced by
-     * reserved/quarantined quantities and warehouse authorization. Inbound
-     * supply only comes from open or partially-received purchase orders in
-     * authorized warehouses with an in-transit/delayed/partially-received
-     * shipment arriving within 14 days of {@code asOf}. Supplier identities
-     * are tenant-scoped, and results are stably ordered by shortage then product.
+     * <p>Demand is restricted to open customer orders. Inventory is reduced by reserved/quarantined
+     * quantities and warehouse authorization. Inbound supply only comes from open or
+     * partially-received purchase orders in authorized warehouses with an
+     * in-transit/delayed/partially-received shipment arriving within 14 days of {@code asOf}.
+     * Supplier identities are tenant-scoped, and results are stably ordered by shortage then
+     * product.
      */
     public static List<FulfillmentRisk> fulfillment(
             SupplyChainData d, LocalDate asOf, Authorization.Context auth) {
@@ -112,10 +128,11 @@ public final class Scenarios {
 
         Map<Integer, BigDecimal> demand = new LinkedHashMap<>();
         for (var line : d.customerOrderLines) {
-            var order = d.customerOrders.stream()
-                    .filter(candidate -> candidate.id() == line.customerOrderId())
-                    .findFirst()
-                    .orElse(null);
+            var order =
+                    d.customerOrders.stream()
+                            .filter(candidate -> candidate.id() == line.customerOrderId())
+                            .findFirst()
+                            .orElse(null);
             if (order != null && "Open".equals(order.status())) {
                 demand.merge(line.productId(), line.quantity(), BigDecimal::add);
             }
@@ -128,22 +145,31 @@ public final class Scenarios {
             int productId = entry.getKey();
             BigDecimal qty = entry.getValue();
 
-            BigDecimal available = d.inventory.stream()
-                    .filter(i -> i.productId() == productId
-                            && auth.allowedWarehouses().contains(i.warehouseId()))
-                    .map(i -> i.onHand().subtract(i.reserved()).subtract(i.quarantined())
-                            .max(BigDecimal.ZERO))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal available =
+                    d.inventory.stream()
+                            .filter(
+                                    i ->
+                                            i.productId() == productId
+                                                    && auth.allowedWarehouses()
+                                                            .contains(i.warehouseId()))
+                            .map(
+                                    i ->
+                                            i.onHand()
+                                                    .subtract(i.reserved())
+                                                    .subtract(i.quarantined())
+                                                    .max(BigDecimal.ZERO))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal inbound = BigDecimal.ZERO;
             for (var line : d.purchaseOrderLines) {
                 if (line.productId() != productId) {
                     continue;
                 }
-                var purchaseOrder = d.purchaseOrders.stream()
-                        .filter(po -> po.id() == line.purchaseOrderId())
-                        .findFirst()
-                        .orElse(null);
+                var purchaseOrder =
+                        d.purchaseOrders.stream()
+                                .filter(po -> po.id() == line.purchaseOrderId())
+                                .findFirst()
+                                .orElse(null);
                 if (purchaseOrder == null
                         || !isOpenOrPartiallyReceived(purchaseOrder.status())
                         || !auth.allowedWarehouses().contains(purchaseOrder.warehouseId())) {
@@ -159,36 +185,54 @@ public final class Scenarios {
                 }
             }
 
-            List<Integer> suppliers = d.purchaseOrderLines.stream()
-                    .filter(line -> line.productId() == productId)
-                    .map(line -> d.purchaseOrders.stream()
-                            .filter(po -> po.id() == line.purchaseOrderId())
-                            .map(PurchaseOrder::supplierId)
-                            .findFirst()
-                            .orElse(null))
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .filter(supplierId -> d.suppliers.stream()
-                            .anyMatch(supplier -> supplier.id() == supplierId
-                                    && supplier.tenantId().equals(auth.tenantId())))
-                    .toList();
+            List<Integer> suppliers =
+                    d.purchaseOrderLines.stream()
+                            .filter(line -> line.productId() == productId)
+                            .map(
+                                    line ->
+                                            d.purchaseOrders.stream()
+                                                    .filter(po -> po.id() == line.purchaseOrderId())
+                                                    .map(PurchaseOrder::supplierId)
+                                                    .findFirst()
+                                                    .orElse(null))
+                            .filter(Objects::nonNull)
+                            .distinct()
+                            .filter(
+                                    supplierId ->
+                                            d.suppliers.stream()
+                                                    .anyMatch(
+                                                            supplier ->
+                                                                    supplier.id() == supplierId
+                                                                            && supplier.tenantId()
+                                                                                    .equals(
+                                                                                            auth
+                                                                                                    .tenantId())))
+                            .toList();
 
             BigDecimal shortage = qty.subtract(available).subtract(inbound).max(BigDecimal.ZERO);
             if (shortage.signum() <= 0) {
                 continue;
             }
 
-            var product = d.products.stream()
-                    .filter(candidate -> candidate.id() == productId)
-                    .findFirst()
-                    .orElseThrow();
-            output.add(new FulfillmentRisk(productId, product.sku(), qty, available, inbound, shortage,
-                    new LinkedHashSet<>(suppliers)));
+            var product =
+                    d.products.stream()
+                            .filter(candidate -> candidate.id() == productId)
+                            .findFirst()
+                            .orElseThrow();
+            output.add(
+                    new FulfillmentRisk(
+                            productId,
+                            product.sku(),
+                            qty,
+                            available,
+                            inbound,
+                            shortage,
+                            new LinkedHashSet<>(suppliers)));
         }
 
-        output.sort(Comparator
-                .comparing(FulfillmentRisk::shortage, Comparator.reverseOrder())
-                .thenComparingInt(FulfillmentRisk::productId));
+        output.sort(
+                Comparator.comparing(FulfillmentRisk::shortage, Comparator.reverseOrder())
+                        .thenComparingInt(FulfillmentRisk::productId));
         return List.copyOf(output.stream().limit(20).toList());
     }
 
@@ -198,7 +242,8 @@ public final class Scenarios {
     }
 
     private static boolean isOpenOrPartiallyReceived(PurchaseOrderStatus status) {
-        return status == PurchaseOrderStatus.OPEN || status == PurchaseOrderStatus.PARTIALLY_RECEIVED;
+        return status == PurchaseOrderStatus.OPEN
+                || status == PurchaseOrderStatus.PARTIALLY_RECEIVED;
     }
 
     private static boolean isInboundShipment(ShipmentStatus status) {

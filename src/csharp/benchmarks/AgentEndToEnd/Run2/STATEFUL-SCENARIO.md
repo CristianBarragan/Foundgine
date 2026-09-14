@@ -42,6 +42,6 @@ Replay mode uses the existing benchmark token estimator:
 
 Provider-reported token usage remains authoritative in live mode.
 
-
 ## Runner diagnostic fix
+
 The PowerShell runner captures dotnet stdout/stderr through `cmd.exe` into `agent-benchmark-console.log`. This prevents PowerShell native stderr handling from masking the actual benchmark exception. A non-zero dotnet exit now prints the last 40 log lines before cleanup.

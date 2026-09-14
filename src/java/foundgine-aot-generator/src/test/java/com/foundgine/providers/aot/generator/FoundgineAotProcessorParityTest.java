@@ -1,12 +1,13 @@
 package com.foundgine.providers.aot.generator;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
+
+import java.nio.file.*;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.nio.file.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class FoundgineAotProcessorParityTest {
     @Test
@@ -16,7 +17,9 @@ class FoundgineAotProcessorParityTest {
 
         Path root = Files.createTempDirectory("foundgine-aot-test");
         Path source = root.resolve("Fixture.java");
-        Files.writeString(source, """
+        Files.writeString(
+                source,
+                """
                 package fixture;
                 import com.foundgine.providers.aot.*;
                 @FoundgineEntity(name="Customer")
@@ -44,22 +47,29 @@ class FoundgineAotProcessorParityTest {
         Files.createDirectories(classes);
 
         String cp = System.getProperty("java.class.path");
-        int result = compiler.run(null, null, null,
-                "-cp", cp,
-                "-processorpath", cp,
-                "-processor", FoundgineAotProcessor.class.getName(),
-                "-Afoundgine.generated.package=fixture.generated",
-                "-Afoundgine.generated.name=GeneratedFoundgineMetadata",
-                "-s", generated.toString(),
-                "-d", classes.toString(),
-                source.toString());
+        int result =
+                compiler.run(
+                        null,
+                        null,
+                        null,
+                        "-cp",
+                        cp,
+                        "-processorpath",
+                        cp,
+                        "-processor",
+                        FoundgineAotProcessor.class.getName(),
+                        "-Afoundgine.generated.package=fixture.generated",
+                        "-Afoundgine.generated.name=GeneratedFoundgineMetadata",
+                        "-s",
+                        generated.toString(),
+                        "-d",
+                        classes.toString(),
+                        source.toString());
         assertEquals(0, result);
 
-        Path generatedFile = generated.resolve(
-                Path.of(
-                        "fixture",
-                        "generated",
-                        "GeneratedFoundgineMetadata.java"));
+        Path generatedFile =
+                generated.resolve(
+                        Path.of("fixture", "generated", "GeneratedFoundgineMetadata.java"));
 
         assertTrue(
                 Files.exists(generatedFile),

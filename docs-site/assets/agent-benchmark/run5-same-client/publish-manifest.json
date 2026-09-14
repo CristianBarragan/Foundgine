@@ -1,88 +1,88 @@
 ﻿{
-    "run":  "Run5SameClient",
-    "publishedUtc":  "2026-09-01T23:41:59.6288449Z",
-    "source":  "C:\\Foundgine\\benchmarks\\AgentEndToEnd\\Run5SameClient\\artifacts",
-    "destination":  "C:\\Foundgine\\docs-site\\assets\\agent-benchmark\\run5-same-client",
-    "files":  [
-                  {
-                      "path":  "00010-customers\\concurrency-008\\run5-same-client-metadata.json",
-                      "bytes":  145627,
-                      "lastWriteUtc":  "2026-08-31T12:02:58.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-016\\run5-same-client-metadata.json",
-                      "bytes":  280380,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-032\\run5-same-client-metadata.json",
-                      "bytes":  560131,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-064\\run5-same-client-metadata.json",
-                      "bytes":  1118469,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-008\\run5-same-client-metadata.json",
-                      "bytes":  140365,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-016\\run5-same-client-metadata.json",
-                      "bytes":  280321,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-032\\run5-same-client-metadata.json",
-                      "bytes":  560123,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-064\\run5-same-client-metadata.json",
-                      "bytes":  1119225,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-008\\run5-same-client-metadata.json",
-                      "bytes":  140418,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-016\\run5-same-client-metadata.json",
-                      "bytes":  280347,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-032\\run5-same-client-metadata.json",
-                      "bytes":  560138,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-064\\run5-same-client-metadata.json",
-                      "bytes":  1119200,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "10000-customers\\concurrency-008\\run5-same-client-metadata.json",
-                      "bytes":  140380,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "10000-customers\\concurrency-016\\run5-same-client-metadata.json",
-                      "bytes":  280390,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "10000-customers\\concurrency-032\\run5-same-client-metadata.json",
-                      "bytes":  560118,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "10000-customers\\concurrency-064\\run5-same-client-metadata.json",
-                      "bytes":  1119074,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  }
-              ]
+  "run": "Run5SameClient",
+  "publishedUtc": "2026-09-01T23:41:59.6288449Z",
+  "source": "C:\\Foundgine\\benchmarks\\AgentEndToEnd\\Run5SameClient\\artifacts",
+  "destination": "C:\\Foundgine\\docs-site\\assets\\agent-benchmark\\run5-same-client",
+  "files": [
+    {
+      "path": "00010-customers\\concurrency-008\\run5-same-client-metadata.json",
+      "bytes": 145627,
+      "lastWriteUtc": "2026-08-31T12:02:58.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-016\\run5-same-client-metadata.json",
+      "bytes": 280380,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-032\\run5-same-client-metadata.json",
+      "bytes": 560131,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-064\\run5-same-client-metadata.json",
+      "bytes": 1118469,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-008\\run5-same-client-metadata.json",
+      "bytes": 140365,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-016\\run5-same-client-metadata.json",
+      "bytes": 280321,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-032\\run5-same-client-metadata.json",
+      "bytes": 560123,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-064\\run5-same-client-metadata.json",
+      "bytes": 1119225,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-008\\run5-same-client-metadata.json",
+      "bytes": 140418,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-016\\run5-same-client-metadata.json",
+      "bytes": 280347,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-032\\run5-same-client-metadata.json",
+      "bytes": 560138,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-064\\run5-same-client-metadata.json",
+      "bytes": 1119200,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "10000-customers\\concurrency-008\\run5-same-client-metadata.json",
+      "bytes": 140380,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "10000-customers\\concurrency-016\\run5-same-client-metadata.json",
+      "bytes": 280390,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "10000-customers\\concurrency-032\\run5-same-client-metadata.json",
+      "bytes": 560118,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "10000-customers\\concurrency-064\\run5-same-client-metadata.json",
+      "bytes": 1119074,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    }
+  ]
 }

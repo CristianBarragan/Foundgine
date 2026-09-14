@@ -29,7 +29,12 @@ services:
       COFFEEBEANERY_RELATIONSHIPS_PER_CUSTOMER: "4"
       COFFEEBEANERY_CONTRACTS_PER_RELATIONSHIP: "3"
       COFFEEBEANERY_TRANSACTIONS_PER_CONTRACT: "4"
-    command: ["sh", "-c", "dotnet /app/CoffeeBeanery.Database.dll && touch /tmp/fixture-ready && tail -f /dev/null"]
+    command:
+      [
+        "sh",
+        "-c",
+        "dotnet /app/CoffeeBeanery.Database.dll && touch /tmp/fixture-ready && tail -f /dev/null",
+      ]
     healthcheck:
       test: ["CMD-SHELL", "test -f /tmp/fixture-ready"]
       interval: 1s

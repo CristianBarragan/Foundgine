@@ -102,7 +102,6 @@ Provider           -> execution
 
 No object mapper belongs in the foundation.
 
-
 ## AOT connection traversal
 
 Once a connection is resolved, it is preserved as a distinct edge in the

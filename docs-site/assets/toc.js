@@ -21,13 +21,17 @@
         });
         if (!link) return;
         if (entry.isIntersecting) {
-          links.forEach(function (l) { l.classList.remove("active"); });
+          links.forEach(function (l) {
+            l.classList.remove("active");
+          });
           link.classList.add("active");
         }
       });
     },
-    { rootMargin: "-10% 0px -75% 0px" }
+    { rootMargin: "-10% 0px -75% 0px" },
   );
 
-  targets.forEach(function (t) { observer.observe(t); });
+  targets.forEach(function (t) {
+    observer.observe(t);
+  });
 })();

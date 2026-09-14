@@ -1,25 +1,172 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Getting started with Foundgine | .NET and Java</title><meta content="Build and run the Foundgine Supply Chain sample in .NET or Java, then follow the request through the application-controlled semantic execution boundary." name="description"/><link href="https://cristianbarragan.github.io/Foundgine/getting-started/" rel="canonical"/>
-<meta content="Getting started with Foundgine | .NET and Java" property="og:title"/><meta content="Build and run the Foundgine Supply Chain sample in .NET or Java, then follow the request through the application-controlled semantic execution boundary." property="og:description"/><meta content="website" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/getting-started/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="Getting started with Foundgine | .NET and Java" name="twitter:title"/><meta content="Build and run the Foundgine Supply Chain sample in .NET or Java, then follow the request through the application-controlled semantic execution boundary." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../assets/style.css" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Getting started with Foundgine | .NET and Java","description":"Build and run the Foundgine Supply Chain sample in .NET or Java, then follow the request through the application-controlled semantic execution boundary.","url":"https://cristianbarragan.github.io/Foundgine/getting-started/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a href="../what-is-foundgine.html">What is it</a>
-<a href="index.html">Getting started</a>
-<a href="../how-it-works/index.html">How it works</a>
-<a href="../architecture/index.html">Architecture</a>
-<a href="../ai-agents/index.html">AI agents</a>
-<a href="../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../samples/index.html">Overview</a><a href="../samples/semantic/index.html">Semantic execution</a><a href="../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../agent-benchmark/index.html">Evidence</a><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="../performance/index.html">Performance</a></div></div>
-<a href="../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page has-toc"><main class="article"><span class="eyebrow">Hands-on · first application</span><h1>Get started with Foundgine</h1><p class="subtitle">Start with the smallest realistic Supply Chain sample, then drill into the advanced semantic and security proving ground.</p>
-<section><h2 id="what-you-will-build">What you will build</h2><p>The starter sample keeps the application small while preserving the important boundaries: API, application, domain, semantics, PostgreSQL and MCP.</p><pre>Caller / AI agent
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Getting started with Foundgine | .NET and Java</title>
+    <meta
+      content="Build and run the Foundgine Supply Chain sample in .NET or Java, then follow the request through the application-controlled semantic execution boundary."
+      name="description"
+    />
+    <link href="https://cristianbarragan.github.io/Foundgine/getting-started/" rel="canonical" />
+    <meta content="Getting started with Foundgine | .NET and Java" property="og:title" />
+    <meta
+      content="Build and run the Foundgine Supply Chain sample in .NET or Java, then follow the request through the application-controlled semantic execution boundary."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/getting-started/"
+      property="og:url"
+    />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Getting started with Foundgine | .NET and Java" name="twitter:title" />
+    <meta
+      content="Build and run the Foundgine Supply Chain sample in .NET or Java, then follow the request through the application-controlled semantic execution boundary."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../assets/style.css" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Getting started with Foundgine | .NET and Java",
+        "description": "Build and run the Foundgine Supply Chain sample in .NET or Java, then follow the request through the application-controlled semantic execution boundary.",
+        "url": "https://cristianbarragan.github.io/Foundgine/getting-started/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a href="../what-is-foundgine.html">What is it</a>
+          <a href="index.html">Getting started</a>
+          <a href="../how-it-works/index.html">How it works</a>
+          <a href="../architecture/index.html">Architecture</a>
+          <a href="../ai-agents/index.html">AI agents</a>
+          <a href="../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../samples/index.html">Overview</a
+              ><a href="../samples/semantic/index.html">Semantic execution</a
+              ><a href="../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../agent-benchmark/index.html">Evidence</a
+              ><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page has-toc">
+      <main class="article">
+        <span class="eyebrow">Hands-on · first application</span>
+        <h1>Get started with Foundgine</h1>
+        <p class="subtitle">
+          Start with the smallest realistic Supply Chain sample, then drill into the advanced
+          semantic and security proving ground.
+        </p>
+        <section>
+          <h2 id="what-you-will-build">What you will build</h2>
+          <p>
+            The starter sample keeps the application small while preserving the important
+            boundaries: API, application, domain, semantics, PostgreSQL and MCP.
+          </p>
+          <pre>
+Caller / AI agent
       ↓
 MCP / API
       ↓
@@ -29,10 +176,149 @@ Semantic model + authorization
       ↓
 Foundgine.Runtime
       ↓
-Foundgine.Providers → PostgreSQL</pre></section>
-<section><h2 id="prerequisites">Prerequisites</h2><ul><li>.NET 9 SDK, or JDK 21 + Maven 3.9+ for the Java samples</li><li>Docker with Compose support</li><li>A clone of the Foundgine repository</li></ul></section>
-<section><h2 id="run-the-starter">Run the starter — .NET</h2><p>Use the repository sample as the executable source of truth. The website deliberately avoids copying a long command transcript that can drift from the sample.</p><ol><li>Open <a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/csharp/samples/Foundgine.SupplyChain"><code>samples/Foundgine.SupplyChain</code></a>.</li><li>Follow <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md">Building the Starter, step by step</a>.</li><li>Use <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md">Foundgine Supply Chain, Explained</a> when you want the reasoning behind each file and boundary.</li></ol></section>
-<section><h2 id="run-the-starter-java">Run the starter — Java</h2><p>The Java port follows the same shape, built as a Maven module instead of an ASP.NET Core project.</p><ol><li>Open <a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain"><code>samples/foundgine-supply-chain</code></a>.</li><li>Follow <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/SupplyChain-Starter-Tutorial.md">Building the Java Starter, step by step</a>.</li><li>Use <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/Foundgine-SupplyChain-Explained.md">Foundgine Supply Chain (Java), Explained</a> for the reasoning behind each file.</li><li>For the complete MCP + PostgreSQL path already wired up in Java, continue with <a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain-advanced"><code>samples/foundgine-supply-chain-advanced</code></a> and its <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md">step-by-step tutorial</a>.</li></ol></section>
-<section><h2 id="what-to-notice-while-running-it">What to notice while running it</h2><div class="link-grid"><a class="link-card" href="../architecture/index.html"><strong>Semantic boundary</strong><span>Meaning is separated from persistence and transport.</span></a><a class="link-card" href="../security/index.html"><strong>Authorization</strong><span>The host supplies trusted identity and the request is authorized before execution.</span></a><a class="link-card" href="../walkthrough/index.html"><strong>Execution trace</strong><span>See the same idea with concrete payloads at every stage.</span></a><a class="link-card" href="../samples/index.html"><strong>Sample progression</strong><span>Move from starter to advanced semantics and PenTest coverage.</span></a></div></section>
-<section><h2 id="go-deeper">Go deeper</h2><p>Once the starter makes sense, move to the <a href="../samples/semantic/index.html">advanced semantic sample</a>. Its numbered repository docs cover claims and authorization, high-assurance scenarios, ambiguity/grounding, retrieval strategies and adversarial testing.</p></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-link prev" href="../what-is-foundgine.html"><span>Previous</span><strong>← What is Foundgine</strong></a><a class="page-nav-home" href="../index.html">Documentation home</a><a class="page-nav-link next" href="../how-it-works/index.html"><span>Next</span><strong>How It Works →</strong></a></nav></main><aside aria-label="On this page" class="toc"><div class="toc-label">On this page</div><ol><li class=""><a href="#what-you-will-build">What you will build</a></li><li class=""><a href="#prerequisites">Prerequisites</a></li><li class=""><a href="#run-the-starter">Run the starter — .NET</a></li><li class=""><a href="#run-the-starter-java">Run the starter — Java</a></li><li class=""><a href="#what-to-notice-while-running-it">What to notice while running it</a></li><li class=""><a href="#go-deeper">Go deeper</a></li></ol><div class="toc-return"><a href="../index.html">↑ Documentation home</a></div></aside></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../assets/site-nav.js"></script><script src="../assets/toc.js"></script></body></html>
+Foundgine.Providers → PostgreSQL</pre>
+        </section>
+        <section>
+          <h2 id="prerequisites">Prerequisites</h2>
+          <ul>
+            <li>.NET 9 SDK, or JDK 21 + Maven 3.9+ for the Java samples</li>
+            <li>Docker with Compose support</li>
+            <li>A clone of the Foundgine repository</li>
+          </ul>
+        </section>
+        <section>
+          <h2 id="run-the-starter">Run the starter — .NET</h2>
+          <p>
+            Use the repository sample as the executable source of truth. The website deliberately
+            avoids copying a long command transcript that can drift from the sample.
+          </p>
+          <ol>
+            <li>
+              Open
+              <a
+                href="https://github.com/CristianBarragan/Foundgine/tree/main/src/csharp/samples/Foundgine.SupplyChain"
+                ><code>samples/Foundgine.SupplyChain</code></a
+              >.
+            </li>
+            <li>
+              Follow
+              <a
+                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md"
+                >Building the Starter, step by step</a
+              >.
+            </li>
+            <li>
+              Use
+              <a
+                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md"
+                >Foundgine Supply Chain, Explained</a
+              >
+              when you want the reasoning behind each file and boundary.
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h2 id="run-the-starter-java">Run the starter — Java</h2>
+          <p>
+            The Java port follows the same shape, built as a Maven module instead of an ASP.NET Core
+            project.
+          </p>
+          <ol>
+            <li>
+              Open
+              <a
+                href="https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain"
+                ><code>samples/foundgine-supply-chain</code></a
+              >.
+            </li>
+            <li>
+              Follow
+              <a
+                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/SupplyChain-Starter-Tutorial.md"
+                >Building the Java Starter, step by step</a
+              >.
+            </li>
+            <li>
+              Use
+              <a
+                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/Foundgine-SupplyChain-Explained.md"
+                >Foundgine Supply Chain (Java), Explained</a
+              >
+              for the reasoning behind each file.
+            </li>
+            <li>
+              For the complete MCP + PostgreSQL path already wired up in Java, continue with
+              <a
+                href="https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain-advanced"
+                ><code>samples/foundgine-supply-chain-advanced</code></a
+              >
+              and its
+              <a
+                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md"
+                >step-by-step tutorial</a
+              >.
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h2 id="what-to-notice-while-running-it">What to notice while running it</h2>
+          <div class="link-grid">
+            <a class="link-card" href="../architecture/index.html"
+              ><strong>Semantic boundary</strong
+              ><span>Meaning is separated from persistence and transport.</span></a
+            ><a class="link-card" href="../security/index.html"
+              ><strong>Authorization</strong
+              ><span
+                >The host supplies trusted identity and the request is authorized before
+                execution.</span
+              ></a
+            ><a class="link-card" href="../walkthrough/index.html"
+              ><strong>Execution trace</strong
+              ><span>See the same idea with concrete payloads at every stage.</span></a
+            ><a class="link-card" href="../samples/index.html"
+              ><strong>Sample progression</strong
+              ><span>Move from starter to advanced semantics and PenTest coverage.</span></a
+            >
+          </div>
+        </section>
+        <section>
+          <h2 id="go-deeper">Go deeper</h2>
+          <p>
+            Once the starter makes sense, move to the
+            <a href="../samples/semantic/index.html">advanced semantic sample</a>. Its numbered
+            repository docs cover claims and authorization, high-assurance scenarios,
+            ambiguity/grounding, retrieval strategies and adversarial testing.
+          </p>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-link prev" href="../what-is-foundgine.html"
+            ><span>Previous</span><strong>← What is Foundgine</strong></a
+          ><a class="page-nav-home" href="../index.html">Documentation home</a
+          ><a class="page-nav-link next" href="../how-it-works/index.html"
+            ><span>Next</span><strong>How It Works →</strong></a
+          >
+        </nav>
+      </main>
+      <aside aria-label="On this page" class="toc">
+        <div class="toc-label">On this page</div>
+        <ol>
+          <li class=""><a href="#what-you-will-build">What you will build</a></li>
+          <li class=""><a href="#prerequisites">Prerequisites</a></li>
+          <li class=""><a href="#run-the-starter">Run the starter — .NET</a></li>
+          <li class=""><a href="#run-the-starter-java">Run the starter — Java</a></li>
+          <li class="">
+            <a href="#what-to-notice-while-running-it">What to notice while running it</a>
+          </li>
+          <li class=""><a href="#go-deeper">Go deeper</a></li>
+        </ol>
+        <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>
+      </aside>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../assets/site-nav.js"></script>
+    <script src="../assets/toc.js"></script>
+  </body>
+</html>

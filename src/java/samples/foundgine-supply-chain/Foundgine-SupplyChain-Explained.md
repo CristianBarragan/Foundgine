@@ -1,10 +1,10 @@
 # Foundgine Supply Chain Starter (Java) — Every Concept, Explained
 
 This is the Java companion to
-[`Foundgine-SupplyChain-Explained.md`](../../csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
+[`Foundgine-SupplyChain-Explained.md`](../../../csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
 and to [`SupplyChain-Starter-Tutorial.md`](./SupplyChain-Starter-Tutorial.md) in this folder. It
-exists because the tutorial *shows* you each file, but doesn't always stop to explain *why the
-concept exists* or *what's different from the C# version*. Read this alongside the tutorial, in the
+exists because the tutorial _shows_ you each file, but doesn't always stop to explain _why the
+concept exists_ or _what's different from the C# version_. Read this alongside the tutorial, in the
 same order (sections match the tutorial's numbered steps).
 
 ---
@@ -13,7 +13,7 @@ same order (sections match the tutorial's numbered steps).
 
 The mental model is identical to the C# sample: Foundgine sits between "an AI agent calling a tool"
 and "SQL running against your database," and **no layer above the SQL compiler is allowed to know
-column names, table names, or write raw SQL** — everything is expressed as *semantic* operations
+column names, table names, or write raw SQL** — everything is expressed as _semantic_ operations
 that only get turned into SQL at the last step. Java doesn't change that boundary; it changes the
 mechanism used to declare it at compile time (annotation processing instead of Roslyn source
 generation) and the idioms used to express it (`record`s and static factory methods instead of
@@ -23,12 +23,12 @@ generation) and the idioms used to express it (`record`s and static factory meth
 
 ## 1. Prerequisites — what each one is for
 
-| Requirement | Why you need it |
-|---|---|
-| **JDK 21** | The `foundgine-aot-generator` module is a Java **annotation processor** (`javax.annotation.processing.Processor`), which is the JDK's compile-time code-generation mechanism — the Java analogue of a Roslyn source generator. Annotation processors run as part of `javac`, so any reasonably current JDK works; this reactor pins `maven.compiler.release` to 21. |
-| **Maven 3.9+** | The Java port is a standard multi-module Maven reactor (`src/java/pom.xml` as parent, one child module per package, `samples/*` for sample applications) — the Java analogue of the `.sln` + `<ProjectReference>` graph on the C# side. |
-| **Docker with Compose** | Once you move past the domain/authorization port covered by this starter and into the fully wired [advanced sample](../foundgine-supply-chain-advanced/README.md), data is stored in real PostgreSQL, not an in-memory fake, so the generated SQL is exercised against a real engine. |
-| **Git clone with reactor references** | Every module and sample in `src/java` depends on `${revision}` — a single Maven property in `src/java/pom.xml` — instead of a published Maven Central version, so you always build against the exact source in the repo, the same reasoning the C# tutorial gives for using `<ProjectReference>` over a NuGet version. |
+| Requirement                           | Why you need it                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **JDK 21**                            | The `foundgine-aot-generator` module is a Java **annotation processor** (`javax.annotation.processing.Processor`), which is the JDK's compile-time code-generation mechanism — the Java analogue of a Roslyn source generator. Annotation processors run as part of `javac`, so any reasonably current JDK works; this reactor pins `maven.compiler.release` to 21. |
+| **Maven 3.9+**                        | The Java port is a standard multi-module Maven reactor (`src/java/pom.xml` as parent, one child module per package, `samples/*` for sample applications) — the Java analogue of the `.sln` + `<ProjectReference>` graph on the C# side.                                                                                                                             |
+| **Docker with Compose**               | Once you move past the domain/authorization port covered by this starter and into the fully wired [advanced sample](../foundgine-supply-chain-advanced/README.md), data is stored in real PostgreSQL, not an in-memory fake, so the generated SQL is exercised against a real engine.                                                                               |
+| **Git clone with reactor references** | Every module and sample in `src/java` depends on `${revision}` — a single Maven property in `src/java/pom.xml` — instead of a published Maven Central version, so you always build against the exact source in the repo, the same reasoning the C# tutorial gives for using `<ProjectReference>` over a NuGet version.                                              |
 
 ---
 
@@ -44,7 +44,7 @@ artifacts under `io.github.cristianbarragan`:
 - **`foundgine-runtime`** — the orchestration layer that executes a plan and exposes
   application-facing APIs (`FoundgineOptions`, the mutation engine used by the advanced sample).
   Sits between Core and Providers.
-- **`foundgine-providers`** — the part that *does* know PostgreSQL exists, *does* know MCP exists,
+- **`foundgine-providers`** — the part that _does_ know PostgreSQL exists, _does_ know MCP exists,
   and hosts the AOT annotation-processor sub-module (`foundgine-aot-generator`) as a Maven module of
   its own, mirroring `Foundgine.Providers.Aot.Generator`.
 - **`foundgine-extensions`** — optional caller-facing adapters. Not used by this starter.
@@ -94,8 +94,8 @@ the planner rather than by application code remembering to call a predicate.
 A bill-of-materials graph is exactly the kind of structure an adversarial or malformed caller can
 turn into a denial-of-service vector: if `walk` only tracked "have I visited this node before, ever,"
 a diamond-shaped (but acyclic) BOM would be reported as a false cycle; if it tracked nothing at all,
-a genuine cycle (`1 → 2 → 3 → 1`) would recurse forever. Tracking the *current path* separately from
-*everything ever visited* gets both right, and is the same invariant the advanced sample's live,
+a genuine cycle (`1 → 2 → 3 → 1`) would recurse forever. Tracking the _current path_ separately from
+_everything ever visited_ gets both right, and is the same invariant the advanced sample's live,
 PostgreSQL-backed `RecursiveSupplierRiskParityTest` proves holds under the real semantic model and
 authorization policy, not just the in-memory fixture here.
 

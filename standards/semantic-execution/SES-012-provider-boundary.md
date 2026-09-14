@@ -1,4 +1,5 @@
 # SES-012 — Provider Compilation, Conformance, and Execution Boundary
+
 ← [SES-011 — Execution Intermediate Representation](SES-011-execution-ir.md) · [Standard Index](README.md) · [SES-013 — Semantic Mutation Model and High-Assurance State Change](SES-013-mutations.md) →
 
 ---

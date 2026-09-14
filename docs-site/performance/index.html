@@ -1,27 +1,269 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Foundgine Performance and Benchmark Evidence</title><meta content="Read Foundgine benchmark evidence with explicit workload scope, measured metrics and clearly labelled estimates." name="description"/><link href="https://cristianbarragan.github.io/Foundgine/performance/" rel="canonical"/>
-<meta content="Foundgine Performance and Benchmark Evidence" property="og:title"/><meta content="Read Foundgine benchmark evidence with explicit workload scope, measured metrics and clearly labelled estimates." property="og:description"/><meta content="website" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/performance/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="Foundgine Performance and Benchmark Evidence" name="twitter:title"/><meta content="Read Foundgine benchmark evidence with explicit workload scope, measured metrics and clearly labelled estimates." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../assets/style.css" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Foundgine Performance and Benchmark Evidence","description":"Read Foundgine benchmark evidence with explicit workload scope, measured metrics and clearly labelled estimates.","url":"https://cristianbarragan.github.io/Foundgine/performance/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a href="../what-is-foundgine.html">What is it</a>
-<a href="../getting-started/index.html">Getting started</a>
-<a href="../how-it-works/index.html">How it works</a>
-<a href="../architecture/index.html">Architecture</a>
-<a href="../ai-agents/index.html">AI agents</a>
-<a href="../security/index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../samples/index.html">Overview</a><a href="../samples/semantic/index.html">Semantic execution</a><a href="../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../agent-benchmark/index.html">Evidence</a><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="index.html">Performance</a></div></div>
-<a href="../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page has-toc"><main class="article"><span class="eyebrow">Evidence · measured versus estimated</span><h1>Performance and benchmark evidence</h1><p class="subtitle">The useful question is not whether Foundgine is universally faster. It is what the measured workloads show about agent work, execution shape and physical performance.</p>
-<section><h2 id="how-to-read-the-evidence">How to read the evidence</h2><p>Every benchmark should be interpreted with its workload, concurrency, fixture and implementation in view. The site separates directly measured values from modeled context estimates.</p><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Type</th><th>Interpretation</th></tr></thead><tbody><tr><td>Tool calls</td><td>Measured</td><td>Agent-side coordination observed in the benchmark.</td></tr><tr><td>Latency / RPS</td><td>Measured</td><td>Physical request performance for the tested fixture and host.</td></tr><tr><td>Success / failure</td><td>Measured</td><td>Correctness signal for the published workload.</td></tr><tr><td>Context tokens</td><td>Estimated</td><td>Benchmark heuristic; not provider billing or live model usage.</td></tr></tbody></table></div></section>
-<section><h2 id="agent-work-evidence">Agent-work evidence</h2><p>The published agent-facing runs compare the same business workflow through conventional and semantic execution paths. Their strongest signal is reduced tool coordination and, in some runs, reduced context carried by the workflow. These are workload-specific measurements, not universal claims about every model or application.</p><p><a href="../agent-benchmark/index.html">Open the benchmark explorer →</a></p></section>
-<section><h2 id="high-assurance-mutation-evidence">High-assurance mutation evidence</h2><p>The TransferFunds experiments add tenant isolation, ownership, authorization revalidation, account-state checks, idempotency and atomic transactional behavior. Run 5 exposed a concurrency limitation; Run 5b isolates request shape with the same client to study individual versus batch calls.</p><p><a href="../agent-benchmark/run-5/index.html">Run 5</a> · <a href="../agent-benchmark/run-5b/index.html">Run 5b</a></p></section>
-<section><h2 id="supply-chain-e2e">Supply Chain E2E</h2><p>The application-level case connects agent → MCP → Foundgine → PostgreSQL and combines semantic execution, authorization, mutation handling and seeded state verification.</p><p><a href="../agent-benchmark/supply-chain/index.html">Open Supply Chain E2E →</a></p></section>
-<section><h2 id="do-not-over-generalize">Do not over-generalize</h2><p>A benchmark is evidence about the experiment that was run. It is not proof that one architecture is always faster, cheaper or safer. Read the run methodology and inspect success/failure counts before drawing conclusions.</p></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-link prev" href="../samples/index.html"><span>Previous</span><strong>← Samples</strong></a><a class="page-nav-home" href="../index.html">Documentation home</a><a class="page-nav-link next" href="../packages/index.html"><span>Next</span><strong>Packages →</strong></a></nav></main><aside aria-label="On this page" class="toc"><div class="toc-label">On this page</div><ol><li class=""><a href="#how-to-read-the-evidence">How to read the evidence</a></li><li class=""><a href="#agent-work-evidence">Agent-work evidence</a></li><li class=""><a href="#high-assurance-mutation-evidence">High-assurance mutation evidence</a></li><li class=""><a href="#supply-chain-e2e">Supply Chain E2E</a></li><li class=""><a href="#do-not-over-generalize">Do not over-generalize</a></li></ol><div class="toc-return"><a href="../index.html">↑ Documentation home</a></div></aside></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../assets/site-nav.js"></script><script src="../assets/toc.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Foundgine Performance and Benchmark Evidence</title>
+    <meta
+      content="Read Foundgine benchmark evidence with explicit workload scope, measured metrics and clearly labelled estimates."
+      name="description"
+    />
+    <link href="https://cristianbarragan.github.io/Foundgine/performance/" rel="canonical" />
+    <meta content="Foundgine Performance and Benchmark Evidence" property="og:title" />
+    <meta
+      content="Read Foundgine benchmark evidence with explicit workload scope, measured metrics and clearly labelled estimates."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="https://cristianbarragan.github.io/Foundgine/performance/" property="og:url" />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Foundgine Performance and Benchmark Evidence" name="twitter:title" />
+    <meta
+      content="Read Foundgine benchmark evidence with explicit workload scope, measured metrics and clearly labelled estimates."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../assets/style.css" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Foundgine Performance and Benchmark Evidence",
+        "description": "Read Foundgine benchmark evidence with explicit workload scope, measured metrics and clearly labelled estimates.",
+        "url": "https://cristianbarragan.github.io/Foundgine/performance/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a href="../what-is-foundgine.html">What is it</a>
+          <a href="../getting-started/index.html">Getting started</a>
+          <a href="../how-it-works/index.html">How it works</a>
+          <a href="../architecture/index.html">Architecture</a>
+          <a href="../ai-agents/index.html">AI agents</a>
+          <a href="../security/index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../samples/index.html">Overview</a
+              ><a href="../samples/semantic/index.html">Semantic execution</a
+              ><a href="../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../agent-benchmark/index.html">Evidence</a
+              ><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page has-toc">
+      <main class="article">
+        <span class="eyebrow">Evidence · measured versus estimated</span>
+        <h1>Performance and benchmark evidence</h1>
+        <p class="subtitle">
+          The useful question is not whether Foundgine is universally faster. It is what the
+          measured workloads show about agent work, execution shape and physical performance.
+        </p>
+        <section>
+          <h2 id="how-to-read-the-evidence">How to read the evidence</h2>
+          <p>
+            Every benchmark should be interpreted with its workload, concurrency, fixture and
+            implementation in view. The site separates directly measured values from modeled context
+            estimates.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Type</th>
+                  <th>Interpretation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tool calls</td>
+                  <td>Measured</td>
+                  <td>Agent-side coordination observed in the benchmark.</td>
+                </tr>
+                <tr>
+                  <td>Latency / RPS</td>
+                  <td>Measured</td>
+                  <td>Physical request performance for the tested fixture and host.</td>
+                </tr>
+                <tr>
+                  <td>Success / failure</td>
+                  <td>Measured</td>
+                  <td>Correctness signal for the published workload.</td>
+                </tr>
+                <tr>
+                  <td>Context tokens</td>
+                  <td>Estimated</td>
+                  <td>Benchmark heuristic; not provider billing or live model usage.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section>
+          <h2 id="agent-work-evidence">Agent-work evidence</h2>
+          <p>
+            The published agent-facing runs compare the same business workflow through conventional
+            and semantic execution paths. Their strongest signal is reduced tool coordination and,
+            in some runs, reduced context carried by the workflow. These are workload-specific
+            measurements, not universal claims about every model or application.
+          </p>
+          <p><a href="../agent-benchmark/index.html">Open the benchmark explorer →</a></p>
+        </section>
+        <section>
+          <h2 id="high-assurance-mutation-evidence">High-assurance mutation evidence</h2>
+          <p>
+            The TransferFunds experiments add tenant isolation, ownership, authorization
+            revalidation, account-state checks, idempotency and atomic transactional behavior. Run 5
+            exposed a concurrency limitation; Run 5b isolates request shape with the same client to
+            study individual versus batch calls.
+          </p>
+          <p>
+            <a href="../agent-benchmark/run-5/index.html">Run 5</a> ·
+            <a href="../agent-benchmark/run-5b/index.html">Run 5b</a>
+          </p>
+        </section>
+        <section>
+          <h2 id="supply-chain-e2e">Supply Chain E2E</h2>
+          <p>
+            The application-level case connects agent → MCP → Foundgine → PostgreSQL and combines
+            semantic execution, authorization, mutation handling and seeded state verification.
+          </p>
+          <p><a href="../agent-benchmark/supply-chain/index.html">Open Supply Chain E2E →</a></p>
+        </section>
+        <section>
+          <h2 id="do-not-over-generalize">Do not over-generalize</h2>
+          <p>
+            A benchmark is evidence about the experiment that was run. It is not proof that one
+            architecture is always faster, cheaper or safer. Read the run methodology and inspect
+            success/failure counts before drawing conclusions.
+          </p>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-link prev" href="../samples/index.html"
+            ><span>Previous</span><strong>← Samples</strong></a
+          ><a class="page-nav-home" href="../index.html">Documentation home</a
+          ><a class="page-nav-link next" href="../packages/index.html"
+            ><span>Next</span><strong>Packages →</strong></a
+          >
+        </nav>
+      </main>
+      <aside aria-label="On this page" class="toc">
+        <div class="toc-label">On this page</div>
+        <ol>
+          <li class=""><a href="#how-to-read-the-evidence">How to read the evidence</a></li>
+          <li class=""><a href="#agent-work-evidence">Agent-work evidence</a></li>
+          <li class="">
+            <a href="#high-assurance-mutation-evidence">High-assurance mutation evidence</a>
+          </li>
+          <li class=""><a href="#supply-chain-e2e">Supply Chain E2E</a></li>
+          <li class=""><a href="#do-not-over-generalize">Do not over-generalize</a></li>
+        </ol>
+        <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>
+      </aside>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../assets/site-nav.js"></script>
+    <script src="../assets/toc.js"></script>
+  </body>
+</html>

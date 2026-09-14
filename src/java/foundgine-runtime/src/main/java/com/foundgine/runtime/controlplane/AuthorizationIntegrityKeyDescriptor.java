@@ -1,8 +1,5 @@
 package com.foundgine.runtime.controlplane;
 
-/**
- * Port of
- * {@code Foundgine.Runtime.ControlPlane.AuthorizationIntegrityKeyDescriptor}.
- */
-public record AuthorizationIntegrityKeyDescriptor(String keyId, AuthorizationIntegrityKeyState state) {
-}
+/** Port of {@code Foundgine.Runtime.ControlPlane.AuthorizationIntegrityKeyDescriptor}. */
+public record AuthorizationIntegrityKeyDescriptor(
+        String keyId, AuthorizationIntegrityKeyState state) {}

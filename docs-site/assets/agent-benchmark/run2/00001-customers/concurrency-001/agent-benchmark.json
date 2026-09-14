@@ -267,9 +267,7 @@
           "Exposure": 48240
         },
         "Actual": null,
-        "Differences": [
-          "Final state was not recorded."
-        ]
+        "Differences": ["Final state was not recorded."]
       }
     ]
   }

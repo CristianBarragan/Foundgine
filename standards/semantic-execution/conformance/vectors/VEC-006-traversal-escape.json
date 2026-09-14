@@ -5,7 +5,10 @@
   "family": "traversal escape",
   "contract": {
     "entity": "Customer",
-    "relationships": [{ "name": "invoices", "target": "Invoice" }, { "name": "referredBy", "target": "Customer" }]
+    "relationships": [
+      { "name": "invoices", "target": "Invoice" },
+      { "name": "referredBy", "target": "Customer" }
+    ]
   },
   "intent": {
     "operation": "read",

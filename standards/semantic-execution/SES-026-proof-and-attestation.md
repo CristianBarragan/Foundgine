@@ -1,4 +1,5 @@
 # SES-026 — Proof, Attestation, and Verification
+
 ← [SES-025 — Provider Capability and Fidelity Profiles](SES-025-provider-capability-profiles.md) · [Standard Index](README.md) · [SES-100 — Forward Conformance Testing Specification](SES-100-conformance-testing.md) →
 
 ---

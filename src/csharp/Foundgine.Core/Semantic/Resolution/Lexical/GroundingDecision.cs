@@ -115,7 +115,7 @@ public sealed record GroundingInterpretation(
 /// frozen semantic contract: what it was committed to (if anything), what
 /// else it could plausibly have meant, and whether that plurality of
 /// meaning is material enough to block automatic commitment.
-/// 
+///
 /// This exists because graph-constrained retrieval answers a narrower
 /// question than grounding does. A candidate that fits the semantic graph
 /// is not necessarily the meaning the user intended; a high retrieval

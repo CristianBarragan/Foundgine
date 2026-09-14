@@ -1,16 +1,15 @@
 package com.foundgine.core.semantic.security.warrants;
 
 public record SecurityWarrantRevocationSnapshot(long sequence) {
-	public static SecurityWarrantRevocationSnapshot capture(ISecurityWarrantRevocationStore s) {
-		if (s == null)
-			throw new NullPointerException();
-		return new SecurityWarrantRevocationSnapshot(s.currentSequence());
-	}
+    public static SecurityWarrantRevocationSnapshot capture(ISecurityWarrantRevocationStore s) {
+        if (s == null) throw new NullPointerException();
+        return new SecurityWarrantRevocationSnapshot(s.currentSequence());
+    }
 
-	public void assertUnchanged(ISecurityWarrantRevocationStore s) {
-		if (s == null)
-			throw new NullPointerException();
-		if (s.currentSequence() != sequence)
-			throw new IllegalStateException("Authorization revocation state changed during execution.");
-	}
+    public void assertUnchanged(ISecurityWarrantRevocationStore s) {
+        if (s == null) throw new NullPointerException();
+        if (s.currentSequence() != sequence)
+            throw new IllegalStateException(
+                    "Authorization revocation state changed during execution.");
+    }
 }

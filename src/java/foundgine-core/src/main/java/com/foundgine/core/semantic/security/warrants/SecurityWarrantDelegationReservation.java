@@ -1,5 +1,9 @@
 package com.foundgine.core.semantic.security.warrants;
 
-public record SecurityWarrantDelegationReservation(String parentWarrantId, String parentWarrantDigest,
-		String childWarrantId, String childWarrantDigest, String childNonce, long sequence) {
-}
+public record SecurityWarrantDelegationReservation(
+        String parentWarrantId,
+        String parentWarrantDigest,
+        String childWarrantId,
+        String childWarrantDigest,
+        String childNonce,
+        long sequence) {}

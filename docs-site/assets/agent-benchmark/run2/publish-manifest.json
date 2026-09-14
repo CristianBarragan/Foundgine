@@ -1,148 +1,148 @@
 ﻿{
-    "run":  "Run2",
-    "publishedUtc":  "2026-09-01T23:41:50.3368312Z",
-    "source":  "C:\\Foundgine\\benchmarks\\AgentEndToEnd\\Run2\\artifacts",
-    "destination":  "C:\\Foundgine\\docs-site\\assets\\agent-benchmark\\run2",
-    "files":  [
-                  {
-                      "path":  "00010-customers\\concurrency-008\\agent-benchmark.json",
-                      "bytes":  3673339,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-008\\agent-benchmark.md",
-                      "bytes":  20817,
-                      "lastWriteUtc":  "2026-09-01T11:38:52.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-008\\docker-metrics-summary.json",
-                      "bytes":  29,
-                      "lastWriteUtc":  "2026-08-31T11:25:58.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-008\\docker-metrics.csv",
-                      "bytes":  168,
-                      "lastWriteUtc":  "2026-08-31T11:25:50.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-008\\expected-state.json",
-                      "bytes":  9270,
-                      "lastWriteUtc":  "2026-08-31T11:25:54.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-016\\agent-benchmark.json",
-                      "bytes":  7347932,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-016\\agent-benchmark.md",
-                      "bytes":  38735,
-                      "lastWriteUtc":  "2026-09-01T11:38:52.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-016\\expected-state.json",
-                      "bytes":  8959,
-                      "lastWriteUtc":  "2026-08-31T11:20:52.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-032\\agent-benchmark.json",
-                      "bytes":  14703998,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-032\\agent-benchmark.md",
-                      "bytes":  79856,
-                      "lastWriteUtc":  "2026-09-01T11:38:52.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-032\\expected-state.json",
-                      "bytes":  8959,
-                      "lastWriteUtc":  "2026-08-31T11:20:52.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-064\\agent-benchmark.json",
-                      "bytes":  29429781,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-064\\agent-benchmark.md",
-                      "bytes":  177155,
-                      "lastWriteUtc":  "2026-09-01T11:38:52.0000000Z"
-                  },
-                  {
-                      "path":  "00010-customers\\concurrency-064\\expected-state.json",
-                      "bytes":  8959,
-                      "lastWriteUtc":  "2026-08-31T11:20:52.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-064\\agent-benchmark.json",
-                      "bytes":  29579835,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-064\\agent-benchmark.md",
-                      "bytes":  149117,
-                      "lastWriteUtc":  "2026-09-01T11:38:52.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-064\\docker-metrics-summary.json",
-                      "bytes":  29,
-                      "lastWriteUtc":  "2026-08-31T11:26:48.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-064\\docker-metrics.csv",
-                      "bytes":  168,
-                      "lastWriteUtc":  "2026-08-31T11:26:26.0000000Z"
-                  },
-                  {
-                      "path":  "00100-customers\\concurrency-064\\expected-state.json",
-                      "bytes":  93277,
-                      "lastWriteUtc":  "2026-08-31T11:26:26.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-064\\agent-benchmark.json",
-                      "bytes":  29580707,
-                      "lastWriteUtc":  "2026-08-31T12:17:46.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-064\\agent-benchmark.md",
-                      "bytes":  149120,
-                      "lastWriteUtc":  "2026-09-01T11:38:52.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-064\\docker-metrics-summary.json",
-                      "bytes":  29,
-                      "lastWriteUtc":  "2026-08-31T11:29:28.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-064\\docker-metrics.csv",
-                      "bytes":  168,
-                      "lastWriteUtc":  "2026-08-31T11:27:24.0000000Z"
-                  },
-                  {
-                      "path":  "01000-customers\\concurrency-064\\expected-state.json",
-                      "bytes":  941984,
-                      "lastWriteUtc":  "2026-08-31T11:27:28.0000000Z"
-                  },
-                  {
-                      "path":  "10000-customers\\concurrency-064\\agent-benchmark.json",
-                      "bytes":  30080652,
-                      "lastWriteUtc":  "2026-08-31T11:51:18.0000000Z"
-                  },
-                  {
-                      "path":  "10000-customers\\concurrency-064\\agent-benchmark.md",
-                      "bytes":  149118,
-                      "lastWriteUtc":  "2026-09-01T11:38:52.0000000Z"
-                  },
-                  {
-                      "path":  "10000-customers\\concurrency-064\\docker-metrics-summary.json",
-                      "bytes":  29,
-                      "lastWriteUtc":  "2026-08-31T11:51:20.0000000Z"
-                  },
-                  {
-                      "path":  "10000-customers\\concurrency-064\\docker-metrics.csv",
-                      "bytes":  168,
-                      "lastWriteUtc":  "2026-08-31T11:31:04.0000000Z"
-                  }
-              ]
+  "run": "Run2",
+  "publishedUtc": "2026-09-01T23:41:50.3368312Z",
+  "source": "C:\\Foundgine\\benchmarks\\AgentEndToEnd\\Run2\\artifacts",
+  "destination": "C:\\Foundgine\\docs-site\\assets\\agent-benchmark\\run2",
+  "files": [
+    {
+      "path": "00010-customers\\concurrency-008\\agent-benchmark.json",
+      "bytes": 3673339,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-008\\agent-benchmark.md",
+      "bytes": 20817,
+      "lastWriteUtc": "2026-09-01T11:38:52.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-008\\docker-metrics-summary.json",
+      "bytes": 29,
+      "lastWriteUtc": "2026-08-31T11:25:58.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-008\\docker-metrics.csv",
+      "bytes": 168,
+      "lastWriteUtc": "2026-08-31T11:25:50.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-008\\expected-state.json",
+      "bytes": 9270,
+      "lastWriteUtc": "2026-08-31T11:25:54.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-016\\agent-benchmark.json",
+      "bytes": 7347932,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-016\\agent-benchmark.md",
+      "bytes": 38735,
+      "lastWriteUtc": "2026-09-01T11:38:52.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-016\\expected-state.json",
+      "bytes": 8959,
+      "lastWriteUtc": "2026-08-31T11:20:52.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-032\\agent-benchmark.json",
+      "bytes": 14703998,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-032\\agent-benchmark.md",
+      "bytes": 79856,
+      "lastWriteUtc": "2026-09-01T11:38:52.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-032\\expected-state.json",
+      "bytes": 8959,
+      "lastWriteUtc": "2026-08-31T11:20:52.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-064\\agent-benchmark.json",
+      "bytes": 29429781,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-064\\agent-benchmark.md",
+      "bytes": 177155,
+      "lastWriteUtc": "2026-09-01T11:38:52.0000000Z"
+    },
+    {
+      "path": "00010-customers\\concurrency-064\\expected-state.json",
+      "bytes": 8959,
+      "lastWriteUtc": "2026-08-31T11:20:52.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-064\\agent-benchmark.json",
+      "bytes": 29579835,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-064\\agent-benchmark.md",
+      "bytes": 149117,
+      "lastWriteUtc": "2026-09-01T11:38:52.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-064\\docker-metrics-summary.json",
+      "bytes": 29,
+      "lastWriteUtc": "2026-08-31T11:26:48.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-064\\docker-metrics.csv",
+      "bytes": 168,
+      "lastWriteUtc": "2026-08-31T11:26:26.0000000Z"
+    },
+    {
+      "path": "00100-customers\\concurrency-064\\expected-state.json",
+      "bytes": 93277,
+      "lastWriteUtc": "2026-08-31T11:26:26.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-064\\agent-benchmark.json",
+      "bytes": 29580707,
+      "lastWriteUtc": "2026-08-31T12:17:46.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-064\\agent-benchmark.md",
+      "bytes": 149120,
+      "lastWriteUtc": "2026-09-01T11:38:52.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-064\\docker-metrics-summary.json",
+      "bytes": 29,
+      "lastWriteUtc": "2026-08-31T11:29:28.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-064\\docker-metrics.csv",
+      "bytes": 168,
+      "lastWriteUtc": "2026-08-31T11:27:24.0000000Z"
+    },
+    {
+      "path": "01000-customers\\concurrency-064\\expected-state.json",
+      "bytes": 941984,
+      "lastWriteUtc": "2026-08-31T11:27:28.0000000Z"
+    },
+    {
+      "path": "10000-customers\\concurrency-064\\agent-benchmark.json",
+      "bytes": 30080652,
+      "lastWriteUtc": "2026-08-31T11:51:18.0000000Z"
+    },
+    {
+      "path": "10000-customers\\concurrency-064\\agent-benchmark.md",
+      "bytes": 149118,
+      "lastWriteUtc": "2026-09-01T11:38:52.0000000Z"
+    },
+    {
+      "path": "10000-customers\\concurrency-064\\docker-metrics-summary.json",
+      "bytes": 29,
+      "lastWriteUtc": "2026-08-31T11:51:20.0000000Z"
+    },
+    {
+      "path": "10000-customers\\concurrency-064\\docker-metrics.csv",
+      "bytes": 168,
+      "lastWriteUtc": "2026-08-31T11:31:04.0000000Z"
+    }
+  ]
 }

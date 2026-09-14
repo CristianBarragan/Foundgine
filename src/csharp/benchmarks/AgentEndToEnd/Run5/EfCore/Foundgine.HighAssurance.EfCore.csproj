@@ -5,7 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../Fixtures/HighAssurance.Banking/Foundgine.HighAssurance.Banking.csproj" />
+    <ProjectReference
+      Include="../../Fixtures/HighAssurance.Banking/Foundgine.HighAssurance.Banking.csproj"
+    />
     <ProjectReference Include="../../../../Foundgine.Runtime/Foundgine.Runtime.csproj" />
   </ItemGroup>
   <ItemGroup>

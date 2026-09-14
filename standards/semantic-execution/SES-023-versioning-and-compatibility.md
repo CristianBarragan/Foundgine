@@ -1,4 +1,5 @@
 # SES-023 — Versioning, Negotiation, and Compatibility
+
 ← [SES-022 — Transport-Neutral Wire Protocol](SES-022-wire-protocol.md) · [Standard Index](README.md) · [SES-024 — Authority Algebra, Delegation, and Attenuation](SES-024-authority-and-delegation.md) →
 
 ---

@@ -1,4 +1,5 @@
 # SES-010 — Semantic Planning, Normalization, and Safe Rewriting
+
 ← [SES-009 — Authorization Provenance and Security Proof](SES-009-authorization-provenance.md) · [Standard Index](README.md) · [SES-011 — Execution Intermediate Representation](SES-011-execution-ir.md) →
 
 ---

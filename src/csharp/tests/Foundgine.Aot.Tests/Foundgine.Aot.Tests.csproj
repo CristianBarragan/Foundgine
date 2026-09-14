@@ -12,8 +12,18 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
     <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
     <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
-    <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" PrivateAssets="all" SkipGetTargetFrameworkProperties="true" UndefineProperties="TargetFramework" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="[4.14.0, 5.0.0)" PrivateAssets="all" />
+    <ProjectReference
+      Include="../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="true"
+      PrivateAssets="all"
+      SkipGetTargetFrameworkProperties="true"
+      UndefineProperties="TargetFramework"
+    />
+    <PackageReference
+      Include="Microsoft.CodeAnalysis.CSharp"
+      Version="[4.14.0, 5.0.0)"
+      PrivateAssets="all"
+    />
   </ItemGroup>
 </Project>
-

@@ -1,25 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Foundgine Security | Authorization Boundary</title><meta content="Understand Foundgine security: host-owned identity, semantic authorization, plan binding, provider conformance and fail-closed execution." name="description"/><link href="https://cristianbarragan.github.io/Foundgine/security/" rel="canonical"/>
-<meta content="Foundgine Security | Authorization Boundary" property="og:title"/><meta content="Understand Foundgine security: host-owned identity, semantic authorization, plan binding, provider conformance and fail-closed execution." property="og:description"/><meta content="website" property="og:type"/><meta content="https://cristianbarragan.github.io/Foundgine/security/" property="og:url"/><meta content="Foundgine" property="og:site_name"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" property="og:image"/><meta content="1280" property="og:image:width"/><meta content="320" property="og:image:height"/>
-<meta content="summary_large_image" name="twitter:card"/><meta content="Foundgine Security | Authorization Boundary" name="twitter:title"/><meta content="Understand Foundgine security: host-owned identity, semantic authorization, plan binding, provider conformance and fail-closed execution." name="twitter:description"/><meta content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp" name="twitter:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml"/><link href="../assets/style.css" rel="stylesheet"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Foundgine Security | Authorization Boundary","description":"Understand Foundgine security: host-owned identity, semantic authorization, plan binding, provider conformance and fail-closed execution.","url":"https://cristianbarragan.github.io/Foundgine/security/","author":{"@type":"Organization","name":"Foundgine"}}</script>
-</head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="../index.html"><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4"><line x1="6" x2="6" y1="6" y2="26"></line><line x1="6" x2="14" y1="6" y2="6"></line><line x1="6" x2="14" y1="26" y2="26"></line></g><circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg>Foundgine</a><button aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation" class="nav-toggle" type="button"><span></span><span></span><span></span></button><nav aria-label="Primary navigation" class="site-nav" id="site-nav"><a href="../what-is-foundgine.html">What is it</a>
-<a href="../getting-started/index.html">Getting started</a>
-<a href="../how-it-works/index.html">How it works</a>
-<a href="../architecture/index.html">Architecture</a>
-<a href="../ai-agents/index.html">AI agents</a>
-<a href="index.html">Security</a>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../samples/index.html">Samples</a><button aria-controls="submenu-samples" aria-expanded="false" aria-label="Show Samples pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-samples"><a href="../samples/index.html">Overview</a><a href="../samples/semantic/index.html">Semantic execution</a><a href="../samples/pentest/index.html">Security PenTest</a></div></div>
-<div class="nav-item has-submenu"><span class="nav-item-row"><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a><button aria-controls="submenu-evidence" aria-expanded="false" aria-label="Show Evidence pages" class="submenu-toggle" type="button"><svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"></path></svg></button></span><div class="submenu" id="submenu-evidence"><a href="../agent-benchmark/index.html">Evidence</a><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a><a href="../performance/index.html">Performance</a></div></div>
-<a href="../packages/index.html">Packages</a>
-<a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank">GitHub</a></nav></div></header>
-<div class="page has-toc"><main class="article"><span class="eyebrow">Security · fail closed</span><h1>Security is part of execution.</h1><p class="subtitle">Foundgine treats caller input as untrusted and carries authorization obligations into the executable plan and provider boundary.</p>
-<section><h2 id="the-core-invariant">The core invariant</h2><pre>Untrusted input
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Foundgine Security | Authorization Boundary</title>
+    <meta
+      content="Understand Foundgine security: host-owned identity, semantic authorization, plan binding, provider conformance and fail-closed execution."
+      name="description"
+    />
+    <link href="https://cristianbarragan.github.io/Foundgine/security/" rel="canonical" />
+    <meta content="Foundgine Security | Authorization Boundary" property="og:title" />
+    <meta
+      content="Understand Foundgine security: host-owned identity, semantic authorization, plan binding, provider conformance and fail-closed execution."
+      property="og:description"
+    />
+    <meta content="website" property="og:type" />
+    <meta content="https://cristianbarragan.github.io/Foundgine/security/" property="og:url" />
+    <meta content="Foundgine" property="og:site_name" />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      property="og:image"
+    />
+    <meta content="1280" property="og:image:width" />
+    <meta content="320" property="og:image:height" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="Foundgine Security | Authorization Boundary" name="twitter:title" />
+    <meta
+      content="Understand Foundgine security: host-owned identity, semantic authorization, plan binding, provider conformance and fail-closed execution."
+      name="twitter:description"
+    />
+    <meta
+      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      name="twitter:image"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link href="../assets/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="../assets/style.css" rel="stylesheet" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Foundgine Security | Authorization Boundary",
+        "description": "Understand Foundgine security: host-owned identity, semantic authorization, plan binding, provider conformance and fail-closed execution.",
+        "url": "https://cristianbarragan.github.io/Foundgine/security/",
+        "author": { "@type": "Organization", "name": "Foundgine" }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="../index.html"
+          ><svg aria-hidden="true" class="brand-mark" height="20" viewbox="0 0 32 32" width="20">
+            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="4">
+              <line x1="6" x2="6" y1="6" y2="26"></line>
+              <line x1="6" x2="14" y1="6" y2="6"></line>
+              <line x1="6" x2="14" y1="26" y2="26"></line>
+            </g>
+            <circle cx="24" cy="16" fill="currentColor" r="4.5"></circle></svg
+          >Foundgine</a
+        ><button
+          aria-controls="site-nav"
+          aria-expanded="false"
+          aria-label="Open navigation"
+          class="nav-toggle"
+          type="button"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <nav aria-label="Primary navigation" class="site-nav" id="site-nav">
+          <a href="../what-is-foundgine.html">What is it</a>
+          <a href="../getting-started/index.html">Getting started</a>
+          <a href="../how-it-works/index.html">How it works</a>
+          <a href="../architecture/index.html">Architecture</a>
+          <a href="../ai-agents/index.html">AI agents</a>
+          <a href="index.html">Security</a>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../samples/index.html">Samples</a
+              ><button
+                aria-controls="submenu-samples"
+                aria-expanded="false"
+                aria-label="Show Samples pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-samples">
+              <a href="../samples/index.html">Overview</a
+              ><a href="../samples/semantic/index.html">Semantic execution</a
+              ><a href="../samples/pentest/index.html">Security PenTest</a>
+            </div>
+          </div>
+          <div class="nav-item has-submenu">
+            <span class="nav-item-row"
+              ><a class="nav-parent-link" href="../agent-benchmark/index.html">Evidence</a
+              ><button
+                aria-controls="submenu-evidence"
+                aria-expanded="false"
+                aria-label="Show Evidence pages"
+                class="submenu-toggle"
+                type="button"
+              >
+                <svg aria-hidden="true" height="6" viewbox="0 0 10 6" width="10">
+                  <path
+                    d="M1 1l4 4 4-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                  ></path>
+                </svg></button
+            ></span>
+            <div class="submenu" id="submenu-evidence">
+              <a href="../agent-benchmark/index.html">Evidence</a
+              ><a href="../agent-benchmark/run-1/index.html">Run 1 · Baseline</a
+              ><a href="../agent-benchmark/run-2/index.html">Run 2 · Scalability</a
+              ><a href="../agent-benchmark/run-3/index.html">Run 3 · Efficiency</a
+              ><a href="../agent-benchmark/run-4/index.html">Run 4 · Graph execution</a
+              ><a href="../agent-benchmark/run-5/index.html">Run 5 · High-assurance TransferFunds</a
+              ><a href="../agent-benchmark/run-5b/index.html">Run 5b · Individual vs batch</a
+              ><a href="../agent-benchmark/supply-chain/index.html">Supply Chain E2E</a
+              ><a href="../performance/index.html">Performance</a>
+            </div>
+          </div>
+          <a href="../packages/index.html">Packages</a>
+          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+    <div class="page has-toc">
+      <main class="article">
+        <span class="eyebrow">Security · fail closed</span>
+        <h1>Security is part of execution.</h1>
+        <p class="subtitle">
+          Foundgine treats caller input as untrusted and carries authorization obligations into the
+          executable plan and provider boundary.
+        </p>
+        <section>
+          <h2 id="the-core-invariant">The core invariant</h2>
+          <pre>
+Untrusted input
       ↓
 Semantic resolution
       ↓
@@ -29,10 +169,137 @@ Security-preserving plan
       ↓
 Provider conformance
       ↓
-Execution</pre><p>A successful retrieval, a valid capability description or an “allow” policy result is not enough on its own. The final executable artifact must still satisfy the security provenance established upstream.</p></section>
-<section><h2 id="who-owns-what">Who owns what?</h2><div class="table-wrap"><table><thead><tr><th>Concern</th><th>Owner</th></tr></thead><tbody><tr><td>Authentication</td><td>Host/application identity system</td></tr><tr><td>Tenant and actor context</td><td>Host/application</td></tr><tr><td>Semantic authorization</td><td>Foundgine authorization policy</td></tr><tr><td>Plan/security binding</td><td>Foundgine planning and runtime</td></tr><tr><td>Physical access</td><td>Concrete provider</td></tr><tr><td>Authority recovery</td><td>Optional control-plane infrastructure</td></tr></tbody></table></div></section>
-<section><h2 id="authorization-is-layered">Authorization is layered</h2><div class="link-grid"><a class="link-card"><strong>Entity</strong><span>Whether the semantic resource is visible.</span></a><a class="link-card"><strong>Field</strong><span>Whether a particular field can be projected.</span></a><a class="link-card"><strong>Relationship</strong><span>Whether a traversal is allowed.</span></a><a class="link-card"><strong>Conditional</strong><span>Whether predicates such as tenant ownership must hold.</span></a><a class="link-card"><strong>Write</strong><span>Whether the caller may mutate, not merely read.</span></a><a class="link-card"><strong>Named operation</strong><span>Whether a domain capability needs stronger role or evidence gates.</span></a></div></section>
-<section><h2 id="caller-supplied-claims-cannot-widen-authority">Caller-supplied claims cannot widen authority</h2><p>Transport or client claims are untrusted input. Reserved identity keys such as role, tenant and administrator authority cannot be asserted by the caller. Accepted optional claims can only narrow an already-authorized operation.</p><p>See the <a href="../samples/semantic/index.html">semantic sample</a> for concrete claim cases and the repository's <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/AUTHORIZATION.md">Authorization</a> guide for the full policy model.</p></section>
-<section><h2 id="provider-conformance">Provider conformance</h2><p>The provider boundary receives an executable artifact carrying security provenance. If the artifact no longer conforms to the authorized execution representation, execution must fail closed rather than silently falling back to a weaker path.</p></section>
-<section><h2 id="security-testing">Security testing</h2><p>The <a href="../samples/pentest/index.html">PenTest sample</a> exercises the boundary through MCP and GraphQL. The advanced semantic sample covers tenant predicates, field and relationship restrictions, and adversarial caller claims.</p></section>
-<nav aria-label="Documentation navigation" class="page-nav"><a class="page-nav-link prev" href="../ai-agents/index.html"><span>Previous</span><strong>← AI Agents</strong></a><a class="page-nav-home" href="../index.html">Documentation home</a><a class="page-nav-link next" href="../samples/index.html"><span>Next</span><strong>Samples →</strong></a></nav></main><aside aria-label="On this page" class="toc"><div class="toc-label">On this page</div><ol><li class=""><a href="#the-core-invariant">The core invariant</a></li><li class=""><a href="#who-owns-what">Who owns what?</a></li><li class=""><a href="#authorization-is-layered">Authorization is layered</a></li><li class=""><a href="#caller-supplied-claims-cannot-widen-authority">Caller-supplied claims cannot widen authority</a></li><li class=""><a href="#provider-conformance">Provider conformance</a></li><li class=""><a href="#security-testing">Security testing</a></li></ol><div class="toc-return"><a href="../index.html">↑ Documentation home</a></div></aside></div><footer class="site-footer">Foundgine 2.2.1 · .NET 9 & Java 21 · <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a></footer><script src="../assets/site-nav.js"></script><script src="../assets/toc.js"></script></body></html>
+Execution</pre>
+          <p>
+            A successful retrieval, a valid capability description or an “allow” policy result is
+            not enough on its own. The final executable artifact must still satisfy the security
+            provenance established upstream.
+          </p>
+        </section>
+        <section>
+          <h2 id="who-owns-what">Who owns what?</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Concern</th>
+                  <th>Owner</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Authentication</td>
+                  <td>Host/application identity system</td>
+                </tr>
+                <tr>
+                  <td>Tenant and actor context</td>
+                  <td>Host/application</td>
+                </tr>
+                <tr>
+                  <td>Semantic authorization</td>
+                  <td>Foundgine authorization policy</td>
+                </tr>
+                <tr>
+                  <td>Plan/security binding</td>
+                  <td>Foundgine planning and runtime</td>
+                </tr>
+                <tr>
+                  <td>Physical access</td>
+                  <td>Concrete provider</td>
+                </tr>
+                <tr>
+                  <td>Authority recovery</td>
+                  <td>Optional control-plane infrastructure</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section>
+          <h2 id="authorization-is-layered">Authorization is layered</h2>
+          <div class="link-grid">
+            <a class="link-card"
+              ><strong>Entity</strong><span>Whether the semantic resource is visible.</span></a
+            ><a class="link-card"
+              ><strong>Field</strong><span>Whether a particular field can be projected.</span></a
+            ><a class="link-card"
+              ><strong>Relationship</strong><span>Whether a traversal is allowed.</span></a
+            ><a class="link-card"
+              ><strong>Conditional</strong
+              ><span>Whether predicates such as tenant ownership must hold.</span></a
+            ><a class="link-card"
+              ><strong>Write</strong><span>Whether the caller may mutate, not merely read.</span></a
+            ><a class="link-card"
+              ><strong>Named operation</strong
+              ><span>Whether a domain capability needs stronger role or evidence gates.</span></a
+            >
+          </div>
+        </section>
+        <section>
+          <h2 id="caller-supplied-claims-cannot-widen-authority">
+            Caller-supplied claims cannot widen authority
+          </h2>
+          <p>
+            Transport or client claims are untrusted input. Reserved identity keys such as role,
+            tenant and administrator authority cannot be asserted by the caller. Accepted optional
+            claims can only narrow an already-authorized operation.
+          </p>
+          <p>
+            See the <a href="../samples/semantic/index.html">semantic sample</a> for concrete claim
+            cases and the repository's
+            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/AUTHORIZATION.md"
+              >Authorization</a
+            >
+            guide for the full policy model.
+          </p>
+        </section>
+        <section>
+          <h2 id="provider-conformance">Provider conformance</h2>
+          <p>
+            The provider boundary receives an executable artifact carrying security provenance. If
+            the artifact no longer conforms to the authorized execution representation, execution
+            must fail closed rather than silently falling back to a weaker path.
+          </p>
+        </section>
+        <section>
+          <h2 id="security-testing">Security testing</h2>
+          <p>
+            The <a href="../samples/pentest/index.html">PenTest sample</a> exercises the boundary
+            through MCP and GraphQL. The advanced semantic sample covers tenant predicates, field
+            and relationship restrictions, and adversarial caller claims.
+          </p>
+        </section>
+        <nav aria-label="Documentation navigation" class="page-nav">
+          <a class="page-nav-link prev" href="../ai-agents/index.html"
+            ><span>Previous</span><strong>← AI Agents</strong></a
+          ><a class="page-nav-home" href="../index.html">Documentation home</a
+          ><a class="page-nav-link next" href="../samples/index.html"
+            ><span>Next</span><strong>Samples →</strong></a
+          >
+        </nav>
+      </main>
+      <aside aria-label="On this page" class="toc">
+        <div class="toc-label">On this page</div>
+        <ol>
+          <li class=""><a href="#the-core-invariant">The core invariant</a></li>
+          <li class=""><a href="#who-owns-what">Who owns what?</a></li>
+          <li class=""><a href="#authorization-is-layered">Authorization is layered</a></li>
+          <li class="">
+            <a href="#caller-supplied-claims-cannot-widen-authority"
+              >Caller-supplied claims cannot widen authority</a
+            >
+          </li>
+          <li class=""><a href="#provider-conformance">Provider conformance</a></li>
+          <li class=""><a href="#security-testing">Security testing</a></li>
+        </ol>
+        <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>
+      </aside>
+    </div>
+    <footer class="site-footer">
+      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+    </footer>
+    <script src="../assets/site-nav.js"></script>
+    <script src="../assets/toc.js"></script>
+  </body>
+</html>

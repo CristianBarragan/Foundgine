@@ -9,8 +9,10 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
     <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
-    
+
     <ProjectReference Include="../../Foundgine.Runtime/Foundgine.Runtime.csproj" />
-    <ProjectReference Include="../../benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Postgres/Foundgine.HighAssurance.Postgres.csproj" />
+    <ProjectReference
+      Include="../../benchmarks/AgentEndToEnd/Fixtures/HighAssurance.Postgres/Foundgine.HighAssurance.Postgres.csproj"
+    />
   </ItemGroup>
 </Project>

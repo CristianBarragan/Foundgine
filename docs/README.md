@@ -27,7 +27,6 @@ This is the reading path — each page ends with a link to the next one, so you 
 17. [Testing](TESTING.md) — how the boundaries above are proven, not just asserted.
 18. [Current status](CURRENT-STATUS.md) — what the active code and tests support today.
 19. [Roadmap](ROADMAP.md) — what's next, and what's deliberately out of scope.
-20. [Migration](MIGRATION.md) — moving code over from the archived V1/Graphgine projects.
 
 Package-specific architecture and usage guidance lives in the `README.md` of every project under `src/csharp/` and `src/java/`. Java sample tutorials live alongside each sample under `src/java/samples/*`.
 

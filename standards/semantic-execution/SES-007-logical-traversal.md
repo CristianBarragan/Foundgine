@@ -1,4 +1,5 @@
 # SES-007 — Logical Traversal and Path Expansion
+
 ← [SES-006 — Candidate Retrieval, Grounding, and Semantic Resolution](SES-006-retrieval-and-resolution.md) · [Standard Index](README.md) · [SES-008 — Semantic Authorization Model](SES-008-authorization-model.md) →
 
 ---

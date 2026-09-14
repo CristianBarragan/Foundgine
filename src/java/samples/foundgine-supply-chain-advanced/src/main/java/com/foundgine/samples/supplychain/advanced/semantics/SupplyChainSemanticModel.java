@@ -4,8 +4,6 @@ import com.foundgine.core.abstractions.*;
 import com.foundgine.core.semantic.*;
 import com.foundgine.core.semantic.metadata.*;
 import com.foundgine.samples.supplychain.advanced.generated.GeneratedFoundgineMetadata;
-import com.foundgine.samples.supplychain.advanced.domain.Domain;
-import com.foundgine.samples.supplychain.advanced.semantics.ManualSupplyChainSemanticModel;
 
 /** Application semantic model for the Advanced Supply Chain sample. */
 public final class SupplyChainSemanticModel {
@@ -28,9 +26,17 @@ public final class SupplyChainSemanticModel {
     public static SemanticModel build() {
         return SemanticModelDiscovery.fromMetadata(Metadata)
                 .overlay(ManualSupplyChainSemanticModel.MODEL)
-                .traversal("Product", "shipments", "purchaseOrderLines", "purchaseOrder", "shipments")
-                .traversal("Product", "supplierIncidents", "purchaseOrderLines", "purchaseOrder", "supplier", "incidents")
-                .build().freeze();
+                .traversal(
+                        "Product", "shipments", "purchaseOrderLines", "purchaseOrder", "shipments")
+                .traversal(
+                        "Product",
+                        "supplierIncidents",
+                        "purchaseOrderLines",
+                        "purchaseOrder",
+                        "supplier",
+                        "incidents")
+                .build()
+                .freeze();
     }
 
     public static EntityId entity(String name) {
@@ -43,13 +49,17 @@ public final class SupplyChainSemanticModel {
     public static FieldId field(String entity, String field) {
         return MODEL.get(entity(entity)).fields().stream()
                 .filter(f -> f.name().equalsIgnoreCase(field))
-                .findFirst().orElseThrow().id();
+                .findFirst()
+                .orElseThrow()
+                .id();
     }
 
     public static RelationshipId relationship(String entity, String relationship) {
         return MODEL.get(entity(entity)).relationships().stream()
                 .filter(r -> r.name().equalsIgnoreCase(relationship))
-                .findFirst().orElseThrow().id();
+                .findFirst()
+                .orElseThrow()
+                .id();
     }
 
     private SupplyChainSemanticModel() {}

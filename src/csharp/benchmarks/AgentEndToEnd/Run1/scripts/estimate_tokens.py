@@ -40,10 +40,10 @@ each flow, plus an aggregate estimate across all measured runs. With
 EstimatedOutputTokens / EstimatedTotalTokens per run and in aggregate,
 alongside the original (provider-reported, possibly zero) fields.
 """
+
 import argparse
 import json
 import sys
-
 
 SYSTEM_PROMPTS = {
     "Conventional application/AI flow": (
@@ -91,14 +91,23 @@ def analyze_run(run: dict, system_prompt_tokens: int, request_tokens: int) -> di
         ot = estimate_tokens(ev.get("Output"))
         tool_input_tokens += it
         tool_output_tokens += ot
-        steps.append({"name": ev.get("Name"), "kind": ev.get("Kind"), "input_tokens": it, "output_tokens": ot})
+        steps.append(
+            {
+                "name": ev.get("Name"),
+                "kind": ev.get("Kind"),
+                "input_tokens": it,
+                "output_tokens": ot,
+            }
+        )
 
     # Rough context-load model: everything that would sit in the model's
     # context window over one full pass — system + user request (paid once,
     # as input) plus every tool call's input (goes out as part of a
     # tool_use turn) and every tool result (comes back as input on the next
     # turn). We report them separately so readers can see the split.
-    estimated_input_tokens = system_prompt_tokens + request_tokens + tool_input_tokens + tool_output_tokens
+    estimated_input_tokens = (
+        system_prompt_tokens + request_tokens + tool_input_tokens + tool_output_tokens
+    )
     estimated_output_tokens = 0  # the harness doesn't capture model text/reasoning output at all (see caveats)
 
     return {
@@ -124,9 +133,15 @@ def analyze_flow(flow: dict) -> dict:
     runs = flow.get("runs") or []
     run_analyses = [analyze_run(r, system_tokens, request_tokens) for r in runs]
     if run_analyses:
-        avg_context = sum(r["estimated_context_load_tokens"] for r in run_analyses) / len(run_analyses)
-        avg_tool_in = sum(r["tool_input_tokens"] for r in run_analyses) / len(run_analyses)
-        avg_tool_out = sum(r["tool_output_tokens"] for r in run_analyses) / len(run_analyses)
+        avg_context = sum(
+            r["estimated_context_load_tokens"] for r in run_analyses
+        ) / len(run_analyses)
+        avg_tool_in = sum(r["tool_input_tokens"] for r in run_analyses) / len(
+            run_analyses
+        )
+        avg_tool_out = sum(r["tool_output_tokens"] for r in run_analyses) / len(
+            run_analyses
+        )
     else:
         avg_context = avg_tool_in = avg_tool_out = 0.0
 
@@ -142,10 +157,19 @@ def analyze_flow(flow: dict) -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("report", help="Path to agent-benchmark.json")
-    parser.add_argument("--json", help="Optional path to write an augmented JSON report", default=None)
-    parser.add_argument("--run", type=int, default=1, help="Which measured run to show a step-by-step breakdown for (default: 1)")
+    parser.add_argument(
+        "--json", help="Optional path to write an augmented JSON report", default=None
+    )
+    parser.add_argument(
+        "--run",
+        type=int,
+        default=1,
+        help="Which measured run to show a step-by-step breakdown for (default: 1)",
+    )
     args = parser.parse_args()
 
     with open(args.report, "r", encoding="utf-8") as f:
@@ -156,16 +180,30 @@ def main() -> int:
         # Fall back to the raw harness shape: {"Results": [ {Flow, Run, Trace, ...}, ... ]}
         results = report.get("Results")
         if not results:
-            print("No 'Flows' or 'Results' array with trace data found in this report.", file=sys.stderr)
-            print("Re-run the benchmark and make sure per-run Trace data is included (record=true).", file=sys.stderr)
+            print(
+                "No 'Flows' or 'Results' array with trace data found in this report.",
+                file=sys.stderr,
+            )
+            print(
+                "Re-run the benchmark and make sure per-run Trace data is included (record=true).",
+                file=sys.stderr,
+            )
             return 1
         grouped: dict[str, list] = {}
         for r in results:
             grouped.setdefault(r.get("Flow"), []).append(r)
-        flows = [{"id": name, "title": name, "runs": runs} for name, runs in grouped.items()]
+        flows = [
+            {"id": name, "title": name, "runs": runs} for name, runs in grouped.items()
+        ]
 
-    if not any((fl.get("runs") or [None])[0] and (fl.get("runs") or [{}])[0].get("Trace") for fl in flows):
-        print("Report has no per-run Trace payloads (record=false runs only).", file=sys.stderr)
+    if not any(
+        (fl.get("runs") or [None])[0] and (fl.get("runs") or [{}])[0].get("Trace")
+        for fl in flows
+    ):
+        print(
+            "Report has no per-run Trace payloads (record=false runs only).",
+            file=sys.stderr,
+        )
         print("Re-run with at least one recorded run per flow.", file=sys.stderr)
         return 1
 
@@ -181,29 +219,48 @@ def main() -> int:
 
     for a in analyses:
         print(f"--- {a['flow']} ---")
-        print(f"  system prompt:  ~{a['system_prompt_tokens']} tokens (fixed, paid every run)")
-        print(f"  user request:   ~{a['request_tokens']} tokens (fixed, paid every run)")
-        run_to_show = next((r for r in a["runs"] if r["run"] == args.run), a["runs"][0] if a["runs"] else None)
+        print(
+            f"  system prompt:  ~{a['system_prompt_tokens']} tokens (fixed, paid every run)"
+        )
+        print(
+            f"  user request:   ~{a['request_tokens']} tokens (fixed, paid every run)"
+        )
+        run_to_show = next(
+            (r for r in a["runs"] if r["run"] == args.run),
+            a["runs"][0] if a["runs"] else None,
+        )
         if run_to_show:
             print(f"  step-by-step (run {run_to_show['run']}):")
             for s in run_to_show["steps"]:
-                print(f"    {s['name']:<28s} in~{s['input_tokens']:>5d}  out~{s['output_tokens']:>5d}")
+                print(
+                    f"    {s['name']:<28s} in~{s['input_tokens']:>5d}  out~{s['output_tokens']:>5d}"
+                )
         print(f"  avg tool-input tokens/run:   ~{a['avg_tool_input_tokens']}")
         print(f"  avg tool-output tokens/run:  ~{a['avg_tool_output_tokens']}")
-        print(f"  avg estimated context load:  ~{a['avg_estimated_context_load_tokens']} tokens/run")
+        print(
+            f"  avg estimated context load:  ~{a['avg_estimated_context_load_tokens']} tokens/run"
+        )
         print()
 
     if len(analyses) >= 2:
         base, other = analyses[0], analyses[1]
         if base["avg_estimated_context_load_tokens"] > 0:
-            saving = (1 - other["avg_estimated_context_load_tokens"] / base["avg_estimated_context_load_tokens"]) * 100
+            saving = (
+                1
+                - other["avg_estimated_context_load_tokens"]
+                / base["avg_estimated_context_load_tokens"]
+            ) * 100
             print("=" * 70)
-            print(f" Estimated token-load reduction ({other['flow']} vs {base['flow']}): {saving:.1f}%")
+            print(
+                f" Estimated token-load reduction ({other['flow']} vs {base['flow']}): {saving:.1f}%"
+            )
             print("=" * 70)
 
     print()
     print("Caveats (read before citing this number):")
-    print("  - This is a heuristic estimate of PAYLOAD size, not a real tokenizer count.")
+    print(
+        "  - This is a heuristic estimate of PAYLOAD size, not a real tokenizer count."
+    )
     print("  - It does not include the model's own reasoning/response tokens —")
     print("    a live agent run would add tool-selection and reasoning tokens on top.")
     print("  - It does not include prompt-cache discounts a real provider might apply")

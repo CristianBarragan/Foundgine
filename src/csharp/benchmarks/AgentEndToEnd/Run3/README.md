@@ -25,5 +25,4 @@ For real model billing, use live mode and provide `AGENT_MODEL_ENDPOINT`, `AGENT
 
 Run 3 deliberately does not claim measured electricity consumption. Docker stats provide CPU/memory/I/O telemetry; actual Wh requires host/server power telemetry.
 
-
 To publish the completed report into the shared `docs-site/assets/agent-benchmark/` folder, add `-Publish` to the benchmark command, or run `publish-report.ps1` directly.

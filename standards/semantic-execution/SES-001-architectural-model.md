@@ -1,4 +1,5 @@
 # SES-001 — Architectural Model and Trust Boundaries
+
 ← [SES-000 — Terminology, Normative Language, and Conformance](SES-000-terminology-and-conformance.md) · [Standard Index](README.md) · [SES-002 — Canonical Semantic Execution Lifecycle](SES-002-canonical-lifecycle.md) →
 
 ---
@@ -35,15 +36,19 @@ The stages MAY be physically fused, but their contracts and trust properties MUS
 ## 3. Critique — what is still under-specified
 
 ### 3.1 Boundary ownership
+
 The standard needs a precise ownership model for every field crossing every boundary. “Trusted context” is too broad. Future versions SHOULD define field-level provenance classes such as caller-controlled, host-derived, contract-derived, policy-derived, planner-derived, provider-derived, and evidence-only.
 
 ### 3.2 Asynchronous and distributed execution
+
 The lifecycle is currently easiest to reason about in-process. A production standard MUST specify what happens when planning and execution are separated by queues, services, retries, workflow engines, or multiple trust domains.
 
 ### 3.3 Human approval
+
 High-risk operations need an approval boundary. The standard SHOULD define approval as a constrained authorization input with identity, scope, expiry, purpose, and non-repudiable binding—not as a Boolean flag attached to an operation.
 
 ### 3.4 Multi-party authority
+
 Delegation, service identities, impersonation, acting-on-behalf-of, and capability attenuation are not sufficiently captured by a single principal model. These need a formal authority algebra.
 
 ## 4. Future requirements

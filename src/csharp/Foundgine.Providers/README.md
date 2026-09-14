@@ -14,7 +14,7 @@ The v2 package consolidates the provider surface into one package, including the
 - AOT-friendly metadata support.
 - The `Foundgine.Providers.Aot.Generator` Roslyn source generator as a **build-time analyzer**.
 
-`Foundgine.Providers` depends only on `Foundgine.Core` and `Foundgine.Runtime`. Hot Chocolate GraphQL translation *and* secure query/mutation execution both live in `Foundgine.Extensions`, not here — add that package separately if your application uses GraphQL.
+`Foundgine.Providers` depends only on `Foundgine.Core` and `Foundgine.Runtime`. Hot Chocolate GraphQL translation _and_ secure query/mutation execution both live in `Foundgine.Extensions`, not here — add that package separately if your application uses GraphQL.
 
 The exact provider implementation you use determines which external infrastructure and configuration your application needs. Note that installing this package brings in every provider's dependencies (including Npgsql, Pgvector, Microsoft.Extensions.AI and ModelContextProtocol) regardless of which provider(s) you actually use, since they currently ship as one package.
 
