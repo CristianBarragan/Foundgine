@@ -63,3 +63,28 @@ CREATE TABLE IF NOT EXISTS supply_chain_cancellation_idempotency (
   cancelled_on DATE NOT NULL
 );
 CREATE INDEX IF NOT EXISTS ix_orders_customer_status ON orders(customer_id, status);
+
+-- Backs the ambiguity-resolution demo capability
+-- (find_top_supplier_overdue_orders / TopSupplierOverdueOrdersService), the
+-- Java port of the C# MCP.Foundgine sample's same-named tool. pg_trgm is
+-- contrib and ships with every stock PostgreSQL image, so it needs no
+-- separate opt-in; the "did you mean" fallback in
+-- TopSupplierOverdueOrdersService degrades to no candidates if it is
+-- unavailable rather than failing.
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE TABLE IF NOT EXISTS suppliers (
+  supplier_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  supplier_name VARCHAR(100) NOT NULL UNIQUE,
+  state VARCHAR(2),
+  total_order_value NUMERIC(14,2) NOT NULL DEFAULT 0,
+  negotiated_cost NUMERIC(14,2)
+);
+CREATE INDEX IF NOT EXISTS ix_suppliers_name_trgm ON suppliers USING gin (supplier_name gin_trgm_ops);
+CREATE TABLE IF NOT EXISTS purchase_orders (
+  purchase_order_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  supplier_id INT NOT NULL REFERENCES suppliers(supplier_id),
+  expected_date DATE NOT NULL,
+  received_date DATE,
+  status VARCHAR(20) NOT NULL DEFAULT 'Open' CHECK (status IN ('Open','Received','Cancelled'))
+);
+CREATE INDEX IF NOT EXISTS ix_purchase_orders_supplier ON purchase_orders(supplier_id);

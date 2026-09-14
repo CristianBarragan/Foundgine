@@ -4,7 +4,12 @@ import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import com.foundgine.samples.supplychain.advanced.data.SupplyChainData;
 import com.foundgine.samples.supplychain.advanced.domain.Domain.*;
 import com.foundgine.samples.supplychain.advanced.semantics.SupplyChainSemanticModel;
-import java.math.BigDecimal; import java.nio.charset.StandardCharsets; import java.security.MessageDigest; import java.time.LocalDate; import java.util.*;
+import com.foundgine.samples.supplychain.advanced.semantics.ManualSupplyChainSemanticModel;
+import java.math.BigDecimal; 
+import java.nio.charset.StandardCharsets; 
+import java.security.MessageDigest; 
+import java.time.LocalDate; 
+import java.util.*;
 
 /** High-assurance in-memory PlaceOrder boundary matching the Advanced C# invariants. */
 public final class PlaceOrderService {
@@ -49,7 +54,7 @@ public final class PlaceOrderService {
     var canonical=lines.stream().map(x->x.productId()+":"+x.quantity()).sorted().reduce(actor+"|"+customerId+"|",(a,b)->a+b+";");
     return sha256(canonical);
   }
-  private String planFingerprint(){return sha256("place_order|"+SupplyChainSemanticModel.MODEL.contractFingerprint()+"|Customer|Order|OrderItem|InventoryLot").substring(0,24);}
+  private String planFingerprint(){return sha256("place_order|"+ManualSupplyChainSemanticModel.MODEL.contractFingerprint()+"|Customer|Order|OrderItem|InventoryLot").substring(0,24);}
   private static String evidence(String actor,int customer,int order,String key){return sha256("place_order|"+actor+"|"+customer+"|"+order+"|"+key);}
   private static String sha256(String s){try{var md=MessageDigest.getInstance("SHA-256");var b=md.digest(s.getBytes(StandardCharsets.UTF_8));var o=new StringBuilder();for(byte x:b)o.append(String.format("%02x",x));return o.toString();}catch(Exception e){throw new IllegalStateException(e);}}
   private record Resolved(int productId,int quantity,BigDecimal unitPrice,int warehouseId,int lotId){}

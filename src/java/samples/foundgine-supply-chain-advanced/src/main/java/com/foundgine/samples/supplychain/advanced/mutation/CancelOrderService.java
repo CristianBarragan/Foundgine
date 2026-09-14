@@ -3,7 +3,7 @@ package com.foundgine.samples.supplychain.advanced.mutation;
 import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import com.foundgine.samples.supplychain.advanced.data.SupplyChainData;
 import com.foundgine.samples.supplychain.advanced.domain.Domain.*;
-import com.foundgine.samples.supplychain.advanced.semantics.SupplyChainSemanticModel;
+import com.foundgine.samples.supplychain.advanced.semantics.ManualSupplyChainSemanticModel;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -88,7 +88,7 @@ public final class CancelOrderService {
     private Object lockFor(String key) { return locks.computeIfAbsent(key, k -> new Object()); }
     private static String requestFingerprint(String actor, int orderId) { return sha256("cancel_order|" + actor + "|" + orderId); }
     private String planFingerprint() {
-        return sha256("cancel_order|" + SupplyChainSemanticModel.MODEL.contractFingerprint() + "|Order|OrderItem|OrderAllocation|InventoryLot").substring(0, 24);
+        return sha256("cancel_order|" + ManualSupplyChainSemanticModel.MODEL.contractFingerprint() + "|Order|OrderItem|OrderAllocation|InventoryLot").substring(0, 24);
     }
     private static String evidence(String actor, int order, String key, BigDecimal restored) {
         return sha256("cancel_order|" + actor + "|" + order + "|" + key + "|" + restored.toPlainString());

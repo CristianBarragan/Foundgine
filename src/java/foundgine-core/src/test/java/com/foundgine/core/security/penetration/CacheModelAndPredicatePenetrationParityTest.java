@@ -4,6 +4,7 @@ import com.foundgine.core.abstractions.*;
 import com.foundgine.core.execution.*;
 import com.foundgine.core.semantic.*;
 import com.foundgine.core.semantic.planning.*;
+import com.foundgine.core.semantic.security.SecurityInvariantIds;
 import org.junit.jupiter.api.Test;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,8 +26,18 @@ class CacheModelAndPredicatePenetrationParityTest {
 
 	@Test
 	void securityObligationChangesProduceDifferentPlanFingerprints() {
-		var a = plan(List.of("security.tenant-isolation"));
-		var b = plan(List.of("security.authorization-required"));
+		var a = plan(List.of(SecurityInvariantIds.TENANT_ISOLATION));
+		var b = plan(List.of(SecurityInvariantIds.AUTHORIZATION_REQUIRED));
+		assertTrue(!SemanticPlanFingerprint.create(a).equals(SemanticPlanFingerprint.create(b)));
+	}
+
+	@Test
+	void modelVersionMismatchIsNotSemanticallyEquivalent() {
+		// A changed security obligation is the authoritative signal. A cache
+		// key produced for one model/security version must not be reused for
+		// another security-bearing plan.
+		var a = plan(List.of(SecurityInvariantIds.AUTHORIZATION_REQUIRED));
+		var b = plan(List.of(SecurityInvariantIds.RUNTIME_AUTHORIZATION));
 		assertTrue(!SemanticPlanFingerprint.create(a).equals(SemanticPlanFingerprint.create(b)));
 	}
 
@@ -34,7 +45,7 @@ class CacheModelAndPredicatePenetrationParityTest {
 	void unknownSecurityObligationIsNotNormalizedIntoKnownOne() {
 		var p = plan(List.of("security.unknown"));
 		assertTrue(p.requiredSecurityInvariants().contains("security.unknown"));
-		assertTrue(!p.requiredSecurityInvariants().contains("security.authorization-required"));
+		assertTrue(!p.requiredSecurityInvariants().contains(SecurityInvariantIds.AUTHORIZATION_REQUIRED));
 	}
 
 	private static SemanticPlan plan(List<String> invariants) {

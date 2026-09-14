@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.github.cristianbarragan</groupId>
+  <artifactId>foundgine-core</artifactId>
+  <version>2.2.0</version>
+  <name>Foundgine Core</name>
+  <description>Port of Foundgine.Core: the foundational, provider-independent semantic
+    layer. Defines the semantic model, metadata, intent contracts and
+    serialization, intermediate representation, provider-neutral execution
+    contracts, planning primitives, and core abstractions/identifiers used
+    by the rest of the platform.</description>
+  <url>https://github.com/CristianBarragan/Foundgine/foundgine-core</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Foundgine</name>
+      <organization>Foundgine</organization>
+      <organizationUrl>https://github.com/CristianBarragan/Foundgine</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/CristianBarragan/Foundgine.git/foundgine-core</connection>
+    <developerConnection>scm:git:ssh://git@github.com/CristianBarragan/Foundgine.git/foundgine-core</developerConnection>
+    <url>https://github.com/CristianBarragan/Foundgine/foundgine-core</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.18.9</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

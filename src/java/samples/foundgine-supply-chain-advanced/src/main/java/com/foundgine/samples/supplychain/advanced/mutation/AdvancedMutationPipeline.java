@@ -5,6 +5,8 @@ import com.foundgine.core.execution.CancellationToken;
 import com.foundgine.core.execution.ExecutionContext;
 import com.foundgine.core.execution.mutation.*;
 import com.foundgine.core.semantic.SemanticModel;
+import com.foundgine.core.semantic.SemanticModelBuilder;
+import com.foundgine.core.semantic.SemanticFieldCapabilities;
 import com.foundgine.core.semantic.SemanticEntity;
 import com.foundgine.core.semantic.mutation.*;
 import com.foundgine.core.semantic.security.SecurityInvariantIds;
@@ -12,8 +14,7 @@ import com.foundgine.runtime.*;
 import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import com.foundgine.samples.supplychain.advanced.authorization.SupplyChainAuthorization;
 import com.foundgine.samples.supplychain.advanced.data.SupplyChainData;
-import com.foundgine.samples.supplychain.advanced.semantics.SupplyChainSemanticModel;
-
+import com.foundgine.samples.supplychain.advanced.semantics.ManualSupplyChainSemanticModel;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 
@@ -38,7 +39,7 @@ public final class AdvancedMutationPipeline {
                                     IMutationBatchExecutionProvider provider) {
         this.data = Objects.requireNonNull(data);
         this.auth = Objects.requireNonNull(auth);
-        var model = SupplyChainSemanticModel.MODEL;
+        var model = mutationModel();
         var schema = schema(model);
         var policy = SupplyChainAuthorization.create(auth.tenantId(),
                 SupplyChainAuthorization.Role.valueOf(auth.role().name()), Map.of());
@@ -74,6 +75,46 @@ public final class AdvancedMutationPipeline {
     private static FieldId field(EntityId entity, String name) { return FieldId.create(entity == PLACE_ORDER ? "PlaceOrderCommand" : "CancelOrderCommand", name); }
     private static FieldId field(EntityId entity, String name, boolean ignored) { return field(entity, name); }
 
+    /**
+     * Command capabilities are semantic entities, but they are not part of the
+     * generated supply-chain/domain topology or the manual semantic overlay.
+     *
+     * Keep this model local to the mutation boundary so the command contract
+     * cannot contaminate the application semantic model.
+     */
+    private static SemanticModel mutationModel() {
+        var builder = new SemanticModelBuilder();
+
+        builder.entity(PLACE_ORDER, "PlaceOrderCommand", e -> {
+            e.identity(FieldId.create("PlaceOrderCommand", "OrderId"), "OrderId");
+            e.field(FieldId.create("PlaceOrderCommand", "Actor"),
+                    "Actor", String.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.field(FieldId.create("PlaceOrderCommand", "CustomerId"),
+                    "CustomerId", int.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.field(FieldId.create("PlaceOrderCommand", "ProductId"),
+                    "ProductId", int.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.field(FieldId.create("PlaceOrderCommand", "Quantity"),
+                    "Quantity", int.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.field(FieldId.create("PlaceOrderCommand", "IdempotencyKey"),
+                    "IdempotencyKey", String.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.field(FieldId.create("PlaceOrderCommand", "OrderId"),
+                    "OrderId", int.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.aliases("PlaceOrder");
+        });
+
+        builder.entity(CANCEL_ORDER, "CancelOrderCommand", e -> {
+            e.identity(FieldId.create("CancelOrderCommand", "OrderId"), "OrderId");
+            e.field(FieldId.create("CancelOrderCommand", "Actor"),
+                    "Actor", String.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.field(FieldId.create("CancelOrderCommand", "OrderId"),
+                    "OrderId", int.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.field(FieldId.create("CancelOrderCommand", "IdempotencyKey"),
+                    "IdempotencyKey", String.class, null, (byte) (SemanticFieldCapabilities.DEFAULT | SemanticFieldCapabilities.WRITABLE));
+            e.aliases("CancelOrder");
+        });
+
+        return builder.build().freeze();
+    }
     private static MutationSchema schema(SemanticModel model) {
         return new MutationSchema() {
             @Override public MutationEntitySchema getEntity(EntityId id) {

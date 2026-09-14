@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.github.cristianbarragan</groupId>
+  <artifactId>foundgine-aot-generator</artifactId>
+  <version>2.2.0</version>
+  <name>Foundgine AOT Generator</name>
+  <description>Foundgine: an application-controlled semantic execution boundary for AI
+    agents and other callers.</description>
+  <url>https://github.com/CristianBarragan/Foundgine/foundgine-aot-generator</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Foundgine</name>
+      <organization>Foundgine</organization>
+      <organizationUrl>https://github.com/CristianBarragan/Foundgine</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/CristianBarragan/Foundgine.git/foundgine-aot-generator</connection>
+    <developerConnection>scm:git:ssh://git@github.com/CristianBarragan/Foundgine.git/foundgine-aot-generator</developerConnection>
+    <url>https://github.com/CristianBarragan/Foundgine/foundgine-aot-generator</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>io.github.cristianbarragan</groupId>
+      <artifactId>foundgine-core</artifactId>
+      <version>2.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.cristianbarragan</groupId>
+      <artifactId>foundgine-providers</artifactId>
+      <version>2.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>

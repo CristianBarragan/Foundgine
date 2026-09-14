@@ -102,6 +102,7 @@
     <module>samples/foundgine-supply-chain-advanced</module>
     <module>benchmarks/foundgine-agent</module>
     <module>security/foundgine-redteam</module>
+    <module>security/pentest</module>
   </modules>
 
   <dependencyManagement>
