@@ -53,13 +53,13 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Run standalone Java penetration module
-        working-directory: src/java
-        run: >-
-          mvn -B -ntp
-          -pl security/pentest
-          -am
-          verify
+      - name: Run standalone Java penetration suite
+        working-directory: src/java/security/pentest
+        env:
+          SKIP_LIVE: "true"
+        run: |
+          chmod +x run-all.sh
+          ./run-all.sh
 
   java-postgres-e2e:
     name: Java PostgreSQL E2E

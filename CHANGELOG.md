@@ -2,6 +2,39 @@
 
 ## Unreleased
 
+## 2.2.1 — September 14, 2026
+
+### Documentation
+
+- Fixed version drift across public docs and the website: several pages
+  (`ai.seo.md`, `docs/CURRENT-STATUS.md`, `docs/README.md`, `docs/PUBLIC-API.md`,
+  `llms.txt`, `llms-full.md`, `docs-site/llms.txt`, `docs-site/llms-full.md`,
+  and 21 `docs-site/**/index.html` page footers) still described the .NET line
+  as `2.0.1` and/or the Java line as `2.2.0`, even though 2.2.0 already
+  aligned the two ecosystems onto a single shared version number. The
+  `docs-site` install snippet (`dotnet add package Foundgine.Runtime/Providers
+  --version 2.0.1`) and the homepage hero badge (`v2.0.1`) had the same
+  problem. All now read `2.2.1` consistently.
+
+### CI
+
+- Fixed `.github/workflows/java-build.yml`'s `java-security-penetration` job,
+  which called `mvn -pl security/pentest -am verify` — `security/pentest`
+  has never been a Maven module (it's the live-scanner script directory, no
+  `pom.xml`), so the job failed outright. It now runs
+  `security/pentest/run-all.sh` with `SKIP_LIVE=true`.
+- Fixed the same underlying bug inside `run-all.sh` itself, plus a second,
+  previously-latent one: `ROOT` only climbed one directory from
+  `security/pentest`, landing in `security/` (no `pom.xml`) instead of
+  `src/java`, which also broke the script's live-check paths
+  (`run-nmap.sh`/`run-zap.sh`) whenever `SKIP_LIVE` was unset.
+
+### Release
+
+- Version: `2.2.1`
+- Target framework: `.NET 9` / Java 21
+- License: Apache License, Version 2.0
+
 ## 2.2.0 — September 14, 2026
 
 ### Security
