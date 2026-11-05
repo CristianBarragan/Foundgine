@@ -1,4 +1,3 @@
-```yaml
 name: Java — Build & Test
 
 on:
@@ -242,4 +241,3 @@ jobs:
             -am \
             -DskipTests \
             deploy
-```
