@@ -49,6 +49,11 @@ jobs:
             version="0.4.0-ci.${GITHUB_RUN_NUMBER}"
           fi
 
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-].*)?$ ]]; then
+            echo "ERROR: Invalid package version: $version"
+            exit 1
+          fi
+
           echo "Package version: $version"
 
           rm -rf artifacts/nuget
@@ -64,13 +69,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           shopt -s nullglob
 
           echo "Available packages:"
-          printf '  %s\n' artifacts/nuget/*.nupkg
-
           packages=(artifacts/nuget/*.nupkg)
+
+          if [[ "${#packages[@]}" -eq 0 ]]; then
+            echo "ERROR: No NuGet packages were produced."
+            exit 1
+          fi
+
+          printf '  %s\n' "${packages[@]}"
 
           expected_packages=(
             "Foundgine.Core"
@@ -80,22 +89,40 @@ jobs:
           )
 
           if [[ "${#packages[@]}" -ne "${#expected_packages[@]}" ]]; then
-            echo "ERROR: Expected exactly ${#expected_packages[@]} NuGet packages, produced ${#packages[@]}."
+            echo "ERROR: Expected exactly four NuGet packages, produced ${#packages[@]}."
             exit 1
           fi
 
           for expected in "${expected_packages[@]}"; do
-            if ! compgen -G "artifacts/nuget/${expected}.*.nupkg" > /dev/null; then
-              echo "ERROR: Expected package was not produced: ${expected}"
+            matches=(artifacts/nuget/"${expected}".*.nupkg)
+
+            if [[ "${#matches[@]}" -ne 1 ]]; then
+              echo "ERROR: Expected exactly one package for ${expected}, found ${#matches[@]}."
+              exit 1
+            fi
+
+            echo "OK: ${expected}"
+          done
+
+          # Reject any unexpected package IDs.
+          for package in "${packages[@]}"; do
+            filename="$(basename "$package")"
+            valid=false
+
+            for expected in "${expected_packages[@]}"; do
+              if [[ "$filename" == "${expected}".*.nupkg ]]; then
+                valid=true
+                break
+              fi
+            done
+
+            if [[ "$valid" != true ]]; then
+              echo "ERROR: Unexpected NuGet package: $filename"
               exit 1
             fi
           done
 
-          if [[ "${#packages[@]}" -eq 0 ]]; then
-            echo "ERROR: No NuGet packages were produced."
-            exit 1
-          fi
-
+          # Locate the Providers package.
           providers_packages=(artifacts/nuget/Foundgine.Providers.*.nupkg)
 
           if [[ "${#providers_packages[@]}" -ne 1 ]]; then
@@ -105,30 +132,56 @@ jobs:
 
           package="${providers_packages[0]}"
 
-          echo "Validating AOT assets in: $package"
-          unzip -l "$package"
+          echo "Validating package: $package"
 
+          unzip -t "$package"
+
+          entries="$(unzip -Z1 "$package")"
+
+          # Required package assets.
           required=(
             "lib/net9.0/Foundgine.Providers.dll"
+            "analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
             "README.md"
-            "LICENSE"
+            "LICENSE/LICENSE"
           )
 
           for file in "${required[@]}"; do
-            if ! unzip -l "$package" | grep -Fq "$file"; then
+            if ! grep -Fxq "$file" <<< "$entries"; then
               echo "ERROR: Required package asset is missing: $file"
               exit 1
             fi
+
             echo "OK: $file"
           done
 
+          # The generator must be packaged as an analyzer,
+          # not as a runtime library.
+          if grep -Eq '^lib/[^/]+/Foundgine\.Providers\.Aot\.Generator\.dll$' <<< "$entries"; then
+            echo "ERROR: AOT generator was incorrectly packaged as a runtime library."
+            exit 1
+          fi
+
+          # Reject a separate AOT generator NuGet package.
+          for candidate in "${packages[@]}"; do
+            filename="$(basename "$candidate")"
+
+            if [[ "$filename" == Foundgine.Providers.Aot.Generator.*.nupkg ]]; then
+              echo "ERROR: A separate AOT generator NuGet package was produced."
+              exit 1
+            fi
+          done
+
+          # Reject the obsolete Experimental.Aot package.
           if compgen -G "artifacts/nuget/Foundgine.Experimental.Aot.*.nupkg" > /dev/null; then
             echo "ERROR: Obsolete Foundgine.Experimental.Aot package was produced."
             exit 1
           fi
-          echo "OK: no obsolete AOT package"
 
-          unzip -t "$package" >/dev/null
+          echo "OK: exactly four expected NuGet packages"
+          echo "OK: AOT generator included as a compiler analyzer"
+          echo "OK: no separate AOT generator package"
+          echo "OK: no obsolete Experimental.Aot package"
 
           echo "NuGet package validation passed."
 
@@ -139,6 +192,9 @@ jobs:
           path: artifacts/nuget/*
           if-no-files-found: error
 
+  # ============================================================
+  # Unit tests
+  # ============================================================
   unit-tests:
     name: Unit Tests
     needs:
@@ -167,47 +223,53 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Foundgine.E2E.Tests needs a live PostgreSQL instance and is run by
-          # the "Integration Tests — PostgreSQL 17" job; the PenTest suite is
-          # not wired into CI yet. Everything else in src/csharp is a plain
-          # unit/component test project and should run here.
-          #
-          # NOTE: these are excluded by NOT invoking their .csproj below,
-          # rather than via `dotnet test --filter`. A `--filter` that matches
-          # zero tests in a given project is treated as a failure by the SDK,
-          # which previously made this job fail even when every other test
-          # passed.
+          # These suites are executed in dedicated jobs.
           exclude=(
             "src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj"
             "src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj"
+            "src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj"
+            "src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj"
           )
 
           mapfile -t all_tests < <(find src/csharp -name '*.Tests.csproj' | sort)
 
+          if [[ "${#all_tests[@]}" -eq 0 ]]; then
+            echo "ERROR: No test projects were found."
+            exit 1
+          fi
+
           status=0
+
           for project in "${all_tests[@]}"; do
             skip=false
+
             for ex in "${exclude[@]}"; do
               if [[ "$project" == "$ex" ]]; then
                 skip=true
                 break
               fi
             done
+
             if [[ "$skip" == true ]]; then
-              echo "Skipping $project (covered by a dedicated job elsewhere in this workflow)"
+              echo "Skipping dedicated test project: $project"
               continue
             fi
 
             echo "::group::dotnet test $project"
+
             dotnet test "$project" \
               --no-build \
               --configuration Release \
               --logger "console;verbosity=normal" || status=$?
+
             echo "::endgroup::"
           done
 
-          exit $status
+          exit "$status"
 
+  # ============================================================
+  # SupplyChain sample tests
+  # ============================================================
   supplychain-sample-tests:
     name: SupplyChain Sample Tests
     needs:
@@ -234,6 +296,9 @@ jobs:
       - name: Run SupplyChain tests
         run: dotnet test src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
+  # ============================================================
+  # SupplyChain semantic end-to-end tests
+  # ============================================================
   supplychain-semantic-sample-tests:
     name: SupplyChain EndToEnd — Semantic Cases
     needs:
@@ -260,6 +325,9 @@ jobs:
       - name: Run semantic SupplyChain tests
         run: dotnet test src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
 
+  # ============================================================
+  # PostgreSQL integration tests
+  # ============================================================
   integration-tests:
     needs:
       - build-pack
@@ -286,6 +354,7 @@ jobs:
           POSTGRES_HOST_PORT: "55432"
         run: |
           docker compose -p foundgine-e2e -f docker-compose.postgres.yml down -v --remove-orphans || true
+
           docker compose -p foundgine-e2e -f docker-compose.postgres.yml \
             up -d --wait postgres
 
@@ -327,6 +396,9 @@ jobs:
             --volumes \
             --remove-orphans
 
+  # ============================================================
+  # Agent benchmark smoke tests
+  # ============================================================
   agent-benchmark-smoke:
     name: Agent Benchmark Smoke — 1 Customer
     needs:
@@ -349,8 +421,11 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = 'Stop'
+
           $benchmarkScript = Join-Path "${{ github.workspace }}" 'src/csharp/benchmarks/AgentEndToEnd/run-all-agent-benchmarks.ps1'
+
           & $benchmarkScript -Smoke
+
           if ($LASTEXITCODE -ne 0) {
             throw "Agent benchmark smoke test failed with exit code $LASTEXITCODE."
           }
@@ -360,8 +435,11 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = 'Stop'
+
           $supplyChainScript = Join-Path "${{ github.workspace }}" 'src/csharp/samples/Foundgine.SupplyChain.Advanced/run-supply-chain.ps1'
+
           & $supplyChainScript
+
           if ($LASTEXITCODE -ne 0) {
             throw "Supply Chain E2E benchmark failed with exit code $LASTEXITCODE."
           }
@@ -370,13 +448,18 @@ jobs:
         shell: pwsh
         run: |
           $benchmarkRoot = Join-Path "${{ github.workspace }}" 'src/csharp/benchmarks/AgentEndToEnd'
+
           $leftover = Get-ChildItem -Path $benchmarkRoot -Directory |
             Where-Object { Test-Path (Join-Path $_.FullName 'artifacts') } |
             ForEach-Object { Join-Path $_.FullName 'artifacts' }
+
           if ($leftover) {
             Write-Warning "Smoke test left artifacts behind: $($leftover -join ', ')"
           }
 
+  # ============================================================
+  # Performance smoke — Hot Chocolate + EF Core
+  # ============================================================
   benchmark-build-hotchocolate:
     name: Performance Smoke — Hot Chocolate + EF Core
     needs:
@@ -398,11 +481,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           projects=(
             "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
             "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
             "src/csharp/benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
           )
+
           for project in "${projects[@]}"; do
             echo "Restoring $project"
             dotnet restore "$project"
@@ -412,11 +497,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           projects=(
             "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
             "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
             "src/csharp/benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj"
           )
+
           for project in "${projects[@]}"; do
             echo "Building $project"
             dotnet build "$project" --no-restore --configuration Release
@@ -426,20 +513,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           image="postgres:17-alpine"
           max_attempts=6
+
           for attempt in $(seq 1 "$max_attempts"); do
             echo "Pulling $image (attempt $attempt/$max_attempts)..."
+
             if docker pull "$image"; then
               echo "Successfully pulled $image."
               exit 0
             fi
+
             if [ "$attempt" -lt "$max_attempts" ]; then
               delay=$((attempt * 10))
               echo "Docker registry pull failed; retrying in ${delay}s..."
               sleep "$delay"
             fi
           done
+
           echo "Unable to pull $image after $max_attempts attempts." >&2
           exit 1
 
@@ -461,15 +553,20 @@ jobs:
           POSTGRES_HOST_PORT: "55433"
         run: |
           set -euo pipefail
+
           COMPOSE=src/csharp/benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
           PROJECT=foundgine-performance-smoke-hc
+
           cleanup() {
             docker compose -p "$PROJECT" -f "$COMPOSE" down -v --remove-orphans || true
           }
+
           trap cleanup EXIT
           cleanup
+
           docker compose -p "$PROJECT" -f "$COMPOSE" up -d --build postgres database hotchocolate
           docker compose -p "$PROJECT" -f "$COMPOSE" up --wait hotchocolate
+
           docker compose -p "$PROJECT" -f "$COMPOSE" run --rm --no-deps \
             -e BENCHMARK_TARGET_NAME="Hot Chocolate + EF Core" \
             -e BENCHMARK_TARGET_URL="http://hotchocolate:4300/graphql" \
@@ -484,6 +581,9 @@ jobs:
             -e BENCHMARK_REPORT_DIRECTORY=/reports \
             loader
 
+  # ============================================================
+  # Performance smoke — Foundgine warm cache
+  # ============================================================
   benchmark-build-foundgine:
     name: Performance Smoke — Foundgine Warm Cache
     needs:
@@ -505,11 +605,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           projects=(
             "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
             "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
             "src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
           )
+
           for project in "${projects[@]}"; do
             echo "Restoring $project"
             dotnet restore "$project"
@@ -519,11 +621,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           projects=(
             "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.Database/CoffeeBeanery.Database.csproj"
             "src/csharp/benchmarks/CoffeeBeanery.Performance/CoffeeBeanery.LoadTest/CoffeeBeanery.LoadTest.csproj"
             "src/csharp/benchmarks/CoffeeBeanery.Performance/Foundgine.CoffeeBeanery.BenchmarkApi/Foundgine.CoffeeBeanery.BenchmarkApi.csproj"
           )
+
           for project in "${projects[@]}"; do
             echo "Building $project"
             dotnet build "$project" --no-restore --configuration Release
@@ -533,20 +637,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           image="postgres:17-alpine"
           max_attempts=6
+
           for attempt in $(seq 1 "$max_attempts"); do
             echo "Pulling $image (attempt $attempt/$max_attempts)..."
+
             if docker pull "$image"; then
               echo "Successfully pulled $image."
               exit 0
             fi
+
             if [ "$attempt" -lt "$max_attempts" ]; then
               delay=$((attempt * 10))
               echo "Docker registry pull failed; retrying in ${delay}s..."
               sleep "$delay"
             fi
           done
+
           echo "Unable to pull $image after $max_attempts attempts." >&2
           exit 1
 
@@ -568,15 +677,20 @@ jobs:
           POSTGRES_HOST_PORT: "55434"
         run: |
           set -euo pipefail
+
           COMPOSE=src/csharp/benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
           PROJECT=foundgine-performance-smoke-fg
+
           cleanup() {
             docker compose -p "$PROJECT" -f "$COMPOSE" down -v --remove-orphans || true
           }
+
           trap cleanup EXIT
           cleanup
+
           docker compose -p "$PROJECT" -f "$COMPOSE" up -d --build postgres database foundgine-warm
           docker compose -p "$PROJECT" -f "$COMPOSE" up --wait foundgine-warm
+
           docker compose -p "$PROJECT" -f "$COMPOSE" run --rm --no-deps \
             -e BENCHMARK_TARGET_NAME="Foundgine - provider-plan cache" \
             -e BENCHMARK_TARGET_URL="http://foundgine-warm:4302/graphql/warm" \
@@ -591,12 +705,18 @@ jobs:
             -e BENCHMARK_REPORT_DIRECTORY=/reports \
             loader
 
+  # ============================================================
+  # Security gate
+  # ============================================================
   security-gate:
     name: Security Gate
     uses: ./.github/workflows/security.yml
     permissions:
       contents: read
 
+  # ============================================================
+  # Publish NuGet packages
+  # ============================================================
   publish-nuget:
     name: Publish NuGet packages
     if: startsWith(github.ref, 'refs/tags/v')
@@ -633,14 +753,58 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
+
           packages=(artifacts/nuget/*.nupkg)
-          if [[ "${#packages[@]}" -eq 0 ]]; then
-            echo "ERROR: No NuGet packages downloaded."
+
+          expected_packages=(
+            "Foundgine.Core"
+            "Foundgine.Runtime"
+            "Foundgine.Providers"
+            "Foundgine.Extensions"
+          )
+
+          if [[ "${#packages[@]}" -ne "${#expected_packages[@]}" ]]; then
+            echo "ERROR: Expected exactly four NuGet packages, found ${#packages[@]}."
             exit 1
           fi
+
           for package in "${packages[@]}"; do
             unzip -t "$package" >/dev/null
+            echo "Validated: $package"
           done
+
+          # Validate all four expected package IDs.
+          for expected in "${expected_packages[@]}"; do
+            matches=(artifacts/nuget/"${expected}".*.nupkg)
+
+            if [[ "${#matches[@]}" -ne 1 ]]; then
+              echo "ERROR: Expected exactly one ${expected} package."
+              exit 1
+            fi
+          done
+
+          # Correctly expand the Providers package glob.
+          providers_packages=(artifacts/nuget/Foundgine.Providers.*.nupkg)
+
+          if [[ "${#providers_packages[@]}" -ne 1 ]]; then
+            echo "ERROR: Expected exactly one Foundgine.Providers package."
+            exit 1
+          fi
+
+          providers_package="${providers_packages[0]}"
+
+          required_analyzer="analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
+
+          entries="$(unzip -Z1 "$providers_package")"
+
+          if ! grep -Fxq "$required_analyzer" <<< "$entries"; then
+            echo "ERROR: AOT generator is missing from the downloaded Providers package."
+            exit 1
+          fi
+
+          echo "OK: all four expected packages validated"
+          echo "OK: AOT analyzer present in Providers package"
+          echo "Downloaded NuGet packages validated."
 
       - name: NuGet login (OIDC)
         uses: NuGet/login@v1
@@ -653,10 +817,21 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
+
           packages=(artifacts/nuget/*.nupkg)
+
+          if [[ "${#packages[@]}" -ne 4 ]]; then
+            echo "ERROR: Expected exactly four packages to publish."
+            exit 1
+          fi
+
           for package in "${packages[@]}"; do
+            echo "Publishing $package"
+
             dotnet nuget push "$package" \
               --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" \
               --source "https://api.nuget.org/v3/index.json" \
               --skip-duplicate
           done
+
+          echo "NuGet publishing completed."
