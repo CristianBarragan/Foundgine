@@ -7,7 +7,7 @@ namespace Foundgine.SupplyChain.Advanced.Semantics;
 /// <summary>
 /// Small hand-authored semantic overlay used by the running Supply Chain sample.
 ///
-/// The complete structural graph is still discovered from AOT metadata by
+/// The complete structural graph is still discovered from the fluent model metadata by
 /// <see cref="SupplyChainSemanticModel"/>. This class intentionally declares
 /// only two entities so the sample demonstrates the typed semantic API without
 /// recreating the entire supply-chain schema a second time.

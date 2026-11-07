@@ -10,7 +10,7 @@ using Foundgine.Core.Semantic.Mutation;
 using Foundgine.Core.Semantic.Query;
 using Foundgine.Providers.Storage.Sql.Mutation;
 using Foundgine.SupplyChain.Application;
-using Foundgine.Generated;
+using Foundgine.SupplyChain.Domain;
 using Foundgine.Core.Semantic.IR;
 using Npgsql;
 using ExecutionContext = Foundgine.Core.Execution.ExecutionContext;
@@ -24,24 +24,24 @@ public sealed class SupplyChainQueryRepository : ISupplyChainQueries
 
     public async Task<object> GetOrders(int customerId, CancellationToken ct)
     {
-        var operation = Read(GeneratedSemanticModel.SalesOrder.Entity, GeneratedSemanticModel.SalesOrder.All,
-            GeneratedSemanticModel.SalesOrder.CustomerId.Eq(customerId),
-            [GeneratedSemanticModel.SalesOrder.Id.Asc()]);
+        var operation = Read(SupplyChainSemantics.SalesOrder.Entity, SupplyChainSemantics.SalesOrder.All,
+            SupplyChainSemantics.SalesOrder.CustomerId.Eq(customerId),
+            [SupplyChainSemantics.SalesOrder.Id.Asc()]);
         var result = await _sql.ExecuteAsync(operation, ct);
         return new { customerId, orders = result.Rows.Select(x => x.Values).ToArray(), plan = result.Fingerprint };
     }
 
     public async Task<object> GetOrder(int customerId, int orderId, CancellationToken ct)
     {
-        var line = new SemanticReadNode(2, GeneratedSemanticModel.SalesOrderLine.Entity,
-            GeneratedSemanticModel.SalesOrderLine.All,
-            GeneratedSemanticModel.SalesOrder.Relationships.Lines, null, []);
+        var line = new SemanticReadNode(2, SupplyChainSemantics.SalesOrderLine.Entity,
+            SupplyChainSemantics.SalesOrderLine.All,
+            SupplyChainSemantics.SalesOrder.Relationships.Lines, null, []);
         var filter = new SemanticAndFilter([
-            GeneratedSemanticModel.SalesOrder.Id.Eq(orderId),
-            GeneratedSemanticModel.SalesOrder.CustomerId.Eq(customerId)
+            SupplyChainSemantics.SalesOrder.Id.Eq(orderId),
+            SupplyChainSemantics.SalesOrder.CustomerId.Eq(customerId)
         ]);
-        var operation = new SemanticOperation(new SemanticReadNode(1, GeneratedSemanticModel.SalesOrder.Entity,
-            GeneratedSemanticModel.SalesOrder.All, null, null, [line],
+        var operation = new SemanticOperation(new SemanticReadNode(1, SupplyChainSemantics.SalesOrder.Entity,
+            SupplyChainSemantics.SalesOrder.All, null, null, [line],
             new SemanticQueryOptions(filter)));
         var result = await _sql.ExecuteAsync(operation, ct);
         var row = result.Rows.FirstOrDefault() ?? throw new KeyNotFoundException("Sales order not found.");
@@ -54,35 +54,35 @@ public sealed class SupplyChainQueryRepository : ISupplyChainQueries
     public async Task<object> GetShipment(int customerId, int shipmentId, CancellationToken ct)
     {
         var filter = new SemanticAndFilter([
-            GeneratedSemanticModel.Shipment.Id.Eq(shipmentId),
-            new SemanticRelationshipFilter(GeneratedSemanticModel.Shipment.Relationships.Order,
+            SupplyChainSemantics.Shipment.Id.Eq(shipmentId),
+            new SemanticRelationshipFilter(SupplyChainSemantics.Shipment.Relationships.Order,
                 SemanticRelationshipQuantifier.Some,
-                GeneratedSemanticModel.SalesOrder.CustomerId.Eq(customerId))
+                SupplyChainSemantics.SalesOrder.CustomerId.Eq(customerId))
         ]);
         var result =
             await _sql.ExecuteAsync(
-                Read(GeneratedSemanticModel.Shipment.Entity, GeneratedSemanticModel.Shipment.All, filter), ct);
+                Read(SupplyChainSemantics.Shipment.Entity, SupplyChainSemantics.Shipment.All, filter), ct);
         var row = result.Rows.FirstOrDefault() ?? throw new KeyNotFoundException("Shipment not found.");
         return new { shipment = row.Values, plan = result.Fingerprint };
     }
 
-    public Task<object> ListProducts(CancellationToken ct) => Query(GeneratedSemanticModel.CatalogProduct.Entity,
-        GeneratedSemanticModel.CatalogProduct.All, "products", ct);
+    public Task<object> ListProducts(CancellationToken ct) => Query(SupplyChainSemantics.CatalogProduct.Entity,
+        SupplyChainSemantics.CatalogProduct.All, "products", ct);
 
-    public Task<object> ListCustomers(CancellationToken ct) => Query(GeneratedSemanticModel.Customer.Entity,
-        GeneratedSemanticModel.Customer.All, "customers", ct);
+    public Task<object> ListCustomers(CancellationToken ct) => Query(SupplyChainSemantics.Customer.Entity,
+        SupplyChainSemantics.Customer.All, "customers", ct);
 
-    public Task<object> ListSuppliers(CancellationToken ct) => Query(GeneratedSemanticModel.Supplier.Entity,
-        GeneratedSemanticModel.Supplier.All, "suppliers", ct);
+    public Task<object> ListSuppliers(CancellationToken ct) => Query(SupplyChainSemantics.Supplier.Entity,
+        SupplyChainSemantics.Supplier.All, "suppliers", ct);
 
     public Task<object> GetProduct(int productId, CancellationToken ct) => ExecuteNamed(
-        Read(GeneratedSemanticModel.CatalogProduct.Entity, GeneratedSemanticModel.CatalogProduct.All,
-            GeneratedSemanticModel.CatalogProduct.Id.Eq(productId)), "product", ct);
+        Read(SupplyChainSemantics.CatalogProduct.Entity, SupplyChainSemantics.CatalogProduct.All,
+            SupplyChainSemantics.CatalogProduct.Id.Eq(productId)), "product", ct);
 
     public Task<object> GetInventory(int productId, CancellationToken ct) => ExecuteNamed(
-        Read(GeneratedSemanticModel.InventoryPosition.Entity, GeneratedSemanticModel.InventoryPosition.All,
-            GeneratedSemanticModel.InventoryPosition.ProductId.Eq(productId),
-            [GeneratedSemanticModel.InventoryPosition.WarehouseId.Asc()]), "inventory", ct, productId);
+        Read(SupplyChainSemantics.InventoryPosition.Entity, SupplyChainSemantics.InventoryPosition.All,
+            SupplyChainSemantics.InventoryPosition.ProductId.Eq(productId),
+            [SupplyChainSemantics.InventoryPosition.WarehouseId.Asc()]), "inventory", ct, productId);
 
     private static SemanticOperation Read(EntityId entity, IReadOnlyList<FieldId> fields,
         SemanticFilterExpression? filter = null, IReadOnlyList<SemanticOrderTerm>? order = null) =>

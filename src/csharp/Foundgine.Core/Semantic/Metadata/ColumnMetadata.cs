@@ -8,4 +8,10 @@ public sealed record ColumnMetadata(
     string? StorageName = null)
 {
     public string EffectiveStorageName => StorageName ?? Name;
+
+    /// <summary>Maximum length declared by persistence configuration, or null when unconstrained/unknown.</summary>
+    public int? MaxLength { get; init; }
+
+    /// <summary>True when persistence configuration declares the column required (not null).</summary>
+    public bool IsRequired { get; init; }
 }

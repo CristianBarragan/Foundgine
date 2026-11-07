@@ -1,4 +1,3 @@
-using Foundgine.Generated;
 using Foundgine.Core.Semantic.Metadata;
 using Foundgine.SupplyChain.Advanced.Semantics;
 using Xunit;
@@ -8,9 +7,9 @@ namespace Foundgine.SupplyChain.Advanced.Tests;
 public sealed class MetadataProducerBoundaryTests
 {
     [Fact]
-    public void Generated_metadata_exposes_structural_metadata_through_the_metadata_catalog_boundary()
+    public void Fluent_model_exposes_structural_metadata_through_the_metadata_catalog_boundary()
     {
-        IMetadataCatalog catalog = GeneratedMetadata.Build();
+        IMetadataCatalog catalog = new SupplyChainModel().Build();
 
         Assert.Equal(17, catalog.Entities.Count());
         Assert.Equal(15, catalog.Relationships.Count());
@@ -27,12 +26,12 @@ public sealed class MetadataProducerBoundaryTests
     }
 
     [Fact]
-    public void Semantic_configuration_consumes_generated_metadata_not_a_second_structural_graph()
+    public void Semantic_configuration_consumes_fluent_model_metadata_not_a_second_structural_graph()
     {
         var model = SupplyChainSemanticModel.Build();
 
-        Assert.Equal(GeneratedMetadata.Build().Entities.Count(), model.Entities.Count);
-        Assert.Equal(GeneratedMetadata.Build().Relationships.Count(),
+        Assert.Equal(new SupplyChainModel().Build().Entities.Count(), model.Entities.Count);
+        Assert.Equal(new SupplyChainModel().Build().Relationships.Count(),
             model.Entities.SelectMany(x => x.Relationships).Count());
     }
 }

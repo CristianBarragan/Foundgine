@@ -1,4 +1,3 @@
-using Foundgine.Generated;
 using Foundgine.Core.Abstractions;
 using Foundgine.Core.Semantic.Metadata;
 using Foundgine.Core.Semantic;
@@ -8,13 +7,13 @@ namespace Foundgine.SupplyChain.Advanced.Semantics;
 /// <summary>
 /// Application semantic configuration for the Supply Chain showcase.
 /// Structural entities, fields, identities and direct relationships come from
-/// generated Foundgine metadata. A small strongly typed manual semantic overlay
+/// the fluent <see cref="SupplyChainModel"/> configuration. A small strongly typed manual semantic overlay
 /// then enriches Product and ProductComponent, while this layer adds the
 /// application-level logical traversals that metadata cannot infer.
 /// </summary>
 public static class SupplyChainSemanticModel
 {
-    public static IMetadataCatalog Metadata { get; } = GeneratedMetadata.Build();
+    public static IMetadataCatalog Metadata { get; } = new SupplyChainModel().Build();
     public static SemanticModel Model { get; } = Build();
 
     public static EntityId Product => Entity("Product");

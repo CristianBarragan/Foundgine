@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Foundgine.HighAssurance.Postgres</RootNamespace>
@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="10.0.11"
+      Version="10.0.14"
     />
     <PackageReference Include="Npgsql" Version="10.0.3" />
   </ItemGroup>

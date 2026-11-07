@@ -1,8 +1,8 @@
 using Foundgine.Core.Semantic.Authorization;
 using Foundgine.Core.Semantic.Metadata;
 using Foundgine.Core.Semantic.Planning;
-using Foundgine.Generated;
 using Foundgine.Runtime;
+using Foundgine.SupplyChain.Domain;
 using Foundgine.SupplyChain.Application;
 using Foundgine.SupplyChain.Infrastructure.Mutations;
 using Foundgine.SupplyChain.Infrastructure.Queries;
@@ -31,11 +31,14 @@ public sealed class SupplyChainDomain : IFoundgineCapability
     /// <summary>Configuration key / environment variable name for the Postgres connection string.</summary>
     public const string ConnectionStringName = "SupplyChainConnectionString";
 
+    // Compiled once from the fluent configuration in Domain/ (SupplyChainModel).
+    private static readonly MetadataRegistry Metadata = new SupplyChainModel().Build();
+
     public static void Configure(FoundgineCapabilityContext context)
     {
         var services = context.Services;
 
-        context.Options.UseMetadata(GeneratedMetadata.Registry);
+        context.Options.UseMetadata(Metadata);
         context.Options.AuthorizationPolicy ??= new AllowAllSemanticAuthorizationPolicy();
 
         services.AddSingleton<ICapabilityAuthorizer, SupplyChainAuthorizer>();
@@ -44,12 +47,11 @@ public sealed class SupplyChainDomain : IFoundgineCapability
         services.AddSingleton(sp =>
             NpgsqlDataSource.Create(ResolveConnectionString(sp.GetRequiredService<IConfiguration>())));
 
-        // GeneratedMetadata.Registry is emitted by the AOT generator directly from
-        // Domain/Models.cs + Domain/StorageModels.cs + Domain/Mappings.cs - it already implements
+        // Metadata is compiled from the fluent configuration in Domain/ (SupplyChainModel) - it already implements
         // IMetadataProvider and IMetadataCatalog, so there is nothing to wrap here.
-        services.AddSingleton<IMetadataProvider>(GeneratedMetadata.Registry);
-        services.AddSingleton<IMetadataCatalog>(GeneratedMetadata.Registry);
-        services.AddSingleton(GeneratedMetadata.Registry);
+        services.AddSingleton<IMetadataProvider>(Metadata);
+        services.AddSingleton<IMetadataCatalog>(Metadata);
+        services.AddSingleton(Metadata);
 
         services.AddSingleton<Planner>();
         services.AddSingleton<SemanticSqlQueryExecutor>();

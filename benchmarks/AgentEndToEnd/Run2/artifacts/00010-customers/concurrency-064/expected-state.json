@@ -1,0 +1,312 @@
+[
+  {
+    "CustomerId": 1,
+    "Baseline": {
+      "CustomerId": 1,
+      "CustomerKey": "a41c0fea-0a7b-5282-bc1e-84d3df2a1f35",
+      "FullName": "Customer 1 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 48240
+    },
+    "Intermediate": {
+      "CustomerId": 1,
+      "CustomerKey": "a41c0fea-0a7b-5282-bc1e-84d3df2a1f35",
+      "FullName": "Customer 1 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 48240
+    },
+    "Expected": {
+      "CustomerId": 1,
+      "CustomerKey": "a41c0fea-0a7b-5282-bc1e-84d3df2a1f35",
+      "FullName": "Customer 1 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 48240
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 2,
+    "Baseline": {
+      "CustomerId": 2,
+      "CustomerKey": "aa244715-ba12-533f-86fd-1821b56af348",
+      "FullName": "Customer 2 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 48816
+    },
+    "Intermediate": {
+      "CustomerId": 2,
+      "CustomerKey": "aa244715-ba12-533f-86fd-1821b56af348",
+      "FullName": "Customer 2 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 48816
+    },
+    "Expected": {
+      "CustomerId": 2,
+      "CustomerKey": "aa244715-ba12-533f-86fd-1821b56af348",
+      "FullName": "Customer 2 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 48816
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 3,
+    "Baseline": {
+      "CustomerId": 3,
+      "CustomerKey": "49fddd63-94ae-5134-b204-d0baa7a880ab",
+      "FullName": "Customer 3 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 49392
+    },
+    "Intermediate": {
+      "CustomerId": 3,
+      "CustomerKey": "49fddd63-94ae-5134-b204-d0baa7a880ab",
+      "FullName": "Customer 3 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 49392
+    },
+    "Expected": {
+      "CustomerId": 3,
+      "CustomerKey": "49fddd63-94ae-5134-b204-d0baa7a880ab",
+      "FullName": "Customer 3 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 49392
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 4,
+    "Baseline": {
+      "CustomerId": 4,
+      "CustomerKey": "b1b1f7e5-20e8-500f-875f-26d5b466d539",
+      "FullName": "Customer 4 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 49968
+    },
+    "Intermediate": {
+      "CustomerId": 4,
+      "CustomerKey": "b1b1f7e5-20e8-500f-875f-26d5b466d539",
+      "FullName": "Customer 4 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 49968
+    },
+    "Expected": {
+      "CustomerId": 4,
+      "CustomerKey": "b1b1f7e5-20e8-500f-875f-26d5b466d539",
+      "FullName": "Customer 4 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 49968
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 5,
+    "Baseline": {
+      "CustomerId": 5,
+      "CustomerKey": "bdcfd470-632d-57a9-b947-52146db1dd65",
+      "FullName": "Customer 5 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 50544
+    },
+    "Intermediate": {
+      "CustomerId": 5,
+      "CustomerKey": "bdcfd470-632d-57a9-b947-52146db1dd65",
+      "FullName": "Customer 5 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 50544
+    },
+    "Expected": {
+      "CustomerId": 5,
+      "CustomerKey": "bdcfd470-632d-57a9-b947-52146db1dd65",
+      "FullName": "Customer 5 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 50544
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 6,
+    "Baseline": {
+      "CustomerId": 6,
+      "CustomerKey": "d4be54c1-266f-57bf-8fd7-309f2f1c5a76",
+      "FullName": "Customer 6 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 51120
+    },
+    "Intermediate": {
+      "CustomerId": 6,
+      "CustomerKey": "d4be54c1-266f-57bf-8fd7-309f2f1c5a76",
+      "FullName": "Customer 6 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 51120
+    },
+    "Expected": {
+      "CustomerId": 6,
+      "CustomerKey": "d4be54c1-266f-57bf-8fd7-309f2f1c5a76",
+      "FullName": "Customer 6 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 51120
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 7,
+    "Baseline": {
+      "CustomerId": 7,
+      "CustomerKey": "6a17816e-a05a-5627-81c9-42a0b3b62df3",
+      "FullName": "Customer 7 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 51696
+    },
+    "Intermediate": {
+      "CustomerId": 7,
+      "CustomerKey": "6a17816e-a05a-5627-81c9-42a0b3b62df3",
+      "FullName": "Customer 7 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 51696
+    },
+    "Expected": {
+      "CustomerId": 7,
+      "CustomerKey": "6a17816e-a05a-5627-81c9-42a0b3b62df3",
+      "FullName": "Customer 7 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 51696
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 8,
+    "Baseline": {
+      "CustomerId": 8,
+      "CustomerKey": "226a47a2-8673-555c-8595-c13cacae47ed",
+      "FullName": "Customer 8 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 52272
+    },
+    "Intermediate": {
+      "CustomerId": 8,
+      "CustomerKey": "226a47a2-8673-555c-8595-c13cacae47ed",
+      "FullName": "Customer 8 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 52272
+    },
+    "Expected": {
+      "CustomerId": 8,
+      "CustomerKey": "226a47a2-8673-555c-8595-c13cacae47ed",
+      "FullName": "Customer 8 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 52272
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 9,
+    "Baseline": {
+      "CustomerId": 9,
+      "CustomerKey": "2cadfe33-0d40-5618-8afd-c2f8f5d90910",
+      "FullName": "Customer 9 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 52848
+    },
+    "Intermediate": {
+      "CustomerId": 9,
+      "CustomerKey": "2cadfe33-0d40-5618-8afd-c2f8f5d90910",
+      "FullName": "Customer 9 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 52848
+    },
+    "Expected": {
+      "CustomerId": 9,
+      "CustomerKey": "2cadfe33-0d40-5618-8afd-c2f8f5d90910",
+      "FullName": "Customer 9 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 52848
+    },
+    "ReviewRuleApplied": true
+  },
+  {
+    "CustomerId": 10,
+    "Baseline": {
+      "CustomerId": 10,
+      "CustomerKey": "be3d8157-e2d9-5b6a-9c37-a2d05c1d5df4",
+      "FullName": "Customer 10 Benchmark",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 53424
+    },
+    "Intermediate": {
+      "CustomerId": 10,
+      "CustomerKey": "be3d8157-e2d9-5b6a-9c37-a2d05c1d5df4",
+      "FullName": "Customer 10 Benchmark | Reviewed",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 53424
+    },
+    "Expected": {
+      "CustomerId": 10,
+      "CustomerKey": "be3d8157-e2d9-5b6a-9c37-a2d05c1d5df4",
+      "FullName": "Customer 10 Benchmark | Reviewed | Remediation Complete",
+      "RelationshipCount": 4,
+      "ContractCount": 12,
+      "TransactionCount": 48,
+      "Exposure": 53424
+    },
+    "ReviewRuleApplied": true
+  }
+]
