@@ -49,7 +49,7 @@ the answer holds under adversarial input, not just the happy path.
 Everything below assumes the same base setup as the starter sample, plus a
 few extras this sample exercises optionally:
 
-- **.NET 9 SDK** — `dotnet --version` should print a 9.x version.
+- **.NET 10 SDK** — the sample targets `net10.0`; `dotnet --version` should print a 10.x version.
 - **Docker Desktop** — for PostgreSQL (required) and, optionally, for
   running with the `pg_search` (ParadeDB) and Apache AGE extensions enabled
   (see doc `04`).

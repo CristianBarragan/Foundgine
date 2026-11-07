@@ -18,7 +18,7 @@ namespace Foundgine.SupplyChain;
 /// <c>src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered</c> for the layered version this sample
 /// grew out of), folded into one capability now that it's a single project: the per-actor
 /// <see cref="ICapabilityAuthorizer"/>, the <see cref="SupplyChainApplication"/> facade, the Postgres
-/// connection, the AOT-generated metadata registry, and the query/mutation repositories.
+/// connection, the metadata registry compiled from the fluent model, and the query/mutation repositories.
 ///
 /// Also supplies the <see cref="Foundgine.Core.Semantic.SemanticModel"/> Foundgine itself needs (via
 /// <see cref="FoundgineOptions.UseMetadata"/>) and a permissive Foundgine authorization policy: this

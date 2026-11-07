@@ -196,8 +196,8 @@ for the machine-readable status of every tracked item.
 
 ## Release 2.3.0
 
-**Current release: 2.3.0 · .NET 9 and Java 21**
+**Current release: 2.3.0 · .NET 10 and Java 21**
 
-The .NET and Java implementations ship as aligned, same-numbered releases. See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes, including what changed in 2.3.0 and every release before it.
+The .NET and Java implementations ship as aligned, same-numbered releases. 2.3.0 adds a fluent configuration API (`FoundgineModel`) in both languages as a code-first alternative to attributes and annotations; see [`docs/MAPPING.md`](docs/MAPPING.md). See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes, including what changed in 2.3.0 and every release before it.
 
 Foundgine is licensed under the Apache License 2.0.

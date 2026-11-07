@@ -1,12 +1,18 @@
 package com.foundgine.core.semantic.configuration;
 
+import com.foundgine.core.abstractions.AuthorizationId;
 import com.foundgine.core.abstractions.ColumnId;
+import com.foundgine.core.abstractions.ConnectionId;
 import com.foundgine.core.abstractions.EntityId;
 import com.foundgine.core.abstractions.FieldId;
 import com.foundgine.core.abstractions.ModelId;
 import com.foundgine.core.abstractions.RelationshipId;
 import com.foundgine.core.semantic.configuration.ConfigurationDefinitions.*;
 import com.foundgine.core.semantic.metadata.AliasDeclaration;
+import com.foundgine.core.semantic.metadata.AuthorizationMetadata;
+import com.foundgine.core.semantic.metadata.ConnectionFieldMetadata;
+import com.foundgine.core.semantic.metadata.ConnectionMetadata;
+import com.foundgine.core.semantic.metadata.ConversionMetadata;
 import com.foundgine.core.semantic.metadata.ColumnMetadata;
 import com.foundgine.core.semantic.metadata.ColumnReference;
 import com.foundgine.core.semantic.metadata.EntityMetadata;
@@ -34,6 +40,9 @@ final class FoundgineModelCompiler {
     private final List<EntityMetadata> entities = new ArrayList<>();
     private final List<ModelMetadata> models = new ArrayList<>();
     private final List<RelationshipMetadata> relationships = new ArrayList<>();
+    private final List<ConnectionMetadata> modelConnections = new ArrayList<>();
+    private final List<AuthorizationMetadata> authorizations = new ArrayList<>();
+    private final List<ConversionMetadata> conversions = new ArrayList<>();
 
     private FoundgineModelCompiler(FoundgineConfigurationContext context) {
         this.context = context;
@@ -53,6 +62,9 @@ final class FoundgineModelCompiler {
         compiler.entities.forEach(registry::register);
         compiler.models.forEach(registry::register);
         compiler.relationships.forEach(registry::register);
+        compiler.conversions.forEach(registry::register);
+        compiler.modelConnections.forEach(registry::register);
+        compiler.authorizations.forEach(registry::register);
     }
 
     private void run() {
@@ -73,6 +85,11 @@ final class FoundgineModelCompiler {
         List<EntityMapDefinition> maps = validMaps();
         List<ConnectionDefinition> connections = wellFormedConnections();
         Map<Class<?>, List<MemberRef>> connectionMembers = connectionMembers(connections);
+        for (ModelConnectionDefinition modelConnection : context.modelConnections)
+            for (ModelConnectionField field : modelConnection.fields)
+                connectionMembers
+                        .computeIfAbsent(modelConnection.entityType, k -> new ArrayList<>())
+                        .add(field.target());
 
         for (EntityMapDefinition map : maps) compileEntity(map, connectionMembers);
 
@@ -90,7 +107,149 @@ final class FoundgineModelCompiler {
         for (ConnectionDefinition connection : connections)
             if (connectionMatchesMaps(connection)) checked.add(connection);
         compileRelationships(checked);
+        compileModelConnections();
     }
+
+    // ---- model connections --------------------------------------------------------------
+
+    private void compileModelConnections() {
+        Map<List<Class<?>>, ConversionMetadata> declared = new LinkedHashMap<>();
+        Map<List<Class<?>>, Object> declaredFunctions = new LinkedHashMap<>();
+        Set<ConnectionId> seenConnections = new HashSet<>();
+        Set<AuthorizationId> seenAuthorizations = new HashSet<>();
+
+        for (ModelConnectionDefinition definition : context.modelConnections) {
+            String label = definition.modelType.getSimpleName() + "." + definition.member;
+
+            if (!context.models.containsKey(definition.modelType) || !byModel.containsKey(definition.modelType)) {
+                errors.add(
+                        "Connection "
+                                + label
+                                + ": "
+                                + definition.modelType.getSimpleName()
+                                + " needs a model configuration and an entity map.");
+                continue;
+            }
+
+            CompiledEntity target = null;
+            for (CompiledEntity candidate : byModel.values())
+                if (candidate.entityType == definition.entityType) target = candidate;
+            if (target == null) {
+                errors.add(
+                        "Connection "
+                                + label
+                                + ": "
+                                + definition.entityType.getSimpleName()
+                                + " is not the storage type of any entity map.");
+                continue;
+            }
+
+            String modelName = definition.modelType.getSimpleName();
+            String connectionName = definition.effectiveName();
+            ConnectionId connectionId =
+                    definition.explicitId != null
+                            ? new ConnectionId(definition.explicitId)
+                            : ConnectionId.create(modelName, connectionName);
+            if (!seenConnections.add(connectionId)) {
+                errors.add(
+                        "Connection "
+                                + label
+                                + ": connection name '"
+                                + connectionName
+                                + "' (id "
+                                + Long.toUnsignedString(connectionId.value())
+                                + ") is used more than once.");
+                continue;
+            }
+
+            List<ConnectionFieldMetadata> fields = new ArrayList<>();
+            for (ModelConnectionField field : definition.fields) {
+                Class<?> sourceType = field.source().type();
+                Class<?> targetType = field.target().type();
+
+                if (field.conversion() == null && sourceType != targetType) {
+                    errors.add(
+                            "Connection "
+                                    + label
+                                    + ": "
+                                    + field.source().name()
+                                    + " ("
+                                    + sourceType.getSimpleName()
+                                    + ") and "
+                                    + field.target().name()
+                                    + " ("
+                                    + targetType.getSimpleName()
+                                    + ") differ in type; use maps(source, target, convert).");
+                    continue;
+                }
+
+                if (field.conversion() != null) {
+                    ConversionMetadata conversion = field.conversion();
+                    List<Class<?>> pair = List.of(conversion.sourceType(), conversion.targetType());
+                    ConversionMetadata existing = declared.putIfAbsent(pair, conversion);
+                    if (existing == null) declaredFunctions.put(pair, field.function());
+                    // The same type pair may be reused only with the same function instance.
+                    else if (declaredFunctions.get(pair) != field.function()) {
+                        errors.add(
+                                "Connection "
+                                        + label
+                                        + ": a different conversion "
+                                        + conversion.sourceType().getSimpleName()
+                                        + " -> "
+                                        + conversion.targetType().getSimpleName()
+                                        + " is already declared; one conversion exists per type pair.");
+                        continue;
+                    }
+                }
+
+                fields.add(
+                        new ConnectionFieldMetadata(
+                                field.source().name(),
+                                field.target().name(),
+                                sourceType,
+                                targetType,
+                                field.conversion() == null ? null : field.conversion().method()));
+            }
+
+            modelConnections.add(
+                    new ConnectionMetadata(
+                            connectionId,
+                            ModelId.create(modelName),
+                            target.id,
+                            connectionName,
+                            definition.member,
+                            fields.isEmpty() ? null : fields));
+
+            for (ModelConnectionAuthorization authorization : definition.authorizations) {
+                AuthorizationId authorizationId =
+                        authorization.explicitId() != null
+                                ? new AuthorizationId(authorization.explicitId())
+                                : AuthorizationId.create(modelName + "." + connectionName, authorization.name());
+                if (!seenAuthorizations.add(authorizationId)) {
+                    errors.add(
+                            "Connection "
+                                    + label
+                                    + ": authorization '"
+                                    + authorization.name()
+                                    + "' is declared more than once.");
+                    continue;
+                }
+                authorizations.add(
+                        new AuthorizationMetadata(
+                                authorizationId,
+                                connectionId,
+                                authorization.name(),
+                                authorization.name(),
+                                authorization.contextType(),
+                                authorization.resourceType(),
+                                authorization.expression(),
+                                authorization.predicate()));
+            }
+        }
+
+        conversions.addAll(declared.values());
+    }
+
 
     // ---- maps -------------------------------------------------------------------------
 

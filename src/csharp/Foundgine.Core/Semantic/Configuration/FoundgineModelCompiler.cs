@@ -18,6 +18,9 @@ internal sealed class FoundgineModelCompiler
     private readonly List<EntityMetadata> _entities = [];
     private readonly List<ModelMetadata> _models = [];
     private readonly List<RelationshipMetadata> _relationships = [];
+    private readonly List<ConnectionMetadata> _modelConnections = [];
+    private readonly List<AuthorizationMetadata> _authorizations = [];
+    private readonly List<ConversionMetadata> _conversions = [];
 
     private FoundgineModelCompiler(FoundgineConfigurationContext context) => _context = context;
 
@@ -34,6 +37,9 @@ internal sealed class FoundgineModelCompiler
         foreach (var entity in compiler._entities) registry.Register(entity);
         foreach (var model in compiler._models) registry.Register(model);
         foreach (var relationship in compiler._relationships) registry.Register(relationship);
+        foreach (var conversion in compiler._conversions) registry.Register(conversion);
+        foreach (var connection in compiler._modelConnections) registry.Register(connection);
+        foreach (var authorization in compiler._authorizations) registry.Register(authorization);
     }
 
     private void Run()
@@ -48,6 +54,7 @@ internal sealed class FoundgineModelCompiler
         var maps = ValidMaps();
         var connections = WellFormedConnections();
         var connectionMembers = ConnectionMembers(connections);
+        AddModelConnectionMembers(connectionMembers);
 
         foreach (var map in maps)
             CompileEntity(map, connectionMembers);
@@ -64,6 +71,7 @@ internal sealed class FoundgineModelCompiler
 
         var checkedConnections = connections.Where(ConnectionMatchesMaps).ToList();
         CompileRelationships(checkedConnections);
+        CompileModelConnections();
     }
 
     // ---- maps -------------------------------------------------------------------------
@@ -162,6 +170,16 @@ internal sealed class FoundgineModelCompiler
         return result;
     }
 
+    private void AddModelConnectionMembers(Dictionary<Type, List<MemberRef>> result)
+    {
+        foreach (var connection in _context.ModelConnections)
+        {
+            if (!result.TryGetValue(connection.EntityType, out var list))
+                result[connection.EntityType] = list = [];
+            list.AddRange(connection.Fields.Select(f => f.Target));
+        }
+    }
+
     private bool ConnectionMatchesMaps(ConnectionDefinition connection)
     {
         var name = ConnectionName(connection);
@@ -190,6 +208,123 @@ internal sealed class FoundgineModelCompiler
         }
 
         return true;
+    }
+
+    // ---- model connections --------------------------------------------------------------
+
+    private void CompileModelConnections()
+    {
+        var conversions = new Dictionary<(Type, Type), ConversionMetadata>();
+        var seenConnections = new HashSet<ConnectionId>();
+        var seenAuthorizations = new HashSet<AuthorizationId>();
+
+        foreach (var definition in _context.ModelConnections)
+        {
+            var label = $"{definition.ModelType.Name}.{definition.Member}";
+
+            if (!_context.Models.ContainsKey(definition.ModelType) ||
+                !_byModel.ContainsKey(definition.ModelType))
+            {
+                _errors.Add($"Connection {label}: {definition.ModelType.Name} needs a model configuration and an entity map.");
+                continue;
+            }
+
+            var target = _byModel.Values.FirstOrDefault(e => e.EntityType == definition.EntityType);
+            if (target is null)
+            {
+                _errors.Add(
+                    $"Connection {label}: {definition.EntityType.Name} is not the storage type of any entity map.");
+                continue;
+            }
+
+            var modelName = definition.ModelType.Name;
+            var connectionId = definition.ExplicitId is { } explicitId
+                ? new ConnectionId(explicitId)
+                : ConnectionId.Create(modelName, definition.EffectiveName);
+
+            if (!seenConnections.Add(connectionId))
+            {
+                _errors.Add($"Connection {label}: connection name '{definition.EffectiveName}' (id {connectionId.Value}) is used more than once.");
+                continue;
+            }
+
+            var fields = new List<ConnectionFieldMetadata>();
+            foreach (var field in definition.Fields)
+            {
+                var sourceType = field.Source.Type;
+                var targetType = field.Target.Type;
+
+                if (field.Conversion is null && sourceType != targetType)
+                {
+                    _errors.Add(
+                        $"Connection {label}: {field.Source.Name} ({sourceType.Name}) and {field.Target.Name} ({targetType.Name}) differ in type; use Maps(source, target, convert).");
+                    continue;
+                }
+
+                if (field.Conversion is not null)
+                {
+                    var pair = (field.Conversion.SourceType, field.Conversion.TargetType);
+                    if (!conversions.TryAdd(pair, field.Conversion))
+                    {
+                        // The same type pair may be reused only with the same delegate.
+                        if (!ReferenceEquals(conversions[pair].Convert, field.Conversion.Convert) &&
+                            !Equals(conversions[pair].Convert?.Method, field.Conversion.Convert?.Method))
+                        {
+                            _errors.Add(
+                                $"Connection {label}: a different conversion {pair.Item1.Name} -> {pair.Item2.Name} is already declared; one conversion exists per type pair.");
+                            continue;
+                        }
+                    }
+                }
+
+                fields.Add(new ConnectionFieldMetadata(
+                    field.Source.Name,
+                    field.Target.Name,
+                    sourceType,
+                    targetType,
+                    field.Conversion?.Method));
+            }
+
+            _modelConnections.Add(new ConnectionMetadata(
+                connectionId,
+                ModelId.Create(modelName),
+                target.Id,
+                definition.EffectiveName,
+                definition.Member,
+                fields.Count == 0 ? null : fields));
+
+            foreach (var authorization in definition.Authorizations)
+            {
+                if (authorization.Predicate is null)
+                {
+                    _errors.Add(
+                        $"Connection {label}: authorization '{authorization.Name}' is not supported. {authorization.PredicateError}");
+                    continue;
+                }
+
+                var authorizationId = authorization.ExplicitId is { } id
+                    ? new AuthorizationId(id)
+                    : AuthorizationId.Create($"{modelName}.{definition.EffectiveName}", authorization.Name);
+
+                if (!seenAuthorizations.Add(authorizationId))
+                {
+                    _errors.Add($"Connection {label}: authorization '{authorization.Name}' is declared more than once.");
+                    continue;
+                }
+
+                _authorizations.Add(new AuthorizationMetadata(
+                    authorizationId,
+                    connectionId,
+                    authorization.Name,
+                    authorization.Name,
+                    authorization.ContextType,
+                    authorization.ResourceType,
+                    authorization.Expression,
+                    authorization.Predicate));
+            }
+        }
+
+        _conversions.AddRange(conversions.Values);
     }
 
     // ---- entities ---------------------------------------------------------------------

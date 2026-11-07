@@ -4,35 +4,76 @@
 
 ## 2.3.0 — November 8, 2026
 
+### Added
+
+- **Fluent configuration API for .NET and Java.** A second, code-first way to
+  produce the same `MetadataRegistry` that the `[Foundgine*]` attributes /
+  annotations and the AOT generator produce. Each configuration class owns one
+  concern — semantic entity and relationships, persistence (table, key, columns,
+  indexes), model-member-to-storage-member maps, relationship-to-foreign-key
+  connections, and model-to-entity connections — and a single `FoundgineModel`
+  subclass registers them. `Build()` validates the whole set and reports every
+  problem in one exception; `BuildInto(registry)` adds the result to an existing
+  registry and refuses to overwrite ids that are already registered.
+  - .NET: `Foundgine.Core.Semantic.Configuration` (`FoundgineModel`,
+    `FoundgineModelConfiguration<T>`, `FoundginePersistenceConfiguration<T>`,
+    `FoundgineEntityMap<TModel, TEntity>`, `FoundgineConnectionConfiguration`,
+    `FoundgineModelConnectionConfiguration<T>`).
+  - Java: `com.foundgine.core.semantic.configuration` with the same shape
+    (`FoundgineModel.build()` / `buildInto(...)`).
+- **Model connections with conversions and authorization.** `HasConnection` /
+  `hasConnection` maps a model member to a storage entity; `Maps(source, target,
+  convert)` records a `ConversionMetadata` for the type pair, and `Authorize` /
+  `authorize` reads the predicate as an expression (never executed at run
+  time) into an `AuthorizationPredicate`.
+- `ColumnMetadata.MaxLength` and `ColumnMetadata.IsRequired` (.NET), populated by
+  `HasMaxLength` / `IsRequired`.
+- Samples now configured fluently: the .NET Supply Chain starter
+  (`src/csharp/samples/Foundgine.SupplyChain`, `Domain/SupplyChainModel.cs`) and
+  the .NET and Java Supply Chain advanced samples. Application code uses the
+  `SupplyChainSemantics` handles, which are checked against the compiled registry
+  at first use.
+
+### Changed
+
+- **Target framework is now .NET 10.** Every C# project under `src/csharp`
+  already built for `net10.0`, while the repo defaults, CI and docs still said
+  .NET 9. `Directory.Build.props` now defaults to `net10.0`, the `build.yml` and
+  `security.yml` workflows install the `10.0.x` SDK, and every doc, website page,
+  `llms*` file and `mcp.json` reads ".NET 10". Java stays on 21.
+
 ### Documentation
 
-- Aligned every public version reference on the single shared version line
-  `2.3.0` (.NET and Java): `README.md`, `ai.seo.md`, `llms.txt`,
-  `llms-full.md`, `docs-site/llms.txt`, `docs-site/llms-full.md`,
-  `docs/CURRENT-STATUS.md`, `docs/PUBLIC-API.md`, `docs/README.md`,
-  `docs-site/README.md`, the `docs-site/packages` install snippets (NuGet and
-  Maven), the homepage badge, and the footer of every `docs-site/**/index.html`
-  page, including the agent-benchmark run pages.
-- `mcp.json` still advertised version `2.0.3`, a drift the 2.2.1 sweep missed;
-  it now reads `2.3.0`.
-- `docs-site/README.md` described the site as ".NET 9" only; it now reads
-  ".NET 9 and Java 21", matching every other page.
-- `docs-site/sitemap.xml` `lastmod` entries refreshed to the release date.
+- Aligned the whole repository and website on `2.3.0`: `Directory.Build.props`,
+  `README.md`, `ai.seo.md`, `llms.txt`, `llms-full.md`, `docs/`, `docs-site/`
+  (install snippets, hero badge and every page footer) and the Java reactor
+  (`<revision>` and the flattened POMs).
+- `mcp.json` and `.well-known/mcp.json` had drifted to `2.0.3` and now read
+  `2.3.0`; `.well-known/mcp.json` also pointed `mcpProject` at a path that does
+  not exist (`src/Foundgine.Providers/...`) and now matches `mcp.json`.
+- Documented the fluent API in `docs/MAPPING.md`, `docs/PUBLIC-API.md`,
+  `docs/ARCHITECTURE.md`, `docs/GETTING-STARTED.md`, `docs/CURRENT-STATUS.md`
+  and the website's Get started page.
+- Rewrote the sample tutorials for the fluent API: the .NET starter
+  tutorial and "explained" guide, and the Java starter tutorial, advanced
+  tutorial and "explained" guide. They previously walked through attribute
+  declarations and generated `GeneratedSemanticModel` / `GeneratedMetadata`
+  types that the samples no longer use.
 
-### Tests
+### Known limits
 
-- Java: removed `AotGeneratedMetadataIntegrationTest` from
-  `foundgine-sample-supply-chain-advanced`. The sample is configured entirely
-  through the fluent model (`SupplyChainFoundgineModel`) and no longer runs the
-  AOT annotation processor, so the generated `GeneratedFoundgineMetadata` class
-  the test imported was never produced and `testCompile` failed.
-  `FluentModelMetadataIntegrationTest` covers the same assertions (entities,
-  aliases, event and temporal metadata) and more.
+- Composite primary keys and composite foreign keys are not supported by the
+  fluent API (or by Foundgine metadata); `Build()` reports them.
+- Type conversions are available on model connections only; entity maps still
+  require identical CLR/Java types.
+- Convention-based connection fields are not inferred; list each `Maps(...)`.
+- Discovery of `FoundgineModel` subclasses by the source generator is not
+  implemented; `Build()` runs at startup.
 
 ### Release
 
 - Version: `2.3.0`
-- Target framework: `.NET 9` / Java 21
+- Target framework: `.NET 10` / Java 21
 - License: Apache License, Version 2.0
 
 ## 2.2.1 — September 14, 2026

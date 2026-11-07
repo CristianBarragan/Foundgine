@@ -10,6 +10,7 @@ Each configuration class owns exactly one concern:
 | Table, columns, key, indexes | `FoundginePersistenceConfiguration<TEntity>` |
 | Model member to storage member | `FoundgineEntityMap<TModel, TEntity>` |
 | Relationship to physical foreign key | `FoundgineConnectionConfiguration` |
+| Model member to storage entity (connection), conversions, authorization | `FoundgineModelConnectionConfiguration<TModel>` |
 
 `FoundgineModel` is the single registration point:
 
@@ -25,6 +26,7 @@ public sealed class ErpModel : FoundgineModel
         model.Configure<CustomerEntityMapping>();
         model.Configure<OrderEntityMapping>();      // every related model needs a map
         model.Configure<CustomerOrderConnection>();
+        model.Configure<OrderModelConnections>();   // optional: model-to-entity connections
     }
 }
 
@@ -34,6 +36,27 @@ MetadataRegistry registry = new ErpModel().Build();
 `Build()` validates the whole set and throws one `InvalidOperationException` listing every problem (missing key, unmapped relationship, ambiguous connection, mismatched types, ...). Configuration order does not matter.
 
 To combine with attribute-generated metadata, call `new ErpModel().BuildInto(GeneratedMetadata.Registry)`. It throws if an entity, model or relationship id already exists, so neither source can silently overwrite the other.
+
+## Model connections, conversions and authorization
+
+A model-to-entity connection (`ConnectionMetadata`) is the fluent counterpart of `[FoundgineConnection]`. Conversions and authorization predicates hang off it:
+
+```csharp
+public sealed class OrderModelConnections : FoundgineModelConnectionConfiguration<Order>
+{
+    public override void Configure(FoundgineModelConnectionBuilder<Order> connections) =>
+        connections.HasConnection<CustomerERP>(x => x.Customer)      // name defaults to "Customer"
+            .Maps(x => x.CustomerId, e => e.Id)                       // identical types
+            .Maps(x => x.CustomerCode, e => e.CodeNumber, int.Parse)  // delegate conversion
+            .Authorize<UserContext>("CanVisit",
+                (user, customer) => user.TenantId == customer.TenantId);
+}
+```
+
+- **Connection id** is `ConnectionId.Create(modelName, connectionName)`, the same as the generator. `HasName(...)` and `HasId(...)` override the name and the id.
+- **Maps** `(source, target)` needs identical CLR types; `Maps(source, target, convert)` records a `ConversionMetadata` for the type pair with the delegate in `ConversionMetadata.Convert`, and the field's `Converter` is `fluent:<Source>-><Target>`. Foundgine never calls the delegate. One conversion exists per type pair; reuse the same delegate or the build reports a conflict.
+- **Authorize** reads the expression tree (not the lambda body at run time) into `AuthorizationPredicate`. Supported: member access on the two parameters, constants, `==`, `!=`, `&&`, `||`, `!`. Anything else (method calls, captured variables) is reported by `Build()`. The first parameter is the caller context; the second is the connected entity. The id is derived from `modelName.connectionName` plus the authorization name unless one is passed.
+- Target members used by `Maps` become columns on the target entity, and the target type must be the storage type of an entity map.
 
 ## Behaviour worth knowing
 
@@ -49,6 +72,6 @@ To combine with attribute-generated metadata, call `new ErpModel().BuildInto(Gen
 ## Not covered yet
 
 - Source-generator discovery of `FoundgineModel` subclasses (compile-time registry, no runtime lambda reading). Today `Build()` runs at startup.
-- `ConnectionMetadata` (model-to-entity connections), conversions and authorization predicates; those stay attribute-based.
 - Composite keys and composite foreign keys.
-- Type conversions between model and storage members (`To(...)` requires identical CLR types).
+- Type conversions on entity maps (`To(...)` requires identical CLR types); conversions are available on model connections only.
+- Convention-based connection fields (matching members by name); list each `Maps(...)` explicitly.

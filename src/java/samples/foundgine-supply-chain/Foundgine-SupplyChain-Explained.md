@@ -76,6 +76,30 @@ sample expresses through its semantic model's field aliases and authorization pr
 the authorization layer and the grounding/retrieval layer described in the advanced sample's docs
 can reason about "this field means tenant" without re-deriving it from naming conventions.
 
+## 4b. Annotations or fluent configuration? (new in 2.3.0)
+
+The starter declares its model with annotations (`@FoundgineEntity`, `@FoundgineSemanticDimension`,
+`@FoundgineAlias`) because that shows the annotation processor end to end. Foundgine 2.3.0 adds a
+second, equivalent route: the **fluent configuration API** in
+`com.foundgine.core.semantic.configuration`. Both produce the same `MetadataRegistry`, so the
+planner, providers and authorization behave identically; what changes is where the declarations
+live.
+
+| | Annotations (this starter) | Fluent configuration ([advanced sample](../foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md)) |
+|---|---|---|
+| Domain records | carry `@Foundgine*` annotations | plain records, no Foundgine imports |
+| Where the model is declared | on the record components | in `FoundgineModelConfiguration`, `FoundginePersistenceConfiguration`, `FoundgineEntityMap`, `FoundgineConnectionConfiguration` and `FoundgineModelConnectionConfiguration` classes |
+| Build step | `foundgine-aot-generator` annotation processor | none; `new MyModel().build()` at startup |
+| Validation | at compile time | `build()` throws one exception listing every problem |
+
+Pick annotations when you own the types and want compile-time checking; pick fluent configuration
+when the types belong to someone else, when you want them free of Foundgine, or when the model needs
+model-to-entity connections with type conversions and authorization predicates. You can mix them:
+`buildInto(registry)` adds fluent metadata to an existing registry and refuses to overwrite an id
+that is already registered.
+
+---
+
 ## 5. Why the starter's authorization is a `record`, not a policy object
 
 `Authorization.Context` here is a small immutable value (tenant, allowed warehouses, role,

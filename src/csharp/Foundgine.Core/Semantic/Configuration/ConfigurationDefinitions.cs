@@ -1,3 +1,4 @@
+using Foundgine.Core.Abstractions;
 using Foundgine.Core.Semantic.Metadata;
 
 namespace Foundgine.Core.Semantic.Configuration;
@@ -91,6 +92,36 @@ internal sealed class ConnectionDefinition(
     public MemberRef? ForeignKey { get; set; }
     public MemberRef? References { get; set; }
 }
+
+/// <summary>A connection from a semantic model member to a storage entity (<c>ConnectionMetadata</c>).</summary>
+internal sealed class ModelConnectionDefinition(Type modelType, Type entityType, string member)
+{
+    public Type ModelType { get; } = modelType;
+    public Type EntityType { get; } = entityType;
+
+    /// <summary>The connection member on the model, which is also the default connection name.</summary>
+    public string Member { get; } = member;
+
+    public string? Name { get; set; }
+    public ulong? ExplicitId { get; set; }
+    public List<ModelConnectionField> Fields { get; } = [];
+    public List<ModelConnectionAuthorization> Authorizations { get; } = [];
+    public string EffectiveName => Name ?? Member;
+}
+
+internal sealed record ModelConnectionField(
+    MemberRef Source,
+    MemberRef Target,
+    ConversionMetadata? Conversion);
+
+internal sealed record ModelConnectionAuthorization(
+    string Name,
+    ulong? ExplicitId,
+    Type ContextType,
+    Type ResourceType,
+    string Expression,
+    AuthorizationPredicate? Predicate,
+    string? PredicateError);
 
 internal static class ConfigurationAlias
 {

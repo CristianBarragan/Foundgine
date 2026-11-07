@@ -11,7 +11,7 @@
   "server": {
     "package": "Foundgine.Providers.Tools.MCP",
     "language": "C#",
-    "framework": ".NET 9"
+    "framework": ".NET 10"
   },
   "tools": [
     {

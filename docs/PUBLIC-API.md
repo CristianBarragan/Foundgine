@@ -113,6 +113,15 @@ The builder is not an authorization mechanism.
 
 Use `AddFoundgine(...)` for normal DI composition.
 
+## Fluent model configuration
+
+Applications that prefer code over attributes describe their model with the
+fluent configuration API (`Foundgine.Core.Semantic.Configuration` in .NET,
+`com.foundgine.core.semantic.configuration` in Java). Extend `FoundgineModel`,
+register one configuration class per concern, and call `Build()` / `build()` to
+get the `MetadataRegistry`; pass it to `UseMetadata(...)`. See
+[`MAPPING.md`](MAPPING.md) for the full surface and its known limits.
+
 ## Lower-level APIs
 
 Advanced integrations can consume:

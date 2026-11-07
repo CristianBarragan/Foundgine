@@ -12,6 +12,7 @@ public final class FoundgineConfigurationContext {
     final Map<Class<?>, PersistenceDefinition> persistence = new LinkedHashMap<>();
     final List<EntityMapDefinition> maps = new ArrayList<>();
     final List<ConnectionDefinition> connections = new ArrayList<>();
+    final List<ModelConnectionDefinition> modelConnections = new ArrayList<>();
 
     FoundgineConfigurationContext() {}
 
@@ -46,6 +47,12 @@ public final class FoundgineConfigurationContext {
         }
         EntityMapDefinition definition = new EntityMapDefinition(modelType, entityType);
         maps.add(definition);
+        return definition;
+    }
+
+    ModelConnectionDefinition addModelConnection(Class<?> modelType, Class<?> entityType, String member) {
+        ModelConnectionDefinition definition = new ModelConnectionDefinition(modelType, entityType, member);
+        modelConnections.add(definition);
         return definition;
     }
 

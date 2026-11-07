@@ -227,6 +227,26 @@ public final class SupplyChainDomain {
 - Records, not mutable classes, keep the domain immutable by construction — idiomatic Java for a
   model that Foundgine treats as read-only structural metadata.
 
+> **Prefer code over annotations?** Since 2.3.0 there is a second way to produce the same
+> metadata: the fluent configuration API in `com.foundgine.core.semantic.configuration`. The
+> records stay plain (no `@Foundgine*` imports) and small configuration classes declare the entity
+> name, dimensions, tables, keys and joins. For example, `Company` above becomes:
+>
+> ```java
+> static final class CompanySemantics extends FoundgineModelConfiguration<Company> {
+>     @Override
+>     public void configure(FoundgineModelBuilder<Company> model) {
+>         model.toEntity("Company");
+>         model.hasDimension(Company::tenantId).as("tenant");
+>     }
+> }
+> ```
+>
+> registered on a `FoundgineModel` subclass and compiled with `build()`. This starter stays on
+> annotations so you can see the annotation processor at work; the
+> [advanced sample](../foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md) (section 1)
+> is built entirely with the fluent API. Both feed the same planner and providers.
+
 ---
 
 ## 4. Authorization

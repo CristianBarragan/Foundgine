@@ -106,6 +106,8 @@ concern and registered in one place, `SupplyChainFoundgineModel`:
 | `PersistenceConfigurations` | table, key and indexes (`FoundginePersistenceConfiguration<T>`) |
 | `EntityMaps` | which storage member holds each semantic member (`FoundgineEntityMap<T, T>`) |
 | `SupplyChainConnections` | which keys join each pair of related entities |
+| `SupplyChainModelConnections` | what a model may visit, how members correspond, and who may follow the connection (`FoundgineModelConnectionConfiguration<T>`) |
+| `SupplyChainFoundgineModel` | the single registration point; `build()` validates everything and returns the `MetadataRegistry` |
 
 Because the records have no navigation members, relationships are declared by name
 (`hasMany("inventory", InventoryLot.class)`), and each physical join is declared once as a
@@ -136,6 +138,59 @@ When the same two entities are related more than once (`Product` ↔ `ProductCom
 `components` and `usedInComponents`), the connection takes the relationship name —
 `connections.hasRelationship(Product.class, ProductComponent.class, "components")` — so Foundgine
 can tell the joins apart.
+
+### Register everything once, build once
+
+`SupplyChainFoundgineModel` extends `FoundgineModel` and lists every configuration class with
+`model.configure(...)`; order does not matter. `build()` validates the whole set and throws one
+exception that lists every problem it found (a missing key, an unmapped relationship, mismatched
+types), so you fix them in one pass instead of one failure at a time:
+
+```java
+public static final IMetadataCatalog Metadata = new SupplyChainFoundgineModel().build();
+```
+
+If you also have annotation-generated metadata (the starter's route), `buildInto(registry)` adds
+the fluent result to that registry and refuses to overwrite any entity, model or relationship id
+that is already registered, so the two sources can coexist without silently clobbering each other.
+
+### Model connections: field maps, conversions and authorization
+
+A relationship says two entities are related. A **model connection** says what a model may *visit*,
+which member corresponds to which entity member, and who is allowed to follow it. This is the
+fluent counterpart of the annotation-based connection declarations, and it is where authorization
+predicates are attached. In the sample, a purchase order reaches its supplier through `supplierId`,
+and only a caller from the same tenant as the supplier may follow it:
+
+```java
+final class SupplyChainModelConnections extends FoundgineModelConnectionConfiguration<PurchaseOrder> {
+    @Override
+    public void configure(FoundgineModelConnectionBuilder<PurchaseOrder> connections) {
+        connections
+                .hasConnection("supplier", Supplier.class)
+                .maps(PurchaseOrder::supplierId, Supplier::id)
+                .authorize(
+                        Authorization.Context.class,
+                        "SameTenantSupplier",
+                        a -> a.context(Authorization.Context::tenantId).eq(a.resource(Supplier::tenantId)));
+    }
+}
+```
+
+- `maps(source, target)` requires both members to have the same Java type.
+- A **type conversion** is a third argument. Say the model keeps a numeric code and the entity
+  stores it as text (this is an illustration, not part of the sample):
+  `.maps(Contract::code, ContractRow::codeNumber, Integer::parseInt)`. Foundgine records the
+  conversion as `ConversionMetadata` for that type pair and never calls the function itself; your
+  provider does. One conversion exists per type pair.
+- `authorize(...)` describes the predicate with a small operand builder, `a.context(...)` for the
+  caller and `a.resource(...)` for the connected entity. It is read as data, never executed, and
+  only member access, constants, `eq`, `ne`, `and`, `or` and `not` exist, the same subset as the
+  .NET expression-tree form. The authorization id is derived from the connection plus the name you
+  give it.
+
+**Not covered yet:** composite primary and foreign keys, and conversions on entity maps (they
+exist on model connections only). `build()` reports an unsupported shape rather than guessing.
 
 Then build the Foundgine `SemanticModel` from it in `semantics/SupplyChainSemanticModel.java`. This
 sample uses the **manual builder** path (`SemanticModelBuilder`) on top of the registry built by

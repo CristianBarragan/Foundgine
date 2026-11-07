@@ -1,5 +1,8 @@
 package com.foundgine.core.semantic.configuration;
 
+import com.foundgine.core.semantic.metadata.AuthorizationMetadata;
+import com.foundgine.core.semantic.metadata.ConnectionMetadata;
+import com.foundgine.core.semantic.metadata.ConversionMetadata;
 import com.foundgine.core.semantic.metadata.EntityMetadata;
 import com.foundgine.core.semantic.metadata.MetadataRegistry;
 import com.foundgine.core.semantic.metadata.ModelMetadata;
@@ -42,6 +45,20 @@ public abstract class FoundgineModel {
         for (RelationshipMetadata relationship : built.relationships())
             if (registry.tryGet(relationship.id()))
                 conflicts.add("relationship '" + relationship.name() + "'");
+        for (ConnectionMetadata connection : built.connections())
+            if (registry.tryGet(connection.id())) conflicts.add("connection '" + connection.name() + "'");
+        for (AuthorizationMetadata authorization : built.authorizations()) {
+            for (AuthorizationMetadata existing : registry.authorizations())
+                if (existing.id().equals(authorization.id()))
+                    conflicts.add("authorization '" + authorization.name() + "'");
+        }
+        for (ConversionMetadata conversion : built.conversions())
+            if (registry.findConversion(conversion.sourceType(), conversion.targetType()) != null)
+                conflicts.add(
+                        "conversion "
+                                + conversion.sourceType().getSimpleName()
+                                + " -> "
+                                + conversion.targetType().getSimpleName());
 
         if (!conflicts.isEmpty())
             throw new IllegalStateException(
@@ -52,6 +69,9 @@ public abstract class FoundgineModel {
         for (EntityMetadata entity : built.entities()) registry.register(entity);
         for (ModelMetadata model : built.models()) registry.register(model);
         for (RelationshipMetadata relationship : built.relationships()) registry.register(relationship);
+        for (ConversionMetadata conversion : built.conversions()) registry.register(conversion);
+        for (ConnectionMetadata connection : built.connections()) registry.register(connection);
+        for (AuthorizationMetadata authorization : built.authorizations()) registry.register(authorization);
     }
 
     private FoundgineConfigurationContext collect() {

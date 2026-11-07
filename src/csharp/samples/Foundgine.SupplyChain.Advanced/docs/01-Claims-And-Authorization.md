@@ -117,9 +117,9 @@ public static RelationshipId SupplierCertifications =>
 
 If you read the walkthrough for the simpler `Foundgine.SupplyChain` starter,
 you'll recognize this as the exact pattern that starter's semantic-model
-wrapper _used to_ have — and which we replaced there with compiler-checked
-constants the AOT generator now emits directly
-(`GeneratedSemanticModel.<Model>.Relationships.<Name>`).
+wrapper _used to_ have — and which we replaced there with typed handles
+(`SupplyChainSemantics.<Model>.Relationships.<Name>`) that are verified
+against the compiled registry the first time they are used.
 
 **We deliberately did not make that same change here**, for a reason this
 sample's own `Infrastructure/README.md` states explicitly: _"there is
@@ -132,19 +132,20 @@ all (`Product.shipments`, `Product.supplierIncidents` — see
 relationships. Any single lookup mechanism used everywhere in this file has
 to handle both kinds uniformly, and only the runtime, name-based
 `Model.Get(...).Relationships.Single(...)` lookup can — a
-compile-time-generated constant only exists for the structural
+typed handle over the structural registry only exists for the structural
 relationships, not the synthesized traversals.
 
-The typo-safety the compile-time constants would have bought you is instead
+The typo-safety typed handles would have bought you is instead
 covered here by the test suite: `SemanticModelTests.cs` and
 `MetadataProducerBoundaryTests.cs` resolve every id this file uses, so a
 renamed or misspelled relationship fails a fast, deterministic unit test —
 not a `Single()` throw discovered in production. If you're extending this
 project and specifically want compile-time-checked ids for a _structural_
-(non-traversal) relationship, `GeneratedSemanticModel.<Model>.Relationships.<Name>`
-is available after a rebuild — just know that using it here is a deliberate
-trade against the "swap metadata producers freely" design goal, not a
-strict improvement.
+(non-traversal) relationship, add typed handles in the style of the starter's
+`SupplyChainSemantics` (each one checked against the registry built by
+`new SupplyChainModel().Build()`) — just know that using them here is a
+deliberate trade against the "swap metadata producers freely" design goal,
+not a strict improvement.
 
 ---
 

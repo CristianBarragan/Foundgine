@@ -65,5 +65,6 @@ public final class SupplyChainFoundgineModel extends FoundgineModel {
         model.configure(EntityMaps.ComplianceIncidentMap.class);
 
         model.configure(SupplyChainConnections.class);
+        model.configure(SupplyChainModelConnections.class);
     }
 }

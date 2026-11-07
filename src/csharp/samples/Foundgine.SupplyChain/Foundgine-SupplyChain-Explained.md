@@ -22,7 +22,7 @@ Why does that matter in practice?
 - An LLM-driven agent calling `place_order` can't SQL-inject anything — there
   is no SQL for it to inject into. It can only invoke named, typed capabilities.
 - If you rename a column (`email` → `email_address`), you edit **one
-  attribute** in `Domain/StorageModels.cs`. Nothing else changes.
+  `HasColumnName(...)` call** in `Domain/PersistenceConfigurations.cs`. Nothing else changes.
 - Every query that runs can be fingerprinted (hashed) and logged, so you have
   an audit trail of "what plan actually executed," independent of trusting
   the caller's description of what it asked for.
@@ -33,7 +33,7 @@ Why does that matter in practice?
 
 | Requirement                     | Why you need it                                                                                                                                                                                                                        |
 | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **.NET 9 SDK**                  | Foundgine's generator is a Roslyn _source generator_, which only runs inside a .NET/Roslyn compilation. You cannot use an older SDK — Roslyn incremental generators need a modern SDK/compiler.                                        |
+| **.NET 10 SDK**                 | The sample project targets `net10.0`, so it needs the .NET 10 SDK to build. Foundgine's fluent configuration reads member names out of C# expression trees, which every current SDK supports; the SDK version is about the sample's target framework, not the API. |
 | **Docker Desktop**              | The sample stores data in real PostgreSQL, not an in-memory fake, so the SQL compiler output is exercised against a real engine (real types, real constraints, real query plans).                                                      |
 | **Git clone with project refs** | Because `Foundgine.Core/Runtime/Providers` are still evolving alongside the sample, the tutorial deliberately uses `<ProjectReference>` instead of published NuGet versions, so you always build against the exact source in the repo. |
 
@@ -60,189 +60,130 @@ to an SDK version mismatch or Docker not running.
   surface (Hot Chocolate) in addition to/instead of MCP. The starter doesn't
   use it.
 
-**Why a Roslyn analyzer instead of a normal NuGet dependency for the
-generator?** Because a source generator has to run _during your build_, as an
-`Analyzer` item, not as a regular assembly reference — that's what the
-`OutputItemType="Analyzer" / ReferenceOutputAssembly="false"` incantation in
-the `.csproj` is doing. It tells MSBuild "run this project's code as a
-compiler plugin against my source, but don't link its assembly into my app."
+**Where's the model compiler?** There isn't a build-time one in this sample.
+The model is described with the **fluent configuration API** in
+`Foundgine.Core.Semantic.Configuration` and compiled once at startup by
+`new SupplyChainModel().Build()`. The `Foundgine.Providers.Aot.Generator`
+Roslyn analyzer (which turns `[FoundgineModel]` / `[FoundgineEntity]`
+attributes into metadata at build time) is still referenced from the csproj
+as an `Analyzer` item, but a fluent model has no attributes for it to read, so
+it emits nothing here. Use it if you prefer attributes, or when you need
+Native AOT with no startup work; the two styles produce the same
+`MetadataRegistry` and can be mixed with `BuildInto(...)`.
 
 ---
 
-## 3–5. Domain models, storage entities, and mappings — why three files, not one
+## 3–5. Domain models, storage entities, and configuration — why separate files
 
 This is the part people most often try to collapse into one file, and it's
-worth understanding why the tutorial keeps them separate:
+worth understanding why the tutorial keeps them separate. With the fluent API
+the types themselves are **plain classes**; everything Foundgine needs to know
+lives in small configuration classes, each owning exactly one concern:
 
-1. **`Domain/Models.cs`** (`[FoundgineModel]`) is the _vocabulary_ your
-   application and your AI agent talk in — "Customer", "SalesOrder". This
-   layer should be stable even if you migrate databases entirely.
-2. **`Domain/StorageModels.cs`** (`[FoundgineEntity]` / `[FoundgineField]` /
-   `[FoundgineRelationship]`) is the _actual schema_ — real table names, real
-   column names, real foreign keys. This layer changes whenever your DBA
-   changes something.
-3. **`Domain/Mappings.cs`** (`[FoundgineModelEntityMap]`) is a **firewall**
-   between the two. It's intentionally the _only_ file allowed to `using`
-   both the `Models` and `Storage` namespaces. If you ever find yourself
-   importing `Domain.Storage` from your application layer, that's a sign the
-   boundary is leaking.
+| Concern | File | Base class |
+| --- | --- | --- |
+| Semantic entity name and relationships | `Domain/ModelConfigurations.cs` | `FoundgineModelConfiguration<TModel>` |
+| Table, key and column names | `Domain/PersistenceConfigurations.cs` | `FoundginePersistenceConfiguration<TEntity>` |
+| Model member → storage member | `Domain/Mappings.cs` | `FoundgineEntityMap<TModel, TEntity>` |
+| Relationship → physical foreign key | `Domain/Mappings.cs` | `FoundgineConnectionConfiguration` |
+| Model member → storage entity, conversions, authorization | _(not needed by the starter)_ | `FoundgineModelConnectionConfiguration<TModel>` |
 
-**IDs matter, and here's the actual rule, precisely:**
+and one class registers them all:
 
-- `[FoundgineModel(..., Id = N)]` — unique across all models.
-- `[FoundgineEntity(..., Id = N)]` — unique across all entities.
-- `[FoundgineField(..., Id = N)]` — unique _within its entity_ (two different
-  entities can reuse field id `1` for their primary key, that's fine and
-  is exactly what the sample does — every `Id` column is field `1`).
-- `[FoundgineRelationship(..., Id = N)]` — unique across the **whole model**,
-  not just within an entity, because relationships are graph edges that get
-  compared against each other during planning.
+1. **`Domain/Models.cs`** is the _vocabulary_ your application and your AI
+   agent talk in — "Customer", "SalesOrder". It carries no Foundgine
+   attributes and no dependency on `Foundgine.Providers`, so it stays stable
+   even if you migrate databases entirely. The navigation properties exist
+   only so configuration can name a relationship with a lambda; Foundgine
+   never populates them.
+2. **`Domain/StorageModels.cs`** is the _actual schema_ — plain scalar
+   members for each table. Real table and column names come from
+   `PersistenceConfigurations.cs`, which changes whenever your DBA changes
+   something.
+3. **`Domain/Mappings.cs`** is a **firewall** between the two. It's
+   intentionally the _only_ file allowed to `using` both the `Models` and
+   `Storage` namespaces. If you ever find yourself importing
+   `Domain.Storage` from your application layer, that's a sign the boundary
+   is leaking.
+4. **`Domain/SupplyChainModel.cs`** is the single registration point
+   (`FoundgineModel`). Order does not matter.
 
-If you get an id collision, the AOT generator (or `ValidateRelationships`,
-which runs before code emission) will fail the build with a diagnostic
-rather than silently producing wrong metadata — this is deliberate: wrong
-metadata here means wrong SQL later, so the generator fails loudly and early.
+**IDs are derived, not assigned.** The old attribute version made you pick a
+unique number for every model, entity, field and relationship. The fluent
+compiler derives them from names instead: entity ids from the semantic entity
+name (`ToEntity("SalesOrderERP")`), field ids from the entity name plus the
+member name, relationship ids from the entity name plus the navigation name,
+and column ids from `schema.table` plus the column name. The same names always
+give the same ids, so fluent and attribute metadata for the same names agree.
+A rename therefore changes an id — which is exactly what the checked handles
+in step 6 are for.
 
-**Checkpoint discipline:** the tutorial tells you to `dotnet build` right
-after step 5, before writing any application code. Do this. If your
-attributes are malformed, you want the compiler to tell you _now_, not three
-files later when a query mysteriously returns nothing.
+**Defaults, so you write less:** the semantic entity name defaults to the model
+type name, the table to the storage type name, and a column to the member name.
+`HasForeignKey` selects the key on the target storage type
+(`Customer 1 - * SalesOrder`); `HasForeignKeyOnSource` selects it on the
+source (`SalesOrderLine * - 1 CatalogProduct`). One connection configures both
+directions of a pair.
+
+**Validation is all-at-once.** `Build()` checks the whole set and throws a
+single `InvalidOperationException` listing every problem — a missing key, an
+unmapped relationship, an ambiguous connection, mismatched types, or an
+unsupported shape such as a composite key. Wrong metadata here means wrong SQL
+later, so it fails loudly and early. Unlike the attribute generator, this
+happens when the application starts (or when a test calls `Build()`), not at
+compile time, so the tutorial's checkpoint after step 5 is to build **and**
+run a test or start the app.
 
 ---
 
-## 6. Why there's no semantic-model file to write — and why the mapping still is
+## 6. Why `SupplyChainSemantics` exists — and what it checks
 
-### The short version
+Application code should not juggle raw ids like
+`EntityId.Create("SalesOrderERP")`. `Domain/SupplyChainSemantics.cs` is a small
+hand-written class of typed handles (`.Entity`, field accessors with
+`.Eq(...)` / `.Set(...)` / `.Asc()`, and `Relationships.<Name>` ids).
 
-Earlier revisions of this sample had you hand-write
-`Semantics/SupplyChainSemanticModel.cs` — a "front door" file so nothing in
-`Infrastructure`/`Application` imported `Foundgine.Generated` directly or
-juggled raw numeric ids. That file is now **gone entirely**. Application
-code (`SupplyChainQueryRepository`, `SupplyChainMutationRepository`,
-`Program.cs`) references `Foundgine.Generated.GeneratedMetadata` and
-`Foundgine.Generated.GeneratedSemanticModel` directly. There's nothing left
-for the wrapper to do.
+Its important property is that **every handle is verified against the compiled
+registry the first time its class is used**:
 
-### Why it became unnecessary
+- `EntityOf(name)` throws if no semantic entity with that name was registered
+  (so a rename in `ToEntity(...)` can't silently strand the handle).
+- `FieldOf(...)` throws if the member isn't mapped on that entity.
+- `RelationshipOf(...)` throws if the relationship isn't configured.
 
-The wrapper originally earned its place two ways:
+Each message says which configuration to update. That replaces the
+compile-time safety the AOT generator used to give for attribute-declared
+models (it emitted a `GeneratedSemanticModel` class for you); a fluent model
+declares nothing for the generator to read, so this thin class takes over.
+It's ordinary C# over the registry — no tooling step — and the ids it uses are
+the same ones the fluent compiler assigns.
 
-1. **`EntityId` passthrough properties** (`Customer`, `SalesOrder`, …) — low
-   risk, but boilerplate.
-2. **Relationship lookups** — the file used to run a LINQ query against the
-   whole `MetadataRegistry` at static-constructor time, matching on
-   **string names**:
+### Going further: connections, conversions and authorization
 
-   ```csharp
-   private static RelationshipId Relationship(string entityName, string relationshipName) =>
-       Registry.Relationships
-           .Single(x => x.Name == relationshipName &&
-                        Registry.GetEntity(x.Source).Name == entityName)
-           .Id;
-
-   public static readonly RelationshipId CustomerOrders = Relationship("CustomerERP", "Orders");
-   ```
-
-   This didn't scale: every new relationship needed a new hand-typed call,
-   the entity/relationship names were plain strings with no compiler check,
-   and a typo failed at **runtime** via `Single()` throwing.
-
-We extended the AOT generator itself
-(`src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/FoundgineMetadataGenerator.cs`,
-in `EmitSemanticModel`) so it emits a `Relationships` nested class directly
-under each model's generated class — one strongly-typed constant per
-`[FoundgineRelationship]` property found on that model's mapped storage
-entity:
+The starter only needs relationships. When a model should _visit_ a storage
+entity by a key that needs converting, or when following that connection needs
+an authorization check, use `FoundgineModelConnectionConfiguration<TModel>`:
 
 ```csharp
-// auto-generated, in Foundgine.Generated.GeneratedSemanticModel
-public static class Customer
-{
-    public static readonly EntityId Entity = new(101);
-    // ...fields...
-
-    public static class Relationships
-    {
-        public static readonly RelationshipId Orders = new(1);
-    }
-}
+connections.HasConnection<CustomerERP>(x => x.Customer)
+    .Maps(x => x.CustomerCode, e => e.CodeNumber, int.Parse)   // conversion
+    .Authorize<UserContext>("CanVisit",
+        (user, customer) => user.TenantId == customer.TenantId);
 ```
 
-Once that existed, the wrapper's _entire remaining content_ was one-line
-aliases with zero logic in them — `SupplyChainSemanticModel.Customer =>
-GeneratedSemanticModel.Customer.Entity`, `SupplyChainSemanticModel.Metadata
-=> GeneratedMetadata.Registry`, and so on. A file that only renames things
-one-to-one isn't a boundary, it's indirection — so we deleted it and updated
-the three call sites that used it (`Program.cs`'s two DI registrations,
-and the two relationship references inside `SupplyChainQueryRepository`) to
-name the generated members directly:
+The conversion is recorded as `ConversionMetadata` for the type pair; Foundgine
+never calls the delegate. `Authorize` reads the lambda as an expression tree
+(member access, constants, `==`, `!=`, `&&`, `||`, `!`) and `Build()` rejects
+anything else.
 
-```csharp
-// Program.cs — GeneratedMetadata.Registry already implements IMetadataProvider
-builder.Services.AddSingleton<IMetadataProvider>(GeneratedMetadata.Registry);
-builder.Services.AddSingleton(GeneratedMetadata.Registry);
-```
+### Known limits (as of 2.3.0)
 
-```csharp
-// SupplyChainQueryRepository.cs
-GeneratedSemanticModel.SalesOrder.Relationships.Lines
-GeneratedSemanticModel.Shipment.Relationships.Order
-```
-
-**What this buys you as you onboard new entities:** add a
-`[FoundgineRelationship]` property, rebuild, and the accessor
-(`GeneratedSemanticModel.<Model>.Relationships.<Name>`) just _exists_ —
-no wrapper file to touch, no lookup call to write, and a typo is a compile
-error (unknown member) instead of a `Single()` throw at app startup.
-
-### The mapping is still required — this is the important part
-
-None of the above means `Domain/Mappings.cs` became optional. It's the
-opposite: `Domain/Mappings.cs` is now the **only** place that decides
-whether a `GeneratedSemanticModel.<Model>` class gets emitted at all. The
-generator registers every `[FoundgineEntity]` into
-`GeneratedMetadata.Registry` unconditionally, but it only emits the
-`GeneratedSemanticModel.<Model>` class — the one with `.Entity`, field
-constants, and `.Relationships` — for models that appear in a
-`[FoundgineModelEntityMap]`:
-
-```csharp
-// FoundgineMetadataGenerator.cs, EmitSemanticModel
-if (!modelEntityMap.TryGetValue(model.ToDisplayString(), out var entity) || ...)
-    continue; // this model gets no GeneratedSemanticModel class at all
-```
-
-Skip the mapping for a model and you still get raw metadata for its entity
-(plannable by name), but you lose every compile-time-checked accessor for
-it. So removing the hand-written wrapper made the mapping _more_ load-bearing,
-not less: with no wrapper standing between application code and the
-generator's output, `Domain/Mappings.cs` is the one file that determines
-what application code is even allowed to reference by name.
-
-### Where this lives
-
-- Generator change: `src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/FoundgineMetadataGenerator.cs`
-- Removed: `src/csharp/samples/Foundgine.SupplyChain/Semantics/SupplyChainSemanticModel.cs`
-  (the `Semantics/` folder no longer exists in this sample)
-- Updated call sites: `src/csharp/samples/Foundgine.SupplyChain/Program.cs`,
-  `src/csharp/samples/Foundgine.SupplyChain/Infrastructure/Queries/SupplyChainQueryRepository.cs`
-
-### Build the solution
-
-```bash
-cd src/csharp/samples/Foundgine.SupplyChain
-dotnet build
-```
-
-Then inspect the generated file (path will be under
-`obj/Debug/net10.0/generated/.../FoundgineMetadataGenerator/...`, or just
-right-click → "Go to Definition" on `GeneratedSemanticModel` in your IDE) and
-confirm you see a `Relationships` nested class with the expected members.
-Also run:
-
-```bash
-dotnet test src/csharp/tests/Foundgine.Aot.Tests
-```
+- Composite primary keys and composite foreign keys aren't supported.
+- Conversions exist on model connections only; `Property(...).To(...)` in an
+  entity map needs identical types.
+- Connection fields are not matched by name automatically; list each `Maps(...)`.
+- `FoundgineModel` subclasses are not discovered by the source generator, so
+  `Build()` runs at startup.
 
 ---
 
@@ -306,7 +247,7 @@ expectedToken` string comparison in C# short-circuits on the first
   orchestrator's readiness probe at `/health/ready`, and its liveness probe
   at `/health`.
 - **The seed schema is the _only_ place table/column names need to match
-  your `StorageName` attributes.** Nothing else in the app cares what the
+  your `ToTable(...)` / `HasColumnName(...)` configuration.** Nothing else in the app cares what the
   columns are called — that's the whole point of the `Domain/StorageModels.cs`
   / `Domain/Mappings.cs` split from step 4–5.
 - **Docker port `4429`.** Arbitrary — chosen to avoid colliding with a
@@ -333,13 +274,14 @@ starter.
 
 ## Quick checklist for onboarding someone new to this project
 
-1. Install .NET 9 SDK + Docker; verify both.
+1. Install .NET 10 SDK + Docker; verify both.
 2. Clone, `dotnet build` the whole solution once to prime NuGet/Roslyn caches.
-3. Read `Domain/Models.cs` → `Domain/StorageModels.cs` → `Domain/Mappings.cs`,
-   in that order — that's the dependency direction of understanding, not just
+3. Read `Domain/Models.cs` → `Domain/StorageModels.cs` →
+   `Domain/PersistenceConfigurations.cs` → `Domain/ModelConfigurations.cs` →
+   `Domain/Mappings.cs` → `Domain/SupplyChainModel.cs`, in that order — that's the dependency direction of understanding, not just
    of code.
-4. `dotnet build` again — confirm `GeneratedSemanticModel` and (with the
-   change above) its new `Relationships` nested classes appear.
+4. `dotnet build` again, then call `new SupplyChainModel().Build()` (or start
+   the app) — confirm it returns without a validation error.
 5. `docker compose up -d postgres`, run `seed.sql`.
 6. `dotnet run`, hit `/health/ready`.
 7. Call `describe_capabilities` for each of `alice`/`bob`/`carol`/`dave`/`admin`

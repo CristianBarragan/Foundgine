@@ -18,7 +18,7 @@ $PublishScript = Join-Path $BenchmarkRoot 'publish-report.ps1'
 $ReportDirectory = Join-Path $BenchmarkRoot 'artifacts/agent-benchmark'
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    throw 'dotnet was not found on PATH. Install the .NET 9 SDK and reopen PowerShell.'
+    throw 'dotnet was not found on PATH. Install the .NET 10 SDK and reopen PowerShell.'
 }
 
 if (-not $NoInfrastructure) {

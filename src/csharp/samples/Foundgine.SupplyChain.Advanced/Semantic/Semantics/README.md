@@ -10,9 +10,12 @@ The domain types in `Domain/Domain.cs` are plain records with no Foundgine refer
 | Tables, keys, indexes | `SupplyChainPersistenceConfigurations.cs` |
 | Model member to storage member | `SupplyChainEntityMaps.cs` |
 | Relationship to physical foreign key | `SupplyChainConnections.cs` |
+| Model-to-entity connection, field maps, conversions, authorization | `SupplyChainModelConnections.cs` |
 | Registration | `SupplyChainModel.cs` |
 
 `new SupplyChainModel().Build()` validates the whole set and returns the metadata registry that `SupplyChainSemanticModel` starts from. Identities are now derived from names (entity and field ids from semantic names, column ids from table and column name), so the explicit numeric ids the attributes used to carry are gone.
+
+`SupplyChainModelConnections.cs` shows the model-to-entity side: `PurchaseOrder.SupplierId` connects to the `Supplier` entity, maps `SupplierId` to `Id`, and carries a tenant authorization predicate (`(context, supplier) => context.TenantId == supplier.TenantId`) that is read from the expression tree. A type conversion is a third argument to `Maps(...)`, for example `.Maps(x => x.Code, e => e.CodeNumber, int.Parse)`; see `Foundgine.Core/Semantic/Configuration/README.md`.
 
 `Product` and `ProductComponent` are related three ways (`components`, `usedInComponents`, `componentProduct`), so the two connections between them name the navigation they configure.
 

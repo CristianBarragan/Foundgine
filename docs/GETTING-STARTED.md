@@ -1,12 +1,12 @@
 # Getting started
 
-Foundgine targets .NET 9.
+Foundgine targets .NET 10.
 
 The quickest way to understand it is to run the repository's SupplyChain sample and then inspect the same pipeline in the `src/` packages.
 
 ## Requirements
 
-- .NET 9 SDK
+- .NET 10 SDK
 - Git
 - Docker Desktop (required for PostgreSQL-backed integration/sample execution)
 
@@ -110,6 +110,15 @@ services.AddFoundgine(options =>
 ```
 
 Metadata supplies structural facts. Semantic configuration supplies application meaning.
+
+To produce that metadata without attributes, configure it fluently and build it once at startup:
+
+```csharp
+MetadataRegistry metadata = new SupplyChainModel().Build();   // a FoundgineModel subclass
+services.AddFoundgine(options => options.UseMetadata(metadata));
+```
+
+The Supply Chain starter samples (.NET and Java) are built this way; see [`MAPPING.md`](MAPPING.md).
 
 ## AOT
 

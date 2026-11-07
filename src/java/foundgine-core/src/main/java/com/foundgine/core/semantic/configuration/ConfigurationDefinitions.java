@@ -1,6 +1,8 @@
 package com.foundgine.core.semantic.configuration;
 
+import com.foundgine.core.abstractions.AuthorizationPredicate;
 import com.foundgine.core.semantic.metadata.AliasDeclaration;
+import com.foundgine.core.semantic.metadata.ConversionMetadata;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -119,4 +121,37 @@ final class ConfigurationDefinitions {
             this.navigation = navigation;
         }
     }
+
+    /** A connection from a semantic model member to a storage entity ({@code ConnectionMetadata}). */
+    static final class ModelConnectionDefinition {
+        final Class<?> modelType;
+        final Class<?> entityType;
+        /** The connection member on the model, which is also the default connection name. */
+        final String member;
+        String name;
+        Long explicitId;
+        final List<ModelConnectionField> fields = new ArrayList<>();
+        final List<ModelConnectionAuthorization> authorizations = new ArrayList<>();
+
+        ModelConnectionDefinition(Class<?> modelType, Class<?> entityType, String member) {
+            this.modelType = modelType;
+            this.entityType = entityType;
+            this.member = member;
+        }
+
+        String effectiveName() {
+            return name != null ? name : member;
+        }
+    }
+
+    record ModelConnectionField(
+            MemberRef source, MemberRef target, ConversionMetadata conversion, Object function) {}
+
+    record ModelConnectionAuthorization(
+            String name,
+            Long explicitId,
+            Class<?> contextType,
+            Class<?> resourceType,
+            String expression,
+            AuthorizationPredicate predicate) {}
 }

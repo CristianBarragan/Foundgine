@@ -1,6 +1,6 @@
 # Current status — Foundgine 2.3.0 (.NET & Java)
 
-The repository ships two implementations of the same architecture, released together on a single aligned version line: the .NET implementation targets .NET 9, and the Java implementation targets Java 21 (Maven, groupId `io.github.cristianbarragan`). Except where noted below, everything on this page applies to both.
+The repository ships two implementations of the same architecture, released together on a single aligned version line: the .NET implementation targets .NET 10, and the Java implementation targets Java 21 (Maven, groupId `io.github.cristianbarragan`). Except where noted below, everything on this page applies to both.
 
 This page is intentionally short: it describes the current architectural state rather than preserving historical release notes.
 
@@ -27,6 +27,7 @@ Security.Authority
 The semantic layer currently covers:
 
 - semantic entities, fields, identities, relationships and aliases;
+- fluent model configuration (.NET and Java) that compiles to the same metadata registry as attributes, including model connections with conversions and authorization predicates;
 - typed and dynamic read intent;
 - filters and logical filter composition;
 - relationship filters and quantifiers;

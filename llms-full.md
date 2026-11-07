@@ -78,7 +78,9 @@ Java (Maven, groupId `io.github.cristianbarragan`):
 
 ## Current release
 
-**2.3.0 · .NET 9 and Java 21**
+**2.3.0 · .NET 10 and Java 21**
+
+New in 2.3.0: a fluent configuration API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
 
 For implementation truth, use the active source tree, tests, `docs/CURRENT-STATUS.md`, and package READMEs under `src/csharp/` and `src/java/`.
 
