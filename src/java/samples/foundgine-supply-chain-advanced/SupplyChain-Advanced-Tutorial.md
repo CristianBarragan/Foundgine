@@ -7,8 +7,9 @@ real code in `src/java/samples/foundgine-supply-chain-advanced`, so you can buil
 an empty Maven project and understand why each piece exists.
 
 > Start with [`../foundgine-supply-chain/SupplyChain-Starter-Tutorial.md`](../foundgine-supply-chain/SupplyChain-Starter-Tutorial.md)
-> first if you haven't — this tutorial assumes you already know why domain records are annotated
-> with `@FoundgineEntity` and how the annotation processor turns them into compiled metadata.
+> first if you haven't — this tutorial assumes you already know how Foundgine turns a domain model
+> into metadata. This sample takes the **fluent configuration** route instead of the starter's
+> annotation processor: the domain records carry no Foundgine annotations at all.
 
 ---
 
@@ -64,9 +65,9 @@ cd src/java/samples/foundgine-supply-chain-advanced
 </dependencies>
 ```
 
-Add the same `maven-compiler-plugin` + `foundgine-aot-generator` annotation-processor configuration
-as the starter, pointing `foundgine.generated.package` at
-`com.foundgine.samples.supplychain.advanced.generated`.
+No annotation processor is needed: this module has no `maven-compiler-plugin` customisation. The
+metadata comes from the fluent configuration under
+`com.foundgine.samples.supplychain.advanced.model` (see section 1).
 
 Add `docker-compose.yml` next to the module:
 
@@ -95,26 +96,50 @@ docker compose up -d postgres
 
 ## 1. Domain and semantic model
 
-Create `domain/Domain.java` with one `record` per entity, annotated with `@FoundgineEntity`. Unlike
-the starter, several fields here also carry `@FoundgineRelationship(target=..., foreignKey=...,
-principalKey=..., name=...)` directly on the component that holds the foreign key, so the
-relationship graph (`Company → BusinessUnit → Warehouse → InventoryLot`,
-`Supplier → PurchaseOrder → PurchaseOrderLine/Shipment`) is declared alongside the field it
-traverses through, instead of in a separate mapping file:
+Create `domain/Domain.java` with one plain `record` per entity — no Foundgine annotations, no
+Foundgine imports. Everything Foundgine needs to know lives in the `model` package, split by
+concern and registered in one place, `SupplyChainFoundgineModel`:
+
+| File | Declares |
+|---|---|
+| `SemanticConfigurations` | entity name, aliases, dimensions, events, relationships (`FoundgineModelConfiguration<T>`) |
+| `PersistenceConfigurations` | table, key and indexes (`FoundginePersistenceConfiguration<T>`) |
+| `EntityMaps` | which storage member holds each semantic member (`FoundgineEntityMap<T, T>`) |
+| `SupplyChainConnections` | which keys join each pair of related entities |
+
+Because the records have no navigation members, relationships are declared by name
+(`hasMany("inventory", InventoryLot.class)`), and each physical join is declared once as a
+connection that serves both directions of the relationship. The records double as their own storage
+types here, so each entity map is `FoundgineEntityMap<Warehouse, Warehouse>`:
 
 ```java
-@FoundgineEntity(name = "Warehouse")
-public record Warehouse(
-    @FoundgineRelationship(target = InventoryLot.class, foreignKey = "warehouseId", principalKey = "id", name = "inventory") int id,
-    @FoundgineSemanticDimension("businessUnit")
-    @FoundgineRelationship(target = BusinessUnit.class, foreignKey = "id", principalKey = "businessUnitId", name = "businessUnit") int businessUnitId,
-    String name,
-    @FoundgineSemanticDimension("tenant") String tenantId) {}
+static final class WarehouseSemantics extends FoundgineModelConfiguration<Warehouse> {
+    @Override
+    public void configure(FoundgineModelBuilder<Warehouse> model) {
+        model.toEntity("Warehouse");
+        model.hasFieldNaming(FieldNaming.PASCAL_CASE);   // semantic fields are Id, Name, TenantId...
+        model.hasDimension(Warehouse::businessUnitId).as("businessUnit");
+        model.hasDimension(Warehouse::tenantId).as("tenant");
+        model.hasMany("inventory", InventoryLot.class);
+        model.hasOne("businessUnit", BusinessUnit.class);
+    }
+}
+
+// in SupplyChainConnections
+connections.hasRelationship(Warehouse.class, InventoryLot.class)
+        .using(Warehouse.class, InventoryLot.class)
+        .hasForeignKey(InventoryLot::warehouseId)
+        .references(Warehouse::id);
 ```
 
+When the same two entities are related more than once (`Product` ↔ `ProductComponent` via
+`components` and `usedInComponents`), the connection takes the relationship name —
+`connections.hasRelationship(Product.class, ProductComponent.class, "components")` — so Foundgine
+can tell the joins apart.
+
 Then build the Foundgine `SemanticModel` from it in `semantics/SupplyChainSemanticModel.java`. This
-sample uses the **manual builder** path (`SemanticModelBuilder`) rather than relying solely on the
-AOT-generated registry, so it can declare things the annotations alone don't express yet — weighted
+sample uses the **manual builder** path (`SemanticModelBuilder`) on top of the registry built by
+`SupplyChainFoundgineModel`, so it can declare things the fluent configuration doesn't express yet — weighted
 aliases on relationships, and two purely semantic **command entities** that don't correspond to a
 domain record at all:
 
