@@ -3,16 +3,19 @@ package com.foundgine.samples.supplychain.advanced;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.foundgine.core.semantic.metadata.IMetadataCatalog;
-import com.foundgine.samples.supplychain.advanced.generated.GeneratedFoundgineMetadata;
+import com.foundgine.samples.supplychain.advanced.model.SupplyChainFoundgineModel;
 import com.foundgine.samples.supplychain.advanced.semantics.SupplyChainSemanticModel;
 
 import org.junit.jupiter.api.Test;
 
-/** Content-level port of the C# MetadataProducerBoundaryTests. */
+/**
+ * Content-level port of the C# MetadataProducerBoundaryTests, with the metadata produced by the
+ * fluent {@link SupplyChainFoundgineModel} configuration.
+ */
 class MetadataProducerBoundaryParityTest {
     @Test
-    void generatedMetadataExposesStructuralCatalogBoundary() {
-        IMetadataCatalog catalog = GeneratedFoundgineMetadata.build();
+    void configuredMetadataExposesStructuralCatalogBoundary() {
+        IMetadataCatalog catalog = new SupplyChainFoundgineModel().build();
         var entities = catalog.entities().spliterator();
         var entityList = java.util.stream.StreamSupport.stream(entities, false).toList();
         var relationships =
@@ -35,8 +38,8 @@ class MetadataProducerBoundaryParityTest {
     }
 
     @Test
-    void semanticConfigurationConsumesGeneratedMetadataTopology() {
-        var catalog = GeneratedFoundgineMetadata.build();
+    void semanticConfigurationConsumesConfiguredMetadataTopology() {
+        var catalog = new SupplyChainFoundgineModel().build();
         var model = SupplyChainSemanticModel.MODEL;
         var entityCount =
                 java.util.stream.StreamSupport.stream(catalog.entities().spliterator(), false)

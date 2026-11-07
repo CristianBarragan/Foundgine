@@ -48,26 +48,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <compilerArgs>
-            <arg>-Afoundgine.generated.package=com.foundgine.samples.supplychain.advanced.generated</arg>
-            <arg>-Afoundgine.generated.name=GeneratedFoundgineMetadata</arg>
-          </compilerArgs>
-
-          <annotationProcessorPaths>
-            <path>
-              <groupId>io.github.cristianbarragan</groupId>
-              <artifactId>foundgine-aot-generator</artifactId>
-              <version>${revision}</version>
-            </path>
-          </annotationProcessorPaths>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
