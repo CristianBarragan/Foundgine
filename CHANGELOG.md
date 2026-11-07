@@ -2,6 +2,39 @@
 
 ## Unreleased
 
+## 2.3.0 — November 8, 2026
+
+### Documentation
+
+- Aligned every public version reference on the single shared version line
+  `2.3.0` (.NET and Java): `README.md`, `ai.seo.md`, `llms.txt`,
+  `llms-full.md`, `docs-site/llms.txt`, `docs-site/llms-full.md`,
+  `docs/CURRENT-STATUS.md`, `docs/PUBLIC-API.md`, `docs/README.md`,
+  `docs-site/README.md`, the `docs-site/packages` install snippets (NuGet and
+  Maven), the homepage badge, and the footer of every `docs-site/**/index.html`
+  page, including the agent-benchmark run pages.
+- `mcp.json` still advertised version `2.0.3`, a drift the 2.2.1 sweep missed;
+  it now reads `2.3.0`.
+- `docs-site/README.md` described the site as ".NET 9" only; it now reads
+  ".NET 9 and Java 21", matching every other page.
+- `docs-site/sitemap.xml` `lastmod` entries refreshed to the release date.
+
+### Tests
+
+- Java: removed `AotGeneratedMetadataIntegrationTest` from
+  `foundgine-sample-supply-chain-advanced`. The sample is configured entirely
+  through the fluent model (`SupplyChainFoundgineModel`) and no longer runs the
+  AOT annotation processor, so the generated `GeneratedFoundgineMetadata` class
+  the test imported was never produced and `testCompile` failed.
+  `FluentModelMetadataIntegrationTest` covers the same assertions (entities,
+  aliases, event and temporal metadata) and more.
+
+### Release
+
+- Version: `2.3.0`
+- Target framework: `.NET 9` / Java 21
+- License: Apache License, Version 2.0
+
 ## 2.2.1 — September 14, 2026
 
 ### Documentation

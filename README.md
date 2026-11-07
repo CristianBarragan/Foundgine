@@ -194,10 +194,10 @@ The standard is the authority — see [`SES-104`](standards/semantic-execution/S
 for the current implementation gap matrix and [`conformance/known-gaps.json`](standards/semantic-execution/conformance/known-gaps.json)
 for the machine-readable status of every tracked item.
 
-## Release 2.2.1
+## Release 2.3.0
 
-**Current release: 2.2.1 · .NET 9 and Java 21**
+**Current release: 2.3.0 · .NET 9 and Java 21**
 
-The .NET and Java implementations ship as aligned, same-numbered releases. See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes, including what changed in 2.2.1 and every release before it.
+The .NET and Java implementations ship as aligned, same-numbered releases. See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes, including what changed in 2.3.0 and every release before it.
 
 Foundgine is licensed under the Apache License 2.0.

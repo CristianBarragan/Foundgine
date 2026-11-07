@@ -71,7 +71,7 @@
       changing it here. flatten-maven-plugin (below) resolves it to a
       concrete version in the installed/deployed POM.
     -->
-    <revision>2.2.1</revision>
+    <revision>2.3.0</revision>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -209,7 +209,7 @@
     </pluginManagement>
     <plugins>
       <!--
-        Resolves ${revision} to a literal version (e.g. 2.2.1) in the POM
+        Resolves ${revision} to a literal version (e.g. 2.3.0) in the POM
         that actually gets installed/deployed, so downstream consumers never
         see the property placeholder. Every module inherits this via the
         parent's <build> section.
