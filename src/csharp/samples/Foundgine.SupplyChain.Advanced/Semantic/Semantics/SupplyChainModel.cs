@@ -71,5 +71,8 @@ public sealed class SupplyChainModel : FoundgineModel
 
         // Relationships to physical keys
         model.Configure<SupplyChainConnections>();
+
+        // Model-to-entity connections with field maps and authorization
+        model.Configure<SupplyChainModelConnections>();
     }
 }

@@ -24,6 +24,7 @@ public sealed class FoundgineConfigurationContext
     internal Dictionary<Type, PersistenceDefinition> Persistence { get; } = new();
     internal List<EntityMapDefinition> Maps { get; } = [];
     internal List<ConnectionDefinition> Connections { get; } = [];
+    internal List<ModelConnectionDefinition> ModelConnections { get; } = [];
 
     internal ModelDefinition AddModel(Type modelType)
     {
@@ -52,6 +53,13 @@ public sealed class FoundgineConfigurationContext
 
         var definition = new EntityMapDefinition(modelType, entityType);
         Maps.Add(definition);
+        return definition;
+    }
+
+    internal ModelConnectionDefinition AddModelConnection(Type modelType, Type entityType, string member)
+    {
+        var definition = new ModelConnectionDefinition(modelType, entityType, member);
+        ModelConnections.Add(definition);
         return definition;
     }
 
@@ -125,6 +133,15 @@ public abstract class FoundgineModel
         foreach (var relationship in built.Relationships)
             if (registry.TryGet(relationship.Id, out _))
                 conflicts.Add($"relationship '{relationship.Name}'");
+        foreach (var connection in built.Connections)
+            if (registry.TryGet(connection.Id, out _))
+                conflicts.Add($"connection '{connection.Name}'");
+        foreach (var authorization in built.Authorizations)
+            if (registry.Authorizations.Any(a => a.Id == authorization.Id))
+                conflicts.Add($"authorization '{authorization.Name}'");
+        foreach (var conversion in built.Conversions)
+            if (registry.FindConversion(conversion.SourceType, conversion.TargetType) is not null)
+                conflicts.Add($"conversion {conversion.SourceType.Name} -> {conversion.TargetType.Name}");
 
         if (conflicts.Count > 0)
             throw new InvalidOperationException(
@@ -134,6 +151,9 @@ public abstract class FoundgineModel
         foreach (var entity in built.Entities) registry.Register(entity);
         foreach (var model in built.Models) registry.Register(model);
         foreach (var relationship in built.Relationships) registry.Register(relationship);
+        foreach (var conversion in built.Conversions) registry.Register(conversion);
+        foreach (var connection in built.Connections) registry.Register(connection);
+        foreach (var authorization in built.Authorizations) registry.Register(authorization);
     }
 
     private FoundgineConfigurationContext Collect()

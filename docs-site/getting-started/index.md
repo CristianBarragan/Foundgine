@@ -15,6 +15,10 @@ Run the canonical Supply Chain sample first, in .NET or Java. The website stays 
 - [Starter explained](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/Foundgine-SupplyChain-Explained.md)
 - [Advanced sample (MCP + PostgreSQL already wired up)](https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain-advanced) and its [step-by-step tutorial](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md)
 
+## Describe your model in code
+
+Both starters configure their semantic model fluently instead of with attributes. Plain domain and storage types stay free of Foundgine references; small configuration classes (semantic, persistence, entity map, connection) are registered once on a `FoundgineModel` subclass, and `Build()` (`build()` in Java) compiles them to the same metadata registry the attribute and AOT-generator path produces. The tutorials above walk through each file. See [Mapping and Connections](https://github.com/CristianBarragan/Foundgine/blob/main/docs/MAPPING.md) for the full API and its current limits.
+
 ## Follow the layers
 
 `Caller → Application → Semantic Model → Runtime → Provider → PostgreSQL`

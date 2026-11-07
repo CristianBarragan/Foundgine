@@ -137,4 +137,27 @@ class FluentModelMetadataIntegrationTest {
             assertEquals(entry.getValue()[2], r.collection(), entry.getKey());
         }
     }
+
+    @Test
+    void modelConnectionCarriesFieldsAndAuthorization() {
+        var registry = new SupplyChainFoundgineModel().build();
+
+        var connection =
+                StreamSupport.stream(registry.connections().spliterator(), false)
+                        .filter(c -> c.name().equals("supplier"))
+                        .findFirst()
+                        .orElseThrow();
+        assertEquals(entity(registry, "Supplier").entityId(), connection.target());
+        assertEquals("supplierId", connection.fields().get(0).sourceMember());
+        assertEquals("id", connection.fields().get(0).targetMember());
+
+        var authorization =
+                StreamSupport.stream(registry.authorizations().spliterator(), false)
+                        .filter(a -> a.name().equals("SameTenantSupplier"))
+                        .findFirst()
+                        .orElseThrow();
+        assertEquals(connection.id(), authorization.connectionId());
+        assertEquals("(context.tenantId == resource.tenantId)", authorization.expression());
+        assertNotNull(authorization.predicate());
+    }
 }

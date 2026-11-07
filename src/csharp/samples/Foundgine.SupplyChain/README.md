@@ -6,12 +6,12 @@ It demonstrates the complete basic path without splitting the application into a
 
 **MCP → application → semantic model → Foundgine planning/execution → PostgreSQL**
 
-The folders are architectural boundaries; they do not require separate assemblies. The AOT generator sees the whole application project, so the starter stays easy to read and easy to run.
+The folders are architectural boundaries; they do not require separate assemblies. The fluent model (`SupplyChainModel`) sees the whole application project, so the starter stays easy to read and easy to run.
 
 ## What it demonstrates
 
 - A small Supply Chain domain and explicit model-to-storage mappings.
-- A generated semantic model from the application model.
+- A fluent-configured semantic model (`Domain/SupplyChainModel.cs`) compiled to a metadata registry at startup, with typed handles in `Domain/SupplyChainSemantics.cs`.
 - Capability authorization before execution.
 - MCP as the agent-facing transport.
 - Foundgine planning and SQL execution against PostgreSQL.

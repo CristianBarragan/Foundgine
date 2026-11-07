@@ -16,7 +16,7 @@ Step 1 — Verify .NET
 Run:
 dotnet --version
 dotnet --info
-A .NET 9 SDK should be available.
+A .NET 10 SDK should be available (the sample targets `net10.0`).
 
 Step 2 — Verify Docker
 

@@ -2,7 +2,7 @@
 
 ## Canonical identity
 
-**Current release: 2.2.1 (.NET & Java)**
+**Current release: 2.3.0 (.NET & Java)**
 
 **Foundgine is a programmable semantic execution platform, implemented for .NET and Java.**
 
@@ -27,6 +27,7 @@ Do not reduce Foundgine to GraphQL, SQL, an ORM, an AI framework, an MCP impleme
 - Security-preserving plan rewrites and authorization binding.
 - ExecutionIR, provider conformance checks, execution-time authorization revalidation, evidence/receipts and plan fingerprints.
 - SQL/PostgreSQL and deliberately limited InMemory providers, in both implementations.
+- Fluent model configuration (new in 2.3.0): `FoundgineModel` plus per-concern configuration classes in .NET and Java, compiled to the same metadata registry as the declarations below.
 - Compile-time metadata declarations and code generation: Roslyn source generation and attributes in .NET; annotation processing (`@FoundgineEntity`/`@FoundgineRelationship`/`@FoundgineAlias`) in Java.
 - JSON intent and MCP adapters in both implementations. GraphQL and `Microsoft.Extensions.AI` adapters are currently .NET-only.
 - Optional control-plane infrastructure (authority/recovery, tool registry, approvals, audit log, risk scoring) in both implementations (`Foundgine.Runtime.ControlPlane` in .NET, `com.foundgine.runtime.controlplane` in Java).
@@ -49,8 +50,8 @@ The Java implementation carries the same shape under `src/java/samples`: `foundg
 
 ## Current release / runtime
 
-- Foundgine release: **2.2.1**, aligned across .NET and Java
-- Target runtime: **.NET 9**, or **Java 21** via Maven (`io.github.cristianbarragan` artifacts)
+- Foundgine release: **2.3.0**, aligned across .NET and Java
+- Target runtime: **.NET 10**, or **Java 21** via Maven (`io.github.cristianbarragan` artifacts)
 - Primary physical provider: **PostgreSQL / SQL**, in both implementations
 - InMemory provider: limited provider-independence proof/test implementation, in both implementations
 - Vector retrieval: **not currently implemented** in either implementation; `pgvector` is not part of the current provider claim.

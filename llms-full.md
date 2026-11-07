@@ -1,4 +1,4 @@
-# Foundgine 2.2.1 (.NET & Java)
+# Foundgine 2.3.0 (.NET & Java)
 
 Foundgine is a **programmable semantic execution platform, implemented for .NET and Java**. It creates an application-controlled boundary between structured caller intent and physical execution. Both implementations share the same architecture and vocabulary, expressed through language-idiomatic mechanisms.
 
@@ -78,7 +78,9 @@ Java (Maven, groupId `io.github.cristianbarragan`):
 
 ## Current release
 
-**2.2.1 · .NET 9 and Java 21**
+**2.3.0 · .NET 10 and Java 21**
+
+New in 2.3.0: a fluent configuration API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
 
 For implementation truth, use the active source tree, tests, `docs/CURRENT-STATUS.md`, and package READMEs under `src/csharp/` and `src/java/`.
 

@@ -181,7 +181,7 @@ Foundgine.Providers → PostgreSQL</pre>
         <section>
           <h2 id="prerequisites">Prerequisites</h2>
           <ul>
-            <li>.NET 9 SDK, or JDK 21 + Maven 3.9+ for the Java samples</li>
+            <li>.NET 10 SDK, or JDK 21 + Maven 3.9+ for the Java samples</li>
             <li>Docker with Compose support</li>
             <li>A clone of the Foundgine repository</li>
           </ul>
@@ -261,6 +261,22 @@ Foundgine.Providers → PostgreSQL</pre>
           </ol>
         </section>
         <section>
+          <h2 id="describe-your-model-in-code">Describe your model in code</h2>
+          <p>
+            Both starters configure their semantic model fluently instead of with attributes.
+            Plain domain and storage types stay free of Foundgine references; small configuration
+            classes (semantic, persistence, entity map, connection) are registered once on a
+            <code>FoundgineModel</code> subclass, and <code>Build()</code> (<code>build()</code>
+            in Java) compiles them to the same metadata registry the attribute and AOT-generator
+            path produces. The tutorials above walk through each file. See
+            <a
+              href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/MAPPING.md"
+              >Mapping and Connections</a
+            >
+            for the full API and its current limits.
+          </p>
+        </section>
+        <section>
           <h2 id="what-to-notice-while-running-it">What to notice while running it</h2>
           <div class="link-grid">
             <a class="link-card" href="../architecture/index.html"
@@ -315,7 +331,7 @@ Foundgine.Providers → PostgreSQL</pre>
       </aside>
     </div>
     <footer class="site-footer">
-      Foundgine 2.2.1 · .NET 9 & Java 21 ·
+      Foundgine 2.3.0 · .NET 10 & Java 21 ·
       <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
     </footer>
     <script src="../assets/site-nav.js"></script>
