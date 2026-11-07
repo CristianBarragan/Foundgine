@@ -3,11 +3,11 @@ package com.foundgine.samples.supplychain.advanced.semantics;
 import com.foundgine.core.abstractions.*;
 import com.foundgine.core.semantic.*;
 import com.foundgine.core.semantic.metadata.*;
-import com.foundgine.samples.supplychain.advanced.generated.GeneratedFoundgineMetadata;
+import com.foundgine.samples.supplychain.advanced.model.SupplyChainFoundgineModel;
 
 /** Application semantic model for the Advanced Supply Chain sample. */
 public final class SupplyChainSemanticModel {
-    public static final IMetadataCatalog Metadata = GeneratedFoundgineMetadata.build();
+    public static final IMetadataCatalog Metadata = new SupplyChainFoundgineModel().build();
 
     public static final EntityId PRODUCT = entity("Product");
     public static final EntityId COMPONENT = entity("ProductComponent");
