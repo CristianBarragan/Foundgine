@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
     <PackageId>Foundgine.Extensions</PackageId>
     <Description>Foundgine.Extensions contains optional framework integrations for Foundgine v2. The current package provides the Hot Chocolate GraphQL integration: translating GraphQL operations into Foundgine semantic intent, and the secure query/mutation executors that run that intent through the Foundgine authorization/execution boundary. It does not replace the Foundgine execution/runtime layer and does not provide storage providers. Consumers are expected to have Foundgine.Core and Foundgine.Runtime installed and to configure their GraphQL server and semantic model; concrete storage/AI/MCP provider execution is supplied separately by Foundgine.Providers.</Description>
     <PackageTags>graphql;hotchocolate;extensions;dotnet</PackageTags>
@@ -14,6 +15,6 @@
     <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
     <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
     <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
-    <PackageReference Include="HotChocolate.Language" Version="16.6.4" />
+    <PackageReference Include="HotChocolate.Language" Version="16.7.3" />
   </ItemGroup>
 </Project>

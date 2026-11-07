@@ -1,9 +1,9 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY . .
 RUN dotnet restore src/csharp/benchmarks/AgentEndToEnd/Run4/MCP.Foundgine/MCP.Foundgine.csproj
 RUN dotnet publish src/csharp/benchmarks/AgentEndToEnd/Run4/MCP.Foundgine/MCP.Foundgine.csproj -c Release -o /app/publish
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 
 # The compose healthcheck for this service runs `curl` inside the container
 # (see docker-compose.yml). The aspnet runtime image is a slim Debian image

@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
     <PackageId>Foundgine.Runtime</PackageId>
     <Description>Foundgine.Runtime is the application-facing execution layer for Foundgine v2. It coordinates intent handling, semantic resolution, authorization and plan approval, provider dispatch, mutation execution, dependency-injection composition, task routing, resource/security controls, and the agent/tool governance control plane. It depends on Foundgine.Core but does not itself provide a database provider, GraphQL server, MCP transport, or LLM client. Consumers are expected to register the runtime with dependency injection and provide an appropriate semantic model and provider implementation.</Description>
     <PackageTags>semantic-execution;authorization;execution-plan;dotnet</PackageTags>
@@ -15,7 +16,7 @@
     <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
     <PackageReference
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="10.0.11"
+      Version="10.0.14"
     />
   </ItemGroup>
 </Project>

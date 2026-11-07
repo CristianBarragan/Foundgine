@@ -140,7 +140,7 @@ jobs:
 
           # Required package assets.
           required=(
-            "lib/net9.0/Foundgine.Providers.dll"
+            "lib/net10.0/Foundgine.Providers.dll"
             "analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
             "README.md"
             "LICENSE/LICENSE"

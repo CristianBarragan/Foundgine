@@ -10,7 +10,7 @@ using Foundgine.Core.Semantic.Mutation;
 using Foundgine.Core.Semantic.Query;
 using Foundgine.Providers.Storage.Sql.Mutation;
 using Foundgine.SupplyChain.Application;
-using Foundgine.Generated;
+using Foundgine.SupplyChain.Domain;
 using Npgsql;
 using ExecutionContext = Foundgine.Core.Execution.ExecutionContext;
 
@@ -37,13 +37,13 @@ public sealed class SupplyChainMutationRepository : ISupplyChainMutations
     {
         if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
         var filter = new SemanticAndFilter([
-            GeneratedSemanticModel.InventoryPosition.WarehouseId.Eq(warehouseId),
-            GeneratedSemanticModel.InventoryPosition.ProductId.Eq(productId)
+            SupplyChainSemantics.InventoryPosition.WarehouseId.Eq(warehouseId),
+            SupplyChainSemantics.InventoryPosition.ProductId.Eq(productId)
         ]);
         var operation = SemanticMutationBuilder.Update(
-            GeneratedSemanticModel.InventoryPosition.Entity,
-            [GeneratedSemanticModel.InventoryPosition.QuantityOnHand.Set(quantity)], filter,
-            GeneratedSemanticModel.InventoryPosition.All);
+            SupplyChainSemantics.InventoryPosition.Entity,
+            [SupplyChainSemantics.InventoryPosition.QuantityOnHand.Set(quantity)], filter,
+            SupplyChainSemantics.InventoryPosition.All);
         return ExecuteSemantic(operation, result => new
         {
             warehouseId, productId, quantity,
@@ -56,14 +56,14 @@ public sealed class SupplyChainMutationRepository : ISupplyChainMutations
     {
         if (string.IsNullOrWhiteSpace(trackingNumber)) throw new ArgumentException("Tracking number is required.");
         var operation = SemanticMutationBuilder.Create(
-            GeneratedSemanticModel.Shipment.Entity,
+            SupplyChainSemantics.Shipment.Entity,
             [
-                GeneratedSemanticModel.Shipment.OrderId.Set(orderId),
-                GeneratedSemanticModel.Shipment.CarrierId.Set(carrierId),
-                GeneratedSemanticModel.Shipment.WarehouseId.Set(warehouseId),
-                GeneratedSemanticModel.Shipment.TrackingNumber.Set(trackingNumber),
-                GeneratedSemanticModel.Shipment.Status.Set("In Transit")
-            ], GeneratedSemanticModel.Shipment.All);
+                SupplyChainSemantics.Shipment.OrderId.Set(orderId),
+                SupplyChainSemantics.Shipment.CarrierId.Set(carrierId),
+                SupplyChainSemantics.Shipment.WarehouseId.Set(warehouseId),
+                SupplyChainSemantics.Shipment.TrackingNumber.Set(trackingNumber),
+                SupplyChainSemantics.Shipment.Status.Set("In Transit")
+            ], SupplyChainSemantics.Shipment.All);
         return ExecuteSemantic(operation, result => new { shipment = result }, ct);
     }
 
@@ -73,10 +73,10 @@ public sealed class SupplyChainMutationRepository : ISupplyChainMutations
         if (!allowed.Contains(status, StringComparer.Ordinal))
             throw new InvalidOperationException("Invalid shipment status.");
         var operation = SemanticMutationBuilder.Update(
-            GeneratedSemanticModel.Shipment.Entity,
-            [GeneratedSemanticModel.Shipment.Status.Set(status)],
-            GeneratedSemanticModel.Shipment.Id.Eq(shipmentId),
-            [GeneratedSemanticModel.Shipment.Id.Id, GeneratedSemanticModel.Shipment.Status.Id]);
+            SupplyChainSemantics.Shipment.Entity,
+            [SupplyChainSemantics.Shipment.Status.Set(status)],
+            SupplyChainSemantics.Shipment.Id.Eq(shipmentId),
+            [SupplyChainSemantics.Shipment.Id.Id, SupplyChainSemantics.Shipment.Status.Id]);
         return ExecuteSemantic(operation, result => new { shipment = result }, ct);
     }
 

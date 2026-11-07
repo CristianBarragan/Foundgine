@@ -235,7 +235,7 @@ dotnet build
 ```
 
 Then inspect the generated file (path will be under
-`obj/Debug/net9.0/generated/.../FoundgineMetadataGenerator/...`, or just
+`obj/Debug/net10.0/generated/.../FoundgineMetadataGenerator/...`, or just
 right-click → "Go to Definition" on `GeneratedSemanticModel` in your IDE) and
 confirm you see a `Relationships` nested class with the expected members.
 Also run:
