@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
     <PackageId>Foundgine.Providers</PackageId>
     <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine v2. It includes storage providers and adapters, AI/model and MCP tooling integrations, and Elasticsearch and vector-store support. It also carries the Foundgine AOT source generator as a build-time analyzer inside the NuGet package, so consumers do not install a separate generator package and the generator is not a runtime dependency. Foundgine.Providers depends only on Foundgine.Core and Foundgine.Runtime; secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers are expected to choose and configure the provider(s) matching their application and supply the semantic model and runtime configuration required by Foundgine.</Description>
     <PackageTags>providers;storage;ai;mcp;dotnet</PackageTags>
@@ -8,76 +7,62 @@
     <RootNamespace>Foundgine.Providers</RootNamespace>
     <AssemblyName>Foundgine.Providers</AssemblyName>
     <IsPackable>true</IsPackable>
-
     <PackageReleaseNotes>2.0.0: v2 package restructuring. Consolidates the former Foundgine.AI, Foundgine.MCP, Foundgine.Sql, Foundgine.InMemory, Foundgine.Elasticsearch, and Foundgine.Postgres.Vector packages.</PackageReleaseNotes>
-
-    <!-- Add the AOT generator to the NuGet package as compiler content. -->
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackFoundgineAotGenerator</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
-
   <ItemGroup>
-    <!-- Keep generator source files out of the Providers assembly. -->
-    <Compile Remove="Foundgine.Providers.Aot.Generator/**/*.cs" />
+    <!-- ASP.NET Core is used only by the optional HTTP gateway adapter. Keep the framework reference private;
+         applications that map HTTP endpoints are expected to be ASP.NET Core hosts already. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Foundgine.Providers.Aot.Generator/**" />
+    <Compile Remove="Gateway.Tests/**/*.cs" />
+    <Compile Remove="EventStore.Tests/**/*.cs" />
+    <Compile Remove="Samples/**/*.cs" />
     <EmbeddedResource Remove="Foundgine.Providers.Aot.Generator/**" />
     <None Remove="Foundgine.Providers.Aot.Generator/**" />
   </ItemGroup>
-
   <ItemGroup>
-    <None Include="README.md"
-          Pack="true"
-          PackagePath="README.md"
-          Condition="Exists('README.md')" />
-
-    <None Include="../../../LICENSE"
-          Pack="true"
-          PackagePath="LICENSE" />
-
+    <!-- Event-store migrations ship inside the single provider package. -->
+    <EmbeddedResource Include="EventStore/Schema/*.sql" LogicalName="Foundgine.Providers.EventStore.Schema.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
     <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
     <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
-
-    <!-- Build-time analyzer reference; not a runtime assembly dependency. -->
+    <!-- The AOT generator is a build-time analyzer, never a runtime dependency. -->
     <ProjectReference
-            Include="Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
-            OutputItemType="Analyzer"
-            ReferenceOutputAssembly="false"
-            PrivateAssets="all"
-            SkipGetTargetFrameworkProperties="true"
-            UndefineProperties="TargetFramework" />
-
+      Include="Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+      PrivateAssets="all"
+      SkipGetTargetFrameworkProperties="true"
+      UndefineProperties="TargetFramework"
+    />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
-    <PackageReference Include="Microsoft.Extensions.AI" Version="10.11.0" />
-    <PackageReference Include="Microsoft.Extensions.AI.Abstractions" Version="10.11.0" />
-    <PackageReference Include="ModelContextProtocol" Version="2.3.1" />
-
-    <PackageReference
-            Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-            Version="10.0.14" />
-
+    <PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
+    <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <PackageReference Include="Pgvector" Version="0.3.2" />
   </ItemGroup>
-
-  <!--
-    NuGet invokes this target through TargetsForTfmSpecificContentInPackage.
-    The generator is included under analyzers/dotnet/cs, not lib/net10.0.
-  -->
-  <Target Name="PackFoundgineAotGenerator">
+  <!-- Ship the generator inside this package as an analyzer; do not create a separate runtime package. -->
+  <Target Name="PackAotGenerator" BeforeTargets="_GetPackageFiles">
     <PropertyGroup>
-      <_FoundgineAotGeneratorPath>$(MSBuildProjectDirectory)/Foundgine.Providers.Aot.Generator/bin/$(Configuration)/netstandard2.0/Foundgine.Providers.Aot.Generator.dll</_FoundgineAotGeneratorPath>
+      <_AotGeneratorDll>
+        $(MSBuildThisFileDirectory)Foundgine.Providers.Aot.Generator/bin/$(Configuration)/netstandard2.0/Foundgine.Providers.Aot.Generator.dll
+      </_AotGeneratorDll>
     </PropertyGroup>
 
     <Error
-            Condition="!Exists('$(_FoundgineAotGeneratorPath)')"
-            Text="Foundgine AOT generator was not built. Expected: $(_FoundgineAotGeneratorPath)" />
+            Condition="!Exists('$(_AotGeneratorDll)')"
+            Text="AOT generator DLL not found: $(_AotGeneratorDll)" />
 
     <ItemGroup>
-      <TfmSpecificPackageFile Include="$(_FoundgineAotGeneratorPath)">
-        <PackagePath>analyzers/dotnet/cs</PackagePath>
-      </TfmSpecificPackageFile>
+      <None Include="$(_AotGeneratorDll)"
+            Pack="true"
+            PackagePath="analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
+            Visible="false" />
     </ItemGroup>
-
-    <Message
-            Importance="high"
-            Text="Packaging Foundgine AOT analyzer: $(_FoundgineAotGeneratorPath)" />
   </Target>
 </Project>

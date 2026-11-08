@@ -10,6 +10,9 @@
 - GraphQL-facing adapters that translate supported GraphQL operations into Foundgine intent and runtime concepts.
 - Integration points for using Foundgine authorization/planning/execution from a GraphQL application instead of implementing a second independent execution path.
 
+- Optional Temporal durable-workflow integration (see `Temporal/README.md`): outbox-to-workflow bridge, saga/approval process workflow, operation activities, and start/status/decision/cancel endpoints.
+- Optional Keycloak identity integration (see `Keycloak/README.md`): JWT validation, tenant/role mapping, and short-lived signed Foundgine warrants from Keycloak identities (API and Temporal workers).
+
 ## What it does not provide
 
 This package does not provide:

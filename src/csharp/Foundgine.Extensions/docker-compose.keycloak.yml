@@ -1,0 +1,13 @@
+# Local Keycloak for development ONLY (dev mode, HTTP, bootstrap admin, imported demo realm).
+# Version pinned so the realm import (user profile, mappers) stays reproducible; confirm the tag exists before relying on it.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Keycloak/dev/foundgine-realm.json:/opt/keycloak/data/import/foundgine-realm.json:ro
