@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <PackageId>Foundgine.Extensions</PackageId>
-    <Description>Foundgine.Extensions contains optional framework integrations for Foundgine v2. The current package provides the Hot Chocolate GraphQL integration: translating GraphQL operations into Foundgine semantic intent, and the secure query/mutation executors that run that intent through the Foundgine authorization/execution boundary. It does not replace the Foundgine execution/runtime layer and does not provide storage providers. Consumers are expected to have Foundgine.Core and Foundgine.Runtime installed and to configure their GraphQL server and semantic model; concrete storage/AI/MCP provider execution is supplied separately by Foundgine.Providers.</Description>
-    <PackageTags>graphql;hotchocolate;extensions;dotnet</PackageTags>
+    <Description>Foundgine.Extensions contains optional framework integrations for Foundgine v2. The package provides the Hot Chocolate GraphQL integration and an optional Temporal durable-workflow integration (outbox-to-workflow bridge, saga/approval process workflow, activities, status/signal endpoints). It also provides an optional Keycloak identity integration (JWT validation, role/tenant mapping, and issuance of short-lived signed Foundgine warrants from Keycloak identities, including for Temporal workers). The GraphQL integration: translating GraphQL operations into Foundgine semantic intent, and the secure query/mutation executors that run that intent through the Foundgine authorization/execution boundary. It does not replace the Foundgine execution/runtime layer and does not provide storage providers. Consumers are expected to have Foundgine.Core and Foundgine.Runtime installed and to configure their GraphQL server and semantic model; concrete storage/AI/MCP provider execution is supplied separately by Foundgine.Providers.</Description>
+    <PackageTags>graphql;hotchocolate;temporal;workflow;keycloak;oidc;extensions;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Extensions</RootNamespace>
     <AssemblyName>Foundgine.Extensions</AssemblyName>
@@ -11,10 +11,20 @@
     <PackageReleaseNotes>2.0.0: v2 package restructuring. Consolidates the former Foundgine.GraphQL.HotChocolate, Foundgine.GraphQL.HotChocolate.Execution, Foundgine.GraphQL.HotChocolate.Mutations, and Foundgine.GraphQL.HotChocolate.MutationExecution packages.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Samples/**" />
+    <None Remove="Samples/**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
     <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
     <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
     <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <!-- Temporal bridge reuses Foundgine.Providers contracts: outbox publisher seam, provider descriptors, gateway execution. -->
+    <ProjectReference Include="../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageReference Include="Temporalio" Version="1.21.1" />
+    <PackageReference Include="Temporalio.Extensions.Hosting" Version="1.18.0" />
     <PackageReference Include="HotChocolate.Language" Version="16.7.3" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,79 @@
+@baseUrl = https://localhost:5001
+@token = REPLACE_WITH_KEYCLOAK_ACCESS_TOKEN
+@executionId = REPLACE_WITH_X_FOUNDGINE_EXECUTION_ID
+@approvalHandle = REPLACE_WITH_OPAQUE_APPROVAL_HANDLE
+
+### Discover capabilities
+GET {{baseUrl}}/foundgine/capabilities
+Authorization: Bearer {{token}}
+
+### Discover semantic contract
+GET {{baseUrl}}/foundgine/semantic
+Authorization: Bearer {{token}}
+
+### Execute a semantic read (replace model-specific names as needed)
+POST {{baseUrl}}/foundgine/read
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "rootEntity": "Customer",
+  "selections": [
+    { "field": "Id" },
+    { "field": "Name" }
+  ],
+  "limit": 25
+}
+
+### Inspect execution status using X-Foundgine-Execution-Id from the read response
+GET {{baseUrl}}/foundgine/executions/{{executionId}}
+Authorization: Bearer {{token}}
+
+### Resume SSE from a previously received event sequence
+GET {{baseUrl}}/foundgine/events
+Authorization: Bearer {{token}}
+Last-Event-ID: 125
+
+### Mutation dry-run (replace IDs and fields with the application's semantic model)
+POST {{baseUrl}}/foundgine/mutations/dry-run
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "operations": [
+    {
+      "entityId": 42,
+      "kind": "Create",
+      "fields": {
+        "1001": "Ada Lovelace"
+      },
+      "returnFields": [1001]
+    }
+  ]
+}
+
+### Create approval (the response contains a short-lived opaque handle)
+POST {{baseUrl}}/foundgine/mutations/approvals
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "operations": [
+    {
+      "entityId": 42,
+      "kind": "Create",
+      "fields": {
+        "1001": "Ada Lovelace"
+      },
+      "returnFields": [1001]
+    }
+  ]
+}
+
+### Execute the approval once
+POST {{baseUrl}}/foundgine/mutations/approvals/{{approvalHandle}}/execute
+Authorization: Bearer {{token}}
+
+### Revoke an unused approval
+DELETE {{baseUrl}}/foundgine/mutations/approvals/{{approvalHandle}}
+Authorization: Bearer {{token}}
