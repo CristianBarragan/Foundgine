@@ -2,7 +2,7 @@ using Foundgine.Providers.Storage.Sql.Retrieval;
 using Foundgine.Core.Semantic.Resolution;
 using Xunit;
 
-namespace Foundgine.Providers.Storage.Sql.Tests;
+namespace Foundgine.Sql.Tests;
 
 public sealed class PostgresRetrievalOptionsTests
 {

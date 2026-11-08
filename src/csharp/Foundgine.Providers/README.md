@@ -53,3 +53,8 @@ dotnet add package Foundgine.Providers --version 2.0.3
 ## Typical application stack
 
 `Foundgine.Core` defines the semantic contracts → `Foundgine.Runtime` controls execution → `Foundgine.Providers` connects the plan to concrete infrastructure. Add `Foundgine.Extensions` only when the application needs its optional framework integrations such as Hot Chocolate.
+
+
+## Foundgine Gateway
+
+The optional ASP.NET Core gateway facade is included in this package under `Foundgine.Providers.Gateway`. It exposes capability/semantic discovery, protected semantic read and mutation workflows, opaque approval handles, execution status, replayable SSE notifications, provider lifecycle hooks, and diagnostics. Its default event and approval stores are process-local development implementations; production hosts must provide durable distributed adapters. See [`Gateway/README.md`](Gateway/README.md) for the HTTP contract, event-store requirements, AOT serialization limits, security requirements, sample host, and tests.
