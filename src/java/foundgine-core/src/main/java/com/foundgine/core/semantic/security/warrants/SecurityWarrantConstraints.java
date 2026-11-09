@@ -45,7 +45,7 @@ public record SecurityWarrantConstraints(
     private static List<String> norm(Collection<String> v) {
         return v == null
                 ? List.of()
-                : v.stream().filter(x -> x != null && !x.isBlank()).distinct().sorted().toList();
+                : v.stream().filter(x -> !WarrantText.isBlank(x)).distinct().sorted().toList();
     }
 
     private static Long nonNeg(Long v, String n) {

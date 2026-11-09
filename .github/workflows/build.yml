@@ -226,6 +226,7 @@ jobs:
           # These suites are executed in dedicated jobs.
           exclude=(
             "src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj"
+            "src/csharp/tests/Foundgine.EventStore.Tests/Foundgine.EventStore.Tests.csproj"
             "src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj"
             "src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj"
             "src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj"
@@ -333,6 +334,10 @@ jobs:
       - build-pack
     name: Integration Tests — PostgreSQL 17
     runs-on: ubuntu-latest
+    # Testcontainers must use the Docker daemon provided by the GitHub runner.
+    # Keep this scoped to the Docker-dependent integration job.
+    env:
+      DOCKER_HOST: unix:///var/run/docker.sock
 
     steps:
       - name: Checkout
@@ -342,6 +347,19 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
+
+      - name: Verify Docker daemon for Testcontainers
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "DOCKER_HOST=$DOCKER_HOST"
+          if [[ ! -S /var/run/docker.sock ]]; then
+            echo "ERROR: Docker socket /var/run/docker.sock is not available."
+            exit 1
+          fi
+          docker version
+          docker info
+          docker compose version
 
       - name: Restore
         run: dotnet restore src/csharp/Foundgine.sln
@@ -376,6 +394,15 @@ jobs:
             --no-build \
             --configuration Release \
             --filter "FullyQualifiedName~Foundgine.E2E.Tests" \
+            --logger "console;verbosity=normal"
+
+      - name: Run PostgreSQL Event Store
+        run: |
+          dotnet test \
+            src/csharp/tests/Foundgine.EventStore.Tests/Foundgine.EventStore.Tests.csproj \
+            --no-build \
+            --configuration Release \
+            --filter "FullyQualifiedName~Foundgine.EventStore.Tests" \
             --logger "console;verbosity=normal"
 
       - name: PostgreSQL diagnostics on failure

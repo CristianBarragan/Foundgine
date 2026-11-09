@@ -31,6 +31,8 @@ public static class GraphQLAdapterErrorCode
     public const string GraphQLValidationFailed = "GRAPHQL_VALIDATION_FAILED";
     public const string AdapterError = "GRAPHQL_ADAPTER_ERROR";
     public const string Unauthenticated = "UNAUTHENTICATED";
+    public const string Forbidden = "FORBIDDEN";
+    public const string ExecutionFailed = "EXECUTION_FAILED";
 }
 
 /// <summary>

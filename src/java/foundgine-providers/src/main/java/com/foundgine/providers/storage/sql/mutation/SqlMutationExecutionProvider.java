@@ -102,9 +102,11 @@ public class SqlMutationExecutionProvider implements IMutationExecutionProvider 
 
     private MutationResult executeOne(SqlMutationPlan plan, CancellationToken token) {
         token.throwIfCancellationRequested();
-        try (PreparedStatement statement =
-                connection.prepareStatement(toJdbcSql(plan.commandText()))) {
-            bind(statement, plan.parameters());
+        var rewritten =
+                com.foundgine.providers.storage.sql.JdbcSqlPlaceholderRewriter.rewriteOrdered(
+                        plan.commandText());
+        try (PreparedStatement statement = connection.prepareStatement(rewritten.sql())) {
+            bind(statement, plan.parameters(), rewritten.placeholderNames());
             AutoCloseable registration =
                     token.register(
                             () -> {
@@ -126,18 +128,23 @@ public class SqlMutationExecutionProvider implements IMutationExecutionProvider 
                                         + " produce a result set. PostgreSQL mutations must use"
                                         + " RETURNING rather than JDBC generated-key retrieval.");
                     }
-                    try (ResultSet result = statement.getResultSet()) {
-                        if (result.next()) {
-                            for (int i = 0; i < plan.returnedFields().size(); i++) {
-                                values.put(
-                                        plan.returnedFields().get(i).fieldId(),
-                                        result.getObject(i + 1));
-                            }
-                            // A mutation returning one row is the canonical contract.
-                            if (result.next()) {
-                                throw new IllegalStateException(
-                                        "Mutation returned more than one result row.");
-                            }
+                    // Counterpart of C# ExecuteReader: a returned row counts as one affected row.
+                    affected = 0;
+                    if (readSingleRow(statement.getResultSet(), plan, values)) affected = 1;
+                }
+
+                // Counterpart of C# FallbackCommandText: an upsert whose DO UPDATE guard
+                // suppressed the write returns no row, so read the existing row instead.
+                if (affected == 0 && values.isEmpty() && plan.fallbackCommandText() != null) {
+                    var fallback =
+                            com.foundgine.providers.storage.sql.JdbcSqlPlaceholderRewriter
+                                    .rewriteOrdered(plan.fallbackCommandText());
+                    try (PreparedStatement fallbackStatement =
+                            connection.prepareStatement(fallback.sql())) {
+                        bind(fallbackStatement, plan.parameters(), fallback.placeholderNames());
+                        if (fallbackStatement.execute()
+                                && readSingleRow(fallbackStatement.getResultSet(), plan, values)) {
+                            affected = 1;
                         }
                     }
                 }
@@ -154,6 +161,23 @@ public class SqlMutationExecutionProvider implements IMutationExecutionProvider 
         }
     }
 
+    /** Reads at most one row into {@code values}; returns whether a row was present. */
+    private static boolean readSingleRow(
+            java.sql.ResultSet result, SqlMutationPlan plan, Map<FieldId, Object> values)
+            throws SQLException {
+        try (result) {
+            if (!result.next()) return false;
+            for (int i = 0; i < plan.returnedFields().size(); i++) {
+                values.put(plan.returnedFields().get(i).fieldId(), result.getObject(i + 1));
+            }
+            // A mutation returning one row is the canonical contract.
+            if (result.next()) {
+                throw new IllegalStateException("Mutation returned more than one result row.");
+            }
+            return true;
+        }
+    }
+
     /**
      * Foundgine's SQL writers use deterministic named placeholders (@p0, @p1, ...) because the C#
      * provider binds named DbParameters. JDBC PreparedStatement is positional, so the physical
@@ -164,12 +188,28 @@ public class SqlMutationExecutionProvider implements IMutationExecutionProvider 
         return com.foundgine.providers.storage.sql.JdbcSqlPlaceholderRewriter.rewrite(sql);
     }
 
+    /**
+     * Binds one value per JDBC {@code ?}. The SQL may reference a named parameter more than once
+     * (an upsert reuses the inserted value in {@code DO UPDATE SET}), so each {@code ?} is resolved
+     * by its placeholder name. When a placeholder name has no matching binding the original
+     * positional behavior is preserved.
+     */
     private static void bind(
             PreparedStatement statement,
-            List<com.foundgine.providers.storage.sql.query.SqlParameterBinding> parameters)
+            List<com.foundgine.providers.storage.sql.query.SqlParameterBinding> parameters,
+            List<String> placeholderNames)
             throws SQLException {
-        for (int i = 0; i < parameters.size(); i++) {
-            statement.setObject(i + 1, parameters.get(i).value());
+        java.util.Map<String, Object> byName = new java.util.HashMap<>();
+        for (var parameter : parameters) byName.put(parameter.name(), parameter.value());
+
+        boolean everyNameKnown =
+                !placeholderNames.isEmpty() && byName.keySet().containsAll(placeholderNames);
+        if (!everyNameKnown) {
+            for (int i = 0; i < parameters.size(); i++)
+                statement.setObject(i + 1, parameters.get(i).value());
+            return;
         }
+        for (int i = 0; i < placeholderNames.size(); i++)
+            statement.setObject(i + 1, byName.get(placeholderNames.get(i)));
     }
 }

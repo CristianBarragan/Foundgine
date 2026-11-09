@@ -17,10 +17,10 @@ public sealed record CapabilityGrant(
     }
 
     private static string Require(string value, string name) =>
-        string.IsNullOrWhiteSpace(value) ? throw new ArgumentException("Value is required.", name) : value;
+        WarrantText.IsBlank(value) ? throw new ArgumentException("Value is required.", name) : value;
 
     private static IReadOnlyList<string> Normalize(IEnumerable<string>? values) =>
-        new ReadOnlyCollection<string>((values ?? []).Where(x => !string.IsNullOrWhiteSpace(x))
+        new ReadOnlyCollection<string>((values ?? []).Where(x => !WarrantText.IsBlank(x))
             .Distinct(StringComparer.Ordinal).OrderBy(x => x, StringComparer.Ordinal).ToList());
 }
 
@@ -57,7 +57,7 @@ public sealed record SecurityWarrantConstraints(
     }
 
     private static IReadOnlyList<string> Normalize(IEnumerable<string>? values) =>
-        new ReadOnlyCollection<string>((values ?? []).Where(x => !string.IsNullOrWhiteSpace(x))
+        new ReadOnlyCollection<string>((values ?? []).Where(x => !WarrantText.IsBlank(x))
             .Distinct(StringComparer.Ordinal).OrderBy(x => x, StringComparer.Ordinal).ToList());
 
     private static T? Validate<T>(T? value, string name) where T : struct, IComparable<T> =>

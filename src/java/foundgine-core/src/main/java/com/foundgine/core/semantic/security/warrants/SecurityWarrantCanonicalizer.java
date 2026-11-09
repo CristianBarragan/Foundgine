@@ -5,6 +5,10 @@ import java.security.*;
 import java.time.*;
 import java.util.*;
 
+/**
+ * Canonical form v1, shared byte for byte with the C# implementation (see conformance/README.md): minimal JSON
+ * escaping, UTF-16 code-unit ordering, UTC timestamps with seven fractional digits and a literal {@code Z}.
+ */
 public final class SecurityWarrantCanonicalizer {
     private SecurityWarrantCanonicalizer() {}
 
@@ -118,7 +122,13 @@ public final class SecurityWarrantCanonicalizer {
                 case '\b' -> s.append("\\b");
                 case '\f' -> s.append("\\f");
                 default -> {
-                    if (c < 0x20) s.append(String.format("\\u%04x", (int) c));
+                    if (c < 0x20) s.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
+                    else if (Character.isHighSurrogate(c)) {
+                        if (i + 1 >= v.length() || !Character.isLowSurrogate(v.charAt(i + 1)))
+                            throw new IllegalArgumentException("Unpaired surrogate in canonical string.");
+                        s.append(c).append(v.charAt(++i));
+                    } else if (Character.isLowSurrogate(c))
+                        throw new IllegalArgumentException("Unpaired surrogate in canonical string.");
                     else s.append(c);
                 }
             }
@@ -130,6 +140,7 @@ public final class SecurityWarrantCanonicalizer {
         var u = i.atOffset(ZoneOffset.UTC);
         int n = i.getNano();
         return String.format(
+                Locale.ROOT,
                 "%04d-%02d-%02dT%02d:%02d:%02d.%07dZ",
                 u.getYear(),
                 u.getMonthValue(),

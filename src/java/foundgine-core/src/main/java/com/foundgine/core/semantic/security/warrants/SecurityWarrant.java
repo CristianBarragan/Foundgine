@@ -21,8 +21,15 @@ public record SecurityWarrant(
     public SecurityWarrant {
         grants = List.copyOf(grants == null ? List.of() : grants);
         constraints = Objects.requireNonNull(constraints, "constraints");
+        issuedAt = tick(issuedAt);
+        expiresAt = tick(expiresAt);
         delegationPath = List.copyOf(delegationPath == null ? List.of() : delegationPath);
         signature = signature == null ? new byte[0] : signature.clone();
+    }
+
+    /** Truncates to 100 ns, the resolution of the canonical form and of .NET ticks, so every comparison agrees. */
+    private static Instant tick(Instant value) {
+        return value == null ? null : Instant.ofEpochSecond(value.getEpochSecond(), value.getNano() / 100 * 100);
     }
 
     public static SecurityWarrant ofDefaults(

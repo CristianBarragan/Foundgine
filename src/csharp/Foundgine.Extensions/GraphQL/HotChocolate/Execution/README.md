@@ -8,6 +8,13 @@ The secure execution engine for the Foundgine Hot Chocolate GraphQL adapter.
   Foundgine semantic execution boundary.
 - `FoundgineHotChocolateMutationExecutor` — executes GraphQL mutations through
   the Foundgine mutation authorization/execution boundary.
+- `FoundgineGraphQLQueryExecutor` (9e-1) — query executor that depends only on
+  `IFoundgineExecutor`, validates the host security context before parsing,
+  propagates cancellation, and returns structured errors (`UNAUTHENTICATED`,
+  `FORBIDDEN`, `EXECUTION_FAILED`, plus translation codes) from `TryExecuteAsync`.
+- `FoundgineGraphQLMutationExecutor` (9e-2) — mutation counterpart: validates the host security
+  context before parsing, runs the batch through `IFoundgineMutations`, shapes results, propagates
+  cancellation, and returns the same structured errors from `TryExecuteAsync`.
 - Host-owned security execution-context integration for both.
 
 ## Why it lives here, in Extensions

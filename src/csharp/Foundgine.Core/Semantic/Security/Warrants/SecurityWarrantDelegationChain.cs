@@ -52,10 +52,12 @@ public static class SecurityWarrantDelegationChainValidator
                 throw new InvalidOperationException("Delegation chain contains a parent-digest substitution.");
             if (!StringComparer.Ordinal.Equals(child.Issuer, parent.Subject))
                 throw new InvalidOperationException("Delegation chain issuer does not match the parent subject.");
-            if (child.DelegationDepth != index)
-                throw new InvalidOperationException("Delegation depth does not match the supplied chain position.");
-            if (child.DelegationPath.Count != index)
-                throw new InvalidOperationException("Delegation path length does not match the chain position.");
+            if (child.DelegationDepth != index ||
+                child.DelegationPath.Count != index)
+            {
+                throw new InvalidOperationException(
+                    "Delegation depth/path length does not match the supplied chain position.");
+            }
 
             for (var pathIndex = 0; pathIndex < index; pathIndex++)
             {

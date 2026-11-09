@@ -28,4 +28,27 @@ final class JdbcSqlPlaceholderRewriterTest {
                 JdbcSqlPlaceholderRewriter.rewrite(
                         "SELECT email @> '{\"x\":1}' FROM t WHERE a = @p0"));
     }
+
+    @org.junit.jupiter.api.Test
+    void rewriteOrdered_reportsReusedPlaceholdersOncePerOccurrence() {
+        var result =
+                JdbcSqlPlaceholderRewriter.rewriteOrdered(
+                        "INSERT INTO t (a, b) VALUES (@p0, @p1) ON CONFLICT (a)"
+                                + " DO UPDATE SET b = @p1 WHERE x = '@p9' AND y = @auth0");
+
+        org.junit.jupiter.api.Assertions.assertEquals(
+                "INSERT INTO t (a, b) VALUES (?, ?) ON CONFLICT (a)"
+                        + " DO UPDATE SET b = ? WHERE x = '@p9' AND y = ?",
+                result.sql());
+        org.junit.jupiter.api.Assertions.assertEquals(
+                java.util.List.of("p0", "p1", "p1", "auth0"), result.placeholderNames());
+    }
+
+    @org.junit.jupiter.api.Test
+    void rewrite_stillMatchesRewriteOrderedSql() {
+        String sql = "SELECT * FROM t WHERE a = @p0 OR b = @p0";
+        org.junit.jupiter.api.Assertions.assertEquals(
+                JdbcSqlPlaceholderRewriter.rewriteOrdered(sql).sql(),
+                JdbcSqlPlaceholderRewriter.rewrite(sql));
+    }
 }
