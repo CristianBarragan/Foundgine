@@ -162,7 +162,9 @@ jobs:
           docker info
 
       - name: Verify PostgreSQL container image availability
-        run: docker pull postgres:17
+        run: |
+          set -euo pipefail
+          docker pull postgres:17
 
       - name: Run PostgreSQL integration and E2E tests
         run: |
@@ -265,6 +267,32 @@ jobs:
           fi
 
           echo "GPG signing secrets are configured."
+
+      - name: Validate GPG private key
+        shell: bash
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+
+          TEMP_GNUPGHOME="$(mktemp -d)"
+          chmod 700 "$TEMP_GNUPGHOME"
+          trap 'rm -rf "$TEMP_GNUPGHOME"' EXIT
+
+          printf '%s\n' "$GPG_PRIVATE_KEY" |
+            gpg --homedir "$TEMP_GNUPGHOME" \
+                --batch \
+                --import
+
+          if ! gpg --homedir "$TEMP_GNUPGHOME" \
+                   --batch \
+                   --list-secret-keys |
+                   grep -q 'sec'; then
+            echo "::error::No usable secret key was imported."
+            exit 1
+          fi
+
+          echo "GPG private key was successfully imported."
 
       - name: Verify Maven Central credentials
         shell: bash
