@@ -372,6 +372,7 @@ jobs:
   publish-maven:
     name: Publish Java Packages to Maven Central
     runs-on: ubuntu-latest
+    environment: production
 
     needs:
       - java-build
