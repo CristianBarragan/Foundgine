@@ -1,4 +1,3 @@
-
 name: Java Build
 
 on:
@@ -499,6 +498,9 @@ jobs:
 
           echo "GPG signing secrets are configured."
 
+      # --------------------------------------------------------
+      # Validate Maven Central credentials
+      # --------------------------------------------------------
       - name: Verify Maven Central credentials
         shell: bash
         env:
@@ -521,7 +523,6 @@ jobs:
 
       # --------------------------------------------------------
       # Configure Java and Maven Central
-      # No GPG keyring import is needed for the BC signer.
       # --------------------------------------------------------
       - name: Set up Java and Maven Central credentials
         uses: actions/setup-java@v6
@@ -534,6 +535,83 @@ jobs:
           server-id: central
           server-username-env-var: MAVEN_USERNAME
           server-password-env-var: MAVEN_CENTRAL_TOKEN
+
+      # --------------------------------------------------------
+      # Diagnose Maven Central configuration without exposing
+      # usernames, passwords, or tokens.
+      # --------------------------------------------------------
+      - name: Diagnose Maven Central publishing configuration
+        shell: bash
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "Maven version:"
+          mvn --version
+
+          echo ""
+          echo "Checking credential environment variables:"
+
+          [[ -n "$MAVEN_USERNAME" ]] \
+            && echo "MAVEN_USERNAME: present" \
+            || { echo "::error::MAVEN_USERNAME is missing."; exit 1; }
+
+          [[ -n "$MAVEN_CENTRAL_TOKEN" ]] \
+            && echo "MAVEN_CENTRAL_TOKEN: present" \
+            || { echo "::error::MAVEN_CENTRAL_TOKEN is missing."; exit 1; }
+
+          echo ""
+          echo "Checking Maven settings.xml:"
+
+          SETTINGS_FILE="$HOME/.m2/settings.xml"
+
+          if [[ ! -f "$SETTINGS_FILE" ]]; then
+            echo "::error::Maven settings.xml was not generated."
+            exit 1
+          fi
+
+          python3 - "$SETTINGS_FILE" <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+
+          path = sys.argv[1]
+          root = ET.parse(path).getroot()
+
+          servers = root.find("{*}servers")
+
+          if servers is None:
+              raise SystemExit("No Maven servers configuration found.")
+
+          central = None
+
+          for server in servers.findall("{*}server"):
+              server_id = server.find("{*}id")
+
+              if server_id is not None and server_id.text == "central":
+                  central = server
+                  break
+
+          if central is None:
+              raise SystemExit("Maven server ID 'central' was not found.")
+
+          username = central.find("{*}username")
+          password = central.find("{*}password")
+
+          print("Maven server ID 'central': found")
+          print("Username configuration:", "present" if username is not None and username.text else "missing")
+          print("Password configuration:", "present" if password is not None and password.text else "missing")
+
+          if username is None or not username.text:
+              raise SystemExit("Central username configuration is missing.")
+
+          if password is None or not password.text:
+              raise SystemExit("Central password configuration is missing.")
+          PY
+
+          echo ""
+          echo "Maven Central configuration checks passed."
 
       # --------------------------------------------------------
       # Publish only the four intended Java libraries.
