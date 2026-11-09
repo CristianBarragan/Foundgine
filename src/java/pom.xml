@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -70,28 +71,33 @@
         <artifactId>jackson-databind</artifactId>
         <version>${jackson.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${postgresql.version}</version>
       </dependency>
+
       <dependency>
         <groupId>com.graphql-java</groupId>
         <artifactId>graphql-java</artifactId>
         <version>${graphql-java.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
+
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
+
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-params</artifactId>
@@ -164,17 +170,15 @@
           </executions>
         </plugin>
 
+        <!-- Signing configuration is inherited by every publishable module. -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
           <version>${maven.gpg.plugin.version}</version>
           <configuration>
-            <passphrase>${env.MAVEN_GPG_PASSPHRASE}</passphrase>
-            <gpgArguments>
-              <arg>--batch</arg>
-              <arg>--pinentry-mode</arg>
-              <arg>loopback</arg>
-            </gpgArguments>
+            <signer>bc</signer>
+            <keyEnvName>MAVEN_GPG_KEY</keyEnvName>
+            <passphraseEnvName>MAVEN_GPG_PASSPHRASE</passphraseEnvName>
           </configuration>
           <executions>
             <execution>
@@ -190,7 +194,7 @@
     </pluginManagement>
 
     <plugins>
-      <!-- The extension must be active from the root reactor so deploy uses Central Portal. -->
+      <!-- Central Portal publishing is activated at the reactor root. -->
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
@@ -200,10 +204,21 @@
           <publishingServerId>central</publishingServerId>
           <autoPublish>true</autoPublish>
           <waitUntil>published</waitUntil>
+
+          <!-- The root aggregator is not a public Foundgine library. -->
+          <excludeArtifacts>
+            <excludeArtifact>foundgine-parent</excludeArtifact>
+          </excludeArtifacts>
         </configuration>
       </plugin>
 
-      <!-- Produce standalone consumer POMs so the internal aggregator parent is not a fifth release artifact. -->
+      <!-- Activate the GPG plugin; pluginManagement alone does not execute it. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+      </plugin>
+
+      <!-- Generate standalone consumer POMs for the published modules. -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>

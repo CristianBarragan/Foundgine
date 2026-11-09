@@ -1,3 +1,4 @@
+
 name: Java Build
 
 on:
@@ -38,80 +39,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Locate Java Maven project
-        id: maven-project
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          POM_FILE="$(python3 - <<'PY'
-          import os
-          import xml.etree.ElementTree as ET
-
-          candidates = []
-
-          for root, dirs, files in os.walk("."):
-              dirs[:] = [
-                  d for d in dirs
-                  if d not in {".git", "target", ".gradle", "node_modules"}
-              ]
-
-              if "pom.xml" not in files:
-                  continue
-
-              path = os.path.join(root, "pom.xml")
-
-              try:
-                  xml = ET.parse(path).getroot()
-                  modules = xml.find("{*}modules")
-                  artifact = xml.find("{*}artifactId")
-
-                  module_names = []
-                  if modules is not None:
-                      module_names = [
-                          (m.text or "").strip().replace("\\", "/")
-                          for m in modules.findall("{*}module")
-                      ]
-
-                  artifact_id = (
-                      artifact.text.strip()
-                      if artifact is not None and artifact.text
-                      else ""
-                  )
-
-                  has_core = any(
-                      module.rstrip("/").split("/")[-1] == "foundgine-core"
-                      for module in module_names
-                  )
-
-                  if has_core or artifact_id == "foundgine-parent":
-                      candidates.append((path, has_core))
-
-              except ET.ParseError:
-                  continue
-
-          if not candidates:
-              raise SystemExit("Foundgine Java parent POM was not found.")
-
-          candidates.sort(
-              key=lambda item: (not item[1], item[0].count(os.sep), item[0])
-          )
-
-          print(os.path.abspath(candidates[0][0]))
-          PY
-          )"
-
-          echo "pom=$POM_FILE" >> "$GITHUB_OUTPUT"
-          echo "Found Maven project: $POM_FILE"
-          test -f "$POM_FILE"
-
       - name: Set up Java
         uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
-          cache-dependency-path: '**/pom.xml'
+          cache-dependency-path: 'src/java/**/pom.xml'
 
       - name: Verify Java and Maven
         run: |
@@ -121,7 +55,7 @@ jobs:
       - name: Build and run unit tests
         run: |
           mvn \
-            -f "${{ steps.maven-project.outputs.pom }}" \
+            -f src/java/pom.xml \
             --batch-mode \
             --no-transfer-progress \
             --errors \
@@ -134,8 +68,8 @@ jobs:
         with:
           name: java-build-reports
           path: |
-            **/target/surefire-reports/**
-            **/target/failsafe-reports/**
+            src/java/**/target/surefire-reports/**
+            src/java/**/target/failsafe-reports/**
           if-no-files-found: ignore
           retention-days: 14
 
@@ -152,84 +86,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Locate Java Maven project
-        id: maven-project
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          POM_FILE="$(python3 - <<'PY'
-          import os
-          import xml.etree.ElementTree as ET
-
-          candidates = []
-
-          for root, dirs, files in os.walk("."):
-              dirs[:] = [
-                  d for d in dirs
-                  if d not in {".git", "target", ".gradle", "node_modules"}
-              ]
-
-              if "pom.xml" not in files:
-                  continue
-
-              path = os.path.join(root, "pom.xml")
-
-              try:
-                  xml = ET.parse(path).getroot()
-                  modules = xml.find("{*}modules")
-                  artifact = xml.find("{*}artifactId")
-
-                  module_names = []
-                  if modules is not None:
-                      module_names = [
-                          (m.text or "").strip().replace("\\", "/")
-                          for m in modules.findall("{*}module")
-                      ]
-
-                  artifact_id = (
-                      artifact.text.strip()
-                      if artifact is not None and artifact.text
-                      else ""
-                  )
-
-                  has_core = any(
-                      module.rstrip("/").split("/")[-1] == "foundgine-core"
-                      for module in module_names
-                  )
-
-                  if has_core or artifact_id == "foundgine-parent":
-                      candidates.append((path, has_core))
-
-              except ET.ParseError:
-                  continue
-
-          if not candidates:
-              raise SystemExit("Foundgine Java parent POM was not found.")
-
-          candidates.sort(
-              key=lambda item: (not item[1], item[0].count(os.sep), item[0])
-          )
-
-          print(os.path.abspath(candidates[0][0]))
-          PY
-          )"
-
-          echo "pom=$POM_FILE" >> "$GITHUB_OUTPUT"
-          echo "Found Maven project: $POM_FILE"
-
       - name: Set up Java
         uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
-          cache-dependency-path: '**/pom.xml'
+          cache-dependency-path: 'src/java/**/pom.xml'
 
       - name: Run Foundgine Redteam tests
         run: |
           mvn \
-            -f "${{ steps.maven-project.outputs.pom }}" \
+            -f src/java/pom.xml \
             --batch-mode \
             --no-transfer-progress \
             --errors \
@@ -244,8 +112,8 @@ jobs:
         with:
           name: java-security-reports
           path: |
-            **/target/surefire-reports/**
-            **/target/failsafe-reports/**
+            src/java/**/target/surefire-reports/**
+            src/java/**/target/failsafe-reports/**
           if-no-files-found: ignore
           retention-days: 14
 
@@ -262,79 +130,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Locate Java Maven project
-        id: maven-project
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          POM_FILE="$(python3 - <<'PY'
-          import os
-          import xml.etree.ElementTree as ET
-
-          candidates = []
-
-          for root, dirs, files in os.walk("."):
-              dirs[:] = [
-                  d for d in dirs
-                  if d not in {".git", "target", ".gradle", "node_modules"}
-              ]
-
-              if "pom.xml" not in files:
-                  continue
-
-              path = os.path.join(root, "pom.xml")
-
-              try:
-                  xml = ET.parse(path).getroot()
-                  modules = xml.find("{*}modules")
-                  artifact = xml.find("{*}artifactId")
-
-                  module_names = []
-                  if modules is not None:
-                      module_names = [
-                          (m.text or "").strip().replace("\\", "/")
-                          for m in modules.findall("{*}module")
-                      ]
-
-                  artifact_id = (
-                      artifact.text.strip()
-                      if artifact is not None and artifact.text
-                      else ""
-                  )
-
-                  has_core = any(
-                      module.rstrip("/").split("/")[-1] == "foundgine-core"
-                      for module in module_names
-                  )
-
-                  if has_core or artifact_id == "foundgine-parent":
-                      candidates.append((path, has_core))
-
-              except ET.ParseError:
-                  continue
-
-          if not candidates:
-              raise SystemExit("Foundgine Java parent POM was not found.")
-
-          candidates.sort(
-              key=lambda item: (not item[1], item[0].count(os.sep), item[0])
-          )
-
-          print(os.path.abspath(candidates[0][0]))
-          PY
-          )"
-
-          echo "pom=$POM_FILE" >> "$GITHUB_OUTPUT"
-          echo "Found Maven project: $POM_FILE"
-
       - name: Set up Java
         uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
-          cache-dependency-path: '**/pom.xml'
+          cache-dependency-path: 'src/java/**/pom.xml'
 
       - name: Verify Docker availability
         run: |
@@ -347,7 +149,7 @@ jobs:
       - name: Run PostgreSQL integration and E2E tests
         run: |
           mvn \
-            -f "${{ steps.maven-project.outputs.pom }}" \
+            -f src/java/pom.xml \
             --batch-mode \
             --no-transfer-progress \
             --errors \
@@ -360,8 +162,8 @@ jobs:
         with:
           name: java-postgres-e2e-reports
           path: |
-            **/target/surefire-reports/**
-            **/target/failsafe-reports/**
+            src/java/**/target/surefire-reports/**
+            src/java/**/target/failsafe-reports/**
           if-no-files-found: ignore
           retention-days: 14
 
@@ -388,72 +190,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Locate Java Maven project
-        id: maven-project
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          POM_FILE="$(python3 - <<'PY'
-          import os
-          import xml.etree.ElementTree as ET
-
-          candidates = []
-
-          for root, dirs, files in os.walk("."):
-              dirs[:] = [
-                  d for d in dirs
-                  if d not in {".git", "target", ".gradle", "node_modules"}
-              ]
-
-              if "pom.xml" not in files:
-                  continue
-
-              path = os.path.join(root, "pom.xml")
-
-              try:
-                  xml = ET.parse(path).getroot()
-                  modules = xml.find("{*}modules")
-                  artifact = xml.find("{*}artifactId")
-
-                  module_names = []
-                  if modules is not None:
-                      module_names = [
-                          (m.text or "").strip().replace("\\", "/")
-                          for m in modules.findall("{*}module")
-                      ]
-
-                  artifact_id = (
-                      artifact.text.strip()
-                      if artifact is not None and artifact.text
-                      else ""
-                  )
-
-                  has_core = any(
-                      module.rstrip("/").split("/")[-1] == "foundgine-core"
-                      for module in module_names
-                  )
-
-                  if has_core or artifact_id == "foundgine-parent":
-                      candidates.append((path, has_core))
-
-              except ET.ParseError:
-                  continue
-
-          if not candidates:
-              raise SystemExit("Foundgine Java parent POM was not found.")
-
-          candidates.sort(
-              key=lambda item: (not item[1], item[0].count(os.sep), item[0])
-          )
-
-          print(os.path.abspath(candidates[0][0]))
-          PY
-          )"
-
-          echo "pom=$POM_FILE" >> "$GITHUB_OUTPUT"
-          echo "Found Maven project: $POM_FILE"
-
       - name: Resolve release version
         id: version
         shell: bash
@@ -470,9 +206,6 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Publishing Foundgine Java version: $VERSION"
 
-      # --------------------------------------------------------
-      # Validate signing key without printing its contents
-      # --------------------------------------------------------
       - name: Validate GPG signing secrets
         shell: bash
         env:
@@ -486,11 +219,6 @@ jobs:
             exit 1
           fi
 
-          if [[ "$GPG_PRIVATE_KEY" != *"-----BEGIN PGP PRIVATE KEY BLOCK-----"* ]]; then
-            echo "::error::The private key is not ASCII-armored."
-            exit 1
-          fi
-
           if [[ -z "$GPG_PASSPHRASE" ]]; then
             echo "::error::MAVEN_GPG_PASSPHRASE is empty or unavailable."
             exit 1
@@ -498,9 +226,6 @@ jobs:
 
           echo "GPG signing secrets are configured."
 
-      # --------------------------------------------------------
-      # Validate Maven Central credentials
-      # --------------------------------------------------------
       - name: Verify Maven Central credentials
         shell: bash
         env:
@@ -521,49 +246,24 @@ jobs:
 
           echo "Maven Central credentials are configured."
 
-      # --------------------------------------------------------
-      # Configure Java and Maven Central
-      # --------------------------------------------------------
       - name: Set up Java and Maven Central credentials
         uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
           cache: maven
-          cache-dependency-path: '**/pom.xml'
-
+          cache-dependency-path: 'src/java/**/pom.xml'
           server-id: central
           server-username-env-var: MAVEN_USERNAME
           server-password-env-var: MAVEN_CENTRAL_TOKEN
 
-      # --------------------------------------------------------
-      # Diagnose Maven Central configuration without exposing
-      # usernames, passwords, or tokens.
-      # --------------------------------------------------------
-      - name: Diagnose Maven Central publishing configuration
+      - name: Diagnose Maven Central settings
         shell: bash
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
         run: |
           set -euo pipefail
 
           echo "Maven version:"
           mvn --version
-
-          echo ""
-          echo "Checking credential environment variables:"
-
-          [[ -n "$MAVEN_USERNAME" ]] \
-            && echo "MAVEN_USERNAME: present" \
-            || { echo "::error::MAVEN_USERNAME is missing."; exit 1; }
-
-          [[ -n "$MAVEN_CENTRAL_TOKEN" ]] \
-            && echo "MAVEN_CENTRAL_TOKEN: present" \
-            || { echo "::error::MAVEN_CENTRAL_TOKEN is missing."; exit 1; }
-
-          echo ""
-          echo "Checking Maven settings.xml:"
 
           SETTINGS_FILE="$HOME/.m2/settings.xml"
 
@@ -576,9 +276,7 @@ jobs:
           import sys
           import xml.etree.ElementTree as ET
 
-          path = sys.argv[1]
-          root = ET.parse(path).getroot()
-
+          root = ET.parse(sys.argv[1]).getroot()
           servers = root.find("{*}servers")
 
           if servers is None:
@@ -588,7 +286,6 @@ jobs:
 
           for server in servers.findall("{*}server"):
               server_id = server.find("{*}id")
-
               if server_id is not None and server_id.text == "central":
                   central = server
                   break
@@ -599,34 +296,26 @@ jobs:
           username = central.find("{*}username")
           password = central.find("{*}password")
 
-          print("Maven server ID 'central': found")
-          print("Username configuration:", "present" if username is not None and username.text else "missing")
-          print("Password configuration:", "present" if password is not None and password.text else "missing")
-
           if username is None or not username.text:
               raise SystemExit("Central username configuration is missing.")
 
           if password is None or not password.text:
               raise SystemExit("Central password configuration is missing.")
+
+          print("Maven Central server configuration is present.")
           PY
 
-          echo ""
-          echo "Maven Central configuration checks passed."
-
-      # --------------------------------------------------------
-      # Publish only the four intended Java libraries.
-      # Bouncy Castle reads the key from MAVEN_GPG_KEY.
-      # --------------------------------------------------------
       - name: Build and publish Foundgine Java libraries
         run: |
           mvn \
-            -f "${{ steps.maven-project.outputs.pom }}" \
+            -f src/java/pom.xml \
             --batch-mode \
             --no-transfer-progress \
             --errors \
             -Drevision="${{ steps.version.outputs.version }}" \
             -Dgpg.signer=bc \
             -Dgpg.keyEnvName=MAVEN_GPG_KEY \
+            -Dgpg.passphraseEnvName=MAVEN_GPG_PASSPHRASE \
             -pl foundgine-core,foundgine-runtime,foundgine-providers,foundgine-extensions \
             -am \
             -DskipTests \
@@ -641,3 +330,75 @@ jobs:
         if: success()
         run: |
           echo "Successfully published Foundgine Java version ${{ steps.version.outputs.version }}"
+
+  # ------------------------------------------------------------
+  # 5. Publish GitHub Wiki
+  # ------------------------------------------------------------
+  publish-wiki:
+    name: Publish GitHub Wiki
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Publish only from main, not from PRs, tags or the java branch.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Wiki source
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ ! -d "wiki" ]]; then
+            echo "::error::The wiki/ directory does not exist."
+            exit 1
+          fi
+
+          if [[ ! -f "wiki/Home.md" ]]; then
+            echo "::error::wiki/Home.md is required."
+            exit 1
+          fi
+
+          echo "Wiki source files found:"
+          find wiki -maxdepth 2 -type f -print
+
+      - name: Publish Wiki pages
+        env:
+          WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$WIKI_TOKEN" ]]; then
+            echo "::error::WIKI_TOKEN is missing."
+            exit 1
+          fi
+
+          git clone \
+            "https://x-access-token:${WIKI_TOKEN}@github.com/${REPOSITORY}.wiki.git" \
+            wiki-published
+
+          # Keep the Git metadata while making the Wiki an exact mirror
+          # of the repository's wiki/ directory.
+          rsync -av --delete --exclude='.git/' wiki/ wiki-published/
+
+          cd wiki-published
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "Wiki is already up to date."
+            exit 0
+          fi
+
+          git commit -m "Update Wiki from ${GITHUB_SHA}"
+          git push origin HEAD
