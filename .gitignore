@@ -74,6 +74,7 @@ Desktop.ini
 # =========================
 
 *.log
+*.trx
 *.tmp
 *.temp
 *.swp

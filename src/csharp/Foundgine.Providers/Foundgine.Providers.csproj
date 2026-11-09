@@ -12,7 +12,6 @@
     <RootNamespace>Foundgine.Providers</RootNamespace>
     <AssemblyName>Foundgine.Providers</AssemblyName>
     <IsPackable>true</IsPackable>
-    <PackageReleaseNotes>2.0.0: v2 package restructuring. Consolidates the former Foundgine.AI, Foundgine.MCP, Foundgine.Sql, Foundgine.InMemory, Foundgine.Elasticsearch, and Foundgine.Postgres.Vector packages.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <!-- ASP.NET Core is used only by the optional HTTP gateway adapter. Keep the framework reference private;
