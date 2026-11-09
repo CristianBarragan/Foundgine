@@ -194,10 +194,13 @@ The standard is the authority — see [`SES-104`](standards/semantic-execution/S
 for the current implementation gap matrix and [`conformance/known-gaps.json`](standards/semantic-execution/conformance/known-gaps.json)
 for the machine-readable status of every tracked item.
 
-## Release 2.3.0
+## Release 2.3.1
 
-**Current release: 2.3.0 · .NET 10 and Java 21**
+**Current release: 2.3.1 · .NET 10 and Java 21**
 
-The .NET and Java implementations ship as aligned, same-numbered releases. 2.3.0 adds a fluent configuration API (`FoundgineModel`) in both languages as a code-first alternative to attributes and annotations; see [`docs/MAPPING.md`](docs/MAPPING.md). See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes, including what changed in 2.3.0 and every release before it.
+The .NET and Java implementations ship as aligned, same-numbered releases. This release maintains the 2.3.x line and aligns package, build, MCP and documentation metadata. Version 2.3.0 introduced the fluent configuration API (`FoundgineModel`) in both languages as a code-first alternative to attributes and annotations; see [`docs/MAPPING.md`](docs/MAPPING.md). See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes.
 
 Foundgine is licensed under the Apache License 2.0.
+## Feature and capability wiki
+
+The [Foundgine feature and capability wiki](docs/wiki/index.md) explains the architecture, semantic model, intent grounding, execution, security, mutations, gateway, providers, agents/MCP, AOT, integrations, and operations by capability rather than by release.

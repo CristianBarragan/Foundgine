@@ -13,7 +13,6 @@
     <RootNamespace>Foundgine.Core</RootNamespace>
     <AssemblyName>Foundgine.Core</AssemblyName>
     <IsPackable>true</IsPackable>
-    <PackageReleaseNotes>2.0.0: v2 package restructuring. Consolidates the former Foundgine (root orchestrator types moved to Foundgine.Runtime; semantic primitives retained here), Foundgine.Abstractions, Foundgine.Semantics, Foundgine.Metadata, Foundgine.Planning, and Foundgine.Intent.Json packages into a single foundational package.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />

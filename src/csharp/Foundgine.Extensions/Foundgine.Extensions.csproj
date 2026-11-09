@@ -13,7 +13,6 @@
     <RootNamespace>Foundgine.Extensions</RootNamespace>
     <AssemblyName>Foundgine.Extensions</AssemblyName>
     <IsPackable>true</IsPackable>
-    <PackageReleaseNotes>2.0.0: v2 package restructuring. Consolidates the former Foundgine.GraphQL.HotChocolate, Foundgine.GraphQL.HotChocolate.Execution, Foundgine.GraphQL.HotChocolate.Mutations, and Foundgine.GraphQL.HotChocolate.MutationExecution packages.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Samples/**" />

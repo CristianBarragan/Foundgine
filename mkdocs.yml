@@ -46,4 +46,21 @@ nav:
   - Testing: TESTING.md
   - Current status: CURRENT-STATUS.md
   - Roadmap: ROADMAP.md
+  - Feature and capability wiki:
+      - Overview: wiki/index.md
+      - Core concepts: wiki/core-concepts.md
+      - Semantic model and metadata: wiki/semantic-model.md
+      - Intent, grounding and retrieval: wiki/intent-grounding.md
+      - Planning and execution: wiki/planning-execution.md
+      - Authorization and security: wiki/authorization-security.md
+      - Mutations: wiki/mutations.md
+      - Gateway, events and live updates: wiki/gateway-events.md
+      - Providers and storage: wiki/providers-storage.md
+      - Provider catalogue: wiki/providers.md
+      - AI agents and MCP: wiki/agents-mcp.md
+      - AOT and generated metadata: wiki/aot.md
+      - Integrations: wiki/integrations.md
+      - Extension catalogue: wiki/extensions.md
+      - Operations and testing: wiki/operations.md
+      - Cross-language implementation map: wiki/implementation-map.md
   - History: history/README.md
