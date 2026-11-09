@@ -59,7 +59,7 @@
           <annotationProcessorPaths>
             <path>
               <groupId>io.github.cristianbarragan</groupId>
-              <artifactId>foundgine-aot-generator</artifactId>
+              <artifactId>foundgine-providers</artifactId>
               <version>${revision}</version>
             </path>
           </annotationProcessorPaths>

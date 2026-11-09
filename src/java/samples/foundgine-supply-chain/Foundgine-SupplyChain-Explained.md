@@ -25,7 +25,7 @@ generation) and the idioms used to express it (`record`s and static factory meth
 
 | Requirement                           | Why you need it                                                                                                                                                                                                                                                                                                                                                     |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **JDK 21**                            | The `foundgine-aot-generator` module is a Java **annotation processor** (`javax.annotation.processing.Processor`), which is the JDK's compile-time code-generation mechanism — the Java analogue of a Roslyn source generator. Annotation processors run as part of `javac`, so any reasonably current JDK works; this reactor pins `maven.compiler.release` to 21. |
+| **JDK 21**                            | The `foundgine-providers` module is a Java **annotation processor** (`javax.annotation.processing.Processor`), which is the JDK's compile-time code-generation mechanism — the Java analogue of a Roslyn source generator. Annotation processors run as part of `javac`, so any reasonably current JDK works; this reactor pins `maven.compiler.release` to 21. |
 | **Maven 3.9+**                        | The Java port is a standard multi-module Maven reactor (`src/java/pom.xml` as parent, one child module per package, `samples/*` for sample applications) — the Java analogue of the `.sln` + `<ProjectReference>` graph on the C# side.                                                                                                                             |
 | **Docker with Compose**               | Once you move past the domain/authorization port covered by this starter and into the fully wired [advanced sample](../foundgine-supply-chain-advanced/README.md), data is stored in real PostgreSQL, not an in-memory fake, so the generated SQL is exercised against a real engine.                                                                               |
 | **Git clone with reactor references** | Every module and sample in `src/java` depends on `${revision}` — a single Maven property in `src/java/pom.xml` — instead of a published Maven Central version, so you always build against the exact source in the repo, the same reasoning the C# tutorial gives for using `<ProjectReference>` over a NuGet version.                                              |
@@ -45,7 +45,7 @@ artifacts under `io.github.cristianbarragan`:
   application-facing APIs (`FoundgineOptions`, the mutation engine used by the advanced sample).
   Sits between Core and Providers.
 - **`foundgine-providers`** — the part that _does_ know PostgreSQL exists, _does_ know MCP exists,
-  and hosts the AOT annotation-processor sub-module (`foundgine-aot-generator`) as a Maven module of
+  and hosts the AOT annotation-processor sub-module (`foundgine-providers`) as a Maven module of
   its own, mirroring `Foundgine.Providers.Aot.Generator`.
 - **`foundgine-extensions`** — optional caller-facing adapters. Not used by this starter.
 
@@ -89,7 +89,7 @@ live.
 |---|---|---|
 | Domain records | carry `@Foundgine*` annotations | plain records, no Foundgine imports |
 | Where the model is declared | on the record components | in `FoundgineModelConfiguration`, `FoundginePersistenceConfiguration`, `FoundgineEntityMap`, `FoundgineConnectionConfiguration` and `FoundgineModelConnectionConfiguration` classes |
-| Build step | `foundgine-aot-generator` annotation processor | none; `new MyModel().build()` at startup |
+| Build step | AOT annotation processor embedded in the `foundgine-providers` JAR | none; `new MyModel().build()` at startup |
 | Validation | at compile time | `build()` throws one exception listing every problem |
 
 Pick annotations when you own the types and want compile-time checking; pick fluent configuration

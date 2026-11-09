@@ -42,6 +42,15 @@
   </dependencies>
   <build>
     <plugins>
+      <!-- The AOT processor is packaged in this artifact. Disable processor discovery
+           while compiling the artifact that contains the processor itself. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <proc>none</proc>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>

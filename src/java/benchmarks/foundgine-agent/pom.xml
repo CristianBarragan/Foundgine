@@ -13,9 +13,6 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <artifactId>foundgine-benchmark-agent</artifactId>
-  <properties>
-    <maven.compiler.release>21</maven.compiler.release>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>

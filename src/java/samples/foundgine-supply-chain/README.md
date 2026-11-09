@@ -11,7 +11,7 @@ the .NET NuGet packages:
 ## What it demonstrates
 
 - A small, framework-neutral Supply Chain domain (`SupplyChainDomain`) expressed as Java `record`s and
-  annotated with `@FoundgineEntity` so the `foundgine-aot-generator` annotation processor can emit
+  annotated with `@FoundgineEntity` so the AOT annotation processor embedded in the `foundgine-providers` JAR can emit
   compiled metadata at build time — no runtime reflection, mirroring the C# Roslyn source generator.
 - A capability-shaped authorization boundary (`Authorization`) with tenant-scoped, role-based checks
   (`CUSTOMER`, `ANALYST`, `WAREHOUSE_OPERATOR`, `SUPPLY_CHAIN_MANAGER`).
@@ -50,7 +50,7 @@ mvn -pl samples/foundgine-supply-chain -am compile exec:java \
   -Dexec.mainClass=com.foundgine.samples.supplychain.Main
 ```
 
-This compiles the module (running the `foundgine-aot-generator` annotation processor over
+This compiles the module (running the AOT annotation processor embedded in the `foundgine-providers` JAR over
 `SupplyChainDomain`) and runs `Main`, which prints the configured `FoundgineOptions` as a smoke
 test that the Java `foundgine-core` / `foundgine-runtime` packages resolve correctly from this
 module.
