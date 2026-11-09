@@ -6,21 +6,21 @@ Foundgine is a semantic execution boundary: it lets applications, APIs, automati
 
 ## Start here
 
-1. [Core concepts](core-concepts.md) — the vocabulary and boundaries used throughout Foundgine.
-2. [Semantic model and metadata](semantic-model.md) — how physical application metadata becomes a stable semantic contract.
-3. [Intent, grounding and retrieval](intent-grounding.md) — how caller language is resolved without granting authority.
-4. [Planning and execution](planning-execution.md) — how resolved requests become validated plans and provider work.
-5. [Authorization and warrants](authorization-security.md) — how identity, scope, authority, and execution trust are separated.
-6. [Mutation lifecycle](mutations.md) — propose, dry-run, approve, and execute.
-7. [Gateway, events and live updates](gateway-events.md) — exposing capabilities through a stable facade.
-8. [Providers and storage](providers-storage.md) — conceptual provider contracts and safety boundaries.
-9. [Provider catalogue](providers.md) — detailed inventory, responsibilities, source locations and operational guidance for every provider family.
-10. [AI agents and MCP](agents-mcp.md) — safe tool discovery and invocation patterns.
-11. [AOT and generated metadata](aot.md) — build-time metadata generation and trimming-friendly deployment.
-12. [Integrations](integrations.md) — overview of Keycloak, Temporal, GraphQL and host integration.
-13. [Extension catalogue](extensions.md) — detailed feature, source and security guide for every framework extension.
-14. [Operations and extension points](operations.md) — configuration, diagnostics, testing, and adding capabilities.
-15. [Cross-language implementation map](implementation-map.md) — where capabilities live in C# and Java.
+1. [Core concepts](core-concepts) — the vocabulary and boundaries used throughout Foundgine.
+2. [Semantic model and metadata](semantic-model) — how physical application metadata becomes a stable semantic contract.
+3. [Intent, grounding and retrieval](intent-grounding) — how caller language is resolved without granting authority.
+4. [Planning and execution](planning-execution) — how resolved requests become validated plans and provider work.
+5. [Authorization and warrants](authorization-security) — how identity, scope, authority, and execution trust are separated.
+6. [Mutation lifecycle](mutations) — propose, dry-run, approve, and execute.
+7. [Gateway, events and live updates](gateway-events) — exposing capabilities through a stable facade.
+8. [Providers and storage](providers-storage) — conceptual provider contracts and safety boundaries.
+9. [Provider catalogue](providers) — detailed inventory, responsibilities, source locations and operational guidance for every provider family.
+10. [AI agents and MCP](agents-mcp) — safe tool discovery and invocation patterns.
+11. [AOT and generated metadata](aot) — build-time metadata generation and trimming-friendly deployment.
+12. [Integrations](integrations) — overview of Keycloak, Temporal, GraphQL and host integration.
+13. [Extension catalogue](extensions) — detailed feature, source and security guide for every framework extension.
+14. [Operations and extension points](operations) — configuration, diagnostics, testing, and adding capabilities.
+15. [Cross-language implementation map](implementation-map) — where capabilities live in C# and Java.
 
 ## Documentation principles
 
