@@ -1,0 +1,571 @@
+{
+ "spec": "warrant-signatures-v1",
+ "keys": {
+  "k-1": {
+   "privateKeyPkcs8": "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDOPo9vAUi05P7DI9+Jg3sLJCOQib7GXzrzDa4iLALkOmNry3WhmJAIK3lWXVLuNchDAa68HHtDE4doC1xwjd76JqlySnuplza1E2sIZnlxxLE+xBULKbxi5QeL4ORwk1IpmFQHP8d50t/2DUvDF2gUTr/F2BDfMvS4DH5UBisc9N1t7DQ2ztEg4c24gcJiUK/F2biqr+bBMi0sIzfRqflpfGAtyYQoWTyKj2Mh39+cJ7cbaAAOJSwDYKqcPncx64LR6tglSjRn1DyQVnHdcTc5MazVIU6cn+HbBvbNqd6AToVZLbTDHsaG0obwWyWwsVlPjCRhroVxw73Z/EOSoJ1hAgMBAAECggEADQpJx/mutUVPUfSumXa9n/to39nEI3qTWX/LCH0VsVF7X/rtLpdc7/waGWeGkVCUOQX3tgwekD10j8cI6rlSclv61bxqeKAURO574EjLMyUxFPT35NmxzONXQhuPktcCi5lTVfwAREfpgjJE0PDl00OuMdFF/wUtROya5i9XqLM6GhNXeApiB5AMA+1NDw9zAuE4xN7LOmLvZbypmMzPlqYwG37e+Uf31XV+PCPgegb/HCPjL+TGHkLQXNe4Neb7yIugj8+c2j3MAdsm6C57h0ZI7y8P9n38PABxVrgSviSPV3ZW0u7KQkd9FId27eqap5dyUxPbh35hAkvXYzMI8wKBgQDqX5KA/uUOpwYpLQLP2wZKCgE6yCTO7hbBEdgjp0iWTAlHkMzncShPwm13kxN5pDtyfhQ1+Oo1U+95wTS5sA3N9X6tUv53EdDiWSQ+NHEyuqbYeyYfiZYCmZ+O8Ctcu6GeXkl4Cvmu7fqhqCHSZ71KAW3xMV0xdfqVK9WDEx53NwKBgQDhRoTAjtQ2ZFqHasBOTkwtrbIl0Tjs0HJXoV9qMn92b6/nOhVpq1bKDzcsS6q+077zH680UNOEfoQjMUQoGiF2S0l7tVdFJRFH6bamMWmB1+6GMeLFgbDR6vlwpxune/pjbFcgB7k5UAUKinZWD2JaKKEkjsAWeL+ufgVvSPksJwKBgQDkZNhG3p5m5fsJ+zQHTEBXvGIwX0QHZ1tDMFl5fRYuaNCOLhyP2eTXvPeiE/BhlNrdmuGlKvlJmI8BDneMEHWTZI3a58rUS8dMHGRGPiKlteDLi06+YvyNchlcWM1Y4/v+cZGU6tUgVAburAKxoKiEytnRtjJD9d2Iqpu5zNLehwKBgQCDw9iQPLq5mdctz+3tn3SFX0yNPCRct8u5n+UMW78cSlWMHPg7V4GrLF0sJpIXjgjpcgXrxr8Bh3LIlt9zyVz7MSwpFLeX9Qd3ladE7C/3R5L3oSQwPBxtnFAMaWIOg8C/+LW5QWtAr6JTOQvgaJ0xeQRQOsL2IeiUKpgJMJi2DwKBgQDA68i3Z2tR8CM4/Kpd21Yoo/oQiCliJbfjXwUz+mWt4c4QoIs+nu6FpGvExs60E1AtcyYjorFb1vBdAl2ZUknLcOCNbou8lmg2MqCT0btcSQtjoME8P1YxI+ZYs3Jz52QZ1A9qBhqdgwgRnk8Ahw4Xe5vufOQ37061eDinZ6Hg2A==",
+   "publicKeySpki": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzj6PbwFItOT+wyPfiYN7CyQjkIm+xl868w2uIiwC5Dpja8t1oZiQCCt5Vl1S7jXIQwGuvBx7QxOHaAtccI3e+iapckp7qZc2tRNrCGZ5ccSxPsQVCym8YuUHi+DkcJNSKZhUBz/HedLf9g1LwxdoFE6/xdgQ3zL0uAx+VAYrHPTdbew0Ns7RIOHNuIHCYlCvxdm4qq/mwTItLCM30an5aXxgLcmEKFk8io9jId/fnCe3G2gADiUsA2CqnD53MeuC0erYJUo0Z9Q8kFZx3XE3OTGs1SFOnJ/h2wb2zanegE6FWS20wx7GhtKG8FslsLFZT4wkYa6FccO92fxDkqCdYQIDAQAB"
+  },
+  "other": {
+   "privateKeyPkcs8": "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDCXY+DorJcP36LfNc1h6FCz70wOV+g5X6R2uDnrDCF9//nHCY6TYcBQ5vYzGRoctpt9FvoR7K4XcvMmY3elWGdcHORo7F1o5gDGOqFBNWoSsnMdmffBdfhuTyP2ZbAv+8TBez2yyi311FFs9yVSus49YJU52yYYYQJbQSm3CQhqDbTIptjpzTRxrMlCV8EecxJAaXB6v4K9u5K2JoeY/5bZpqfa/S1qkd0AVNCNhShAPQR5TKIxq/Vc9LnR3zpZQ4OJ6eeQuWDYcwM60GmtBv0BeIqY4XBJPhoE93HuEWkXlH3JXw+/nXuSOgR5nxjGTCYjm/8v0ECD+qJhQ0+USIfAgMBAAECggEAF4Mp8UqlOPOVY1pezmLx5xsqT8MhBl28yfgobN4voIU3t8V3+mWWh1ieacOQAfKi6do9pAPIYvU1yjJpLxvzCxCnal7bANghc354IE9NaWZisxE/z4Ltcqjt4pj326lcSnjVCaXZ7yNk+YGglY7SlbldYtf8ExL43gsKHQVUeZ2hy8BAceJnF+nUp75NokDrR3N+RubmK5Y1n9toc8Aa1rPk4I9CSrrhl8Ep3qmywaWPIcPJGVOmVI+aNN/XVHl7UH/xElxuo5LolG3aOVqbo7rhpBWUN4iuNf6odAJ4x+KrMHHeMyBNQjo/0fafK7tm88GiKIYGsdqClnnZt90DgQKBgQDg21VPM2ggnRmiBro+J4DiEjjRoC5KHAl1UBcQaEKVj2Ag1DZC/vpUggT8FZk8QNfjP6Nb2tKg2dJ45hDxaXD39mNOHJYwmXiQn9ZZo9cdCAqZTsMp3kjEXs8zUGh2kizjq3U+c4WoVHis6lXcTMk7gES4M5aVv28Sg0NnFj0JtwKBgQDdSRuxYgLbjs01v+zKkI4MTQpCGdH65HQFT/hK9zXc0shct7OqKHEJVZww8qH3REBKMPfdfTwkasbZNuDnUvqNHdyU2M+MW0QHRA8CIKxE+0VAG7dXEjvbNxfEeIJJLsF6E/w7kSOLITEJa44BZk9apMw9RSYcaRRuFFIs8mNK2QKBgQDH9wZU2tidOFjVWLpEEAl0AtR4x8Sir3BR3ZnFQ5MDQnAwgciHqA2jHcWlEOgnR1s2gx+Zzm5GEbA1SBSFPEn0mi8SBiYirjkkFKEhMq1Y6g/S6tJw53c6+z202qsr1y8IgTBRC5cvbX+r9vHIapkCyz1Rur8OCSKUChvlD0fU3QKBgDXeYEF0TKHKR6Z4DFrbidjwwDiLNJTRHHVWnGkTeSdCoMgBaFlZ8vqEvrsjtc4N7WCiPxTKMePjoniqZWGqz5ee113c0dmnNg5WwRiRf55jVN5gYOdvZubcqIqJk53hJfRj/Rk7Id3yvI9AgZdRoqu8RoP722U7J2AMzlxmvUkxAoGBAM6JTCd46G/Niu5wkI6KdB25146ctx0bP8SswkZ5hUTTscLHrWqJaUi8XSrB9jMogOs1f/j3NcUBj1DlMWgWYtMIWd4ZCOhLQDK3CRqpleC+70wLi0r5kBo4ysNXyNqOQ+jJFIOvk6f6+u0cRU8nh8emF5Opq4uRgaMp19eB3CwL",
+   "publicKeySpki": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwl2Pg6KyXD9+i3zXNYehQs+9MDlfoOV+kdrg56wwhff/5xwmOk2HAUOb2MxkaHLabfRb6EeyuF3LzJmN3pVhnXBzkaOxdaOYAxjqhQTVqErJzHZn3wXX4bk8j9mWwL/vEwXs9ssot9dRRbPclUrrOPWCVOdsmGGECW0EptwkIag20yKbY6c00cazJQlfBHnMSQGlwer+CvbuStiaHmP+W2aan2v0tapHdAFTQjYUoQD0EeUyiMav1XPS50d86WUODiennkLlg2HMDOtBprQb9AXiKmOFwST4aBPdx7hFpF5R9yV8Pv517kjoEeZ8YxkwmI5v/L9BAg/qiYUNPlEiHwIDAQAB"
+  }
+ },
+ "cases": [
+  {
+   "name": "valid: minimal ascii",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "Oduu5bVGmh+F5MrlmoC+wmjngWYW5VcCkKuwW2yKFm9y2YEgmYlmB5LnAX9vp3zvbMbO1rKn/6NsjCidJZN6SHbnqr5+i2WmKYgkbOY7+h38cmmIPRDGqVIFhKw9pFNShNErlDx+PGETD7/dY2bhkNrbSCwhM7SmMMb48Jtc0QbGqEHS29WpZ140e8tKcjzkaMoAG3YqxT8wOCTjy6xGx1iESufMEHjgkzPDK9Z9BLNhIAMDbJvrwtYnR/PwGa5zWoybslpPEnGmsXnI1oN/ZxWLxOS4yowhS6KFeoeNNalnTVT0j72nUYk13J3DhAukuO1rveYzdJm+t7nLpdDlfg==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": null,
+   "mustReproduceSignature": true
+  },
+  {
+   "name": "valid: plus sign in email subject",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice+test@example.com",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "PuGGyqKBW7s9GqrquftzFcVyhHFYusZwm2gskdM7hyCSHPiaIs56xaQgAbARnqI20HpKza7CT5c95AZB4Og9lSQ9B1bpMDQ+5Ntt9vEqAJCSNZI4HU/4hwWCfuQksf4w/k3Q7ZWXfGKaH9ALg5IN7C7vpoxv2KMy+f97+S2UUYV0LUm5MyVb5o7u4sVtqog5S8h41WEhN6ml/qaMmzlMF3DOzJyfqiIe8cL/Q61vlJYCpAQr5u1ixZPzD2dnvXcP/UGn8n3MxwKIYUsNJb1Xq+Dqh0Dp5VjIe1rv+5TuAzttu6LTyc3dZd9FYc8xH2uyADMyJdOrJlTqXQDwucVilQ==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": null,
+   "mustReproduceSignature": true
+  },
+  {
+   "name": "valid: non-ascii bmp is emitted raw",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "Jos\u00e9 M\u00fcller \u6771\u4eac",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "k0U/9wIWZkL969OiiBnFF9YhSYRethfoZT6LShv2DTQ9Cuwk56TLwylTA+2dLw4KoA8HLn/otN6e73y+eDSziZmqecsDuZCSAFaqrDlsxYUwKrz8Cstp/v7zzDPVDKWjj51JbEutfOE1AO1ceZ9hyjqxJCCLbPxQBskOVXAlfsQaesWFhQbkGBwZkdSDUVIMy2W7f5aOI28BMSqVgxG6/fq7VQIq0AEgaymgXCNI/opbDbl6F2Plh2e+K7L7WUhFVOGeoWOUC3yMXtMKJ+XkBLVwKUbKcWrFlJfdtv9tIiGvSj23UftgATTSfUSyJHdeQwLBIfAizDXMvLrrorF3Vw==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": null,
+   "mustReproduceSignature": true
+  },
+  {
+   "name": "valid: astral character (surrogate pair) is emitted raw",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "ok \ud83d\ude00 end",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "sLspI75r/MXFjxjniptd8wD6E/G+3uhEdV/w9yDcP69drRBKSXnWn+5jtrtwNP92KJI8ZzAAeWi/M6vPtxvrT25fiS+ASf6cSKNxdyCoT0XNxc8xUiBJ7XhQbThlYlWOb2ltBqvSXQFLwBQVzjmfaLZEV51T6gZRvEbWxOcH+uB9Z27YQQIyrmTppQs/Dy+aQzgYuhFnlHVYRjqMe+0UyskHXTUztrhGSl+lpUEaD/VWI5N2+Ei2UXUhMeRjhzP0PYt6i1DmUtR1ds4qjExEi62+T8Ypu817L5fvrvKRvIeXUSgILQerV5iy19sS8ULwHNsCY0mGyhSuXaefso+37g==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": null,
+   "mustReproduceSignature": true
+  },
+  {
+   "name": "valid: quote, backslash and control characters",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "q\"b\\n\nr\rt\tb\bf\fv\u000bz\u001f del\u007f",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "hOD2dOwa5J+ly7QrvfOcJoNEY99shBsuDfa7HQjbZ9V9aGeLzuZftm7QYVuYjcyeGEwAeV1XKx8SU5wHH4tP1daIUeT+fd59TeqLRfk2Ci0AXOpN2/oU91JREFVGyvbIGDUvlqiarMxKxpDSlxBovc0l4ysbOPlvLVlM1x+Ul+9meUsV3EorZt4nJR/vyMLeHXuih1RU0eULLozi4DBy2uVjvjuUTITkVaXV9b/r4t9rJZSVa4EtquPIUEDYUm5FO9z+zi1eEvF0rIJoDs+tZ4FZKf20qAVpHhCgHGMnkmRFWV/9LqbFMORy+bDooZPy/XfdwP8c86K+s9A3djqN4w==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": null,
+   "mustReproduceSignature": true
+  },
+  {
+   "name": "valid: constraints with limits and decimal scale preserved",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {
+     "allowedTenants": [
+      "t2",
+      "t1"
+     ],
+     "allowedFields": [
+      "name"
+     ],
+     "resourceScopes": [
+      "r"
+     ],
+     "allowedOperations": [
+      "read",
+      "write"
+     ],
+     "maxResults": 9007199254740993,
+     "maxAmount": "100.50"
+    },
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "G/TrfbmJINFWPdjyeYfRmHJbuzREnACIr+9sfMYR1KkiPihJCODnoY3slim7zBBPqj1Zwkot8tDWczN5FSk5AsjkOEzRvzu0UmJy/Sb6I81SRZyzN/UV8u4jU8cbhV1gE5hOSrsltSNGoLdcA+JyeA34JOJgtYOlRs9eFGBBg5GkFZ6Qo4OJ96hQpZyafZD2NFTNoiO0+edSJSchvaqr0Np+kB7INLTKwoARrXJHVBLeXIFEwpX1/fkUqdW5cLcn+by0T4X/BXwEJKwQj1Q3l0nSoMVAyjPmiBkeVqqCe/CAsaD0oVguDgleOb8mbtoEj7K0jJiJqeqZH8hv+z/j8g==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": null,
+   "mustReproduceSignature": true
+  },
+  {
+   "name": "valid: delegated warrant",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": "w-0",
+    "parentDigest": "ABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB",
+    "delegationPath": [
+     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    ]
+   },
+   "signature": "wuSMjJ3+k8GS/t5ijfI0SKPp7h/sP7DWici5LN6Gljeb11SPt8bp54OGqLSNeN56LyzMdUfLntX++mgLqDex2r0JGxhLCDku12pbGvP3EyIs+oaaNULGyE530hkUsdwDI2fVwhKjD0p5ebB0VSQgUm1IjlxPyHJ1UqYKPzy0e1PKBERRiJVL7dWRPEU/64ViU/OC/jtOPB0ri3pkSQwCKWOpwHcF+CccA78Q2uEd6abEW6SpSimZVGPewICmT/HW5KJuQaqPSRAWOFOohtb7igHt1VuVeWndfy70Jw2Flx9bUO4wxTtiJHOVRd2jm+YJqc/1RKvh09LSA4cIUamxEA==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": null,
+   "mustReproduceSignature": true
+  },
+  {
+   "name": "valid: blank means ascii whitespace only; other unicode spaces are kept",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [
+     {
+      "capability": "c",
+      "operation": "o",
+      "resourceScopes": [
+       " ",
+       "\t",
+       "\u000b",
+       "\u00a0",
+       "\u2003",
+       "\u0085",
+       "\u001c",
+       "x"
+      ]
+     }
+    ],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "i2W2NhVW4Dn5ulbTv3itsLAl14LVIXwhVEajv9hnbTwaC22qNp6W07E9eR5cgIMKDyU2Em08Mm2rStkCF/Utg7F5xcyEX+7CCTSjQcVMb1GTFIVdpJ0mdq+cZhYXpVXJY+2xA39/fvtjrOXw2ND+KoGKjrK2KnV8g5JFd5WYtoeBbK5wjOTixqxy9gZviMFBK1NyiNQyZdtTL0zO0CC9yTNnkZQ5saEH58E7IRFZHKqr/qBCxjAiy1/3ET7cVCASRUTMdNwZBfjrkl3gTL64DqjD91DUlOd0ETsRYTjutE614mL8m0CSuW0CLWCao8JKeXKPMGGMOcGW5Rga7zV4Tw==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": null,
+   "mustReproduceSignature": true
+  },
+  {
+   "name": "tampered subject",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "mallory",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "Oduu5bVGmh+F5MrlmoC+wmjngWYW5VcCkKuwW2yKFm9y2YEgmYlmB5LnAX9vp3zvbMbO1rKn/6NsjCidJZN6SHbnqr5+i2WmKYgkbOY7+h38cmmIPRDGqVIFhKw9pFNShNErlDx+PGETD7/dY2bhkNrbSCwhM7SmMMb48Jtc0QbGqEHS29WpZ140e8tKcjzkaMoAG3YqxT8wOCTjy6xGx1iESufMEHjgkzPDK9Z9BLNhIAMDbJvrwtYnR/PwGa5zWoybslpPEnGmsXnI1oN/ZxWLxOS4yowhS6KFeoeNNalnTVT0j72nUYk13J3DhAukuO1rveYzdJm+t7nLpdDlfg==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant signature is invalid.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "tampered scope",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [
+     {
+      "capability": "c",
+      "operation": "o",
+      "resourceScopes": [
+       "x"
+      ]
+     }
+    ],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "JNxTG9sn3vsKRaBB49Y7TypSWcc7qLUAa4Ju6qBuKccUCm1uQZhQ2RJzcxC8QGuBrPN4RV2ClG1hGbEAelXS/BZ2wmYCcZXB45Vgc3zRvQ/5mIsFFqoubv0Y0WoobHcR4DVSf0ZQKuavqa6L9e6dxjxEv4FGipN810uUxuDX99hx7kwTDtARhcZMZAwhfBsEBjRuqQ8yd1218V2Q/5PPHWYspre0ah2QFfxh6zg4e7xCQafNyGGGnlvgVNWnikZSSG6imKOAvbqLwhYezCPHSQ4tbhJ5DYY5KTdIQjX1HvcUG+pwIfjWSX3eXBF4WPJ8DJR70mM5/a0Q8Ugxu/X0Ag==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant signature is invalid.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "signed by a different key",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "Sv3TxUzWPuEdVzhlVU3DRqEC+38S5EeTJupD2KE5iFFlVAK/gE1ejjU87CMAm8HSZyaTrPrLufsce5F6U6xoHyZI5t13RmH9ivb9nkaH6RXmID0a2js5ALF5AOqaunZg16HHsmwpzDPcrGT8NRc3l20KMC0whdfJfC7RUJNDZvP9s3SI9bR8hHnHa1T4Om7gkvFME4nhuSIhHJ0tsagwwn9M/Nb9ySi7BOAX4I2A+HPiNzsyFefYNWH95lcFLSNlGQJMqiknlbTCweV2x9BcYDe+2BvhmNuRLX/I+BnaeG2q6rsvvT9lhHyDKIo2PtGYn/Mg/syCp1Yi6L11sq4EhQ==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant signature is invalid.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "no signature",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant has no signature.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "expired",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "Oduu5bVGmh+F5MrlmoC+wmjngWYW5VcCkKuwW2yKFm9y2YEgmYlmB5LnAX9vp3zvbMbO1rKn/6NsjCidJZN6SHbnqr5+i2WmKYgkbOY7+h38cmmIPRDGqVIFhKw9pFNShNErlDx+PGETD7/dY2bhkNrbSCwhM7SmMMb48Jtc0QbGqEHS29WpZ140e8tKcjzkaMoAG3YqxT8wOCTjy6xGx1iESufMEHjgkzPDK9Z9BLNhIAMDbJvrwtYnR/PwGa5zWoybslpPEnGmsXnI1oN/ZxWLxOS4yowhS6KFeoeNNalnTVT0j72nUYk13J3DhAukuO1rveYzdJm+t7nLpdDlfg==",
+   "now": "2026-11-09T07:31:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant is expired or not yet valid.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "not yet valid",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "Oduu5bVGmh+F5MrlmoC+wmjngWYW5VcCkKuwW2yKFm9y2YEgmYlmB5LnAX9vp3zvbMbO1rKn/6NsjCidJZN6SHbnqr5+i2WmKYgkbOY7+h38cmmIPRDGqVIFhKw9pFNShNErlDx+PGETD7/dY2bhkNrbSCwhM7SmMMb48Jtc0QbGqEHS29WpZ140e8tKcjzkaMoAG3YqxT8wOCTjy6xGx1iESufMEHjgkzPDK9Z9BLNhIAMDbJvrwtYnR/PwGa5zWoybslpPEnGmsXnI1oN/ZxWLxOS4yowhS6KFeoeNNalnTVT0j72nUYk13J3DhAukuO1rveYzdJm+t7nLpdDlfg==",
+   "now": "2026-11-09T07:00:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant is expired or not yet valid.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "expiry not after issued-at",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:25:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "fxdtBxdI4OlAuJk/VEg9duMMksx6fFDe2s83xryYWpkp5cl23b+hJA1D7lBeac5x7oaKfivFGO7+wDeaeh+T9HAmOFc4kbvCIJKI5BFp1Mahs6+nlTukpL5R/jrDvMbjJA1C7bnhHsFDAKktyb68nHEY3hFpo501tLSguDF2V0LmHUa1as2yBrj+Jpe3peYKCDW30gPEQDt4i1rB+B49iipnbOc0Fu5pYQjCSOyVSac7CHVe0rBS67OmFCdWHav6x3qrjc+g79CFYJimG/WDOoEOCknsIxZaHMKmO1jRWhux6KNviMrYFYPE6uIQQPTNgVEAC2awCNTLneIL0JNvug==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant expiry must be after issued-at.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "untrusted issuer",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "Oduu5bVGmh+F5MrlmoC+wmjngWYW5VcCkKuwW2yKFm9y2YEgmYlmB5LnAX9vp3zvbMbO1rKn/6NsjCidJZN6SHbnqr5+i2WmKYgkbOY7+h38cmmIPRDGqVIFhKw9pFNShNErlDx+PGETD7/dY2bhkNrbSCwhM7SmMMb48Jtc0QbGqEHS29WpZ140e8tKcjzkaMoAG3YqxT8wOCTjy6xGx1iESufMEHjgkzPDK9Z9BLNhIAMDbJvrwtYnR/PwGa5zWoybslpPEnGmsXnI1oN/ZxWLxOS4yowhS6KFeoeNNalnTVT0j72nUYk13J3DhAukuO1rveYzdJm+t7nLpdDlfg==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "someone-else",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant issuer is not trusted.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "untrusted audience",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "Oduu5bVGmh+F5MrlmoC+wmjngWYW5VcCkKuwW2yKFm9y2YEgmYlmB5LnAX9vp3zvbMbO1rKn/6NsjCidJZN6SHbnqr5+i2WmKYgkbOY7+h38cmmIPRDGqVIFhKw9pFNShNErlDx+PGETD7/dY2bhkNrbSCwhM7SmMMb48Jtc0QbGqEHS29WpZ140e8tKcjzkaMoAG3YqxT8wOCTjy6xGx1iESufMEHjgkzPDK9Z9BLNhIAMDbJvrwtYnR/PwGa5zWoybslpPEnGmsXnI1oN/ZxWLxOS4yowhS6KFeoeNNalnTVT0j72nUYk13J3DhAukuO1rveYzdJm+t7nLpdDlfg==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "other",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant audience is not trusted.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "no expected issuer configured",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "Oduu5bVGmh+F5MrlmoC+wmjngWYW5VcCkKuwW2yKFm9y2YEgmYlmB5LnAX9vp3zvbMbO1rKn/6NsjCidJZN6SHbnqr5+i2WmKYgkbOY7+h38cmmIPRDGqVIFhKw9pFNShNErlDx+PGETD7/dY2bhkNrbSCwhM7SmMMb48Jtc0QbGqEHS29WpZ140e8tKcjzkaMoAG3YqxT8wOCTjy6xGx1iESufMEHjgkzPDK9Z9BLNhIAMDbJvrwtYnR/PwGa5zWoybslpPEnGmsXnI1oN/ZxWLxOS4yowhS6KFeoeNNalnTVT0j72nUYk13J3DhAukuO1rveYzdJm+t7nLpdDlfg==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": null,
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Security warrant verification requires a configured expected issuer.",
+   "mustReproduceSignature": false
+  },
+  {
+   "name": "unknown key id",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-2",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "signature": "AXpzYJWRjxYVBWswVCj7J8kteZyPn0HY+i3nq2i4Who4sJ0qQVE3KGakHkK18VEEQuvUlM/5LdQVSHPFDhB/rgDNyxuPHAc1fafYskTvmxZp7i0n2o241gi7zEZwL+w1B8V5nVdARfQTzMQ2X/AQMzaEjucXQJLl585tCAFE/8BruYuu7HfQohRS1THpf7yvGOszq/kiJIirVzpZ3wAsvcOelH+kUN0nGti1YVR7YRytoUht9bdxxiveOZgRpBw+H///dcqfyMTtcIITA5hw3z0OVOGsMor5gudKV6pcrfWuC3sU4oC3Ryp2vewRhxyEIHmtVhFIn9xu2MTqrtaJVw==",
+   "now": "2026-11-09T07:27:00.0000000Z",
+   "expectedIssuer": "foundgine-keycloak-bridge",
+   "expectedAudience": "foundgine",
+   "resolvableKeyIds": [
+    "k-1"
+   ],
+   "error": "Unknown warrant key 'k-2'.",
+   "mustReproduceSignature": false
+  }
+ ]
+}

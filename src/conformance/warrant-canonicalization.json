@@ -1,0 +1,355 @@
+{
+ "spec": "warrant-canonical-form-v1",
+ "vectors": [
+  {
+   "name": "minimal ascii",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "01913A7B4D7616768F6929A6A0AC820EBC8719BAA8D2EEFBA19AE17B55DA4A12"
+  },
+  {
+   "name": "plus sign in email subject",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice+test@example.com",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice+test@example.com\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "26256558A2236E62F561FCA37413C16B170D769CB147C5AB52958D7D79021C04"
+  },
+  {
+   "name": "html-sensitive characters are not escaped",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "a&b<c>d'e`f",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"a&b<c>d'e`f\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "C436E778317465F7A17DEBA53BD7191783EC1C1C6FFF51DA783C911307C9C011"
+  },
+  {
+   "name": "non-ascii bmp is emitted raw",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "Jos\u00e9 M\u00fcller \u6771\u4eac",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"Jos\u00e9 M\u00fcller \u6771\u4eac\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "5FF172E0ACF09F5C815582B24422CBC1F3D8E6A4A0F209CB2BD492645E8E95A3"
+  },
+  {
+   "name": "astral character (surrogate pair) is emitted raw",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "ok \ud83d\ude00 end",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"ok \ud83d\ude00 end\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "58FE27A6E5876D147D2C02A8BD577FF23110A36363F4834D5863D09AD0FD6C57"
+  },
+  {
+   "name": "quote, backslash and control characters",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "q\"b\\n\nr\rt\tb\bf\fv\u000bz\u001f del\u007f",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"q\\\"b\\\\n\\nr\\rt\\tb\\bf\\fv\\u000bz\\u001f del\u007f\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "AC2544B48088D2CCE986CC680A48A5AD68B07CAD57D55D038F1A5FD97E34658B"
+  },
+  {
+   "name": "grants sorted and scopes normalized",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [
+     {
+      "capability": "orders",
+      "operation": "write",
+      "resourceScopes": [
+       "b",
+       "a",
+       "a",
+       " "
+      ]
+     },
+     {
+      "capability": "orders",
+      "operation": "read",
+      "resourceScopes": [
+       "z"
+      ]
+     },
+     {
+      "capability": "accounts",
+      "operation": "read",
+      "resourceScopes": []
+     }
+    ],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[{\"capability\":\"accounts\",\"operation\":\"read\",\"resourceScopes\":[]},{\"capability\":\"orders\",\"operation\":\"read\",\"resourceScopes\":[\"z\"]},{\"capability\":\"orders\",\"operation\":\"write\",\"resourceScopes\":[\"a\",\"b\"]}],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "344F286DAD86FBE181CEF6A1C7AF3A9DEA12E20E18CD896849841EE72122DADF"
+  },
+  {
+   "name": "utf-16 code unit ordering (U+FF5E sorts after U+10000)",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [
+     {
+      "capability": "c",
+      "operation": "o",
+      "resourceScopes": [
+       "\uff5e",
+       "\ud800\udc00",
+       "a"
+      ]
+     }
+    ],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[{\"capability\":\"c\",\"operation\":\"o\",\"resourceScopes\":[\"a\",\"\ud800\udc00\",\"\uff5e\"]}],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "D04586FFCC5BB0B0B9730655646F8E3E4F050D74D9AFCC5AB12C13D78093D039"
+  },
+  {
+   "name": "constraints with limits and decimal scale preserved",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {
+     "allowedTenants": [
+      "t2",
+      "t1"
+     ],
+     "allowedFields": [
+      "name"
+     ],
+     "resourceScopes": [
+      "r"
+     ],
+     "allowedOperations": [
+      "read",
+      "write"
+     ],
+     "maxResults": 9007199254740993,
+     "maxAmount": "100.50"
+    },
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[\"t1\",\"t2\"],\"allowedFields\":[\"name\"],\"resourceScopes\":[\"r\"],\"allowedOperations\":[\"read\",\"write\"],\"maxResults\":9007199254740993,\"maxAmount\":100.50},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "929F708F2E96A9931CCA83C0EC002CD55679AD0D84BF4CD9C7003FBEE37137AE"
+  },
+  {
+   "name": "decimal with trailing zeros",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {
+     "maxAmount": "0.0010"
+    },
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":0.0010},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "EF1790435C2EE1B97724DCBF2CAF732B642CB21F0731912683A1CDA94B683F70"
+  },
+  {
+   "name": "delegated warrant",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": "w-0",
+    "parentDigest": "ABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB",
+    "delegationPath": [
+     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    ]
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":\"w-0\",\"parentDigest\":\"ABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB\",\"delegationPath\":[\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\"]}",
+   "digest": "4E34824B07ADA2795DA044715E47DFF8679BEF08943DB7764167A9D0663788B9"
+  },
+  {
+   "name": "offset input normalizes to utc",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-11-09T09:25:00.1234567+02:00",
+    "expiresAt": "2026-11-09T07:30:00Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.1234567Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "B97C80733ADE3C480D1253C9FF33F446FCD7A8EE51243DC1D327BA04479D104D"
+  },
+  {
+   "name": "blank means ascii whitespace only; other unicode spaces are kept",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [
+     {
+      "capability": "c",
+      "operation": "o",
+      "resourceScopes": [
+       " ",
+       "\t",
+       "\u000b",
+       "\u00a0",
+       "\u2003",
+       "\u0085",
+       "\u001c",
+       "x"
+      ]
+     }
+    ],
+    "constraints": {},
+    "issuedAt": "2026-11-09T07:25:00.0000000Z",
+    "expiresAt": "2026-11-09T07:30:00.0000000Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[{\"capability\":\"c\",\"operation\":\"o\",\"resourceScopes\":[\"\\u001c\",\"x\",\"\u0085\",\"\u00a0\",\"\u2003\"]}],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-11-09T07:25:00.0000000Z\",\"expiresAt\":\"2026-11-09T07:30:00.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "6CCB8433DE2EF570411907D76505F5192A1DCC63419EAA8BBA05EE6ADD1F9769"
+  },
+  {
+   "name": "whole-second timestamps keep seven fractional digits",
+   "warrant": {
+    "id": "w-1",
+    "issuer": "foundgine-keycloak-bridge",
+    "subject": "alice",
+    "audience": "foundgine",
+    "grants": [],
+    "constraints": {},
+    "issuedAt": "2026-01-02T03:04:05Z",
+    "expiresAt": "2026-01-02T03:09:05Z",
+    "nonce": "n-1",
+    "keyId": "k-1",
+    "parentId": null,
+    "parentDigest": null,
+    "delegationPath": []
+   },
+   "unsignedJson": "{\"id\":\"w-1\",\"issuer\":\"foundgine-keycloak-bridge\",\"subject\":\"alice\",\"audience\":\"foundgine\",\"grants\":[],\"constraints\":{\"allowedTenants\":[],\"allowedFields\":[],\"resourceScopes\":[],\"allowedOperations\":[],\"maxResults\":null,\"maxAmount\":null},\"issuedAt\":\"2026-01-02T03:04:05.0000000Z\",\"expiresAt\":\"2026-01-02T03:09:05.0000000Z\",\"nonce\":\"n-1\",\"keyId\":\"k-1\",\"parentId\":null,\"parentDigest\":null,\"delegationPath\":[]}",
+   "digest": "F459B34407CE218801E4E94587A6C7EF856D6FBA7DC282F3936D80CA9829609E"
+  }
+ ]
+}

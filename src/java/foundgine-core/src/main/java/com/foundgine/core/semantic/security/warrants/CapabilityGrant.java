@@ -18,12 +18,12 @@ public record CapabilityGrant(String capability, String operation, List<String> 
     }
 
     private static String require(String v, String n) {
-        if (v == null || v.isBlank()) throw new IllegalArgumentException("Value is required: " + n);
+        if (WarrantText.isBlank(v)) throw new IllegalArgumentException("Value is required: " + n);
         return v;
     }
 
     private static List<String> normalize(Collection<String> v) {
         if (v == null) return List.of();
-        return v.stream().filter(x -> x != null && !x.isBlank()).distinct().sorted().toList();
+        return v.stream().filter(x -> !WarrantText.isBlank(x)).distinct().sorted().toList();
     }
 }

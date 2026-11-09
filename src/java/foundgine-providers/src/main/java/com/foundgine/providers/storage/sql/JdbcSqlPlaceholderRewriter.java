@@ -1,5 +1,8 @@
 package com.foundgine.providers.storage.sql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Converts Foundgine's deterministic named SQL placeholders to JDBC's positional {@code ?}
  * placeholders at the physical execution boundary.
@@ -11,8 +14,21 @@ package com.foundgine.providers.storage.sql;
 public final class JdbcSqlPlaceholderRewriter {
     private JdbcSqlPlaceholderRewriter() {}
 
+    /**
+     * Result of {@link #rewriteOrdered(String)}: the positional SQL plus the placeholder name
+     * (without the leading {@code @}) for each {@code ?}, in the order the {@code ?} marks appear.
+     * A name that the SQL references more than once appears once per reference, so callers bind
+     * the same value to every occurrence.
+     */
+    public record Rewritten(String sql, List<String> placeholderNames) {}
+
     public static String rewrite(String sql) {
-        if (sql == null || sql.isEmpty()) return sql;
+        return rewriteOrdered(sql).sql();
+    }
+
+    public static Rewritten rewriteOrdered(String sql) {
+        if (sql == null || sql.isEmpty()) return new Rewritten(sql, List.of());
+        List<String> names = new ArrayList<>();
 
         StringBuilder result = new StringBuilder(sql.length());
         boolean singleQuoted = false;
@@ -43,6 +59,7 @@ public final class JdbcSqlPlaceholderRewriter {
             if (!singleQuoted && !doubleQuoted && c == '@' && i + 1 < sql.length()) {
                 int end = placeholderEnd(sql, i + 1);
                 if (end > i + 1) {
+                    names.add(sql.substring(i + 1, end));
                     result.append('?');
                     i = end - 1;
                     continue;
@@ -50,7 +67,7 @@ public final class JdbcSqlPlaceholderRewriter {
             }
             result.append(c);
         }
-        return result.toString();
+        return new Rewritten(result.toString(), List.copyOf(names));
     }
 
     private static int placeholderEnd(String sql, int start) {

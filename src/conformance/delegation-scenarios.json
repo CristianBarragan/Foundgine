@@ -1,0 +1,2817 @@
+{
+ "spec": "warrant-delegation-scenarios-v1",
+ "scenarios": [
+  {
+   "name": "valid narrowing",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "5"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": null,
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "5A2C55C9D35D169195E48516B2706BC968B9D8BED52EB5FABFB396E913700744"
+   ]
+  },
+  {
+   "name": "numerically equal decimals with different scale are accepted",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": null,
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "1FDB53A6E84E8A91B791E3917281BA667C36695FB6A39F3380711F03C230F7C4"
+   ]
+  },
+  {
+   "name": "parent expired",
+   "op": "attenuate",
+   "now": "2026-11-09T09:00:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Cannot attenuate an expired or not-yet-valid parent warrant.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "1FDB53A6E84E8A91B791E3917281BA667C36695FB6A39F3380711F03C230F7C4"
+   ]
+  },
+  {
+   "name": "wrong parent id",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "x",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant must identify its parent warrant.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "3CB2E5610CDE183539404CAAC179F920D29AB8BCB4A543C469721B311394B75F"
+   ]
+  },
+  {
+   "name": "missing parent id",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant must identify its parent warrant.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "373F99A22E3EB6F8A456DED4C93FF62358F6DC677AA05CE0A69095A050637830"
+   ]
+  },
+  {
+   "name": "wrong parent digest",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "0000000000000000000000000000000000000000000000000000000000000000",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant must bind cryptographically to its parent digest.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "0C0E8D016AD1F78C44A491251BA479818BA40AA1CC857A47A106367FA3122484"
+   ]
+  },
+  {
+   "name": "issuer is not parent subject",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "someone-else",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Delegated issuer must be the parent subject.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "23DA2FE6C66FE8AB0C2A16B8383C1CF628173BA5ABBB6521ADBE90CB469F0C15"
+   ]
+  },
+  {
+   "name": "audience broadened",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "other",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Delegation cannot broaden the audience.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "DE3D079F0915681044A21326C0C8C0AD05F4E122A94CC9E5F78351E328A1F6AF"
+   ]
+  },
+  {
+   "name": "child predates parent",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T06:59:59.9999999Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant cannot predate parent issuance.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "122BD99339DB111D3C99CDA9618BC5F2BEF936C165F3E54BC3E4AEA6300DA5DE"
+   ]
+  },
+  {
+   "name": "child extends expiry by one tick",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000001Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant cannot extend parent expiry.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "92E152186FA17BF2AD8A6A42F1DD212F529BCF4EBADE039BA17C8816A6F410E7"
+   ]
+  },
+  {
+   "name": "depth skips a level",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+      "0000000000000000000000000000000000000000000000000000000000000000"
+     ]
+    }
+   ],
+   "error": "Delegation depth must increase exactly one level.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "1EBA604D954FBAC13070FC68863AEDEB4487FEC78D701474966B382CC76F8E3A"
+   ]
+  },
+  {
+   "name": "path does not end in parent digest",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "0000000000000000000000000000000000000000000000000000000000000000"
+     ]
+    }
+   ],
+   "error": "Child delegation path does not match the parent chain.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "E27D0247D48919672E06E8646BF8B844F2F7872737C3E11E9ED9F4BFDDA3448F"
+   ]
+  },
+  {
+   "name": "child adds a capability",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "write",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant adds capability 'orders'.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "37B554F25669CE0157DBFEC1F010647B18144D928009EE87358A474AC9E59E40"
+   ]
+  },
+  {
+   "name": "child broadens grant scope",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "z"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant broadens resource scope for 'orders'.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "C5105766462FFBD08727784ECBA028F977BB524DC1ACA910F8ABD1DD5F526D8E"
+   ]
+  },
+  {
+   "name": "unrestricted parent grant scope allows any child scope",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": []
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "z"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "7AEB5B842B36C174B8F75E2E4819CBF9159E861B284023DB6D72896048E612BB",
+     "delegationPath": [
+      "7AEB5B842B36C174B8F75E2E4819CBF9159E861B284023DB6D72896048E612BB"
+     ]
+    }
+   ],
+   "error": null,
+   "digests": [
+    "7AEB5B842B36C174B8F75E2E4819CBF9159E861B284023DB6D72896048E612BB",
+    "48F9BF906270347F07E21E2C02C50557AC5B719AF06F2AA3B0647E9001AD94BD"
+   ]
+  },
+  {
+   "name": "child drops max results",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxAmount": "1"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant constraints broaden parent authority.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "6AE0A1342565DDCBC6F103A24AE2137B7E256E4FB34C3672AA7E108F133B1DF8"
+   ]
+  },
+  {
+   "name": "child raises max amount",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.01"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant constraints broaden parent authority.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "0A27D061044AFF02724168DDEDFCC23EBBB2C4DBDBC29E0878E6B581BAECB579"
+   ]
+  },
+  {
+   "name": "child empty tenants under restricted parent",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "1"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+     "delegationPath": [
+      "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E"
+     ]
+    }
+   ],
+   "error": "Child warrant constraints broaden parent authority.",
+   "digests": [
+    "90F4CCA584ABC243B274579C9AE533EF6C324AB2C32FCE2CB49CB5A747289B2E",
+    "98B240D37543550D79230772936FCFE8CDB82248F0D598C49382910F43BAB57A"
+   ]
+  },
+  {
+   "name": "depth 33 exceeds maximum",
+   "op": "attenuate",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "p",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "mid",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a",
+        "b"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1",
+       "t2"
+      ],
+      "resourceScopes": [
+       "a",
+       "b"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 10,
+      "maxAmount": "10.0"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": [
+      "0000000000000000000000000000000000000000000000000000000000000001",
+      "0000000000000000000000000000000000000000000000000000000000000002",
+      "0000000000000000000000000000000000000000000000000000000000000003",
+      "0000000000000000000000000000000000000000000000000000000000000004",
+      "0000000000000000000000000000000000000000000000000000000000000005",
+      "0000000000000000000000000000000000000000000000000000000000000006",
+      "0000000000000000000000000000000000000000000000000000000000000007",
+      "0000000000000000000000000000000000000000000000000000000000000008",
+      "0000000000000000000000000000000000000000000000000000000000000009",
+      "000000000000000000000000000000000000000000000000000000000000000A",
+      "000000000000000000000000000000000000000000000000000000000000000B",
+      "000000000000000000000000000000000000000000000000000000000000000C",
+      "000000000000000000000000000000000000000000000000000000000000000D",
+      "000000000000000000000000000000000000000000000000000000000000000E",
+      "000000000000000000000000000000000000000000000000000000000000000F",
+      "0000000000000000000000000000000000000000000000000000000000000010",
+      "0000000000000000000000000000000000000000000000000000000000000011",
+      "0000000000000000000000000000000000000000000000000000000000000012",
+      "0000000000000000000000000000000000000000000000000000000000000013",
+      "0000000000000000000000000000000000000000000000000000000000000014",
+      "0000000000000000000000000000000000000000000000000000000000000015",
+      "0000000000000000000000000000000000000000000000000000000000000016",
+      "0000000000000000000000000000000000000000000000000000000000000017",
+      "0000000000000000000000000000000000000000000000000000000000000018",
+      "0000000000000000000000000000000000000000000000000000000000000019",
+      "000000000000000000000000000000000000000000000000000000000000001A",
+      "000000000000000000000000000000000000000000000000000000000000001B",
+      "000000000000000000000000000000000000000000000000000000000000001C",
+      "000000000000000000000000000000000000000000000000000000000000001D",
+      "000000000000000000000000000000000000000000000000000000000000001E",
+      "000000000000000000000000000000000000000000000000000000000000001F",
+      "0000000000000000000000000000000000000000000000000000000000000020"
+     ]
+    },
+    {
+     "id": "c",
+     "issuer": "mid",
+     "subject": "leaf",
+     "audience": "foundgine",
+     "grants": [
+      {
+       "capability": "orders",
+       "operation": "read",
+       "resourceScopes": [
+        "a"
+       ]
+      }
+     ],
+     "constraints": {
+      "allowedTenants": [
+       "t1"
+      ],
+      "resourceScopes": [
+       "a"
+      ],
+      "allowedOperations": [
+       "read"
+      ],
+      "maxResults": 5,
+      "maxAmount": "10.00"
+     },
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "p",
+     "parentDigest": "5A1FC4C212F2389CCAEA9D068DEE9B189ED1A1865EB28A693F16275A351296AF",
+     "delegationPath": [
+      "0000000000000000000000000000000000000000000000000000000000000001",
+      "0000000000000000000000000000000000000000000000000000000000000002",
+      "0000000000000000000000000000000000000000000000000000000000000003",
+      "0000000000000000000000000000000000000000000000000000000000000004",
+      "0000000000000000000000000000000000000000000000000000000000000005",
+      "0000000000000000000000000000000000000000000000000000000000000006",
+      "0000000000000000000000000000000000000000000000000000000000000007",
+      "0000000000000000000000000000000000000000000000000000000000000008",
+      "0000000000000000000000000000000000000000000000000000000000000009",
+      "000000000000000000000000000000000000000000000000000000000000000A",
+      "000000000000000000000000000000000000000000000000000000000000000B",
+      "000000000000000000000000000000000000000000000000000000000000000C",
+      "000000000000000000000000000000000000000000000000000000000000000D",
+      "000000000000000000000000000000000000000000000000000000000000000E",
+      "000000000000000000000000000000000000000000000000000000000000000F",
+      "0000000000000000000000000000000000000000000000000000000000000010",
+      "0000000000000000000000000000000000000000000000000000000000000011",
+      "0000000000000000000000000000000000000000000000000000000000000012",
+      "0000000000000000000000000000000000000000000000000000000000000013",
+      "0000000000000000000000000000000000000000000000000000000000000014",
+      "0000000000000000000000000000000000000000000000000000000000000015",
+      "0000000000000000000000000000000000000000000000000000000000000016",
+      "0000000000000000000000000000000000000000000000000000000000000017",
+      "0000000000000000000000000000000000000000000000000000000000000018",
+      "0000000000000000000000000000000000000000000000000000000000000019",
+      "000000000000000000000000000000000000000000000000000000000000001A",
+      "000000000000000000000000000000000000000000000000000000000000001B",
+      "000000000000000000000000000000000000000000000000000000000000001C",
+      "000000000000000000000000000000000000000000000000000000000000001D",
+      "000000000000000000000000000000000000000000000000000000000000001E",
+      "000000000000000000000000000000000000000000000000000000000000001F",
+      "0000000000000000000000000000000000000000000000000000000000000020",
+      "5A1FC4C212F2389CCAEA9D068DEE9B189ED1A1865EB28A693F16275A351296AF"
+     ]
+    }
+   ],
+   "error": "Maximum delegation depth exceeded.",
+   "digests": [
+    "5A1FC4C212F2389CCAEA9D068DEE9B189ED1A1865EB28A693F16275A351296AF",
+    "040EDEB3EFE7B38D76BC60EBBEACC610195526243891708411BD9F6609B173A3"
+   ]
+  },
+  {
+   "name": "valid three-warrant chain",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "l",
+     "issuer": "bob",
+     "subject": "carol",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "m",
+     "parentDigest": "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+      "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9"
+     ]
+    }
+   ],
+   "error": null,
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "C7DCA3F4B7E2B6DCFE4DD958FAB169764B43A760661641BBA3B2A41907FBC3F5"
+   ],
+   "chainDigest": "E6E6CCC399D191B1D1DF2BC9939DDE8860137A8496AB2E2EFA3D92EA2BA2ACF1"
+  },
+  {
+   "name": "empty chain",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [],
+   "error": "A delegation chain must contain at least one warrant.",
+   "digests": []
+  },
+  {
+   "name": "chain longer than depth limit",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    }
+   ],
+   "error": "Delegation chain exceeds the maximum supported depth.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9"
+   ]
+  },
+  {
+   "name": "root carries ancestry",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "x",
+     "parentDigest": null,
+     "delegationPath": []
+    }
+   ],
+   "error": "The root warrant cannot contain delegation ancestry.",
+   "digests": [
+    "6760560B3AAE38E9BCEC9606E97A9229D42715F068FFD8CEECA3F6BD299FB3D4"
+   ]
+  },
+  {
+   "name": "root expired",
+   "op": "validateChain",
+   "now": "2026-11-09T09:00:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    }
+   ],
+   "error": "The root warrant is not currently valid.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+   ]
+  },
+  {
+   "name": "root digest mismatch",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    }
+   ],
+   "error": "Delegation chain root does not match the expected root digest.",
+   "expectedRootDigest": "0000000000000000000000000000000000000000000000000000000000000000",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+   ]
+  },
+  {
+   "name": "ancestor expired",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T07:20:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    }
+   ],
+   "error": "A delegated warrant is not currently valid.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "A2FF43417162FD3CDE4F1C2E7EF3B3BACFC9C5BC1DF832C593578C700BBCDC69"
+   ]
+  },
+  {
+   "name": "parent id substituted",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "zzz",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    }
+   ],
+   "error": "Delegation chain contains a parent-id substitution or reorder.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "63A475350207887EFC3B87FEC72004DDC44FB86A2176E3634A1491FA34B15FEA"
+   ]
+  },
+  {
+   "name": "parent digest substituted",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "0000000000000000000000000000000000000000000000000000000000000000",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    }
+   ],
+   "error": "Delegation chain contains a parent-digest substitution.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "288F1E9783A94B50C3FF0D1BEA7BC15DBBF13753AC61927110E3432AFC8B92F5"
+   ]
+  },
+  {
+   "name": "issuer is not previous subject",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "m",
+     "issuer": "mallory",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    }
+   ],
+   "error": "Delegation chain issuer does not match the parent subject.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "121D17A708B75FCE867B56F3E607184C94D4FB5E1C1B1F4AA6C04B3716B9CC18"
+   ]
+  },
+  {
+   "name": "path length wrong",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+      "0000000000000000000000000000000000000000000000000000000000000000"
+     ]
+    }
+   ],
+   "error": "Delegation depth/path length does not match the supplied chain position.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "39C43E6CD112C9F3C56AF06FF40A9393E0610B4E28D3AE317C066C71B2094915"
+   ]
+  },
+  {
+   "name": "path spliced",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "m",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    },
+    {
+     "id": "l",
+     "issuer": "bob",
+     "subject": "carol",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "m",
+     "parentDigest": "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+     "delegationPath": [
+      "0000000000000000000000000000000000000000000000000000000000000000",
+      "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9"
+     ]
+    }
+   ],
+   "error": "Delegation path contains a splice, reorder, or substituted ancestor.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "7E181C9D558C41A01ABCC6CE6EB7FFADDD2C0513799305C8EBE50A067354F5D9",
+    "E6234BDD9CF06D7A0DE95AF72C55CFA19C257F09556FFFED46ADB73ECE7C830B"
+   ]
+  },
+  {
+   "name": "repeated warrant id",
+   "op": "validateChain",
+   "now": "2026-11-09T07:30:00.0000000Z",
+   "warrants": [
+    {
+     "id": "r",
+     "issuer": "foundgine-keycloak-bridge",
+     "subject": "alice",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": null,
+     "parentDigest": null,
+     "delegationPath": []
+    },
+    {
+     "id": "r",
+     "issuer": "alice",
+     "subject": "bob",
+     "audience": "foundgine",
+     "grants": [],
+     "constraints": {},
+     "issuedAt": "2026-11-09T07:00:00.0000000Z",
+     "expiresAt": "2026-11-09T08:00:00.0000000Z",
+     "nonce": "n-1",
+     "keyId": "k-1",
+     "parentId": "r",
+     "parentDigest": "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+     "delegationPath": [
+      "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB"
+     ]
+    }
+   ],
+   "error": "Delegation chain contains a repeated warrant id.",
+   "digests": [
+    "3A1CFF63C4F0842CB66BA05FE659B5ACA47C5A8F70E7F93CFD7DF5AD4A91E6EB",
+    "A26218C95FC49F495F22D5022081949437204CB6F66DFA7D39881A0ACD5BC298"
+   ]
+  }
+ ]
+}

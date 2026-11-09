@@ -1,0 +1,8 @@
+# Local Temporal for development ONLY (SQLite-backed dev server, no auth, no TLS).
+services:
+  temporal:
+    image: temporalio/temporal:latest
+    command: ["server", "start-dev", "--ip", "0.0.0.0", "--port", "7233", "--ui-port", "8233"]
+    ports:
+      - "7233:7233"   # gRPC (clients and workers)
+      - "8233:8233"   # Web UI
