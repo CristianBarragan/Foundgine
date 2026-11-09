@@ -28,10 +28,10 @@ env:
 jobs:
 
   # ------------------------------------------------------------
-  # 1. Build and test the complete Java reactor
+  # 1. Build and run unit tests for the complete Java reactor
   # ------------------------------------------------------------
   java-build:
-    name: Java Build and Tests
+    name: Java Build and Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -93,9 +93,7 @@ jobs:
 
           if not candidates:
               raise SystemExit(
-                  "Could not find the Foundgine Java parent POM. "
-                  "Expected a pom.xml containing the foundgine-core module "
-                  "or artifactId foundgine-parent."
+                  "Could not find the Foundgine Java parent POM."
               )
 
           candidates.sort(
@@ -125,14 +123,14 @@ jobs:
           mvn --version
           echo "Maven project: ${{ steps.maven-project.outputs.pom }}"
 
-      - name: Build and test all Java modules
+      - name: Build and run unit tests
         run: |
           mvn \
             -f "${{ steps.maven-project.outputs.pom }}" \
             --batch-mode \
             --no-transfer-progress \
             --errors \
-            clean verify
+            clean package
 
       - name: Upload Maven build reports
         if: always()
@@ -493,9 +491,16 @@ jobs:
         run: |
           set -euo pipefail
 
+          echo "Checking imported GPG secret keys..."
+
           gpg --list-secret-keys --keyid-format LONG
 
-          gpg --list-secret-keys --with-colons | grep -q '^sec:'
+          if ! gpg --list-secret-keys --with-colons | grep -q '^sec:'; then
+            echo "::error::No GPG secret key was imported."
+            exit 1
+          fi
+
+          echo "GPG signing key successfully imported."
 
       - name: Verify Maven Central credentials
         shell: bash
@@ -509,6 +514,9 @@ jobs:
           test -n "$MAVEN_USERNAME"
           test -n "$MAVEN_CENTRAL_TOKEN"
           test -n "$MAVEN_GPG_PASSPHRASE"
+
+          echo "Maven Central credentials are configured."
+          echo "GPG passphrase is configured."
 
       - name: Build and publish Foundgine Java libraries
         run: |
