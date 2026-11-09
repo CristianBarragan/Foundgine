@@ -502,7 +502,7 @@ jobs:
       - name: Verify Maven Central credentials
         shell: bash
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
         run: |
           set -euo pipefail
