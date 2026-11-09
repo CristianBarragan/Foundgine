@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/CristianBarragan/Foundgine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
     <PackageId>Foundgine.Providers</PackageId>
     <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine v2. It includes storage providers and adapters, AI/model and MCP tooling integrations, and Elasticsearch and vector-store support. It also carries the Foundgine AOT source generator as a build-time analyzer inside the NuGet package, so consumers do not install a separate generator package and the generator is not a runtime dependency. Foundgine.Providers depends only on Foundgine.Core and Foundgine.Runtime; secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers are expected to choose and configure the provider(s) matching their application and supply the semantic model and runtime configuration required by Foundgine.</Description>
     <PackageTags>providers;storage;ai;mcp;dotnet</PackageTags>
@@ -40,8 +45,7 @@
       SkipGetTargetFrameworkProperties="true"
       UndefineProperties="TargetFramework"
     />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
-    <PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
+<PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
     <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <PackageReference Include="Pgvector" Version="0.3.2" />

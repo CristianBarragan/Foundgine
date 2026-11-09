@@ -1,6 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/CristianBarragan/Foundgine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
     <PackageId>Foundgine.Core</PackageId>
     <Description>Foundgine.Core is the foundational, provider-independent semantic layer for Foundgine v2. It defines the semantic model, metadata, intent contracts and serialization, intermediate representation, provider-neutral execution contracts, planning primitives, identifiers, and core abstractions used by the rest of the platform. Use it when building semantic models, authoring or resolving intents, implementing integrations, or creating your own providers. It does not execute database operations, host GraphQL or MCP, provide an LLM client, or perform application runtime orchestration. Consumers are expected to supply their own provider and runtime composition when execution is required.</Description>
     <PackageTags>semantic-model;abstractions;serialization;dotnet</PackageTags>
