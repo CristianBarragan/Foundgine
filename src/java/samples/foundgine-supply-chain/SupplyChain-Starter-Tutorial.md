@@ -51,7 +51,7 @@ stabilizes.
 - **Docker with Compose support** (only needed once you add the PostgreSQL provider — see
   the [Advanced tutorial](../foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md))
 - A clone of this repository — the module uses `${revision}` project references into
-  `foundgine-core`, `foundgine-runtime`, `foundgine-providers`, and `foundgine-aot-generator`
+  `foundgine-core`, `foundgine-runtime`, `foundgine-providers`, and `foundgine-providers`
   from the same Maven reactor, exactly like the real sample
 
 Verify:
@@ -145,7 +145,7 @@ module:
           <annotationProcessorPaths>
             <path>
               <groupId>io.github.cristianbarragan</groupId>
-              <artifactId>foundgine-aot-generator</artifactId>
+              <artifactId>foundgine-providers</artifactId>
               <version>${revision}</version>
             </path>
           </annotationProcessorPaths>
@@ -158,7 +158,7 @@ module:
 
 > **Why a compile-time annotation processor?** Just like the C# Roslyn generator, Foundgine needs
 > to know your entities, fields, and relationships _before_ it can plan a query. The
-> `foundgine-aot-generator` annotation processor reads `@FoundgineEntity` (and friends) at compile
+> AOT annotation processor embedded in the `foundgine-providers` JAR reads `@FoundgineEntity` (and friends) at compile
 > time and emits a generated metadata class you use directly in code — no runtime reflection.
 
 Register the module in `src/java/pom.xml`'s `<modules>` list if it isn't already there, and in
@@ -357,7 +357,7 @@ cd src/java
 mvn -pl samples/foundgine-supply-chain -am compile
 ```
 
-If this succeeds, the `foundgine-aot-generator` annotation processor has produced a generated
+If this succeeds, the AOT annotation processor embedded in the `foundgine-providers` JAR has produced a generated
 metadata class in the background containing your `SupplyChainDomain` entities as compiled metadata
 — you never write or see this file by hand, exactly like the C# generator's
 `GeneratedMetadata`/`GeneratedSemanticModel`.
