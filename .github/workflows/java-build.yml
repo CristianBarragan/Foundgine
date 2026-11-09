@@ -337,7 +337,6 @@ jobs:
   publish-wiki:
     name: Publish GitHub Wiki
     runs-on: ubuntu-latest
-    environment: production
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     timeout-minutes: 10
 
@@ -358,8 +357,8 @@ jobs:
             exit 1
           fi
 
-          if [[ ! -f "docs/wiki/Home.md" ]]; then
-            echo "::error::docs/wiki/Home.md does not exist."
+          if [[ ! -f "docs/wiki/index.md" ]]; then
+            echo "::error::docs/wiki/index.md does not exist."
             exit 1
           fi
 
@@ -375,22 +374,34 @@ jobs:
             exit 1
           fi
 
-      - name: Publish Wiki
+      - name: Clone GitHub Wiki
         env:
           WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
 
-          WIKI_REPOSITORY="${GITHUB_REPOSITORY}.wiki.git"
-
           git clone \
-            "https://x-access-token:${WIKI_TOKEN}@github.com/${WIKI_REPOSITORY}" \
+            "https://x-access-token:${WIKI_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" \
             /tmp/foundgine-wiki
+
+      - name: Synchronize Wiki documentation
+        shell: bash
+        run: |
+          set -euo pipefail
 
           rsync -av --delete \
             --exclude='.git/' \
+            --exclude='index.md' \
             docs/wiki/ /tmp/foundgine-wiki/
+
+          # GitHub Wiki requires Home.md as its homepage.
+          cp docs/wiki/index.md /tmp/foundgine-wiki/Home.md
+
+      - name: Commit and publish Wiki
+        shell: bash
+        run: |
+          set -euo pipefail
 
           cd /tmp/foundgine-wiki
 
@@ -399,7 +410,7 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
             git add -A
-            git commit -m "Update Foundgine Wiki"
+            git commit -m "Update Foundgine Wiki from docs/wiki"
             git push
           else
             echo "Wiki is already up to date."
