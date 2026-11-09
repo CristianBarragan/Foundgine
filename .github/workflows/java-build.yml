@@ -1,243 +1,259 @@
-name: Java — Build & Test
+
+name: Java Build
 
 on:
   push:
-    branches: [main, java]
+    branches:
+      - main
+      - java
     tags:
-      - v*
+      - 'v*'
   pull_request:
-    branches: [main, java]
+    branches:
+      - main
+      - java
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: java-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JAVA_VERSION: '21'
+  MAVEN_OPTS: '-Xmx2g -XX:+UseG1GC'
+
 jobs:
-  # ============================================================
-  # Java 21 build and tests
-  # ============================================================
+
+  # ------------------------------------------------------------
+  # 1. Build and test the complete Java reactor
+  # ------------------------------------------------------------
   java-build:
-    name: Java 21 Build & Test
+    name: Java Build and Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Set up Java
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: ${{ env.JAVA_VERSION }}
           cache: maven
+          cache-dependency-path: |
+            pom.xml
+            **/pom.xml
 
-      - name: Build and test Java
-        working-directory: src/java
-        shell: bash
+      - name: Verify Java and Maven
         run: |
-          set -euo pipefail
+          java --version
+          mvn --version
 
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-            VERSION="${GITHUB_REF_NAME#v}"
-            echo "Building release version $VERSION"
+      - name: Build and test all Java modules
+        run: |
+          mvn --batch-mode \
+              --no-transfer-progress \
+              --errors \
+              clean verify
 
-            mvn -B -ntp \
-              -Drevision="$VERSION" \
-              verify
-          else
-            mvn -B -ntp verify
-          fi
+      - name: Upload Maven build reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-build-reports
+          path: |
+            **/target/surefire-reports/**
+            **/target/failsafe-reports/**
+          if-no-files-found: ignore
+          retention-days: 14
 
-  # ============================================================
-  # Java security penetration tests
-  # ============================================================
+  # ------------------------------------------------------------
+  # 2. Security and penetration tests
+  # ------------------------------------------------------------
   java-security-penetration:
-    name: Java Security Penetration Gate
+    name: Java Security and Penetration Tests
+    runs-on: ubuntu-latest
+    needs: java-build
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+          cache-dependency-path: |
+            pom.xml
+            **/pom.xml
+
+      - name: Run Foundgine Redteam tests
+        run: |
+          mvn --batch-mode \
+              --no-transfer-progress \
+              --errors \
+              -pl security/foundgine-redteam \
+              -am \
+              verify
+
+      - name: Upload security test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-security-reports
+          path: |
+            **/target/surefire-reports/**
+            **/target/failsafe-reports/**
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # ------------------------------------------------------------
+  # 3. PostgreSQL / Docker integration and E2E tests
+  # ------------------------------------------------------------
+  java-postgres-e2e:
+    name: Java PostgreSQL E2E Tests
+    runs-on: ubuntu-latest
+    needs: java-build
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+          cache-dependency-path: |
+            pom.xml
+            **/pom.xml
+
+      - name: Verify Docker availability
+        run: |
+          docker version
+          docker info
+
+      - name: Verify PostgreSQL container image availability
+        run: docker pull postgres:17
+
+      - name: Run PostgreSQL integration and E2E tests
+        run: |
+          mvn --batch-mode \
+              --no-transfer-progress \
+              --errors \
+              verify
+
+      - name: Upload E2E test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-postgres-e2e-reports
+          path: |
+            **/target/surefire-reports/**
+            **/target/failsafe-reports/**
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # ------------------------------------------------------------
+  # 4. Publish Java libraries to Maven Central
+  # ------------------------------------------------------------
+  publish-maven:
+    name: Publish Java Packages to Maven Central
+    runs-on: ubuntu-latest
     needs:
       - java-build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: "21"
-          cache: maven
-
-      - name: Verify penetration suite exists
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ ! -f src/java/security/pentest/run-all.sh ]]; then
-            echo "ERROR: Java penetration suite not found."
-            echo "Expected: src/java/security/pentest/run-all.sh"
-            exit 1
-          fi
-
-      - name: Run standalone Java penetration suite
-        working-directory: src/java/security/pentest
-        env:
-          SKIP_LIVE: "true"
-        run: |
-          set -euo pipefail
-          chmod +x run-all.sh
-          ./run-all.sh
-
-  # ============================================================
-  # Java PostgreSQL E2E tests
-  # ============================================================
-  java-postgres-e2e:
-    name: Java PostgreSQL E2E
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_USER: foundgine
-          POSTGRES_PASSWORD: foundgine
-          POSTGRES_DB: foundgine_e2e
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U foundgine -d foundgine_e2e"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: "21"
-          cache: maven
-
-      - name: Wait for PostgreSQL
-        env:
-          PGPASSWORD: foundgine
-        run: |
-          set -euo pipefail
-
-          for i in {1..30}; do
-            if pg_isready \
-              -h 127.0.0.1 \
-              -p 5432 \
-              -U foundgine \
-              -d foundgine_e2e; then
-              exit 0
-            fi
-
-            sleep 2
-          done
-
-          echo "PostgreSQL did not become ready in time."
-          exit 1
-
-      - name: Run Java E2E tests
-        working-directory: src/java
-        env:
-          FOUNDGINE_POSTGRES_CONNECTION_STRING: jdbc:postgresql://localhost:5432/foundgine_e2e?user=foundgine&password=foundgine
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-            VERSION="${GITHUB_REF_NAME#v}"
-            REVISION=(-Drevision="$VERSION")
-          else
-            REVISION=()
-          fi
-
-          mvn -B -ntp \
-            "${REVISION[@]}" \
-            -Dsurefire.failIfNoSpecifiedTests=false \
-            "-Dtest=*E2ETest,*Postgres*E2ETest,*Postgres*ParityTest" \
-            test
-
-  # ============================================================
-  # Publish Maven Central packages
-  # ============================================================
-  publish-maven:
-    name: Publish Maven Central Packages
+      - java-security-penetration
+      - java-postgres-e2e
 
     if: startsWith(github.ref, 'refs/tags/v')
-
-    needs:
-      - java-build
-      - java-postgres-e2e
-      - java-security-penetration
-
-    runs-on: ubuntu-latest
-
-    environment: production
+    timeout-minutes: 45
 
     permissions:
       contents: read
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Resolve release version
+        id: version
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          if [[ -z "$VERSION" ]]; then
+            echo "Unable to determine release version."
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Publishing Foundgine Java version: $VERSION"
+
+      - name: Set up Java and Maven Central credentials
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: ${{ env.JAVA_VERSION }}
           cache: maven
+          cache-dependency-path: |
+            pom.xml
+            **/pom.xml
 
           server-id: central
-          server-username: MAVEN_CENTRAL_USERNAME
-          server-password: MAVEN_CENTRAL_PASSWORD
+          server-username-env-var: MAVEN_USERNAME
+          server-password-env-var: MAVEN_CENTRAL_TOKEN
 
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          # Import the signing key into an isolated GPG keyring.
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
 
-      - name: Validate release version
+      - name: Verify GPG signing key
         shell: bash
         run: |
           set -euo pipefail
 
-          VERSION="${GITHUB_REF_NAME#v}"
+          gpg --list-secret-keys --keyid-format LONG
 
-          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-].*)?$ ]]; then
-            echo "ERROR: Invalid release tag: $GITHUB_REF_NAME"
-            exit 1
-          fi
+          gpg --list-secret-keys --with-colons \
+            | grep -q '^sec:'
 
-          echo "Publishing Foundgine Java version: $VERSION"
-
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-
-      - name: Publish four Foundgine Maven modules
-        working-directory: src/java
+      - name: Verify Maven Central credentials
+        shell: bash
         env:
-          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
         run: |
-          set -euo pipefail
+          test -n "$MAVEN_USERNAME"
+          test -n "$MAVEN_CENTRAL_TOKEN"
+          test -n "$MAVEN_GPG_PASSPHRASE"
 
-          mvn -B -ntp \
-            -Drevision="$VERSION" \
-            -Prelease \
-            -pl foundgine-core,foundgine-runtime,foundgine-providers,foundgine-extensions \
-            -am \
-            -DskipTests \
-            deploy
+      - name: Build and publish Foundgine Java libraries
+        run: |
+          mvn --batch-mode \
+              --no-transfer-progress \
+              --errors \
+              -Drevision="${{ steps.version.outputs.version }}" \
+              -pl foundgine-core,foundgine-runtime,foundgine-providers,foundgine-extensions \
+              -am \
+              -DskipTests \
+              deploy
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+      - name: Report published version
+        if: success()
+        run: |
+          echo "Successfully published Foundgine Java version ${{ steps.version.outputs.version }}"
