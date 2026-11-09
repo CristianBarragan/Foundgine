@@ -17,7 +17,7 @@ Hot Chocolate exception details are enabled because this project is a benchmark/
 
 ### 2. Npgsql 9 package is pinned to an actually available 9.x release
 
-The active benchmark projects use Npgsql EF Core `9.0.4`. The earlier `9.0.7` reference was not available from the package feed used by the benchmark machine, which caused NuGet to fall forward to Npgsql EF Core `10.0.0` and fail against `net9.0`.
+At the time this fix was recorded, the benchmark projects used Npgsql EF Core `9.0.4`. The earlier `9.0.7` reference was not available from the package feed used by that benchmark machine, which caused NuGet to fall forward to Npgsql EF Core `10.0.0` and fail against `net9.0`. This is historical troubleshooting context; current Foundgine benchmark projects target .NET 10.
 
 ### 3. Database readiness is part of container health
 

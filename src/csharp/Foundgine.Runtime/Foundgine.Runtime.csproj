@@ -13,7 +13,6 @@
     <RootNamespace>Foundgine.Runtime</RootNamespace>
     <AssemblyName>Foundgine.Runtime</AssemblyName>
     <IsPackable>true</IsPackable>
-    <PackageReleaseNotes>2.0.0: v2 package restructuring. Consolidates the former Foundgine (root orchestrator), Foundgine.Execution, and Foundgine.Security.Authority packages.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />

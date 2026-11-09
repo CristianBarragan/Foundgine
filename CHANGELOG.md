@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+## 2.3.1 — November 9, 2026
+
+### Changed
+
+- Aligned the canonical .NET and Java release versions on `2.3.1`.
+- Updated the checked-in Maven consumer POMs, MCP discovery manifests, package
+  installation examples, public documentation, website metadata and AI
+  reference files to identify `2.3.1` as the current release.
+- Aligned the .NET CI build's non-tag package version with the `2.3.1` release
+  line (`2.3.1-ci.<run-number>`).
+- Removed stale per-package `2.0.0` release-note overrides so all NuGet
+  packages inherit the shared changelog metadata.
+- Corrected three broken project-reference paths in the Run1 benchmark project.
+- Removed a tracked, machine-generated TRX test report that contained stale local
+  .NET 9 build paths; retained the human-readable and JSON benchmark reports.
+
+### Release
+
+- Version: `2.3.1`
+- Target framework: `.NET 10` / Java 21
+- License: Apache License, Version 2.0
+
 ## 2.3.0 — November 8, 2026
 
 ### Added

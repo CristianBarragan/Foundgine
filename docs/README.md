@@ -1,6 +1,6 @@
 # Foundgine documentation
 
-This directory contains the **current** Foundgine documentation, covering both implementations, released together as **2.3.0**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
+This directory contains the **current** Foundgine documentation, covering both implementations, released together as **2.3.1**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
 
 The repository itself is the source of truth. Documentation describes implemented architecture and tested behavior; it does not use old release notes or historical benchmark snapshots as current product guidance.
 
@@ -38,3 +38,6 @@ The documentation follows four rules:
 2. **Implemented and planned are separated.** A planned feature is not documented as a shipped capability.
 3. **Transport and provider boundaries stay explicit.** GraphQL, MCP, JSON, AI, and SQL are adapters/providers around the semantic core.
 4. **Historical material stays out of the active guide.** Release notes, old benchmark runs, and implementation diaries are not part of the current documentation set.
+## Feature and capability wiki
+
+The [Foundgine feature and capability wiki](wiki/index.md) explains the architecture, semantic model, intent grounding, execution, security, mutations, gateway, providers, agents/MCP, AOT, integrations, and operations by capability rather than by release.
