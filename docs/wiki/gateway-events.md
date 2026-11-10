@@ -39,4 +39,4 @@ Gateway contracts should be explicit and versionable. In .NET AOT deployments, s
 
 - C#: `Foundgine.Providers/Gateway`, `Foundgine.Providers/Outbox`, `Foundgine.Providers/EventStore`, gateway sample.
 - Java: `foundgine-providers/.../gateway`, HTTP routing, event publisher and related event/outbox packages.
-- See also: [Architecture](../ARCHITECTURE.md), [Runtime](../RUNTIME.md), [Testing](../TESTING.md).
+- See also: [Architecture](../ARCHITECTURE), [Runtime](../RUNTIME), [Testing](../TESTING).

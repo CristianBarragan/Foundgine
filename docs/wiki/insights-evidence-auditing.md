@@ -16,7 +16,7 @@
 | **Tool-call audit** (`IAuditLog`, `AuditEvent`) | Each governance step for an AI tool call: risk scored, policy evaluated, approval requested/decided, routed, denied | In-memory by default; `BufferedDurableAuditLog` adds a bounded queue and per-event acknowledgement |
 | **Approval evidence** | `ApprovalRequested` stored in the same transaction as the approval | Yes, with the PostgreSQL approval store |
 
-More detail in [Approvals, audit and governance](approvals-audit-governance.md).
+More detail in [Approvals, audit and governance](approvals-audit-governance).
 
 ## 3. Diagnostics: how it is behaving
 
@@ -43,8 +43,8 @@ C#: `Foundgine.Core/Execution` (evidence, receipt), `Foundgine.Providers/Gateway
 
 ## Related pages
 
-- [Approvals, audit and governance](approvals-audit-governance.md)
-- [Gateway, events and live updates](gateway-events.md)
-- [Provider catalogue](providers.md)
-- [ORM providers (EF Core and JPA)](orm-providers.md)
-- [Operations and extension points](operations.md)
+- [Approvals, audit and governance](approvals-audit-governance)
+- [Gateway, events and live updates](gateway-events)
+- [Provider catalogue](providers)
+- [ORM providers (EF Core and JPA)](orm-providers)
+- [Operations and extension points](operations)

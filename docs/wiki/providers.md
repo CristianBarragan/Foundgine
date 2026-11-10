@@ -2,7 +2,7 @@
 
 > **In plain words.** A **provider** is the part that actually talks to the outside world for Foundgine: the database, the search engine, the event log, the message queue, the AI tool protocol. Foundgine decides *what* should happen and *whether it is allowed*; a provider only does the *how*. You pick the providers that match your stack and leave the rest out. Think of Foundgine as a driver who knows the rules and the destination, and providers as the vehicles that do the moving.
 >
-> **Using EF Core (.NET) or JPA (Java)?** You do not need to write SQL. See [ORM providers](orm-providers.md): Foundgine hands its plans to your existing ORM, and the permission rules are always added for you.
+> **Using EF Core (.NET) or JPA (Java)?** You do not need to write SQL. See [ORM providers](orm-providers): Foundgine hands its plans to your existing ORM, and the permission rules are always added for you.
 
 ## Overview
 
@@ -32,16 +32,16 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | | **ORM map generator** (`Foundgine.Providers.Orm.Generator`) | Writes the typed field maps EF Core needs | Yes | maps are provider-neutral today |
 | **Declarations** | **Graph retrieval capability** (`GraphRetrieval`) | A label saying a provider supports graph lookups | Yes | Yes |
 
-**Provider kinds the gateway understands** (`FoundgineProviderKind`): `EventStore`, `Outbox`, `Workflow`, `Messaging`, `Realtime`, `Persistence`, `Identity`, `Diagnostics`, `Metadata`. Temporal registers as a `Workflow` provider and Keycloak as an `Identity` provider (see [Extensions](extensions.md)).
+**Provider kinds the gateway understands** (`FoundgineProviderKind`): `EventStore`, `Outbox`, `Workflow`, `Messaging`, `Realtime`, `Persistence`, `Identity`, `Diagnostics`, `Metadata`. Temporal registers as a `Workflow` provider and Keycloak as an `Identity` provider (see [Extensions](extensions)).
 
 **Which query provider should I pick?**
 
 | Your situation | Pick |
 |---|---|
 | Plain relational database, you want the most control and cost estimation | **SQL** |
-| You already use EF Core or JPA and want one data-access stack | **EF Core** or **JPA** ([details](orm-providers.md)) |
+| You already use EF Core or JPA and want one data-access stack | **EF Core** or **JPA** ([details](orm-providers)) |
 | Tests, samples, no database | **In-memory** |
-| Not sure a feature is production-ready | Check the status tables in [ORM providers](orm-providers.md) and [Conformance and hardening](conformance-hardening.md) |
+| Not sure a feature is production-ready | Check the status tables in [ORM providers](orm-providers) and [Conformance and hardening](conformance-hardening) |
 
 ## Provider selection at a glance
 
@@ -139,7 +139,7 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 
 **What they do.** Run Foundgine plans through the ORM you already have instead of generating SQL text. The shared ORM core validates the plan and binds it to the authorization decision; the adapter (EF Core for .NET, JPA for Java) turns the checked plan into an `IQueryable` (EF Core) or a Criteria query (JPA). Permission filters are always added and callers can only narrow results further.
 
-**Be honest about maturity.** Much of this family is *implemented* but not yet *proven by a real database run*; aggregate cursor pagination is switched off until it is. The full status table, rules and setup are in **[ORM providers (EF Core and JPA)](orm-providers.md)**.
+**Be honest about maturity.** Much of this family is *implemented* but not yet *proven by a real database run*; aggregate cursor pagination is switched off until it is. The full status table, rules and setup are in **[ORM providers (EF Core and JPA)](orm-providers)**.
 
 **Source:** `src/csharp/Foundgine.Providers.Orm`, `src/csharp/Foundgine.Providers.EntityFrameworkCore`, `src/csharp/Foundgine.Providers.Orm.Generator`; Java `foundgine-providers/.../storage/orm` and `.../orm/jpa`.
 
@@ -206,7 +206,7 @@ The Temporal extension can use the outbox publisher bridge, but workflow orchest
 
 **Provider lifecycle.** The registry describes and tracks providers; it does not instantiate arbitrary providers, choose application execution policy, or grant caller authority. Validate provider requirements and health at startup.
 
-**Insights and audit.** Events, execution status, diagnostics and the critical audit hook live here: see [Insights, evidence and auditing](insights-evidence-auditing.md).
+**Insights and audit.** Events, execution status, diagnostics and the critical audit hook live here: see [Insights, evidence and auditing](insights-evidence-auditing).
 
 **Source:** `src/csharp/Foundgine.Providers/Gateway` and `src/java/foundgine-providers/.../gateway`.
 
@@ -233,7 +233,7 @@ Discovery is descriptive, not a grant. Never trust a tool name, description, mod
 
 **C# packaging.** The declarations/runtime support live in `Foundgine.Providers/Aot`. The Roslyn generator is a separate build-time project, `Foundgine.Providers.Aot.Generator`, but is packed as an analyzer inside the `Foundgine.Providers` NuGet package. A NuGet consumer should not need to install a separate generator package. The generator is not a runtime dependency.
 
-**ORM maps.** A second Roslyn generator, `Foundgine.Providers.Orm.Generator`, reads the same `[FoundgineEntity]`, `[FoundgineField]` and `[FoundgineRelationship]` declarations and writes strongly typed maps for the EF Core provider, so no reflection or runtime expression compiling is needed. See [ORM providers](orm-providers.md).
+**ORM maps.** A second Roslyn generator, `Foundgine.Providers.Orm.Generator`, reads the same `[FoundgineEntity]`, `[FoundgineField]` and `[FoundgineRelationship]` declarations and writes strongly typed maps for the EF Core provider, so no reflection or runtime expression compiling is needed. See [ORM providers](orm-providers).
 
 **Java.** The corresponding declarations and metadata helpers live under `com.foundgine.providers.aot`; generator support is in the Java AOT generator module. Verify the Maven module's published artifact and current processor configuration for the exact release.
 
@@ -265,13 +265,13 @@ See **Models: Microsoft.Extensions.AI** above. They are descriptors, not an LLM,
 
 ## Related pages
 
-- [ORM providers (EF Core and JPA)](orm-providers.md)
-- [Provider overview and safety rules](providers-storage.md)
-- [Insights, evidence and auditing](insights-evidence-auditing.md)
-- [Extensions](extensions.md)
-- [Planning and execution](planning-execution.md)
-- [Authorization and security](authorization-security.md)
-- [Gateway, events and live updates](gateway-events.md)
-- [AI agents and MCP](agents-mcp.md)
-- [AOT and generated metadata](aot.md)
-- [Cross-language implementation map](implementation-map.md)
+- [ORM providers (EF Core and JPA)](orm-providers)
+- [Provider overview and safety rules](providers-storage)
+- [Insights, evidence and auditing](insights-evidence-auditing)
+- [Extensions](extensions)
+- [Planning and execution](planning-execution)
+- [Authorization and security](authorization-security)
+- [Gateway, events and live updates](gateway-events)
+- [AI agents and MCP](agents-mcp)
+- [AOT and generated metadata](aot)
+- [Cross-language implementation map](implementation-map)

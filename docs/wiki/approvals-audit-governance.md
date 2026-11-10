@@ -25,7 +25,7 @@
 
 ## Tool-call governance (control plane)
 
-`ToolCallGovernor` coordinates: tool registry (`IToolRegistry`, `ToolDescriptor`), risk rules (`IRiskRule`, `RiskScore`), policy gateway (`IPolicyGateway`, `PolicyDecision`), approvals (`IApprovalStore`, `ApprovalRequest`) and audit (`AuditEvent`). Audit writes happen before the final deny/approve/route branch, and the allow-path `Routed` audit happens before the allow result returns, so a sink failure never yields an allow. Open item: approval creation then audit is not yet atomic; a transactional approval+audit outbox is needed. Java adds authorization-context integrity key rings with rotation authorisation. See [AI agents and MCP](agents-mcp.md).
+`ToolCallGovernor` coordinates: tool registry (`IToolRegistry`, `ToolDescriptor`), risk rules (`IRiskRule`, `RiskScore`), policy gateway (`IPolicyGateway`, `PolicyDecision`), approvals (`IApprovalStore`, `ApprovalRequest`) and audit (`AuditEvent`). Audit writes happen before the final deny/approve/route branch, and the allow-path `Routed` audit happens before the allow result returns, so a sink failure never yields an allow. Open item: approval creation then audit is not yet atomic; a transactional approval+audit outbox is needed. Java adds authorization-context integrity key rings with rotation authorisation. See [AI agents and MCP](agents-mcp).
 
 ## Where to look
 

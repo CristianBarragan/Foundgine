@@ -19,7 +19,7 @@ A typical read path is:
 
 ## Mutation path
 
-Mutations use a separate plan and lifecycle; see [Mutations](mutations.md). The plan captures operation kind, fields, dependencies, and effects. It should be validated before execution and bound to the authorization and approval context that permits it.
+Mutations use a separate plan and lifecycle; see [Mutations](mutations). The plan captures operation kind, fields, dependencies, and effects. It should be validated before execution and bound to the authorization and approval context that permits it.
 
 ## SQL compilation
 
@@ -45,4 +45,4 @@ Results should preserve semantic field identities and types rather than leak raw
 
 - C#: `src/csharp/Foundgine.Core/Semantic/Query`, `Semantic/Expressions`, `Semantic/Aggregates`, `src/csharp/Foundgine.Runtime/Execution`, `src/csharp/Foundgine.Providers/Storage/Sql`.
 - Java: `foundgine-core` semantic query/planning packages, `foundgine-runtime` execution, and `foundgine-providers` storage implementations.
-- Existing guides: [Runtime](../RUNTIME.md), [Architecture](../ARCHITECTURE.md), [Standards](../STANDARDS.md).
+- Existing guides: [Runtime](../RUNTIME), [Architecture](../ARCHITECTURE), [Standards](../STANDARDS).
