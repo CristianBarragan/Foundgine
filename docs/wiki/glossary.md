@@ -52,3 +52,7 @@
 | **Tool-call governor** | Control-plane component that risk-scores, policy-checks, approves and audits agent tool calls. |
 | **Warrant** | A signed, short-lived, scoped permission slip, verified at execution. |
 | **Workflow (Temporal)** | A long-running, durable business process. |
+| **ORM** | A tool that maps your classes to database tables so you do not write SQL by hand. |
+| **Extension** | An optional plug-in that connects a tool (GraphQL, Keycloak, Temporal) to Foundgine. It translates; it never decides permissions. |
+| **Receipt** | A fingerprint-only record that an execution happened. See [Insights, evidence and auditing](insights-evidence-auditing.md). |
+| **Diagnostics** | Metrics and traces showing how the system behaves; hints, not proof. |

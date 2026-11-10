@@ -2,6 +2,38 @@
 
 > **In plain words.** Many teams already have an ORM. Instead of making them hand-write SQL, Foundgine can hand its plans to **EF Core** (.NET) or **JPA** (Java). The ORM turns the plan into database queries. The security rules stay the same: permission filters are always added, they can never be removed by the caller, and only the fields asked for are fetched. This family is the **newest** and the wiki is deliberately cautious: much of it is *implemented* but not yet *proven by a real database run*.
 
+## Which provider is which?
+
+| | **EF Core provider** | **JPA provider** |
+|---|---|---|
+| Language | .NET (C#) | Java |
+| Your existing tool | Entity Framework Core (`DbContext`) | Jakarta Persistence (`EntityManager`) |
+| Main classes | `EfCoreProvider`, `EfCoreQuerySource`, `EfCoreMutationSource` | `JpaOrmProvider`, `JpaOrmQuerySource`, `JpaOrmMutationSource`, `JpaPredicates`, `JpaOrmSnapshotPageSession` |
+| Shared engine underneath | `Foundgine.Providers.Orm` | `storage/orm` |
+| Maturity | Most complete; real SQLite integration tests exist | Partial; see the status table |
+
+**Which should I use instead of the SQL provider?** Choose the ORM provider when your application already owns its entities and database access through EF Core or JPA and you want one data-access stack, your existing connection and transaction handling, and your ORM's database support. Choose the [SQL provider](providers.md) when you want Foundgine to write the SQL itself, with its cost estimator and PostgreSQL batching. Both keep the same permission rules.
+
+## Plain-words walk-through
+
+Say a caller asks: *"show me customers whose orders include SKU A."*
+
+1. Foundgine works out what that means in your model and checks the caller is allowed (the **authorization binding**).
+2. It builds a provider-neutral plan (**Execution IR**).
+3. The ORM core checks the plan only asks for things this provider can really do. If not, it **stops before touching the database**.
+4. It builds the query from **generated, typed pieces** (no guessing at runtime): the permission filter first, then the caller's filter on top.
+5. EF Core (or JPA) turns that into SQL and runs it, fetching **only the requested columns**.
+6. Child rows (the orders) are fetched in a **batch** using the parents' keys, with the child's own permission filter applied inside that query.
+7. Rows come back with **evidence** (which provider, plan fingerprint, which parts were permission-checked), see [Insights, evidence and auditing](insights-evidence-auditing.md).
+
+## Setting it up (.NET)
+
+1. Mark your entity classes with `[FoundgineEntity]`, `[FoundgineField]` and `[FoundgineRelationship]`. The **ORM map generator** (`Foundgine.Providers.Orm.Generator`) writes the typed maps at build time; nothing is discovered by reflection at run time.
+2. Build the registry once from your model metadata, the generated maps and the relationship metadata: `OrmRegistry.Create(entities, maps, relationships)`.
+3. Register the EF Core provider with your `DbContext` and that registry, then run your normal Foundgine configuration for the model and authorization. The ORM provider never decides permissions itself.
+
+Java uses the JPA provider with `jakarta.persistence` as an optional dependency; see `src/java/foundgine-providers/.../storage/orm/jpa` and `src/java/ORM-JPA-PARITY-PLAN.md` for current wiring. Check exact registration method names in the source for your version.
+
 ## Shape of the family
 
 ```text
@@ -52,6 +84,26 @@ The machine-readable source of truth for .NET is `src/csharp/conformance/orm/pro
 
 Two consistency notes the docs repeat on purpose: the default per-fetch path is live, read-committed-style data (not a snapshot), and a cursor fingerprint alone is not a snapshot guarantee.
 
+## How "some / none / all" treat permissions
+
+Relationship filters ask a question about a customer's orders. The key idea: **orders the caller may not see do not exist, as far as the question is concerned.**
+
+| Filter | Plain meaning | How it is built |
+|---|---|---|
+| **some** | At least one *visible* order matches | any( visible **and** matches ) |
+| **none** | No *visible* order matches | not any( visible **and** matches ) |
+| **all** | Every *visible* order matches (a customer with no visible orders passes) | not any( visible **and** does **not** match ) |
+
+The permission test always sits **outside** the negation. Negating "visible and matches" would wrongly treat a hidden order as a failure, so a customer whose only order is hidden from the caller would be wrongly excluded from **all**.
+
+**Result shape.** Rows come back as flat "left join" rows, one per visible child order: a customer with two visible orders appears twice, one with none appears once. De-duplicate if you only want customers.
+
+## Insights for ORM providers
+
+- Evidence is produced for every execution (`ExecutionEvidence`): provider name, plan fingerprint, permission-checked nodes, rows, time. The fingerprint covers the plan *shape*, not the filter values.
+- The queries your ORM sends can be inspected with your ORM's normal logging or interceptors.
+- Whether a feature is *proven* is tracked in `provider-conformance-matrix.json` and the CI evidence lanes, see [Conformance and hardening](conformance-hardening.md).
+
 ## Verifying
 
 - .NET: `dotnet test src/csharp/tests/Foundgine.Orm.Tests/Foundgine.Orm.Tests.csproj -c Release`; Native AOT steps in `src/csharp/aot/README.md`.
@@ -61,3 +113,11 @@ Two consistency notes the docs repeat on purpose: the default per-fetch path is 
 ## Where to look
 
 C#: `Foundgine.Providers.Orm`, `Foundgine.Providers.EntityFrameworkCore`, `tests/Foundgine.Orm.Tests`, `conformance/orm`. Java: `foundgine-providers/.../storage/orm` and `.../orm/jpa`.
+
+## Related pages
+
+- [Provider catalogue](providers.md)
+- [Providers and storage](providers-storage.md)
+- [Insights, evidence and auditing](insights-evidence-auditing.md)
+- [Conformance and hardening](conformance-hardening.md)
+- [Glossary](glossary.md)

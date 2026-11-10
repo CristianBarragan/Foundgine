@@ -26,7 +26,8 @@ This is the reading path — each page ends with a link to the next one, so you 
 16. [PostgreSQL E2E](POSTGRES-E2E.md) — the real database integration path.
 17. [Testing](TESTING.md) — how the boundaries above are proven, not just asserted.
 18. [Current status](CURRENT-STATUS.md) — what the active code and tests support today.
-19. [Roadmap](ROADMAP.md) — what's next, and what's deliberately out of scope.\n20. [CI and release validation](CI.md) — reproducible .NET 10 / Java 27 build and CodeQL behavior.
+19. [Roadmap](ROADMAP.md) — what's next, and what's deliberately out of scope.
+20. [CI and release validation](CI.md) — reproducible .NET 10 / Java 27 build and CodeQL behavior.
 
 Package-specific architecture and usage guidance lives in the `README.md` of every project under `src/csharp/` and `src/java/`. Java sample tutorials live alongside each sample under `src/java/samples/*`.
 
@@ -38,6 +39,13 @@ The documentation follows four rules:
 2. **Implemented and planned are separated.** A planned feature is not documented as a shipped capability.
 3. **Transport and provider boundaries stay explicit.** GraphQL, MCP, JSON, AI, and SQL are adapters/providers around the semantic core.
 4. **Historical material stays out of the active guide.** Release notes, old benchmark runs, and implementation diaries are not part of the current documentation set.
+
 ## Feature and capability wiki
 
-The [Foundgine feature and capability wiki](wiki/index.md) explains the architecture, semantic model, intent grounding, execution, security, mutations, gateway, providers, agents/MCP, AOT, integrations, and operations by capability rather than by release.
+The [Foundgine feature and capability wiki](wiki/index.md) explains Foundgine by capability rather than by release, with plain-language summaries at the top of each page. Good entry points:
+
+- [Provider catalogue](wiki/providers.md): every provider by name (SQL, **EF Core**, **JPA**, in-memory, Elasticsearch, pgvector, PostgreSQL retrieval, event store, outbox, gateway, MCP, AI models).
+- [ORM providers (EF Core and JPA)](wiki/orm-providers.md): run Foundgine plans through the ORM you already use, with an honest maturity table.
+- [Extensions](wiki/extensions.md): GraphQL, Keycloak and Temporal in one place.
+- [Insights, evidence and auditing](wiki/insights-evidence-auditing.md): receipts, audit, diagnostics and live events.
+- [Glossary](wiki/glossary.md): short, friendly definitions.

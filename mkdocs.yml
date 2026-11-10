@@ -55,12 +55,18 @@ nav:
       - Authorization and security: wiki/authorization-security.md
       - Mutations: wiki/mutations.md
       - Gateway, events and live updates: wiki/gateway-events.md
-      - Providers and storage: wiki/providers-storage.md
-      - Provider catalogue: wiki/providers.md
+      - Providers:
+          - Provider catalogue: wiki/providers.md
+          - ORM providers (EF Core and JPA): wiki/orm-providers.md
+          - Providers and storage: wiki/providers-storage.md
+      - Extensions (GraphQL, Keycloak, Temporal): wiki/extensions.md
       - AI agents and MCP: wiki/agents-mcp.md
       - AOT and generated metadata: wiki/aot.md
-      - Integrations: wiki/integrations.md
-      - Extension catalogue: wiki/extensions.md
+      - Trust and proof:
+          - Insights, evidence and auditing: wiki/insights-evidence-auditing.md
+          - Approvals, audit and governance: wiki/approvals-audit-governance.md
+          - Conformance and hardening: wiki/conformance-hardening.md
       - Operations and testing: wiki/operations.md
       - Cross-language implementation map: wiki/implementation-map.md
+      - Glossary (plain words): wiki/glossary.md
   - History: history/README.md

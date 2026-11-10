@@ -35,7 +35,7 @@ Retrieval is candidate discovery, not authorization.
 
 Intent can originate from application code, JSON, GraphQL, MCP or AI tools. These are adapters/consumers of the semantic boundary. GraphQL and `Microsoft.Extensions.AI` adapters are currently .NET-only; JSON intent and MCP adapters exist in both .NET and Java.
 
-Current providers include `Foundgine.Providers.Storage.Sql` (`foundgine-providers` in Java) for SQL/PostgreSQL and a deliberately limited InMemory provider, in both implementations. PostgreSQL retrieval includes relational lookup, `pg_trgm`, native full text, optional `pg_search`/BM25 and optional Apache AGE graph similarity, also in both implementations. Vector retrieval is not currently implemented.
+Current providers include `Foundgine.Providers.Storage.Sql` (`foundgine-providers` in Java) for SQL/PostgreSQL and a deliberately limited InMemory provider, in both implementations. ORM execution is available through the EF Core adapter (.NET, `Foundgine.Providers.EntityFrameworkCore`) and the JPA adapter (Java, `storage/orm/jpa`) over a shared ORM-neutral core; maturity is tracked per capability. PostgreSQL retrieval includes relational lookup, `pg_trgm`, native full text, optional `pg_search`/BM25 and optional Apache AGE graph similarity, also in both implementations. Vector retrieval is not currently implemented.
 
 ## AI
 
@@ -73,6 +73,7 @@ The Java port (`src/java/samples/foundgine-supply-chain-advanced`) demonstrates 
 - `Foundgine.Core.Execution` — ExecutionIR, provider boundary, results and evidence
 - `Foundgine.Providers.Storage.Sql` — SQL/PostgreSQL provider
 - `Foundgine.Providers.Storage.InMemory` — limited non-SQL provider
+- `Foundgine.Providers.Orm` / `Foundgine.Providers.EntityFrameworkCore` (.NET) and `storage/orm` / `storage/orm/jpa` (Java) — ORM execution core with EF Core and JPA adapters
 - `Foundgine.Providers.Aot` / `Foundgine.Providers.Aot.Generator` — AOT declarations and source generation
 - `Foundgine.Core.Serialization` — JSON intent adapter
 - `Foundgine.Extensions.GraphQL.HotChocolate*` — GraphQL adapters/execution boundaries

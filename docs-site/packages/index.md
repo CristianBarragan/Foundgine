@@ -6,8 +6,8 @@ The current package surface is organized as four publishable packages:
 | ---------------------- | ----------------------------------------------------------------------------- |
 | `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts |
 | `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                 |
-| `Foundgine.Providers`  | Concrete storage, AI/model, MCP, AOT and other integrations                   |
-| `Foundgine.Extensions` | Optional framework integrations such as Hot Chocolate GraphQL                 |
+| `Foundgine.Providers`  | Concrete storage (SQL, EF Core, JPA, in-memory, search), events, gateway, AI/model, MCP and AOT |
+| `Foundgine.Extensions` | Optional GraphQL (Hot Chocolate), Keycloak identity and Temporal workflow integrations |
 
 A Java port of the same four packages is published to Maven Central under the `io.github.cristianbarragan` namespace:
 
