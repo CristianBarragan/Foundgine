@@ -40,4 +40,4 @@ The runtime exposes mutation abstractions; providers may expose MCP or gateway m
 
 - C#: `Foundgine.Core/Semantic/Mutation`, `Foundgine.Runtime/Api/IFoundgineMutations.cs`, `MutationBuilder.cs`, `PlanApproval.cs`, `DryRunResult.cs`, `FoundgineMutationEngine.cs`, provider SQL mutation compiler/execution folders.
 - Java: `foundgine-core/.../semantic/mutation`, `foundgine-runtime` mutation APIs/engine, and provider mutation packages.
-- Related architecture: [Runtime](../RUNTIME.md), [Security](../SECURITY.md), [Public API](../PUBLIC-API.md).
+- Related architecture: [Runtime](../RUNTIME), [Security](../SECURITY), [Public API](../PUBLIC-API).

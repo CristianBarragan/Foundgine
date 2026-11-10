@@ -44,4 +44,4 @@ Audit enough to reconstruct the decision and execution chain, but avoid logging 
 
 - C#: `Foundgine.Core/Semantic/Security`, `Security/Warrants`, `Foundgine.Runtime/ControlPlane`, `Foundgine.Runtime/Execution`, and Keycloak extension security folders.
 - Java: `foundgine-core/.../semantic/security`, `foundgine-runtime` security/governance packages, and `foundgine-extensions/.../keycloak`.
-- Existing guides: [Security](../SECURITY.md), [Authorization](../AUTHORIZATION.md).
+- Existing guides: [Security](../SECURITY), [Authorization](../AUTHORIZATION).

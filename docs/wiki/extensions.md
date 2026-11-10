@@ -2,7 +2,7 @@
 
 > **In plain words.** An **extension** plugs a popular tool into Foundgine so you do not have to write the glue yourself. Foundgine has three: **GraphQL** (so a GraphQL API can talk to Foundgine), **Keycloak** (so people who log in with Keycloak get the right permissions) and **Temporal** (so long-running business processes, like "onboard a customer", can run reliably over days). Extensions are **optional** and only *translate*. They never make permission decisions on their own: every request still goes through Foundgine's normal checks.
 >
-> *Extension or provider?* A **provider** does the real work against storage or infrastructure (SQL, EF Core, JPA, Elasticsearch...), see the [Provider catalogue](providers.md). An **extension** connects an outside *framework or service* to Foundgine. Some extensions also register themselves as providers so Foundgine can see them (Keycloak as an `Identity` provider, Temporal as a `Workflow` provider).
+> *Extension or provider?* A **provider** does the real work against storage or infrastructure (SQL, EF Core, JPA, Elasticsearch...), see the [Provider catalogue](providers). An **extension** connects an outside *framework or service* to Foundgine. Some extensions also register themselves as providers so Foundgine can see them (Keycloak as an `Identity` provider, Temporal as a `Workflow` provider).
 
 This is the **only** page for integrations. The older "Integrations" overview repeated this content and now just points here.
 
@@ -29,8 +29,8 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 | Expose a GraphQL API | GraphQL (adapter + secure execution) |
 | Log users in with Keycloak and want them to get Foundgine permissions | Keycloak |
 | Need a process that waits, retries, asks for approval or can be undone | Temporal (with Keycloak so workers get proper permissions) |
-| Need a database or search backend | Not an extension: pick a [provider](providers.md) |
-| Want AI agents to call Foundgine | Not an extension: see [AI agents and MCP](agents-mcp.md) |
+| Need a database or search backend | Not an extension: pick a [provider](providers) |
+| Want AI agents to call Foundgine | Not an extension: see [AI agents and MCP](agents-mcp) |
 
 ## 1 and 2. GraphQL integration
 
@@ -158,7 +158,7 @@ Hosting extensions register core services, providers, capabilities, options and 
 
 ## Insights and auditing for extensions
 
-- Temporal emits metrics and traces under the source name `Foundgine.Temporal`. GraphQL and Keycloak rely on your host's normal logging plus Foundgine's own evidence and audit (see [Insights, evidence and auditing](insights-evidence-auditing.md)).
+- Temporal emits metrics and traces under the source name `Foundgine.Temporal`. GraphQL and Keycloak rely on your host's normal logging plus Foundgine's own evidence and audit (see [Insights, evidence and auditing](insights-evidence-auditing)).
 - Never put warrants or raw tokens into workflow history, events or logs.
 
 ## Integration author checklist
@@ -184,12 +184,12 @@ Hosting extensions register core services, providers, capabilities, options and 
 
 ## Related pages
 
-- [Provider catalogue](providers.md)
-- [ORM providers (EF Core and JPA)](orm-providers.md)
-- [Providers and storage](providers-storage.md)
-- [Insights, evidence and auditing](insights-evidence-auditing.md)
-- [Authorization and security](authorization-security.md)
-- [Mutations](mutations.md)
-- [Gateway, events and live updates](gateway-events.md)
-- [Operations and testing](operations.md)
-- [Cross-language implementation map](implementation-map.md)
+- [Provider catalogue](providers)
+- [ORM providers (EF Core and JPA)](orm-providers)
+- [Providers and storage](providers-storage)
+- [Insights, evidence and auditing](insights-evidence-auditing)
+- [Authorization and security](authorization-security)
+- [Mutations](mutations)
+- [Gateway, events and live updates](gateway-events)
+- [Operations and testing](operations)
+- [Cross-language implementation map](implementation-map)

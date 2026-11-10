@@ -41,4 +41,4 @@ A successful generator compile is not proof of Native AOT compatibility. Verify 
 
 - C#: `Foundgine.Providers/Aot`, `Foundgine.Providers/Foundgine.Providers.Aot.Generator`.
 - Java: `src/java/foundgine-aot-generator` and the annotations/metadata contracts in `foundgine-providers`.
-- Existing guide: [AOT](../AOT.md).
+- Existing guide: [AOT](../AOT).

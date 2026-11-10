@@ -12,7 +12,7 @@ Translate validated plans into provider operations. SQL providers compile semant
 
 ### ORM providers (EF Core and JPA)
 
-Run the same validated plans through the ORM an application already uses: **EF Core** in .NET and **JPA** in Java. A shared, ORM-neutral core keeps the security rules (mandatory permission filters, explicit projection, atomic mutations); the adapter only translates. See [ORM providers](orm-providers.md) for status and setup.
+Run the same validated plans through the ORM an application already uses: **EF Core** in .NET and **JPA** in Java. A shared, ORM-neutral core keeps the security rules (mandatory permission filters, explicit projection, atomic mutations); the adapter only translates. See [ORM providers](orm-providers) for status and setup.
 
 ### Retrieval providers
 
@@ -65,6 +65,6 @@ An event store persists envelopes for audit, replay, or stream delivery. An outb
 
 ## Full provider catalogue
 
-For the component-by-component inventory, source paths, language coverage, security constraints and operational guidance, see the [Provider catalogue](providers.md).
+For the component-by-component inventory, source paths, language coverage, security constraints and operational guidance, see the [Provider catalogue](providers).
 
-See also: [ORM providers (EF Core and JPA)](orm-providers.md), [Insights, evidence and auditing](insights-evidence-auditing.md), [Extensions](extensions.md).
+See also: [ORM providers (EF Core and JPA)](orm-providers), [Insights, evidence and auditing](insights-evidence-auditing), [Extensions](extensions).

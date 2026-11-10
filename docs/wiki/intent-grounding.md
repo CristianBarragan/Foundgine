@@ -42,4 +42,4 @@ A grounding decision should be inspectable: what was requested, what candidates 
 
 - C#: `Semantic/Intent`, `Semantic/Resolution`, `Semantic/Resolution/Lexical`, `Semantic/Resolution/Retrieval*`, `SemanticRequestResolver.cs`.
 - Java: `foundgine-core/.../semantic/intent`, `resolution`, and `resolution/lexical` packages.
-- Existing guides: [Open Intent API](../OPEN-INTENT-API.md), [Lexical grounding](../LEXICAL-GROUNDING.md), [Grounding decisions](../GROUNDING-DECISIONS.md).
+- Existing guides: [Open Intent API](../OPEN-INTENT-API), [Lexical grounding](../LEXICAL-GROUNDING), [Grounding decisions](../GROUNDING-DECISIONS).

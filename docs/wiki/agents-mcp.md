@@ -35,4 +35,4 @@ Prompt injection, tool-output injection, confused deputy behavior, tenant confus
 
 - C#: `Foundgine.Providers/Tools/MCP`, `Foundgine.Runtime/ControlPlane`, agent models, and security/warrant code.
 - Java: `foundgine-providers` MCP/tool integration, `foundgine-runtime` governance components, and the agent benchmark module.
-- Existing guide: [AI agent integration](../AI-AGENT.md).
+- Existing guide: [AI agent integration](../AI-AGENT).

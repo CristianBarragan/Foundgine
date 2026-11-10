@@ -56,4 +56,4 @@ Intent fingerprints for warrant-bearing Java requests now embed the authority ca
 
 ## Where to look
 
-`src/DUAL-RUNTIME-HARDENING-PLAN.md`, `src/conformance/README.md`, `src/java/ORM-JPA-PARITY-PLAN.md`, `src/csharp/conformance/orm/provider-conformance-matrix.json`, `src/csharp/ci`.
+`src/DUAL-RUNTIME-HARDENING-PLAN`, `src/conformance/README`, `src/java/ORM-JPA-PARITY-PLAN`, `src/csharp/conformance/orm/provider-conformance-matrix.json`, `src/csharp/ci`.

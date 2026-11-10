@@ -45,7 +45,7 @@ Each stage has a distinct job. A caller cannot skip authorization by supplying a
 - **Providers** implement storage, transport, gateway, event, and tooling integrations.
 - **Extensions** adapt external frameworks and infrastructure such as GraphQL, Keycloak, and Temporal.
 
-The precise project/module layout is listed in [implementation map](implementation-map.md).
+The precise project/module layout is listed in [implementation map](implementation-map).
 
 ## Important non-equivalences
 
