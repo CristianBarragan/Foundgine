@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "description": "Step 78 tenant-first gate. Every scenario sends a request for an entity that does not exist, so the only way the caller can learn anything about the schema is if the engine resolved names before authenticating. Both runtimes must implement every scenario under the same name (Java camelCase, .NET Snake_case, compared case- and separator-insensitively).",
+  "gateMessage": "The warrant does not authorize the requested subject or tenant scope.",
+  "resolverMarker": "no semantic descriptor",
+  "expectations": {
+    "gate-denial": "Fails with the generic gate denial: message equals gateMessage and does not contain resolverMarker or the probed entity name.",
+    "verification-failure": "Fails in warrant verification: message differs from gateMessage and does not contain resolverMarker.",
+    "reaches-resolver": "Passes the gate and fails in name resolution: message contains resolverMarker and differs from gateMessage.",
+    "succeeds": "Plans and executes: no exception; the provider runs exactly once."
+  },
+  "scenarios": [
+    {
+      "id": "wrong-tenant-probe-of-unknown-entity-gets-generic-denial",
+      "path": "dry-run",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "trusted-key"
+      },
+      "context": {
+        "subject": "alice",
+        "tenant": "tenant-b"
+      },
+      "expect": "gate-denial",
+      "entity": "unknown"
+    },
+    {
+      "id": "missing-tenant-probe-of-unknown-entity-gets-generic-denial",
+      "path": "dry-run",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "trusted-key"
+      },
+      "context": {
+        "subject": "alice",
+        "tenant": null
+      },
+      "expect": "gate-denial",
+      "entity": "unknown"
+    },
+    {
+      "id": "wrong-subject-probe-of-unknown-entity-gets-generic-denial",
+      "path": "dry-run",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "trusted-key"
+      },
+      "context": {
+        "subject": "mallory",
+        "tenant": "tenant-a"
+      },
+      "expect": "gate-denial",
+      "entity": "unknown"
+    },
+    {
+      "id": "unverifiable-warrant-probe-never-reaches-resolver",
+      "path": "dry-run",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "untrusted-key"
+      },
+      "context": {
+        "subject": "alice",
+        "tenant": "tenant-a"
+      },
+      "expect": "verification-failure",
+      "entity": "unknown"
+    },
+    {
+      "id": "same-tenant-caller-passes-gate-and-reaches-resolver",
+      "path": "dry-run",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "trusted-key"
+      },
+      "context": {
+        "subject": "alice",
+        "tenant": "tenant-a"
+      },
+      "expect": "reaches-resolver",
+      "entity": "unknown"
+    },
+    {
+      "id": "intent-path-is-gated-before-name-resolution",
+      "path": "read-intent",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "trusted-key"
+      },
+      "context": {
+        "subject": "alice",
+        "tenant": "tenant-b"
+      },
+      "expect": "gate-denial",
+      "entity": "unknown"
+    },
+    {
+      "id": "approved-execution-path-is-gated-before-name-resolution",
+      "path": "approved-execution",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "trusted-key"
+      },
+      "context": {
+        "subject": "alice",
+        "tenant": "tenant-b"
+      },
+      "expect": "gate-denial",
+      "entity": "unknown"
+    },
+    {
+      "id": "valid-same-tenant-request-plans-and-executes",
+      "path": "dry-run-then-execute",
+      "entity": "known",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "trusted-key",
+        "grants": "all-read-capabilities"
+      },
+      "context": {
+        "subject": "alice",
+        "tenant": "tenant-a"
+      },
+      "expect": "succeeds"
+    },
+    {
+      "id": "wrong-tenant-caller-on-known-entity-is-denied-before-any-execution",
+      "path": "dry-run-then-execute",
+      "entity": "known",
+      "warrant": {
+        "subject": "alice",
+        "allowedTenants": [
+          "tenant-a"
+        ],
+        "signedBy": "trusted-key",
+        "grants": "all-read-capabilities"
+      },
+      "context": {
+        "subject": "alice",
+        "tenant": "tenant-b"
+      },
+      "expect": "gate-denial",
+      "providerExecutions": 0
+    }
+  ]
+}

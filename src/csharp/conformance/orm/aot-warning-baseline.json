@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "policy": "Reviewed-only baseline. Never update automatically. Each entry must be justified in code review and include fingerprint, code, owner, rationale, and reviewedBy.",
+  "warnings": []
+}

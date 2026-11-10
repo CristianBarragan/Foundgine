@@ -5,7 +5,7 @@ namespace Foundgine.Providers.EventStore.Schema;
 public static class EventStoreMigrator
 {
     // Ordered, append-only. Never edit an applied migration; add a new one.
-    private static readonly string[] Migrations = ["001_initial", "002_correlation", "003_outbox"];
+    private static readonly string[] Migrations = ["001_initial", "002_correlation", "003_outbox", "004_gateway_approvals"];
 
     public static async Task ApplyAsync(
         NpgsqlDataSource dataSource, CancellationToken cancellationToken = default)

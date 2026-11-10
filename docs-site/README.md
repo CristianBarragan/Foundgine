@@ -1,6 +1,6 @@
 # Foundgine website
 
-Static public documentation for Foundgine **2.3.1 · .NET 10**.
+Static public documentation for Foundgine **3.3.0 · .NET 10 and Java 27**.
 
 ## Public reading path
 
@@ -16,7 +16,7 @@ The site is a guided product story rather than a dump of repository internals:
 8. **Evidence** — inspect benchmark methodology and results.
 9. **Packages** — choose packages by architectural responsibility.
 
-Every conceptual page has an in-page table of contents and a previous/home/next navigation strip. Deeper implementation detail belongs in the linked repository Markdown files.
+Every conceptual page has an in-page table of contents and a previous/home/next navigation strip. Deeper implementation detail belongs in the linked repository Markdown files, including the Java 27 build guide at `src/java/BUILDING.md` and the shared technical reference under `docs/`.
 
 ## Content rules
 
@@ -24,7 +24,7 @@ Every conceptual page has an in-page table of contents and a previous/home/next 
 - Keep the landing page concise; move detailed explanations to dedicated pages or repository docs.
 - Distinguish measured benchmark results from modeled estimates.
 - Keep security claims tied to executable tests or documented invariants.
-- Keep transport, semantic and provider responsibilities explicit.
+- Keep transport, semantic and provider responsibilities explicit.\n- Describe Java 27 and .NET 10 as language implementations of the same semantic execution architecture, while clearly marking language-specific capability differences.
 - Use the canonical architecture as the stable visual reference.
 
 ## Diagrams

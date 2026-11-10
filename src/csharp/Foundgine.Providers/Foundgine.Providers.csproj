@@ -1,60 +1,93 @@
+
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Authors>Foundgine</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/CristianBarragan/Foundgine</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
     <PackageId>Foundgine.Providers</PackageId>
-    <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine v2. It includes storage providers and adapters, AI/model and MCP tooling integrations, and Elasticsearch and vector-store support. It also carries the Foundgine AOT source generator as a build-time analyzer inside the NuGet package, so consumers do not install a separate generator package and the generator is not a runtime dependency. Foundgine.Providers depends only on Foundgine.Core and Foundgine.Runtime; secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers are expected to choose and configure the provider(s) matching their application and supply the semantic model and runtime configuration required by Foundgine.</Description>
+    <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine v2. It includes storage providers and adapters, AI/model and MCP tooling integrations, EventStore, gateway provider integrations, and Elasticsearch and vector-store support. It also carries the Foundgine AOT source generator as a build-time analyzer inside the NuGet package, so consumers do not install a separate generator package and the generator is not a runtime dependency. Foundgine.Providers depends only on Foundgine.Core and Foundgine.Runtime; secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers are expected to choose and configure the provider(s) matching their application and supply the semantic model and runtime configuration required by Foundgine.</Description>
     <PackageTags>providers;storage;ai;mcp;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Providers</RootNamespace>
     <AssemblyName>Foundgine.Providers</AssemblyName>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
+
   <ItemGroup>
-    <!-- ASP.NET Core is used only by the optional HTTP gateway adapter. Keep the framework reference private;
-         applications that map HTTP endpoints are expected to be ASP.NET Core hosts already. -->
-    <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App"
+                        PrivateAssets="all" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Remove="Foundgine.Providers.Aot.Generator/**" />
+    <!-- Never compile generated files from nested projects. -->
+    <Compile Remove="**/obj/**/*.cs" />
+    <Compile Remove="**/bin/**/*.cs" />
+
+    <!-- These directories are independent projects or samples. -->
+    <Compile Remove="Foundgine.Providers.Aot.Generator/**/*.cs" />
+
+    <!-- ORM core, ORM generator and EF Core provider are top-level sibling projects. These guards keep a
+         stale nested copy (e.g. left behind when a zip is extracted over an old tree) from being compiled
+         into this assembly. -->
+    <Compile Remove="Foundgine.Providers.Orm/**" />
+    <Compile Remove="Foundgine.Providers.Orm.Generator/**" />
+    <Compile Remove="Foundgine.Providers.EntityFrameworkCore/**" />
+    <EmbeddedResource Remove="Foundgine.Providers.Orm/**;Foundgine.Providers.Orm.Generator/**;Foundgine.Providers.EntityFrameworkCore/**" />
+    <None Remove="Foundgine.Providers.Orm/**;Foundgine.Providers.Orm.Generator/**;Foundgine.Providers.EntityFrameworkCore/**" />
+    <Compile Remove="Samples/**/*.cs" />
     <Compile Remove="Gateway.Tests/**/*.cs" />
     <Compile Remove="EventStore.Tests/**/*.cs" />
-    <Compile Remove="Samples/**/*.cs" />
-    <EmbeddedResource Remove="Foundgine.Providers.Aot.Generator/**" />
-    <None Remove="Foundgine.Providers.Aot.Generator/**" />
+
+    <EmbeddedResource Remove="Foundgine.Providers.Aot.Generator/**/*" />
+
+    <None Remove="Foundgine.Providers.Aot.Generator/**/*" />
   </ItemGroup>
+
   <ItemGroup>
-    <!-- Event-store migrations ship inside the single provider package. -->
-    <EmbeddedResource Include="EventStore/Schema/*.sql" LogicalName="Foundgine.Providers.EventStore.Schema.%(Filename)%(Extension)" />
+    <EmbeddedResource
+            Include="EventStore/Schema/*.sql"
+            LogicalName="Foundgine.Providers.EventStore.Schema.%(Filename)%(Extension)" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
-    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+    <None Include="README.md"
+          Pack="true"
+          PackagePath="README.md"
+          Condition="Exists('README.md')" />
+
+    <None Include="../../../LICENSE"
+          Pack="true"
+          PackagePath="LICENSE" />
+
     <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
     <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
-    <!-- The AOT generator is a build-time analyzer, never a runtime dependency. -->
+
+    <!-- Build-time AOT analyzer; not a runtime dependency. -->
     <ProjectReference
-      Include="Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"
-      PrivateAssets="all"
-      SkipGetTargetFrameworkProperties="true"
-      UndefineProperties="TargetFramework"
-    />
-<PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
-    <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
-    <PackageReference Include="Npgsql" Version="10.0.3" />
-    <PackageReference Include="Pgvector" Version="0.3.2" />
+            Include="Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+            OutputItemType="Analyzer"
+            ReferenceOutputAssembly="false"
+            PrivateAssets="all"
+            SkipGetTargetFrameworkProperties="true"
+            UndefineProperties="TargetFramework" />
+
+    <PackageReference Include="Microsoft.Extensions.AI"
+                      Version="10.9.0" />
+
+    <PackageReference Include="ModelContextProtocol"
+                      Version="2.2.0" />
+
+    <PackageReference Include="Npgsql"
+                      Version="10.0.3" />
+
+    <PackageReference Include="Pgvector"
+                      Version="0.3.2" />
   </ItemGroup>
-  <!-- Ship the generator inside this package as an analyzer; do not create a separate runtime package. -->
-  <Target Name="PackAotGenerator" BeforeTargets="_GetPackageFiles">
+
+  <Target Name="PackAotGenerator"
+          BeforeTargets="_GetPackageFiles">
+
     <PropertyGroup>
-      <_AotGeneratorDll>
-        $(MSBuildThisFileDirectory)Foundgine.Providers.Aot.Generator/bin/$(Configuration)/netstandard2.0/Foundgine.Providers.Aot.Generator.dll
-      </_AotGeneratorDll>
+      <_AotGeneratorDll>$(MSBuildThisFileDirectory)Foundgine.Providers.Aot.Generator/bin/$(Configuration)/netstandard2.0/Foundgine.Providers.Aot.Generator.dll</_AotGeneratorDll>
     </PropertyGroup>
 
     <Error
@@ -66,6 +99,17 @@
             Pack="true"
             PackagePath="analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
             Visible="false" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Items are removed here (not only in the ItemGroup above) so an explicit <Compile Include> added later by an
+       IDE for a file under these folders cannot pull the ORM/EF/generator sources into this assembly. -->
+  <Target Name="ExcludeSiblingProjectSources" BeforeTargets="BeforeCompile;CoreCompile;GenerateMSBuildEditorConfigFile">
+    <ItemGroup>
+      <Compile Remove="Foundgine.Providers.Orm/**" />
+      <Compile Remove="Foundgine.Providers.Orm.Generator/**" />
+      <Compile Remove="Foundgine.Providers.EntityFrameworkCore/**" />
+      <Compile Remove="Foundgine.Providers.Aot.Generator/**" />
     </ItemGroup>
   </Target>
 </Project>

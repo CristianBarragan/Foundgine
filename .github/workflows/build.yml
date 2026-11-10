@@ -27,6 +27,39 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate canonical and release versions
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          canonical="$(python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+
+          root = ET.parse("Directory.Build.props").getroot()
+          values = [
+              (element.text or "").strip()
+              for element in root.iter()
+              if element.tag.rsplit("}", 1)[-1] == "VersionPrefix"
+          ]
+          if len(values) != 1 or not values[0]:
+              raise SystemExit("Expected exactly one non-empty VersionPrefix in Directory.Build.props")
+          print(values[0])
+          PY
+          )"
+
+          if [[ "$canonical" != "3.3.0" ]]; then
+            echo "::error::Directory.Build.props must define 3.3.0; found '$canonical'."
+            exit 1
+          fi
+
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            tag_version="${GITHUB_REF_NAME#v}"
+            if [[ "$tag_version" != "$canonical" ]]; then
+              echo "::error::Release tag v$tag_version does not match canonical version $canonical."
+              exit 1
+            fi
+          fi
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
@@ -46,7 +79,7 @@ jobs:
           if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
             version="${GITHUB_REF_NAME#v}"
           else
-            version="2.3.1-ci.${GITHUB_RUN_NUMBER}"
+            version="3.3.0-ci.${GITHUB_RUN_NUMBER}"
           fi
 
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-].*)?$ ]]; then
@@ -59,11 +92,7 @@ jobs:
           rm -rf artifacts/nuget
           mkdir -p artifacts/nuget
 
-          dotnet pack src/csharp/Foundgine.sln \
-            --no-restore \
-            --configuration Release \
-            --output artifacts/nuget \
-            -p:PackageVersion="$version"
+          dotnet pack src/csharp/Foundgine.sln --no-restore --configuration Release --output artifacts/nuget "-p:Version=$version" "-p:PackageVersion=$version"
 
       - name: Validate NuGet packages
         shell: bash
@@ -765,7 +794,7 @@ jobs:
 
     steps:
       - name: Download NuGet artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           name: nuget-packages
           path: artifacts/nuget

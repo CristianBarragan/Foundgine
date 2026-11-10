@@ -43,11 +43,22 @@ public sealed class FoundgineGatewayApprovalService
             throw new UnauthorizedAccessException("The approval security context changed while the approval was being created.");
         var handle = Base64Url(RandomNumberGenerator.GetBytes(32));
         var expires = _time.GetUtcNow().Add(_lifetime);
-        await _store.StoreAsync(Digest(handle), approval, identity.Subject, identity.Tenant, expires, cancellationToken)
+        if (_store is not IAtomicFoundgineGatewayApprovalStore atomicStore)
+            throw new InvalidOperationException("Gateway approval creation requires an atomic approval-plus-audit/outbox store.");
+        var evidence = new FoundgineGatewayApprovalEvidence(
+            Guid.NewGuid().ToString("N"), "ApprovalRequested", identity.Subject, identity.Tenant,
+            approval.PlanFingerprint, _time.GetUtcNow(), expires);
+        await atomicStore.StoreWithEvidenceAsync(Digest(handle), approval, evidence, cancellationToken)
             .ConfigureAwait(false);
         return new FoundgineGatewayApprovalReceipt(handle, expires, approval.PlanFingerprint);
     }
 
+    /// <summary>
+    /// Consumes the handle (one-time) and executes; null when the handle is unknown, expired, revoked or not the caller's.
+    /// <b>At-most-once contract:</b> the approval is consumed (committed) BEFORE execution starts. If execution then fails
+    /// or the process dies, the approval is not restored: the failure may have happened after side effects, so an
+    /// automatic retry could run the mutation twice. A caller that needs to retry must obtain a fresh approval.
+    /// </summary>
     public async Task<MutationExecutionResult?> ExecuteAsync(string handle,
         CancellationToken cancellationToken = default)
     {

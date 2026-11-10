@@ -286,6 +286,7 @@ public final class FoundgineEngine implements IFoundgine {
         Objects.requireNonNull(request, "request");
         SecurityResourceLimitValidator.validate(request, securityResourceLimits);
 
+        authenticateBeforeDiscovery(request);
         var graph = new SemanticRequestResolver(contract).resolve(request);
         SemanticOperation semanticOperation = SemanticOperationCompiler.compile(graph);
         validateWarrant(request, semanticOperation, false);
@@ -333,6 +334,7 @@ public final class FoundgineEngine implements IFoundgine {
                             + " dry-run and obtain a new approval.");
         }
 
+        authenticateBeforeDiscovery(approval.request());
         var graph = new SemanticRequestResolver(contract).resolve(approval.request());
         SemanticOperation semanticOperation = SemanticOperationCompiler.compile(graph);
         validateWarrant(approval.request(), semanticOperation, true);
@@ -376,6 +378,7 @@ public final class FoundgineEngine implements IFoundgine {
     public CompletionStage<ExecutionResult> executeAsync(
             ReadIntent intent, ExecutionContext context, CancellationToken cancellationToken) {
         Objects.requireNonNull(intent, "intent");
+        authenticateBeforeDiscovery(intent.security());
         SemanticRequest request = new ReadIntentCompiler(model).compile(intent);
         return executeAsync(request, context, cancellationToken);
     }
@@ -388,6 +391,7 @@ public final class FoundgineEngine implements IFoundgine {
         Objects.requireNonNull(request, "request");
         SecurityResourceLimitValidator.validate(request, securityResourceLimits);
 
+        authenticateBeforeDiscovery(request);
         var graph = new SemanticRequestResolver(contract).resolve(request);
         SemanticOperation semanticOperation = SemanticOperationCompiler.compile(graph);
         validateWarrant(request, semanticOperation, true);
@@ -432,6 +436,29 @@ public final class FoundgineEngine implements IFoundgine {
         return security == null
                 ? cacheNamespace + ":" + shape
                 : cacheNamespace + ":authority:" + security.authorityCachePartition() + ":" + shape;
+    }
+
+    /**
+     * Tenant-first gate. Runs before the request is resolved against the semantic model, so an
+     * unauthenticated or wrong-tenant caller can never use resolver errors to probe entity, field
+     * or relationship names. Denials are deliberately generic and carry no schema detail.
+     */
+    private void authenticateBeforeDiscovery(SemanticRequest request) {
+        authenticateBeforeDiscovery(request.security());
+    }
+
+    private void authenticateBeforeDiscovery(SecurityExecutionContext security) {
+        if (security == null) return;
+
+        validateDiscoveryWarrant(security);
+
+        var warrant = security.warrant();
+        var tenants = warrant.constraints().allowedTenants();
+        if (!warrant.subject().equals(security.subject())
+                || (!tenants.isEmpty()
+                        && (security.tenant() == null || !tenants.contains(security.tenant()))))
+            throw new SecurityException(
+                    "The warrant does not authorize the requested subject or tenant scope.");
     }
 
     private void validateWarrant(
@@ -503,6 +530,23 @@ public final class FoundgineEngine implements IFoundgine {
             SecurityWarrantReplayGuard.consume(
                     security.warrant(), warrantReplayStore, Instant.now());
         }
+    }
+
+    /**
+     * Canonical text hashed into the intent fingerprint. The security context carries a signed
+     * warrant with {@link java.time.Instant} fields, which the plain mapper cannot serialize, so a
+     * security-bearing request is serialized without its context and the context's authority
+     * partition (which embeds the full warrant digest) is appended. Requests without a security
+     * context serialize exactly as before.
+     */
+    private static String intentFingerprintSource(SemanticRequest request) throws Exception {
+        SecurityExecutionContext security = request.security();
+        if (security == null) return MAPPER.writeValueAsString(request);
+        SemanticRequest withoutSecurity =
+                new SemanticRequest(request.root(), request.selections(), request.options(), null);
+        return MAPPER.writeValueAsString(withoutSecurity)
+                + "|authority:"
+                + security.authorityCachePartition();
     }
 
     private static List<com.foundgine.core.semantic.ir.SemanticReadNode> traverseDepthFirst(
@@ -613,7 +657,7 @@ public final class FoundgineEngine implements IFoundgine {
                                                 "intent-v"
                                                         + versions.intentVersion()
                                                         + "|"
-                                                        + MAPPER.writeValueAsString(request));
+                                                        + intentFingerprintSource(request));
                             } catch (Exception e) {
                                 throw new IllegalStateException(
                                         "Unable to serialize semantic request for intent"

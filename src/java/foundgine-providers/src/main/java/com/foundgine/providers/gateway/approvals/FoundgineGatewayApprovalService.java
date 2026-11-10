@@ -57,7 +57,12 @@ public final class FoundgineGatewayApprovalService {
         RANDOM.nextBytes(raw);
         var handle = Base64.getUrlEncoder().withoutPadding().encodeToString(raw);
         var expires = clock.instant().plus(lifetime);
-        store.store(digest(handle), approval, identity.subject(), identity.tenant(), expires);
+        if (!(store instanceof IAtomicFoundgineGatewayApprovalStore atomicStore))
+            throw new IllegalStateException("Gateway approval creation requires an atomic approval-plus-audit/outbox store.");
+        var evidence = new FoundgineGatewayApprovalEvidence(java.util.UUID.randomUUID().toString().replace("-", ""),
+                "ApprovalRequested", identity.subject(), identity.tenant(), approval.planFingerprint(),
+                clock.instant(), expires);
+        atomicStore.storeWithEvidence(digest(handle), approval, evidence);
         return new FoundgineGatewayApprovalReceipt(handle, expires, approval.planFingerprint());
     }
 

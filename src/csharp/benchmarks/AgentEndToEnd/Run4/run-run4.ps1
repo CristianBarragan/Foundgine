@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param([ValidateSet('agent','protocol','both')][string]$Mode='both',[int[]]$CustomerCounts=@(10,100,1000,10000),[int[]]$Concurrency=@(8,16,32,64),[int[]]$RunsPerTier=@(30,30,30,30),[int]$Warmups=5,[switch]$Publish)
 $ErrorActionPreference='Stop'
 # PowerShell 7.3+ promotes anything a native command (docker, docker compose,
@@ -139,7 +139,8 @@ try {
       Remove-Item $stop -Force -ErrorAction SilentlyContinue
       $hostCmd=(Get-Command powershell -ErrorAction SilentlyContinue)
       if($null -eq $hostCmd){$hostCmd=(Get-Command pwsh -ErrorAction Stop)}
-      $metrics=Start-Process -FilePath $hostCmd.Source -ArgumentList @('-NoProfile','-File',$MetricsScript,'-ComposeFile',$ComposeFile,'-ProjectName',$Project,'-Services','postgres,graphql-ef,mcp-foundgine','-OutputCsv',$csv,'-StopFile',$stop,'-IntervalMs','1000') -PassThru
+      $metrics=Start-Process -FilePath $hostCmd.Source -ArgumentList @('-NoProfile','-File',$MetricsScript,'-ComposeFile',$ComposeFile,'-ProjectName',$Project,'-Services','postgres,graphql-ef,mcp-foundgine','-OutputCsv',$csv,'-StopFile',$stop,'-ErrorLog',($csv + '.errors.log'),'-IntervalMs','1000') -PassThru
+      $benchmarkExitCode = -1
       try {
         $env:RUN4_MODE=$Mode
         $env:RUN4_RUNS=$runsForTier.ToString()
@@ -151,13 +152,17 @@ try {
         $env:RUN4_MCP_URL='http://localhost:4402/mcp'
         Write-Host "Run 4: customers=$customerCount concurrency=$c runs=$runsForTier warmups=$Warmups"
         & dotnet run --project (Join-Path $PSScriptRoot 'Runner/Runner.csproj') -c Release -- $Mode
-        if($LASTEXITCODE -ne 0){throw "Run 4 failed for $customerCount customers at concurrency $c (exit code $LASTEXITCODE)"}
+        $benchmarkExitCode = $LASTEXITCODE
+        if($benchmarkExitCode -ne 0){throw "Run 4 failed for $customerCount customers at concurrency $c (exit code $LASTEXITCODE)"}
       }
       finally {
         New-Item -ItemType File -Force -Path $stop | Out-Null
         try { Wait-Process -Id $metrics.Id -Timeout 10 -ErrorAction SilentlyContinue } catch {}
         if(-not $metrics.HasExited){ try { $metrics.Kill() } catch {} }
-        if(Test-Path $csv){ & $hostCmd.Source -NoProfile -File $MetricsSummary -InputCsv $csv -OutputJson $json }
+        if(Test-Path $csv){
+          & $hostCmd.Source -NoProfile -File $MetricsSummary -InputCsv $csv -OutputJson $json -ErrorLog ($csv + '.errors.log')
+          if($LASTEXITCODE -ne 0 -and $benchmarkExitCode -eq 0){ throw "Docker metrics summary failed for $customerCount customers / concurrency $c. See $csv.errors.log." }
+        }
       }
     }
   }

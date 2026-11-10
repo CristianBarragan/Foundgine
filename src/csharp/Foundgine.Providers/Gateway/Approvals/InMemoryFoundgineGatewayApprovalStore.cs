@@ -7,11 +7,16 @@ namespace Foundgine.Providers.Gateway.Approvals;
 /// Single-process development store. It is intentionally not durable or shared across replicas;
 /// production hosts must register a distributed implementation of IFoundgineGatewayApprovalStore.
 /// </summary>
-public sealed class InMemoryFoundgineGatewayApprovalStore : IFoundgineGatewayApprovalStore
+public sealed class InMemoryFoundgineGatewayApprovalStore : IAtomicFoundgineGatewayApprovalStore
 {
     private sealed record Entry(MutationPlanApproval Approval, string Subject, string? Tenant, DateTimeOffset ExpiresAt);
     private readonly ConcurrentDictionary<string, Entry> _entries = new(StringComparer.Ordinal);
     private readonly TimeProvider _time;
+    private readonly object _commitLock = new();
+    private readonly List<FoundgineGatewayApprovalEvidence> _evidence = new();
+
+    /// <summary>Development-only evidence view; this is not durable audit storage.</summary>
+    public IReadOnlyList<FoundgineGatewayApprovalEvidence> Evidence { get { lock (_commitLock) return _evidence.ToArray(); } }
 
     public InMemoryFoundgineGatewayApprovalStore(TimeProvider? timeProvider = null) =>
         _time = timeProvider ?? TimeProvider.System;
@@ -27,6 +32,22 @@ public sealed class InMemoryFoundgineGatewayApprovalStore : IFoundgineGatewayApp
         if (!_entries.TryAdd(handleDigest, new Entry(approval, subject, tenant, expiresAt)))
             throw new InvalidOperationException("Approval handle collision.");
         return ValueTask.CompletedTask;
+    }
+
+
+    public async ValueTask StoreWithEvidenceAsync(string handleDigest, MutationPlanApproval approval,
+        FoundgineGatewayApprovalEvidence evidence, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(evidence);
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_commitLock)
+        {
+            // The in-memory implementation models a single atomic commit for development/tests only.
+            StoreAsync(handleDigest, approval, evidence.Subject, evidence.Tenant, evidence.ExpiresAt, cancellationToken)
+                .GetAwaiter().GetResult();
+            _evidence.Add(evidence);
+        }
+        await ValueTask.CompletedTask;
     }
 
     public ValueTask<MutationPlanApproval?> TakeAsync(string handleDigest, string subject, string? tenant,

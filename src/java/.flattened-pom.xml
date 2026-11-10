@@ -1,33 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!--
-  Foundgine — Java implementation
-
-  Module layout:
-
-    foundgine-core          [core semantic execution boundary]
-    foundgine-extensions    [transport adapters, layered independently]
-    foundgine-providers     [storage/execution providers]
-    foundgine-runtime       [application-facing runtime]
-    */src/test/java         [test suites]
-    samples/*               [sample applications]
-    benchmarks/*            [performance benchmarks]
-    security/foundgine-redteam [security test suite]
-
-  Modules are added to this parent in dependency order (Core first, since
-  everything else depends on it).
--->
-<project
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
->
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-parent</artifactId>
-  <version>2.3.1</version>
+  <version>3.3.0</version>
   <packaging>pom</packaging>
-  <name>Foundgine</name>
-  <description>Foundgine: an application-controlled semantic execution boundary for AI agents and other callers.</description>
+  <name>Foundgine Java</name>
+  <description>Java implementation of Foundgine, aligned with the current C# source packages.</description>
   <url>https://github.com/CristianBarragan/Foundgine</url>
   <licenses>
     <license>
@@ -48,4 +28,14 @@
     <developerConnection>scm:git:ssh://git@github.com/CristianBarragan/Foundgine.git</developerConnection>
     <url>https://github.com/CristianBarragan/Foundgine</url>
   </scm>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

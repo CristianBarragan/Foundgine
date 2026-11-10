@@ -169,6 +169,7 @@ public sealed class FoundgineEngine : IFoundgine
         ArgumentNullException.ThrowIfNull(request);
         SecurityResourceLimitValidator.Validate(request, _securityResourceLimits);
 
+        AuthenticateBeforeDiscovery(request);
         var graph = new SemanticRequestResolver(_contract).Resolve(request);
         var semanticOperation = SemanticOperationCompiler.Compile(graph);
         ValidateWarrant(request, semanticOperation, consumeReplay: false);
@@ -217,6 +218,7 @@ public sealed class FoundgineEngine : IFoundgine
                 "The approval was created against an incompatible semantic version set. Re-run dry-run and obtain a new approval.");
         }
 
+        AuthenticateBeforeDiscovery(approval.Request);
         var graph = new SemanticRequestResolver(_contract).Resolve(approval.Request);
         var semanticOperation = SemanticOperationCompiler.Compile(graph);
         ValidateWarrant(approval.Request, semanticOperation, consumeReplay: true);
@@ -258,6 +260,7 @@ public sealed class FoundgineEngine : IFoundgine
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(intent);
+        AuthenticateBeforeDiscovery(intent.Security);
         var request = new Foundgine.Core.Semantic.Intent.ReadIntentCompiler(_model).Compile(intent);
         return ExecuteAsync(request, context, cancellationToken);
     }
@@ -270,6 +273,7 @@ public sealed class FoundgineEngine : IFoundgine
         ArgumentNullException.ThrowIfNull(request);
         SecurityResourceLimitValidator.Validate(request, _securityResourceLimits);
 
+        AuthenticateBeforeDiscovery(request);
         var graph = new SemanticRequestResolver(_contract).Resolve(request);
         var semanticOperation = SemanticOperationCompiler.Compile(graph);
         ValidateWarrant(request, semanticOperation, consumeReplay: true);
@@ -312,6 +316,31 @@ public sealed class FoundgineEngine : IFoundgine
         return security is null
             ? _cacheNamespace + ":" + shape
             : _cacheNamespace + ":authority:" + security.AuthorityCachePartition + ":" + shape;
+    }
+
+    /// <summary>
+    /// Tenant-first gate. Runs before the request is resolved against the
+    /// semantic model, so an unauthenticated or wrong-tenant caller can never
+    /// use resolver errors to probe entity, field or relationship names.
+    /// Denials are deliberately generic and carry no schema detail.
+    /// </summary>
+    private void AuthenticateBeforeDiscovery(SemanticRequest request) =>
+        AuthenticateBeforeDiscovery(request.Security);
+
+    private void AuthenticateBeforeDiscovery(SecurityExecutionContext? security)
+    {
+        if (security is null)
+            return;
+
+        ValidateDiscoveryWarrant(security);
+
+        var warrant = security.Warrant;
+        var tenants = warrant.Constraints.AllowedTenants;
+        if (!StringComparer.Ordinal.Equals(warrant.Subject, security.Subject) ||
+            (tenants.Count > 0 &&
+             (security.Tenant is null || !tenants.Contains(security.Tenant, StringComparer.Ordinal))))
+            throw new UnauthorizedAccessException(
+                "The warrant does not authorize the requested subject or tenant scope.");
     }
 
     private void ValidateWarrant(SemanticRequest request, SemanticOperation operation, bool consumeReplay)

@@ -46,7 +46,7 @@ stabilizes.
 
 ## 1. Prerequisites
 
-- **JDK 21** (`maven.compiler.release` for this reactor)
+- **JDK 27** (`maven.compiler.release` for this reactor)
 - **Maven 3.9+**
 - **Docker with Compose support** (only needed once you add the PostgreSQL provider — see
   the [Advanced tutorial](../foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md))

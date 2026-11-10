@@ -1,4 +1,4 @@
-# Source layout
+﻿# Source layout
 
 Foundgine keeps each language implementation under its own language-specific
 source root:
@@ -34,3 +34,6 @@ without mixing Java and C# projects in the same directory.
 
 The two implementations can therefore evolve side-by-side while preserving
 the same conceptual Foundgine module boundaries.
+## Dual-runtime hardening
+
+See [DUAL-RUNTIME-HARDENING-PLAN.md](DUAL-RUNTIME-HARDENING-PLAN.md) for the evidence-based .NET/Java hardening matrix and release gates.

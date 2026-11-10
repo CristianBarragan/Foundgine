@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsAotCompatible>true</IsAotCompatible>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageId>Foundgine.Providers.Orm</PackageId>
+    <Description>Shared ORM execution core for Foundgine: composes generated, strongly typed LINQ expression fragments from the provider-neutral ExecutionIR. Used by the EF Core adapter. ORM-agnostic: depends only on IQueryable.</Description>
+    <RootNamespace>Foundgine.Providers.Orm</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
+    <!-- Build-time source generator shipped as an analyzer; never a runtime dependency. -->
+    <ProjectReference Include="../Foundgine.Providers.Orm.Generator/Foundgine.Providers.Orm.Generator.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all"
+                      SkipGetTargetFrameworkProperties="true" UndefineProperties="TargetFramework" />
+  </ItemGroup>
+</Project>

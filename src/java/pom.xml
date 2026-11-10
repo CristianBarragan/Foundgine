@@ -36,7 +36,7 @@
   </scm>
 
   <properties>
-    <revision>2.3.1</revision>
+    <revision>3.3.0</revision>
     <maven.compiler.release>27</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -44,6 +44,7 @@
     <junit.version>5.11.4</junit.version>
     <postgresql.version>42.7.12</postgresql.version>
     <graphql-java.version>22.3</graphql-java.version>
+    <jakarta-persistence.version>3.2.0</jakarta-persistence.version>
 
     <maven.compiler.plugin.version>3.16.0</maven.compiler.plugin.version>
     <maven.surefire.plugin.version>3.6.1</maven.surefire.plugin.version>
@@ -58,6 +59,8 @@
     <module>foundgine-core</module>
     <module>foundgine-runtime</module>
     <module>foundgine-providers</module>
+    <!-- Compile-time metadata generator (Java counterpart of Foundgine.Providers.Aot.Generator). -->
+    <module>foundgine-aot-generator</module>
     <module>foundgine-extensions</module>
     <module>security/foundgine-redteam</module>
     <!-- Keep the annotation-processor consumer in the same reactor as its
@@ -78,6 +81,12 @@
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${postgresql.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.persistence</groupId>
+        <artifactId>jakarta.persistence-api</artifactId>
+        <version>${jakarta-persistence.version}</version>
       </dependency>
 
       <dependency>

@@ -51,6 +51,11 @@ jobs:
           set -euo pipefail
           java -version
           javac -version
+          JAVA_MAJOR="$(java -XshowSettings:properties -version 2>&1 | awk -F'= ' '/java.specification.version/ {print $2; exit}')"
+          if [[ "$JAVA_MAJOR" != "${JAVA_VERSION}" ]]; then
+            echo "::error::Expected Java ${JAVA_VERSION}, but the runtime reports ${JAVA_MAJOR:-unknown}."
+            exit 1
+          fi
           mvn --version
 
       - name: Build and run unit tests
@@ -62,11 +67,12 @@ jobs:
             --no-transfer-progress \
             --errors \
             -Dgpg.skip=true \
+            -Drevision="3.3.0-ci.${GITHUB_RUN_NUMBER}" \
             clean package
 
       - name: Upload Maven build reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: java-build-reports
           path: |
@@ -101,6 +107,11 @@ jobs:
           set -euo pipefail
           java -version
           javac -version
+          JAVA_MAJOR="$(java -XshowSettings:properties -version 2>&1 | awk -F'= ' '/java.specification.version/ {print $2; exit}')"
+          if [[ "$JAVA_MAJOR" != "${JAVA_VERSION}" ]]; then
+            echo "::error::Expected Java ${JAVA_VERSION}, but the runtime reports ${JAVA_MAJOR:-unknown}."
+            exit 1
+          fi
           mvn --version
 
       - name: Run Foundgine Redteam tests
@@ -112,13 +123,14 @@ jobs:
             --no-transfer-progress \
             --errors \
             -Dgpg.skip=true \
+            -Drevision="3.3.0-ci.${GITHUB_RUN_NUMBER}" \
             -pl security/foundgine-redteam \
             -am \
             verify
 
       - name: Upload security test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: java-security-reports
           path: |
@@ -153,6 +165,11 @@ jobs:
           set -euo pipefail
           java -version
           javac -version
+          JAVA_MAJOR="$(java -XshowSettings:properties -version 2>&1 | awk -F'= ' '/java.specification.version/ {print $2; exit}')"
+          if [[ "$JAVA_MAJOR" != "${JAVA_VERSION}" ]]; then
+            echo "::error::Expected Java ${JAVA_VERSION}, but the runtime reports ${JAVA_MAJOR:-unknown}."
+            exit 1
+          fi
           mvn --version
 
       - name: Verify Docker availability
@@ -175,11 +192,12 @@ jobs:
             --no-transfer-progress \
             --errors \
             -Dgpg.skip=true \
+            -Drevision="3.3.0-ci.${GITHUB_RUN_NUMBER}" \
             verify
 
       - name: Upload E2E test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: java-postgres-e2e-reports
           path: |
@@ -221,6 +239,11 @@ jobs:
 
           if [[ -z "$VERSION" ]]; then
             echo "::error::Unable to determine release version."
+            exit 1
+          fi
+
+          if [[ "$VERSION" != "3.3.0" ]]; then
+            echo "::error::Release tag v$VERSION does not match canonical Foundgine version 3.3.0."
             exit 1
           fi
 
@@ -364,6 +387,11 @@ jobs:
           set -euo pipefail
           java -version
           javac -version
+          JAVA_MAJOR="$(java -XshowSettings:properties -version 2>&1 | awk -F'= ' '/java.specification.version/ {print $2; exit}')"
+          if [[ "$JAVA_MAJOR" != "${JAVA_VERSION}" ]]; then
+            echo "::error::Expected Java ${JAVA_VERSION}, but the runtime reports ${JAVA_MAJOR:-unknown}."
+            exit 1
+          fi
           mvn --version
 
       - name: Build and publish Foundgine Java libraries
