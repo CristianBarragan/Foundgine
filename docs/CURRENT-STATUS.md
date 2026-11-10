@@ -95,6 +95,10 @@ Both implementations carry `ParityTest`-style tests asserting the SQL provider b
 
 `Foundgine.Providers.Storage.InMemory` (`com.foundgine.providers.storage.inmemory` in Java) is a deliberately limited provider used to validate provider independence and support deterministic tests/examples, in both implementations.
 
+### ORM providers (EF Core and JPA)
+
+An ORM-neutral execution core (`Foundgine.Providers.Orm` in .NET, `storage/orm` in Java) validates plans, binds authorization and executes through typed expression fragments. The concrete adapters are **EF Core** (`Foundgine.Providers.EntityFrameworkCore`, .NET) and **JPA** (`storage/orm/jpa`, Java); .NET also has a Roslyn ORM map generator (`Foundgine.Providers.Orm.Generator`). Capability and evidence status is tracked per capability: implemented is not the same as certified, and aggregate cursor pagination stays disabled until a real database test proves it. See the [ORM providers wiki page](wiki/orm-providers.md) and [`SOURCE-COVERAGE.md`](SOURCE-COVERAGE.md).
+
 ## Current adapters
 
 ### GraphQL

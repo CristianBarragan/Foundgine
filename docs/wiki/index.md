@@ -6,21 +6,43 @@ Foundgine is a semantic execution boundary: it lets applications, APIs, automati
 
 ## Start here
 
-1. [Core concepts](core-concepts) — the vocabulary and boundaries used throughout Foundgine.
-2. [Semantic model and metadata](semantic-model) — how physical application metadata becomes a stable semantic contract.
-3. [Intent, grounding and retrieval](intent-grounding) — how caller language is resolved without granting authority.
-4. [Planning and execution](planning-execution) — how resolved requests become validated plans and provider work.
-5. [Authorization and warrants](authorization-security) — how identity, scope, authority, and execution trust are separated.
-6. [Mutation lifecycle](mutations) — propose, dry-run, approve, and execute.
-7. [Gateway, events and live updates](gateway-events) — exposing capabilities through a stable facade.
-8. [Providers and storage](providers-storage) — conceptual provider contracts and safety boundaries.
-9. [Provider catalogue](providers) — detailed inventory, responsibilities, source locations and operational guidance for every provider family.
-10. [AI agents and MCP](agents-mcp) — safe tool discovery and invocation patterns.
-11. [AOT and generated metadata](aot) — build-time metadata generation and trimming-friendly deployment.
-12. [Integrations](integrations) — overview of Keycloak, Temporal, GraphQL and host integration.
-13. [Extension catalogue](extensions) — detailed feature, source and security guide for every framework extension.
-14. [Operations and extension points](operations) — configuration, diagnostics, testing, and adding capabilities.
-15. [Cross-language implementation map](implementation-map) — where capabilities live in C# and Java.
+> **New to this? In plain words.** Foundgine sits between your callers (apps, APIs, AI agents) and your data. **Providers** do the database and infrastructure work; **extensions** connect tools like GraphQL, Keycloak and Temporal. Foundgine decides what is allowed.
+
+**Concepts**
+
+1. [Core concepts](core-concepts.md) — the vocabulary and boundaries used throughout Foundgine.
+2. [Semantic model and metadata](semantic-model.md) — how physical application metadata becomes a stable semantic contract.
+3. [Intent, grounding and retrieval](intent-grounding.md) — how caller language is resolved without granting authority.
+4. [Planning and execution](planning-execution.md) — how resolved requests become validated plans and provider work.
+5. [Authorization and warrants](authorization-security.md) — how identity, scope, authority, and execution trust are separated.
+6. [Mutation lifecycle](mutations.md) — propose, dry-run, approve, and execute.
+7. [Gateway, events and live updates](gateway-events.md) — exposing capabilities through a stable facade.
+
+**Providers (databases, ORMs, search, events)**
+
+8. [Provider catalogue](providers.md) — **every provider by name**, in plain words: SQL, **EF Core**, **JPA**, in-memory, Elasticsearch, pgvector, PostgreSQL retrieval, event store, outbox, gateway, MCP, AI models.
+9. [ORM providers: EF Core (.NET) and JPA (Java)](orm-providers.md) — use the ORM you already have; permissions are still always enforced; honest maturity table.
+10. [Providers and storage](providers-storage.md) — conceptual provider contracts and safety boundaries.
+
+**Extensions and AI**
+
+11. [Extensions](extensions.md) — GraphQL, Keycloak and Temporal in one place (the old Integrations page now points here).
+12. [AI agents and MCP](agents-mcp.md) — safe tool discovery and invocation patterns.
+
+**Trust, proof and operations**
+
+13. [Insights, evidence and auditing](insights-evidence-auditing.md) — receipts, audit, diagnostics and live events.
+14. [Approvals, audit and governance](approvals-audit-governance.md) — who said yes, and can we prove it.
+15. [Conformance and hardening](conformance-hardening.md) — what is proven versus only implemented.
+16. [AOT and generated metadata](aot.md) — build-time metadata generation and trimming-friendly deployment.
+17. [Operations and extension points](operations.md) — configuration, diagnostics, testing, and adding capabilities.
+
+**Reference**
+
+18. [Cross-language implementation map](implementation-map.md) — where capabilities live in C# and Java.
+19. [Glossary (plain words)](glossary.md) — short, friendly definitions.
+
+> Looking for **EF Core** or **JPA**? Go to [ORM providers](orm-providers.md). Looking for GraphQL, Keycloak or Temporal? Go to [Extensions](extensions.md).
 
 ## Documentation principles
 

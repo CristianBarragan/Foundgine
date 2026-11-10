@@ -10,9 +10,13 @@ Providers adapt semantic plans and capability contracts to concrete infrastructu
 
 Translate validated plans into provider operations. SQL providers compile semantic filters/projections/orderings into parameterized SQL and enforce required authorization predicates. In-memory providers are useful for deterministic tests and simple deployments, but should preserve the same contract semantics.
 
+### ORM providers (EF Core and JPA)
+
+Run the same validated plans through the ORM an application already uses: **EF Core** in .NET and **JPA** in Java. A shared, ORM-neutral core keeps the security rules (mandatory permission filters, explicit projection, atomic mutations); the adapter only translates. See [ORM providers](orm-providers.md) for status and setup.
+
 ### Retrieval providers
 
-Provide candidate discovery for grounding. PostgreSQL pgvector and Elasticsearch integrations can index lexical/embedding projections and return candidate references. They are not authoritative semantic contracts and do not grant access.
+Provide candidate discovery for grounding. PostgreSQL pgvector, PostgreSQL trigram/full-text and Elasticsearch integrations can index lexical/embedding projections and return candidate references. They are not authoritative semantic contracts and do not grant access.
 
 ### Event and outbox providers
 
@@ -62,3 +66,5 @@ An event store persists envelopes for audit, replay, or stream delivery. An outb
 ## Full provider catalogue
 
 For the component-by-component inventory, source paths, language coverage, security constraints and operational guidance, see the [Provider catalogue](providers.md).
+
+See also: [ORM providers (EF Core and JPA)](orm-providers.md), [Insights, evidence and auditing](insights-evidence-auditing.md), [Extensions](extensions.md).

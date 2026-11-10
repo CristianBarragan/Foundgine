@@ -20,16 +20,24 @@
 Foundgine gives AI agents and other callers a way to express what they want, while your application retains full control over how anything is executed. It introduces a single, application‑controlled semantic execution boundary that sits between:
 
 - caller intent,
-
 - your domain meaning,
-
 - your authorization rules,
-
 - and the actual operations performed on your data, APIs, GraphQL, MCP tools, or backend systems.
 
 This boundary ensures that agents can propose actions, but only your application decides **what is allowed, what is safe, and what is actually executed.**
 
 [**Go to website →**](https://cristianbarragan.github.io/Foundgine/docs-site/)
+
+**Where to read next**
+
+| I want to... | Go to |
+| ------------ | ----- |
+| Run something now | [Get started](#get-started) |
+| Understand the idea and the boundary | [`docs/WHY-FOUNDGINE.md`](docs/WHY-FOUNDGINE.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| Browse every feature in plain language | [Feature and capability wiki](docs/wiki/index.md) |
+| Pick a database, ORM (**EF Core** / **JPA**) or search provider | [Provider catalogue](docs/wiki/providers.md) · [ORM providers](docs/wiki/orm-providers.md) |
+| Add GraphQL, Keycloak or Temporal | [Extensions](docs/wiki/extensions.md) |
+| See what is proven versus only implemented | [Current status](docs/CURRENT-STATUS.md) · [Conformance and hardening](docs/wiki/conformance-hardening.md) |
 
 # The problem
 
@@ -152,16 +160,35 @@ For the deeper rationale, read:
 
 ## Package shape
 
-The current source layout is consolidated into four publishable packages:
+The source layout is consolidated into four publishable packages (the .NET names are shown; Java uses `foundgine-*` artifacts under `io.github.cristianbarragan`):
 
-| Package                | Responsibility                                                                |
-| ---------------------- | ----------------------------------------------------------------------------- |
-| `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts |
-| `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                 |
-| `Foundgine.Providers`  | Storage, AI/model, MCP, AOT and other concrete integrations                   |
-| `Foundgine.Extensions` | Optional framework integrations such as Hot Chocolate GraphQL                 |
+| Package                | Responsibility                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- |
+| `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts                            |
+| `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                                            |
+| `Foundgine.Providers`  | Concrete storage (SQL, **EF Core**, **JPA**, in-memory, search), events, gateway, AI/model, MCP and AOT |
+| `Foundgine.Extensions` | Optional GraphQL (Hot Chocolate), Keycloak identity and Temporal workflow integrations                   |
 
 The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. See the [package guide](docs-site/packages/) for the current boundary map.
+
+## Providers and extensions at a glance
+
+A **provider** does the real work against infrastructure; an **extension** connects an outside framework or service. Both sit outside the semantic boundary: they never decide what is allowed.
+
+| Need | Use | Notes |
+| ---- | --- | ----- |
+| Relational database, Foundgine writes the SQL | **SQL provider** (incl. PostgreSQL batched mutations) | .NET and Java |
+| Your existing ORM | **EF Core** (.NET) or **JPA** (Java) over a shared ORM-neutral core | Permission filters are always added; maturity is tracked per capability. See [ORM providers](docs/wiki/orm-providers.md) |
+| Tests and demos, no database | **In-memory provider** | Deliberately limited |
+| Understanding free-form wording | **Elasticsearch**, **PostgreSQL + pgvector**, **PostgreSQL trigram/full-text** retrieval | Candidates and evidence only, never authority |
+| Durable events and reliable delivery | **Event store** and **outbox** | At-least-once delivery |
+| One front door for other products | **Gateway** (approvals, events, status, diagnostics) | Opaque one-time approval handles |
+| AI agents and tools | **MCP tools**, **Microsoft.Extensions.AI** models | Model supplies intent, host supplies authority |
+| GraphQL API | **GraphQL extension** (Hot Chocolate) | Translates only |
+| Keycloak logins | **Keycloak extension** | Short-lived signed warrants |
+| Long-running processes | **Temporal extension** | Retries, timers, approvals, compensation |
+
+The full inventory with source paths is the [Provider catalogue](docs/wiki/providers.md) and the [Extensions page](docs/wiki/extensions.md). Receipts, audit and diagnostics are explained in [Insights, evidence and auditing](docs/wiki/insights-evidence-auditing.md).
 
 ## Evidence
 
@@ -181,18 +208,24 @@ A live adversarial run of `Foundgine.RedTeam` against the Advanced Supply Chain 
 ## Development
 
 ```bash
+# .NET (.NET 10)
 dotnet restore
 dotnet build
 dotnet test
+
+# Java (Java 27, from src/java)
+mvn -f pom.xml clean package
 ```
 
-PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md).
+PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). CI and release validation: [`docs/CI.md`](docs/CI.md).
 
-Foundgine's architecture is specified independently of this implementation as
-the **Semantic Execution (SES) standard**: [`standards/semantic-execution/`](standards/semantic-execution/README.md).
-The standard is the authority — see [`SES-104`](standards/semantic-execution/SES-104-foundgine-test-mapping.md)
-for the current implementation gap matrix and [`conformance/known-gaps.json`](standards/semantic-execution/conformance/known-gaps.json)
-for the machine-readable status of every tracked item.
+Foundgine's architecture is specified independently of this implementation as the **Semantic Execution (SES) standard**: [`standards/semantic-execution/`](standards/semantic-execution/README.md). The standard is the authority; see [`SES-104`](standards/semantic-execution/SES-104-foundgine-test-mapping.md) for the implementation gap matrix and [`conformance/known-gaps.json`](standards/semantic-execution/conformance/known-gaps.json) for the machine-readable status of every tracked item.
+
+## Documentation
+
+- [Documentation index](docs/README.md) — the reading path.
+- [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, AOT, auditing and operations.
+- [Website](https://cristianbarragan.github.io/Foundgine/docs-site/) · [`CHANGELOG.md`](CHANGELOG.md)
 
 ## Release 3.3.0
 
@@ -200,7 +233,6 @@ for the machine-readable status of every tracked item.
 
 The .NET and Java implementations ship as aligned, same-numbered releases. This release establishes the 3.3.x line and aligns package, build, MCP and documentation metadata. Version 2.3.0 introduced the fluent configuration API (`FoundgineModel`) in both languages as a code-first alternative to attributes and annotations; see [`docs/MAPPING.md`](docs/MAPPING.md). See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes.
 
-Foundgine is licensed under the Apache License 2.0.
-## Feature and capability wiki
+## License
 
-The [Foundgine feature and capability wiki](docs/wiki/index.md) explains the architecture, semantic model, intent grounding, execution, security, mutations, gateway, providers, agents/MCP, AOT, integrations, and operations by capability rather than by release.
+Foundgine is licensed under the Apache License 2.0.

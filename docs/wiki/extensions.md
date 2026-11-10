@@ -1,19 +1,38 @@
-# Framework extensions and integrations
+# Extensions (GraphQL, Keycloak, Temporal)
 
-Extensions adapt a framework, identity system or workflow engine to Foundgine's contracts. They are optional: applications should install only the integrations they use. An extension is an adapter, not a second semantic engine. It must translate external requests or context into Foundgine contracts and delegate semantic resolution, authorization and execution to the core/runtime boundary.
+> **In plain words.** An **extension** plugs a popular tool into Foundgine so you do not have to write the glue yourself. Foundgine has three: **GraphQL** (so a GraphQL API can talk to Foundgine), **Keycloak** (so people who log in with Keycloak get the right permissions) and **Temporal** (so long-running business processes, like "onboard a customer", can run reliably over days). Extensions are **optional** and only *translate*. They never make permission decisions on their own: every request still goes through Foundgine's normal checks.
+>
+> *Extension or provider?* A **provider** does the real work against storage or infrastructure (SQL, EF Core, JPA, Elasticsearch...), see the [Provider catalogue](providers.md). An **extension** connects an outside *framework or service* to Foundgine. Some extensions also register themselves as providers so Foundgine can see them (Keycloak as an `Identity` provider, Temporal as a `Workflow` provider).
 
-## Extension selection at a glance
+This is the **only** page for integrations. The older "Integrations" overview repeated this content and now just points here.
 
-| Extension | Purpose | C# source | Java source |
-|---|---|---|---|
-| GraphQL | Translate GraphQL schema operations, selections, variables and mutations into Foundgine semantic intent and results | `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` | `src/java/foundgine-extensions/.../graphql` |
-| Keycloak | Validate Keycloak identity tokens, map claims, establish trusted execution context and issue/resolve Foundgine warrants | `src/csharp/Foundgine.Extensions/Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
-| Temporal | Durable workflow orchestration, activities, process lifecycle, outbox bridge, security propagation and HTTP routes | `src/csharp/Foundgine.Extensions/Temporal` | `src/java/foundgine-extensions/.../temporal` |
-| Extension registry | Common extension identity/registration contracts | `src/csharp/Foundgine.Extensions` | `com.foundgine.extensions` |
+Extensions adapt a framework, identity system or workflow engine to Foundgine's contracts. They are optional: install only the integrations you use. An extension is an adapter, not a second semantic engine: it translates external requests or context into Foundgine contracts and delegates semantic resolution, authorization and execution to the core/runtime boundary.
 
-> Both language modules contain GraphQL, Keycloak and Temporal source trees in this repository snapshot. That does not establish exact API, feature or maturity parity. Check each language's implementation and tests before assuming equivalent hosting, provider or operational behavior.
+## Every extension by name
 
-## GraphQL integration
+| # | Extension | What it is, in plain words | C# source | Java source |
+|---|---|---|---|---|
+| 1 | **GraphQL, Hot Chocolate adapter** | Reads a GraphQL query and turns it into a Foundgine request | `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` | `src/java/foundgine-extensions/.../graphql` |
+| 2 | **GraphQL secure execution** (`...HotChocolate.Execution`) | Runs those requests through Foundgine's safe path (permissions, plan, provider) | `GraphQL/HotChocolate/Execution` | query and mutation executors in `...graphql` |
+| 3 | **Keycloak identity** | Turns a Keycloak login into trusted Foundgine identity and short-lived signed permission slips (warrants) | `src/csharp/Foundgine.Extensions/Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
+| 4 | **Temporal durable workflows** | Runs long, multi-step business processes with retries, timers, approvals and undo steps | `src/csharp/Foundgine.Extensions/Temporal` | `src/java/foundgine-extensions/.../temporal` |
+| 5 | **Extension registry** | A small list of which extensions are installed | `src/csharp/Foundgine.Extensions` | `com.foundgine.extensions` |
+
+> Both language modules contain GraphQL, Keycloak and Temporal source trees in this repository snapshot. That does not establish exact API, feature or maturity parity. Check each language's implementation and tests before assuming equivalent behaviour.
+
+**Install what you use.** In .NET the umbrella package is `Foundgine.Extensions`. It does **not** include the Foundgine runtime, any storage provider, an MCP server or an LLM client.
+
+## Which extension do I need?
+
+| If you... | Use |
+|---|---|
+| Expose a GraphQL API | GraphQL (adapter + secure execution) |
+| Log users in with Keycloak and want them to get Foundgine permissions | Keycloak |
+| Need a process that waits, retries, asks for approval or can be undone | Temporal (with Keycloak so workers get proper permissions) |
+| Need a database or search backend | Not an extension: pick a [provider](providers.md) |
+| Want AI agents to call Foundgine | Not an extension: see [AI agents and MCP](agents-mcp.md) |
+
+## 1 and 2. GraphQL integration
 
 **Purpose.** Connects a GraphQL API to Foundgine's semantic execution boundary. GraphQL is the external transport/schema contract; Foundgine remains responsible for semantic interpretation, authorization, planning and provider execution.
 
@@ -46,7 +65,7 @@ The C# source is under `GraphQL/HotChocolate`; query/mutation execution has a de
 
 **Source:** `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql`.
 
-## Keycloak identity integration
+## 3. Keycloak identity integration
 
 **Purpose.** Bridges Keycloak authentication and identity claims into Foundgine's own security execution context and signed warrant model. Keycloak authenticates the principal; Foundgine still decides whether a particular semantic operation is authorized.
 
@@ -79,7 +98,7 @@ The C# source is under `GraphQL/HotChocolate`; query/mutation execution has a de
 
 **Source:** `src/csharp/Foundgine.Extensions/Keycloak` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/keycloak`.
 
-## Temporal durable-workflow integration
+## 4. Temporal durable-workflow integration
 
 **Purpose.** Adds durable orchestration for long-running business processes. Temporal owns workflow state, timers, retries, signals and compensation. Foundgine owns authorization and execution of each semantic data operation.
 
@@ -120,7 +139,7 @@ The C# source is under `GraphQL/HotChocolate`; query/mutation execution has a de
 
 **Source:** `src/csharp/Foundgine.Extensions/Temporal` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/temporal`.
 
-## Extension registry and contracts
+## 5. Extension registry and contracts
 
 The Java extension module includes `FoundgineExtension`, `TransportExtension` and `FoundgineExtensionRegistry` as common extension descriptors/registry surfaces. These describe and organize installed integrations; they do not execute operations or bypass the runtime. The C# module's primary extension boundary is currently expressed through its package and framework-specific registration APIs.
 
@@ -132,6 +151,24 @@ The Java extension module includes `FoundgineExtension`, `TransportExtension` an
 - `Foundgine.Extensions` supplies optional framework/identity/workflow adapters.
 
 C# package references should be selected according to the integration required; the main `Foundgine.Extensions` project references Core, Runtime and Providers. Java's `foundgine-extensions` module depends on `foundgine-core`, `foundgine-runtime` and `foundgine-providers`. These module-level dependencies do not mean every integration is mandatory at runtime; configure and use only the relevant extension.
+
+## Hosting and dependency injection
+
+Hosting extensions register core services, providers, capabilities, options and validation. Prefer explicit options and startup validation. Do not register multiple conflicting providers, and never let a missing security dependency silently fall back to permissive behaviour. Applications that never call `AddFoundgineTemporal*` never connect to Temporal.
+
+## Insights and auditing for extensions
+
+- Temporal emits metrics and traces under the source name `Foundgine.Temporal`. GraphQL and Keycloak rely on your host's normal logging plus Foundgine's own evidence and audit (see [Insights, evidence and auditing](insights-evidence-auditing.md)).
+- Never put warrants or raw tokens into workflow history, events or logs.
+
+## Integration author checklist
+
+- Map external identity and context into trusted Foundgine contracts.
+- Preserve tenant, subject, correlation and trace context.
+- Delegate semantic resolution and authorization to Foundgine.
+- Define retry, timeout, cancellation and idempotency behaviour.
+- Add negative security tests and an end-to-end sample.
+- Document provider and framework versions separately from Foundgine package versions.
 
 ## Adding an extension
 
@@ -147,7 +184,10 @@ C# package references should be selected according to the integration required; 
 
 ## Related pages
 
+- [Provider catalogue](providers.md)
+- [ORM providers (EF Core and JPA)](orm-providers.md)
 - [Providers and storage](providers-storage.md)
+- [Insights, evidence and auditing](insights-evidence-auditing.md)
 - [Authorization and security](authorization-security.md)
 - [Mutations](mutations.md)
 - [Gateway, events and live updates](gateway-events.md)

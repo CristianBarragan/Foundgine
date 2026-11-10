@@ -40,3 +40,5 @@ Build and test the C# and Java implementations independently. Verify NuGet and M
 - C# tests: `src/csharp/tests`, `src/csharp/security`, `src/csharp/benchmarks`.
 - Java tests and samples: modules under `src/java`, `src/java/samples`, and `src/java/security`.
 - Existing guides: [Testing](../TESTING.md), [Current status](../CURRENT-STATUS.md), [Roadmap](../ROADMAP.md).
+
+See also: [Insights, evidence and auditing](insights-evidence-auditing.md), [ORM providers](orm-providers.md), [Extensions](extensions.md).

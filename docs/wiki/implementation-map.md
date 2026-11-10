@@ -9,6 +9,7 @@ This page maps capabilities to the repository's current module layout. It is an 
 | Intent and lexical grounding | `Foundgine.Core/Semantic/Intent`, `Resolution` | `foundgine-core` intent/resolution packages |
 | Query and mutation planning | `Foundgine.Core/Semantic/Query`, `Mutation`, `Aggregates` | `foundgine-core` query/mutation/planning packages |
 | Runtime orchestration and APIs | `src/csharp/Foundgine.Runtime` | `src/java/foundgine-runtime` |
+| ORM providers (EF Core / JPA) | `src/csharp/Foundgine.Providers.Orm`, `Foundgine.Providers.EntityFrameworkCore`, `Foundgine.Providers.Orm.Generator` | `foundgine-providers/.../storage/orm` and `.../orm/jpa` |
 | SQL, in-memory and retrieval providers | `src/csharp/Foundgine.Providers/Storage` | `src/java/foundgine-providers` |
 | Gateway, event and outbox | `Foundgine.Providers/Gateway`, `EventStore`, `Outbox` | `foundgine-providers` gateway/event/outbox packages |
 | MCP and agent tooling | `Foundgine.Providers/Tools/MCP`, runtime control plane | `foundgine-providers` tool/MCP packages and `foundgine-runtime` governance |
@@ -30,11 +31,11 @@ Coordinates semantic requests, authorization, plans, execution lifecycle, contro
 
 ### Providers
 
-Implements physical execution and infrastructure adapters. Provider capabilities must be declared and validated; provider-specific semantics must not leak into core contracts.
+Implements physical execution and infrastructure adapters, including the SQL, **EF Core** and **JPA** execution providers (see [ORM providers](orm-providers.md) and the [Provider catalogue](providers.md)). Provider capabilities must be declared and validated; provider-specific semantics must not leak into core contracts.
 
 ### Extensions
 
-Adapts third-party frameworks and services. Extensions should translate to/from Foundgine contracts and delegate the actual semantic and security decisions to the appropriate core/runtime services.
+See [Extensions](extensions.md) for the single catalogue. Adapts third-party frameworks and services. Extensions should translate to/from Foundgine contracts and delegate the actual semantic and security decisions to the appropriate core/runtime services.
 
 ## How to verify a component
 
