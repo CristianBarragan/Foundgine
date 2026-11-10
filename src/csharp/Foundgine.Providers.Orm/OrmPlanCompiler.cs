@@ -48,7 +48,8 @@ public class OrmPlanCompiler : IProviderPlanCompiler, ISecurityInvariantProvider
         var plan = new OrmPlan(_provider, ir)
         {
             CapabilityContractVersion = _capabilities.ContractVersion,
-            DeclaredFeatures = _capabilities.Features
+            DeclaredFeatures = _capabilities.Features,
+            BoundIR = ir
         };
         ExecutionIRBoundary.BindProviderPlan(ir, plan);
         return plan;

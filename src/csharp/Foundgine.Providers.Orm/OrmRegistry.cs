@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Foundgine.Core.Abstractions;
 using Foundgine.Core.Semantic.Metadata;
 
@@ -98,7 +99,7 @@ public sealed class OrmRegistry
         links[slot] = new OrmLink(relationship.Id, parent, child, parentField.Value, childField.Value);
     }
 
-    public bool TryGetMap(EntityId id, out IOrmEntityMap map) => _maps.TryGetValue(id, out map!);
+    public bool TryGetMap(EntityId id, [MaybeNullWhen(false)] out IOrmEntityMap map) => _maps.TryGetValue(id, out map);
 
     public IOrmEntityMap GetMap(EntityId id) =>
         _maps.TryGetValue(id, out var map)

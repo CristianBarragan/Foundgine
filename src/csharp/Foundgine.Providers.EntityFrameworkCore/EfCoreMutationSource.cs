@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Foundgine.Core.Execution.Mutation;
 using Foundgine.Providers.Orm;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +22,9 @@ public sealed class EfCoreMutationSource : IOrmMutationSource
             : new OwnedTransaction(_context.Database.BeginTransaction(), _context);
     }
 
-    public IQueryable<TEntity> TrackedQuery<TEntity>() where TEntity : class => _context.Set<TEntity>();
-    public void Add<TEntity>(TEntity entity) where TEntity : class => _context.Set<TEntity>().Add(entity);
-    public void Remove<TEntity>(TEntity entity) where TEntity : class => _context.Set<TEntity>().Remove(entity);
+    public IQueryable<TEntity> TrackedQuery<[DynamicallyAccessedMembers(OrmEntityMembers.Required)] TEntity>() where TEntity : class => _context.Set<TEntity>();
+    public void Add<[DynamicallyAccessedMembers(OrmEntityMembers.Required)] TEntity>(TEntity entity) where TEntity : class => _context.Set<TEntity>().Add(entity);
+    public void Remove<[DynamicallyAccessedMembers(OrmEntityMembers.Required)] TEntity>(TEntity entity) where TEntity : class => _context.Set<TEntity>().Remove(entity);
     public int SaveChanges() => _context.SaveChanges();
 
     private sealed class OwnedTransaction(

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace Foundgine.Providers.Orm;
@@ -14,6 +15,7 @@ public static class ExpressionComposer
     public static Expression<Func<T, bool>> Or<T>(Expression<Func<T, bool>> left, Expression<Func<T, bool>> right) =>
         Combine(left, right, Expression.OrElse);
 
+    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "Both operands are Func<TEntity, bool> predicates over the same generated entity type, so the resulting delegate type is one the generated maps already instantiate.")]
     public static LambdaExpression And(LambdaExpression left, LambdaExpression right)
     {
         if (left.Parameters.Count != 1 || right.Parameters.Count != 1 || left.Parameters[0].Type != right.Parameters[0].Type ||

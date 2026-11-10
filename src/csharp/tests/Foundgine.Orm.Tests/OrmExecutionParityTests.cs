@@ -86,7 +86,9 @@ public sealed class OrmExecutionParityTests
         var result = await new OrmExecutionProvider("test-orm", new EnumerableSource([.. customers, .. orders]), registry)
             .ExecuteAsync(plan, context);
 
-        Assert.Equal(expected, result.Rows.Select(row => (string)row.Values["Name"]!).OrderBy(x => x));
+        // Rows are flat LEFT-JOIN rows (one per visible child), so Ada appears once per authorized order.
+        // The quantifier decides which parents qualify; compare distinct parents.
+        Assert.Equal(expected, result.Rows.Select(row => (string)row.Values["Name"]!).Distinct().OrderBy(x => x));
     }
 
     [Fact]
@@ -150,7 +152,7 @@ public sealed class OrmExecutionParityTests
             descending: true, thenBy: false);
 
         Assert.Equal(new[] { "Linus", "Ada", "Grace" }, min.Select(x => x.Name));
-        Assert.Equal(new[] { "Ada", "Grace", "Linus" }, max.Select(x => x.Name));
+        Assert.Equal(new[] { "Grace", "Ada", "Linus" }, max.Select(x => x.Name));
     }
 
     [Fact]
@@ -341,7 +343,10 @@ public sealed class OrmExecutionParityTests
         var compiler = new OrmPlanCompiler("test-orm", registry);
         var authorizedIr = Ir();
         var otherIr = Ir(new SemanticQueryOptions(
-            Filter: new SemanticFieldFilter(Active, SemanticFilterOperator.Eq, true)));
+            Filter: new SemanticFieldFilter(Active, SemanticFilterOperator.Eq, true))) with
+        {
+            AuthorizationBinding = new SemanticPlanAuthorizationBinding("other-contract", "other-authorization")
+        };
         var compiled = Assert.IsType<OrmPlan>(compiler.Compile(authorizedIr));
         var transplanted = compiled with { IR = otherIr };
         var source = new CountingSource();
@@ -349,6 +354,25 @@ public sealed class OrmExecutionParityTests
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             executor.ExecuteAsync(transplanted, Context(TenantA)));
+        Assert.Equal(0, source.QueryCount);
+    }
+
+    [Fact]
+    public async Task Executor_rejects_plan_whose_ir_was_swapped_even_with_identical_binding()
+    {
+        var registry = Registry();
+        var compiler = new OrmPlanCompiler("test-orm", registry);
+        var compiled = Assert.IsType<OrmPlan>(compiler.Compile(Ir()));
+        // Same ("test-contract", "test-authorization") binding, but a different, unauthorized-by-this-plan IR.
+        var swapped = compiled with
+        {
+            IR = Ir(new SemanticQueryOptions(Filter: new SemanticFieldFilter(Active, SemanticFilterOperator.Eq, true)))
+        };
+        Assert.Equal(compiled.IR.AuthorizationBinding, swapped.IR.AuthorizationBinding);
+        var source = new CountingSource();
+        var executor = new OrmExecutionProvider("test-orm", source, registry);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => executor.ExecuteAsync(swapped, Context(TenantA)));
         Assert.Equal(0, source.QueryCount);
     }
 

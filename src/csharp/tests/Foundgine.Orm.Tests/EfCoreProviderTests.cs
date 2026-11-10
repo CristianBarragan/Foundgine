@@ -68,7 +68,7 @@ public sealed class EfCoreProviderTests
 
         Assert.Equal(new[] { "Grace", "Ada" }, result.Rows.Select(r => (string)r.Values["Name"]!));
         Assert.Equal("efcore", result.Evidence!.Provider);
-        Assert.Equal(0, db.ChangeTracker.Entries().Count()); // no tracking
+        Assert.Empty(db.ChangeTracker.Entries()); // no tracking
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public sealed class EfCoreProviderTests
 
         var result = await new EfCoreExecutionProvider(db, registry).ExecuteAsync(plan, context);
 
-        Assert.Equal(new[] { "Ada" }, result.Rows.Select(row => (string)row.Values["Name"]!));
+        Assert.Equal(new[] { "Ada" }, result.Rows.Select(row => (string)row.Values["Name"]!).Distinct());
         Assert.Contains(capture.Commands, sql => sql.Contains("EXISTS", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(capture.Commands, sql => sql.Contains("CustomerId", StringComparison.OrdinalIgnoreCase));
     }
@@ -173,7 +173,7 @@ public sealed class EfCoreProviderTests
 
         var result = await new EfCoreExecutionProvider(db, registry).ExecuteAsync(plan, context);
 
-        Assert.Equal(new[] { "Ada" }, result.Rows.Select(row => (string)row.Values["Name"]!));
+        Assert.Equal(new[] { "Ada" }, result.Rows.Select(row => (string)row.Values["Name"]!).Distinct());
         Assert.Contains(capture.Commands, sql => sql.Contains("COUNT", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(capture.Commands, sql => sql.Contains("MAX", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(capture.Commands, sql => sql.Contains("CustomerId", StringComparison.OrdinalIgnoreCase));
@@ -209,12 +209,14 @@ public sealed class EfCoreProviderTests
             ["ctx.CustomerId"] = 1
         });
 
+        capture.Commands.Clear(); // drop the seeding INSERTs
         var result = await new EfCoreExecutionProvider(db, registry).ExecuteAsync(plan, context);
 
-        Assert.Equal(new[] { "Ada", "Grace", "Linus" }, result.Rows.Select(row => (string)row.Values["Name"]!));
+        Assert.Equal(new[] { "Ada", "Grace", "Linus" }, result.Rows.Select(row => (string)row.Values["Name"]!).Distinct());
         Assert.Contains(capture.Commands, sql => sql.Contains("COUNT", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(capture.Commands, sql => sql.Contains("CustomerId", StringComparison.OrdinalIgnoreCase));
-        var aggregateOrderSql = Assert.Single(capture.Commands);
+        // Two SELECTs run (parent page, then the child node); the COUNT-ordered one is the parent query.
+        var aggregateOrderSql = Assert.Single(capture.Commands, sql => sql.Contains("COUNT", StringComparison.OrdinalIgnoreCase));
         Assert.Contains("ORDER BY", aggregateOrderSql, StringComparison.OrdinalIgnoreCase);
         // The three parent rows deliberately exercise a tie: Grace and Linus both have
         // zero authorized child rows. The generated primary-key tie-breaker makes that
@@ -330,7 +332,8 @@ public sealed class EfCoreProviderTests
 
         var result = await new EfCoreExecutionProvider(db, registry).ExecuteAsync(plan, context);
 
-        Assert.Equal(expected, result.Rows.Select(row => (string)row.Values["Name"]!));
+        // Flat joined rows: a parent repeats once per authorized child. Distinct keeps first-occurrence order.
+        Assert.Equal(expected, result.Rows.Select(row => (string)row.Values["Name"]!).Distinct());
         Assert.Contains(capture.Commands, sql => sql.Contains(aggregate.ToString().ToUpperInvariant(), StringComparison.OrdinalIgnoreCase));
         Assert.Contains(capture.Commands, sql => sql.Contains("CustomerId", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(capture.Commands, sql => sql.Contains("ORDER BY", StringComparison.OrdinalIgnoreCase));

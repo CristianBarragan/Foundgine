@@ -1,6 +1,6 @@
 # Foundgine Java Gateway — Increment 1
 
-This increment adds the Java 21 gateway/provider foundation in `foundgine-providers`.
+This increment adds the Java 27 gateway/provider foundation in `foundgine-providers`.
 
 ## Included
 
@@ -56,4 +56,4 @@ This increment does **not** add persistence, replay, HTTP endpoints, approvals, 
 
 ## Verification
 
-Production sources compile with `javac --release 21`. Maven was not available in the implementation environment, so the Maven/JUnit suite could not be executed here.
+Production sources compile with `javac --release 27`. Maven was not available in the implementation environment, so the Maven/JUnit suite could not be executed here.

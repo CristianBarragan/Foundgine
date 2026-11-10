@@ -9,7 +9,10 @@ Set-StrictMode -Version Latest
 $rows = @()
 if (Test-Path -LiteralPath $InputCsv) { $rows = @(Import-Csv -LiteralPath $InputCsv) }
 if ([string]::IsNullOrWhiteSpace($ErrorLog)) { $ErrorLog = "$InputCsv.errors.log" }
-$errors = if (Test-Path -LiteralPath $ErrorLog) { @(Get-Content -LiteralPath $ErrorLog) } else { @() }
+$errors = @()
+if (Test-Path -LiteralPath $ErrorLog) {
+    $errors = @(Get-Content -LiteralPath $ErrorLog)
+}
 if ($rows.Count -eq 0) {
     $result = [pscustomobject]@{
         Status = 'no-samples'
@@ -19,11 +22,12 @@ if ($rows.Count -eq 0) {
         Services = @()
     }
     $result | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $OutputJson -Encoding utf8
-if ($errors.Count -gt 0) {
-    Write-Warning "Docker metrics are partial: $($errors.Count) collector errors. Diagnostics: $ErrorLog"
-    exit 3
-}
-    Write-Error "Docker metrics collector produced zero samples. Diagnostics: $ErrorLog"
+    if ($errors.Count -gt 0) {
+        Write-Warning "Docker metrics are partial: $($errors.Count) collector errors. Diagnostics: $ErrorLog"
+        exit 3
+    }
+
+    Write-Error "Docker metrics collector produced zero samples. Diagnostics: $ErrorLog" -ErrorAction Continue
     exit 2
 }
 $services = @()

@@ -1,6 +1,6 @@
-# Current status — Foundgine 2.3.1 (.NET & Java)
+# Current status — Foundgine 3.3.0 (.NET & Java)
 
-The repository ships two implementations of the same architecture, released together on a single aligned version line: the .NET implementation targets .NET 10, and the Java implementation targets Java 21 (Maven, groupId `io.github.cristianbarragan`). Except where noted below, everything on this page applies to both.
+The repository ships two implementations of the same architecture, released together on a single aligned version line: the .NET implementation targets .NET 10, and the Java implementation targets Java 27 (Maven, groupId `io.github.cristianbarragan`). Except where noted below, everything on this page applies to both.
 
 This page is intentionally short: it describes the current architectural state rather than preserving historical release notes.
 

@@ -2,7 +2,7 @@
 
 ## Canonical identity
 
-**Current release: 2.3.1 (.NET & Java)**
+**Current release: 3.3.0 (.NET & Java)**
 
 **Foundgine is a programmable semantic execution platform, implemented for .NET and Java.**
 
@@ -50,8 +50,8 @@ The Java implementation carries the same shape under `src/java/samples`: `foundg
 
 ## Current release / runtime
 
-- Foundgine release: **2.3.1**, aligned across .NET and Java
-- Target runtime: **.NET 10**, or **Java 21** via Maven (`io.github.cristianbarragan` artifacts)
+- Foundgine release: **3.3.0**, aligned across .NET and Java
+- Target runtime: **.NET 10**, or **Java 27** via Maven (`io.github.cristianbarragan` artifacts)
 - Primary physical provider: **PostgreSQL / SQL**, in both implementations
 - InMemory provider: limited provider-independence proof/test implementation, in both implementations
 - Vector retrieval: **not currently implemented** in either implementation; `pgvector` is not part of the current provider claim.

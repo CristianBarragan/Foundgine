@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -92,7 +93,7 @@ public interface IOrmEntityMap
 /// the (hand-written, auditable) rules for composing them: authorization is always applied as its own Where
 /// clause before any user filter, and only fields present in the authorized node are ever read back.
 /// </summary>
-public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : class
+public abstract class OrmEntityMap<[DynamicallyAccessedMembers(OrmEntityMembers.Required)] TEntity> : IOrmEntityMap where TEntity : class
 {
     private const int KeyChunkSize = 500;
 
@@ -153,15 +154,16 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
     public LambdaExpression LowerFilterExpression(
         SemanticFilterExpression filter, AuthorizationPredicate authorization, ExecutionContext context)
     {
-        var userPredicate = LowerFilter(filter, validateOnly: false)!;
+        var userPredicate = LowerFilterRequired(filter);
         return ExpressionComposer.And(LowerAuthorization(authorization, context), userPredicate);
     }
 
-    public LambdaExpression LowerUserFilterExpression(SemanticFilterExpression filter) => LowerFilter(filter, validateOnly: false)!;
+    public LambdaExpression LowerUserFilterExpression(SemanticFilterExpression filter) => LowerFilterRequired(filter);
 
     public LambdaExpression LowerAuthorizationExpression(AuthorizationPredicate authorization, ExecutionContext context) =>
         LowerAuthorization(authorization, context);
 
+    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "Re-wraps a generated Func<TEntity, TField> selector without its object boxing; the delegate type is one of the generated field selector types.")]
     public LambdaExpression AggregateSelector(FieldId field)
     {
         var selector = Binding(field).Selector;
@@ -294,7 +296,10 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
 
         // Forward pagination (limit without offset, or any cursor page) fetches one extra row for HasNextPage.
         var forward = limit is > 0 && offset is null;
-        var chunks = keys is null ? [null] : Chunk(keys);
+        IEnumerable<IReadOnlyList<object?>?> chunks =
+            keys is null
+                ? new IReadOnlyList<object?>?[] { null }
+                : Chunk(keys).Cast<IReadOnlyList<object?>?>();
         var rows = new List<IReadOnlyDictionary<FieldId, object?>>();
         var aggregateCursorRows = new List<IReadOnlyList<object?>>();
         var hasNext = false;
@@ -313,8 +318,7 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
         foreach (var selector in countCursorSelectors)
             projectionValues.Add(Expression.Convert(
                 ReplaceParameter(selector.Body, selector.Parameters[0], projectionParameter), typeof(object)));
-        var projectionBody = Expression.NewArrayInit(typeof(object), projectionValues);
-        var projection = Expression.Lambda<Func<TEntity, object?[]>>(projectionBody, projectionParameter);
+        var projection = BuildObjectArrayProjection(projectionValues, projectionParameter);
 
         foreach (var chunk in chunks)
         {
@@ -324,14 +328,18 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
             if (node.Authorization is not null)
                 query = query.Where(LowerAuthorization(node.Authorization, context));
             if (chunk is not null)
-                query = query.Where(Binding(keyField!.Value).In(chunk));
+            {
+                if (keyField is not { } keyFieldId)
+                    throw new InvalidOperationException("A key field is required when parent keys restrict a fetch.");
+                query = query.Where(Binding(keyFieldId).In(chunk));
+            }
             if (options?.Filter is not null)
             {
                 var relatedAuthorization = node.Children
                     .Where(child => child.ViaRelationship is not null && child.Authorization is not null)
                     .GroupBy(child => child.ViaRelationship!.Value)
-                    .ToDictionary(group => group.Key, group => group.Select(child => child.Authorization!).Distinct().Single());
-                query = query.Where(LowerFilter(options.Filter, validateOnly: false, context, relatedAuthorization)!);
+                    .ToDictionary(group => group.Key, group => group.Select(child => child.Authorization).OfType<AuthorizationPredicate>().Distinct().Single());
+                query = query.Where(LowerFilterRequired(options.Filter, context, relatedAuthorization));
             }
             if (keyset is not null)
                 query = query.Where(keyset);
@@ -342,10 +350,10 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
 
             var projected = await source.ToListAsync(query.Select(projection), cancellationToken).ConfigureAwait(false);
             var count = projected.Count;
-            if (forward && count > limit!.Value)
+            if (forward && limit is { } pageLimit && count > pageLimit)
             {
                 hasNext = true;
-                count = limit.Value;
+                count = pageLimit;
             }
 
             for (var i = 0; i < count; i++)
@@ -374,6 +382,93 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
         }
 
         return new OrmFetch(rows, page) { AggregateCursorRows = aggregateCursorRows };
+    }
+    
+    public void Bind(EntityMetadata entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        if (!StringComparer.Ordinal.Equals(EntityName, entity.Name))
+            throw new InvalidOperationException(
+                $"Generated ORM map '{EntityName}' cannot be bound to entity metadata '{entity.Name}'.");
+
+        if (entity.ClrType is not null && entity.ClrType != typeof(TEntity))
+            throw new InvalidOperationException(
+                $"Generated ORM map '{EntityName}' targets CLR type '{typeof(TEntity).FullName}', " +
+                $"but metadata declares '{entity.ClrType.FullName}'.");
+
+        if (_entityId is not null)
+            throw new InvalidOperationException(
+                $"Generated ORM map '{EntityName}' has already been bound.");
+
+        var metadataByName = new Dictionary<string, FieldMetadata>(StringComparer.Ordinal);
+
+        foreach (var field in entity.EffectiveFields)
+        {
+            if (!metadataByName.TryAdd(field.Name, field))
+                throw new InvalidOperationException(
+                    $"Entity metadata '{EntityName}' contains duplicate field name '{field.Name}'.");
+        }
+
+        var byId = new Dictionary<FieldId, OrmFieldBinding<TEntity>>();
+        var byColumn = new Dictionary<ColumnId, FieldId>();
+
+        foreach (var binding in _byName.Values)
+        {
+            if (!metadataByName.TryGetValue(binding.Name, out var field))
+                throw new InvalidOperationException(
+                    $"Generated ORM map '{EntityName}' contains field '{binding.Name}', " +
+                    "but the entity metadata does not declare it.");
+
+            if (binding.ClrType != field.ClrType)
+                throw new InvalidOperationException(
+                    $"Generated ORM field '{EntityName}.{binding.Name}' has CLR type " +
+                    $"'{binding.ClrType.FullName}', but metadata declares '{field.ClrType.FullName}'.");
+
+            if (!byId.TryAdd(field.Id, binding))
+                throw new InvalidOperationException(
+                    $"Entity metadata '{EntityName}' maps multiple fields to semantic field id '{field.Id}'.");
+
+            if (field.Column is { } column)
+            {
+                if (column.EntityId != entity.EntityId)
+                    throw new InvalidOperationException(
+                        $"Field '{EntityName}.{field.Name}' references a column belonging to a different entity.");
+
+                if (!byColumn.TryAdd(column.ColumnId, field.Id))
+                    throw new InvalidOperationException(
+                        $"Entity metadata '{EntityName}' maps multiple fields to column '{column.ColumnId}'.");
+            }
+        }
+
+        foreach (var field in metadataByName.Values)
+        {
+            if (!_byName.ContainsKey(field.Name))
+                throw new InvalidOperationException(
+                    $"Entity metadata '{EntityName}' declares field '{field.Name}', " +
+                    "but the generated ORM map does not contain a binding for it.");
+        }
+
+        if (entity.PrimaryKey is { } primaryKey)
+        {
+            if (primaryKey.EntityId != entity.EntityId)
+                throw new InvalidOperationException(
+                    $"Primary key metadata for '{EntityName}' references a different entity.");
+
+            if (!byColumn.ContainsKey(primaryKey.ColumnId))
+                throw new InvalidOperationException(
+                    $"Primary key column '{primaryKey.ColumnId}' for '{EntityName}' " +
+                    "does not have a generated ORM field binding.");
+        }
+
+        // Publish the completed mappings only after all validation succeeds.
+        foreach (var pair in byId)
+            _byId.Add(pair.Key, pair.Value);
+
+        foreach (var pair in byColumn)
+            _byColumn.Add(pair.Key, pair.Value);
+
+        _entityId = entity.EntityId;
     }
 
     // Builds the complete mixed tuple in semantic order. COUNT values come from private projection
@@ -505,8 +600,8 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
                 throw new InvalidOperationException(
                     $"Aggregate ordering '{EntityName}' needs a primary key for deterministic tie-breaking.");
             ordered = ordered is null
-                ? primaryKey.Value.OrderBy(query, descending: false)
-                : primaryKey.Value.ThenBy(ordered, descending: false);
+                ? primaryKey.Value.OrderBy(query, false)
+                : primaryKey.Value.ThenBy(ordered, false);
         }
 
         if (requireDeterministic && !terms.Any(t => !t.IsAggregate && Binding(t.Field).IsPrimaryKey))
@@ -672,7 +767,7 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
 
             case MutationKind.Update:
             {
-                var matched = source.TrackedQuery<TEntity>().Where(LowerFilter(filter!, validateOnly: false)!).ToList();
+                var matched = source.TrackedQuery<TEntity>().Where(LowerFilterRequired(filter ?? throw new InvalidOperationException("A mutation filter is required."))).ToList();
                 foreach (var entity in matched) SetValues(entity, values);
                 if (matched.Count > 0) source.SaveChanges();
                 return new MutationResult(matched.Count, Returned(matched.FirstOrDefault(), returnFields));
@@ -680,7 +775,7 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
 
             case MutationKind.Delete:
             {
-                var matched = source.TrackedQuery<TEntity>().Where(LowerFilter(filter!, validateOnly: false)!).ToList();
+                var matched = source.TrackedQuery<TEntity>().Where(LowerFilterRequired(filter ?? throw new InvalidOperationException("A mutation filter is required."))).ToList();
                 var returned = Returned(matched.FirstOrDefault(), returnFields); // read before the row is gone
                 foreach (var entity in matched) source.Remove(entity);
                 if (matched.Count > 0) source.SaveChanges();
@@ -690,10 +785,10 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
             case MutationKind.Upsert:
             {
                 Expression<Func<TEntity, bool>> match = ExpressionComposer.Constant<TEntity>(true);
-                foreach (var conflict in conflictFields!)
+                foreach (var conflict in conflictFields ?? throw new InvalidOperationException("Upsert requires conflict fields."))
                     match = ExpressionComposer.And(match, Binding(conflict).Equal(values.First(v => v.Key == conflict).Value));
                 if (filter is not null)
-                    match = ExpressionComposer.And(match, LowerFilter(filter, validateOnly: false)!);
+                    match = ExpressionComposer.And(match, LowerFilterRequired(filter));
 
                 var existing = source.TrackedQuery<TEntity>().Where(match).ToList();
                 if (existing.Count == 0) return CreateOne(values, returnFields, source);
@@ -738,6 +833,21 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
 
     // ---------------------------------------------------------------- filters
 
+    /// <summary>Builds <c>entity =&gt; new object[] { ... }</c> so EF Core selects only the requested columns.</summary>
+    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "The array element type is the constant typeof(object) and the delegate type Func<TEntity, object[]> is statically known; EF Core translates this tree to a column projection and does not compile it.")]
+    private static Expression<Func<TEntity, object?[]>> BuildObjectArrayProjection(
+        IReadOnlyList<Expression> values, ParameterExpression parameter) =>
+        Expression.Lambda<Func<TEntity, object?[]>>(Expression.NewArrayInit(typeof(object), values), parameter);
+
+
+    /// <summary>Lowers a filter for execution. Only validate-only lowering yields no expression, so a null here is a defect.</summary>
+    private Expression<Func<TEntity, bool>> LowerFilterRequired(
+        SemanticFilterExpression filter,
+        ExecutionContext? context = null,
+        IReadOnlyDictionary<RelationshipId, AuthorizationPredicate>? relationshipAuthorization = null) =>
+        LowerFilter(filter, validateOnly: false, context, relationshipAuthorization)
+        ?? throw new InvalidOperationException("Filter lowering produced no expression.");
+
     private Expression<Func<TEntity, bool>>? LowerFilter(
         SemanticFilterExpression filter,
         bool validateOnly,
@@ -774,8 +884,11 @@ public abstract class OrmEntityMap<TEntity> : IOrmEntityMap where TEntity : clas
                 if (relationshipAuthorization is null ||
                     !relationshipAuthorization.TryGetValue(relationship.Relationship, out var authorization) || context is null)
                     throw new NotSupportedException("ORM provider: relationship filters require an authorization predicate on the matching child ExecutionIR node.");
-                var child = target.LowerFilterExpression(relationship.Predicate, authorization, context);
-                return (Expression<Func<TEntity, bool>>)navigation.Build(child, relationship.Quantifier);
+                // Authorization and the user predicate stay separate: the binding must keep authorization
+                // outside the negation used by None/All.
+                var childAuthorization = target.LowerAuthorizationExpression(authorization, context);
+                var childPredicate = target.LowerUserFilterExpression(relationship.Predicate);
+                return (Expression<Func<TEntity, bool>>)navigation.Build(childAuthorization, childPredicate, relationship.Quantifier);
             }
             case SemanticAggregateFilter aggregate:
             {

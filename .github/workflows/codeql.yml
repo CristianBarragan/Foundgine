@@ -45,6 +45,8 @@ jobs:
         include:
           - language: csharp
             build-mode: none
+          - language: java-kotlin
+            build-mode: manual
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
         # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
@@ -56,6 +58,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Set up Java 27
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '27'
+          cache: maven
+          cache-dependency-path: 'src/java/**/pom.xml'
 
       # Add any setup steps before running the `github/codeql-action/init` action.
       # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -82,14 +93,19 @@ jobs:
       # to build your code.
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-      - if: matrix.build-mode == 'manual'
+      - name: Build Java sources for CodeQL
+        if: matrix.language == 'java-kotlin' && matrix.build-mode == 'manual'
         shell: bash
         run: |
-          echo 'If you are using a "manual" build mode for one or more of the' \
-            'languages you are analyzing, replace this with the commands to build' \
-            'your code, for example:'
-          echo '  make bootstrap'
-          echo '  make release'
+          set -euo pipefail
+          java -version
+          mvn --version
+          mvn --file src/java/pom.xml --batch-mode --no-transfer-progress --errors -Drevision="3.3.0-codeql.${GITHUB_RUN_NUMBER}" -Dgpg.skip=true -DskipTests clean package
+
+      - if: matrix.build-mode == 'manual' && matrix.language != 'java-kotlin'
+        shell: bash
+        run: |
+          echo "::error::No manual build has been configured for ${{ matrix.language }}."
           exit 1
 
       - name: Perform CodeQL Analysis

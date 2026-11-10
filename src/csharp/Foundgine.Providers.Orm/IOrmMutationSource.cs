@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 namespace Foundgine.Providers.Orm;
 
 /// <summary>
@@ -14,9 +15,9 @@ public interface IOrmMutationSource
     /// </summary>
     IOrmTransaction BeginTransaction();
 
-    IQueryable<TEntity> TrackedQuery<TEntity>() where TEntity : class;
-    void Add<TEntity>(TEntity entity) where TEntity : class;
-    void Remove<TEntity>(TEntity entity) where TEntity : class;
+    IQueryable<TEntity> TrackedQuery<[DynamicallyAccessedMembers(OrmEntityMembers.Required)] TEntity>() where TEntity : class;
+    void Add<[DynamicallyAccessedMembers(OrmEntityMembers.Required)] TEntity>(TEntity entity) where TEntity : class;
+    void Remove<[DynamicallyAccessedMembers(OrmEntityMembers.Required)] TEntity>(TEntity entity) where TEntity : class;
 
     /// <summary>Flushes pending changes inside the current transaction.</summary>
     int SaveChanges();

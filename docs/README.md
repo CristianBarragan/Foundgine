@@ -1,6 +1,6 @@
 # Foundgine documentation
 
-This directory contains the **current** Foundgine documentation, covering both implementations, released together as **2.3.1**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
+This directory contains the **current** Foundgine documentation, covering both implementations, released together as **3.3.0**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
 
 The repository itself is the source of truth. Documentation describes implemented architecture and tested behavior; it does not use old release notes or historical benchmark snapshots as current product guidance.
 
@@ -26,7 +26,7 @@ This is the reading path — each page ends with a link to the next one, so you 
 16. [PostgreSQL E2E](POSTGRES-E2E.md) — the real database integration path.
 17. [Testing](TESTING.md) — how the boundaries above are proven, not just asserted.
 18. [Current status](CURRENT-STATUS.md) — what the active code and tests support today.
-19. [Roadmap](ROADMAP.md) — what's next, and what's deliberately out of scope.
+19. [Roadmap](ROADMAP.md) — what's next, and what's deliberately out of scope.\n20. [CI and release validation](CI.md) — reproducible .NET 10 / Java 27 build and CodeQL behavior.
 
 Package-specific architecture and usage guidance lives in the `README.md` of every project under `src/csharp/` and `src/java/`. Java sample tutorials live alongside each sample under `src/java/samples/*`.
 

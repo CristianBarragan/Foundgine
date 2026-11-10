@@ -114,13 +114,13 @@ public sealed class OrmFeatureConformanceMatrixTests
             new SemanticQueryOptions(Order: [new SemanticOrderTerm(Total, SemanticSortDirection.Desc, [CustomerOrders], SemanticOrderAggregate.Min)]),
             new SemanticQueryOptions(Order: [new SemanticOrderTerm(Total, SemanticSortDirection.Desc, [CustomerOrders], SemanticOrderAggregate.Max)])
         };
-        var aggregateOrder = new[] { new SemanticOrderTerm(OrderId, SemanticSortDirection.Desc,
+        var aggregateOrders = new[] { new SemanticOrderTerm(OrderId, SemanticSortDirection.Desc,
             [CustomerOrders], SemanticOrderAggregate.Count) };
         var pagedAggregateOrders = new[]
         {
-            new SemanticQueryOptions(Order: aggregateOrder, Limit: 10),
-            new SemanticQueryOptions(Order: aggregateOrder, Offset: 10),
-            new SemanticQueryOptions(Order: aggregateOrder, After: OrmCursor.Encode([2]))
+            new SemanticQueryOptions(Order: aggregateOrders, Limit: 10),
+            new SemanticQueryOptions(Order: aggregateOrders, Offset: 10),
+            new SemanticQueryOptions(Order: aggregateOrders, After: OrmCursor.Encode([2]))
         };
         var childPage = Ir(fields: [Id], children: [Child(2, Order, CustomerOrders, [OrderId],
             options: new SemanticQueryOptions(Limit: 1))]);

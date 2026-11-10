@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 namespace Foundgine.Providers.Orm;
 
 /// <summary>
@@ -7,7 +8,7 @@ namespace Foundgine.Providers.Orm;
 public interface IOrmQuerySource
 {
     /// <summary>A read-only (no change tracking) root query for the entity type.</summary>
-    IQueryable<TEntity> Query<TEntity>() where TEntity : class;
+    IQueryable<TEntity> Query<[DynamicallyAccessedMembers(OrmEntityMembers.Required)] TEntity>() where TEntity : class;
 
     Task<IReadOnlyList<TEntity>> ToListAsync<TEntity>(IQueryable<TEntity> query, CancellationToken cancellationToken)
         where TEntity : class;

@@ -17,5 +17,7 @@
                       OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all"
                       SkipGetTargetFrameworkProperties="true" UndefineProperties="TargetFramework" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+    <!-- Override the transitive SQLitePCLRaw.lib.e_sqlite3 2.1.11 (GHSA-2m69-gcr7-jv3q); same pin as Foundgine.Orm.Tests. -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
   </ItemGroup>
 </Project>

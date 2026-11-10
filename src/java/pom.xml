@@ -36,7 +36,7 @@
   </scm>
 
   <properties>
-    <revision>2.3.1</revision>
+    <revision>3.3.0</revision>
     <maven.compiler.release>27</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -59,6 +59,8 @@
     <module>foundgine-core</module>
     <module>foundgine-runtime</module>
     <module>foundgine-providers</module>
+    <!-- Compile-time metadata generator (Java counterpart of Foundgine.Providers.Aot.Generator). -->
+    <module>foundgine-aot-generator</module>
     <module>foundgine-extensions</module>
     <module>security/foundgine-redteam</module>
     <!-- Keep the annotation-processor consumer in the same reactor as its

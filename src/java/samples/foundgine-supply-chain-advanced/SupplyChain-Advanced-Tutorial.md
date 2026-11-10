@@ -35,7 +35,7 @@ AI agent / MCP client
 
 ### Prerequisites
 
-- **JDK 21**, **Maven 3.9+** (same reactor as the starter)
+- **JDK 27**, **Maven 3.9+** (same reactor as the starter)
 - **Docker with Compose support** — this sample stores mutation state in real PostgreSQL
 - A clone of this repository, building against the `${revision}` reactor exactly like the starter
 

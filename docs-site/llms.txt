@@ -1,6 +1,6 @@
-# Foundgine 2.3.1 (.NET & Java) — Website AI reference
+# Foundgine 3.3.0 (.NET & Java) — Website AI reference
 
-Foundgine is a **programmable semantic execution platform, implemented for .NET and Java**. It creates one application-controlled boundary between caller intent and physical execution, expressed through language-idiomatic mechanisms in each implementation.
+Foundgine is a **semantic execution layer for .NET 10 and Java 27**. It resolves structured caller intent into authorized, deterministic execution plans within an application-controlled boundary, using language-idiomatic mechanisms in each implementation.
 
 ## Canonical lifecycle
 
@@ -11,6 +11,17 @@ Caller → Intent → Semantic Model → Semantic Operation Graph
 ```
 
 **Retrieval is discovery, not authority.**
+
+## Semantic execution lifecycle
+
+1. **External actors and transports** — application code, MCP, GraphQL and JSON carry structured requests to the host-controlled boundary. Transport adapters do not own domain authority.
+2. **Intent resolution** — the request is parsed and normalized into a typed intent and operation shape.
+3. **Semantic model** — application metadata defines entities, fields, relationships, identities, aliases and exposed capabilities.
+4. **Grounding and ambiguity resolution** — candidate discovery is evaluated against semantic evidence; unresolved ambiguity is rejected or returned for clarification rather than guessed.
+5. **Authorization and capability boundaries** — trusted host context and policy determine which resolved operations the caller may exercise. Retrieval is never authorization.
+6. **Planning and Execution IR** — the authorized logical operation becomes a deterministic provider-independent plan and a constrained execution representation.
+7. **Runtime and provider execution** — runtime orchestration invokes a conforming provider; providers execute the authorized artifact rather than reinterpret caller authority.
+8. **Results and observability** — results, execution evidence, receipts and diagnostics are returned without leaking secrets or elevating provider output into authority.
 
 ## Core vocabulary
 
@@ -59,7 +70,7 @@ execution
 
 ## Current release
 
-**2.3.1 · .NET 10 and Java 21**
+**3.3.0 · .NET 10 and Java 27**
 
 New in 2.3.0: a fluent configuration API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
 

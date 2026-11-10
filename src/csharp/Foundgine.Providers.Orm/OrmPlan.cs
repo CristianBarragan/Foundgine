@@ -14,4 +14,11 @@ public sealed record OrmPlan(string ProviderName, ExecutionIR IR) : ProviderPlan
 
     /// <summary>Feature declaration used during compilation; this is not security evidence.</summary>
     public OrmProviderFeature DeclaredFeatures { get; init; } = OrmProviderFeature.None;
+
+    /// <summary>
+    /// The exact IR instance this plan was compiled and authorization-bound from. Internal so callers cannot
+    /// assign it: a record <c>with { IR = other }</c> copies this field unchanged, so the executor can tell the
+    /// plan's IR was swapped even when the replacement carries an identical authorization binding.
+    /// </summary>
+    internal ExecutionIR? BoundIR { get; init; }
 }

@@ -42,6 +42,11 @@ public class OrmExecutionProvider : IExecutionProvider
                 $"The {_provider} provider refuses to execute a plan whose authorization provenance " +
                 "does not match its ExecutionIR.");
 
+        // Equal bindings are not enough: the IR itself must be the instance the plan was compiled from.
+        if (!ReferenceEquals(ormPlan.BoundIR, ormPlan.IR))
+            throw new InvalidOperationException(
+                $"The {_provider} provider refuses to execute a plan whose ExecutionIR is not the one it was compiled from.");
+
         context.EnsureWithinDeadline();
         using var cts = context.CreateDeadlineCancellationSource(cancellationToken);
         var stopwatch = Stopwatch.StartNew();

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace Foundgine.Providers.Orm;
@@ -7,7 +8,12 @@ public interface IOrmRelationshipBinding<TEntity> where TEntity : class
 {
     string Name { get; }
     Type TargetType { get; }
-    LambdaExpression Build(LambdaExpression predicate, Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier quantifier);
+    /// <summary>
+    /// Lowers a relationship quantifier. <paramref name="authorization"/> (the related entity's authorization) and
+    /// <paramref name="predicate"/> (the caller's filter) are kept separate because authorization must stay *outside*
+    /// any negation: ALL is "no authorized child fails the predicate", never "no child fails (authorization AND predicate)".
+    /// </summary>
+    LambdaExpression Build(LambdaExpression authorization, LambdaExpression predicate, Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier quantifier);
     LambdaExpression BuildAggregate(LambdaExpression predicate, Foundgine.Core.Semantic.Query.SemanticFilterAggregate aggregate, LambdaExpression? selector, Foundgine.Core.Semantic.Query.SemanticAggregateFilterOperator op, object? value);
     LambdaExpression BuildCountAggregateOrderSelector(LambdaExpression predicate);
     LambdaExpression BuildCountAggregateCursorComparison(LambdaExpression predicate, int cursorValue, bool descending, bool equal);
@@ -32,27 +38,44 @@ public sealed class OrmRelationshipBinding<TParent, TChild> : IOrmRelationshipBi
         Name = string.IsNullOrWhiteSpace(name) ? throw new ArgumentException("Relationship name is required.", nameof(name)) : name;
         Navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
     }
+    
 
     public string Name { get; }
     public Type TargetType => typeof(TChild);
     public Expression<Func<TParent, IEnumerable<TChild>>> Navigation { get; }
 
-    public LambdaExpression Build(LambdaExpression predicate, Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier quantifier)
+    public LambdaExpression Build(
+        LambdaExpression authorization,
+        LambdaExpression predicate,
+        Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier quantifier)
     {
-        if (predicate.Parameters.Count != 1 || predicate.Parameters[0].Type != typeof(TChild) || predicate.ReturnType != typeof(bool))
-            throw new InvalidOperationException($"Relationship '{Name}' predicate does not target '{typeof(TChild)}'.");
+        EnsureChildPredicate(authorization, "authorization");
+        EnsureChildPredicate(predicate, "predicate");
         var parent = Navigation.Parameters[0];
-        var childPredicate = predicate;
-        var any = Expression.Call(AnyMethod, Navigation.Body, childPredicate);
+
+        // Authorization is always conjoined on the positive side of Any(...), so rows the caller may not see
+        // can neither satisfy nor violate a quantifier (an unauthorized child is as if it did not exist).
+        var authorizedMatch = ExpressionComposer.And(authorization, predicate);
+        var authorizedViolation = ExpressionComposer.And(
+            authorization, Expression.Lambda<Func<TChild, bool>>(Expression.Not(predicate.Body), predicate.Parameters));
+
         Expression body = quantifier switch
         {
-            Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier.Some => any,
-            Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier.None => Expression.Not(any),
-            Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier.All => Expression.Not(
-                Expression.Call(AnyMethod, Navigation.Body, Expression.Lambda(Expression.Not(childPredicate.Body), childPredicate.Parameters))),
+            Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier.Some => Any(authorizedMatch),
+            Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier.None => Expression.Not(Any(authorizedMatch)),
+            Foundgine.Core.Semantic.Query.SemanticRelationshipQuantifier.All => Expression.Not(Any(authorizedViolation)),
             _ => throw new NotSupportedException($"Relationship quantifier '{quantifier}' is not supported.")
         };
-        return Expression.Lambda(body, parent);
+        return Expression.Lambda<Func<TParent, bool>>(body, parent);
+    }
+
+    private Expression Any(LambdaExpression childPredicate) =>
+        Expression.Call(AnyMethod, Navigation.Body, childPredicate);
+
+    private void EnsureChildPredicate(LambdaExpression predicate, string role)
+    {
+        if (predicate.Parameters.Count != 1 || predicate.Parameters[0].Type != typeof(TChild) || predicate.ReturnType != typeof(bool))
+            throw new InvalidOperationException($"Relationship '{Name}' {role} does not target '{typeof(TChild)}'.");
     }
 
     /// <summary>Builds the correlated COUNT key as a reusable parent selector.</summary>
@@ -145,6 +168,7 @@ public sealed class OrmRelationshipBinding<TParent, TChild> : IOrmRelationshipBi
         return OrmQueryableOrderMethods<TParent, TNumber?>.Apply(query, parentSelector, descending, thenBy);
     }
 
+    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "The only runtime-typed delegate is Func<TChild, TResult> for a scalar selector lifted to its nullable type. TChild and the scalar result types come from generated maps, so these closed delegate types are statically rooted; EF Core translates the tree and never relies on JIT-compiling it.")]
     public LambdaExpression BuildAggregate(
         LambdaExpression predicate,
         Foundgine.Core.Semantic.Query.SemanticFilterAggregate aggregate,
@@ -185,7 +209,7 @@ public sealed class OrmRelationshipBinding<TParent, TChild> : IOrmRelationshipBi
 
         var underlyingType = Nullable.GetUnderlyingType(resultType);
         var convertedValue = Convert.ChangeType(value, underlyingType ?? resultType, System.Globalization.CultureInfo.InvariantCulture);
-        var constant = underlyingType is null
+        Expression constant = underlyingType is null
             ? Expression.Constant(convertedValue, resultType)
             : Expression.Convert(Expression.Constant(convertedValue, underlyingType), resultType);
         Expression comparison = op switch
@@ -198,7 +222,7 @@ public sealed class OrmRelationshipBinding<TParent, TChild> : IOrmRelationshipBi
             Foundgine.Core.Semantic.Query.SemanticAggregateFilterOperator.Lte => Expression.LessThanOrEqual(aggregateExpression, constant),
             _ => throw new NotSupportedException($"Aggregate comparison '{op}' is not supported.")
         };
-        return Expression.Lambda(comparison, parent);
+        return Expression.Lambda<Func<TParent, bool>>(comparison, parent);
     }
 
     // The type switch closes these generic method handles at compile time. There is no
@@ -256,11 +280,11 @@ internal static class OrmEnumerableMethods<TSource, TResult>
 
     public static readonly System.Reflection.MethodInfo Min =
         ((MethodCallExpression)((Expression<Func<IEnumerable<TSource>, Func<TSource, TResult>, TResult>>)
-            ((source, selector) => Enumerable.Min<TSource, TResult>(source, selector))).Body).Method;
+            ((source, selector) => Enumerable.Min<TSource, TResult>(source, selector)!)).Body).Method;
 
     public static readonly System.Reflection.MethodInfo Max =
         ((MethodCallExpression)((Expression<Func<IEnumerable<TSource>, Func<TSource, TResult>, TResult>>)
-            ((source, selector) => Enumerable.Max<TSource, TResult>(source, selector))).Body).Method;
+            ((source, selector) => Enumerable.Max<TSource, TResult>(source, selector)!)).Body).Method;
 }
 
 /// <summary>Closed generic Queryable ordering calls; no runtime generic method construction.</summary>

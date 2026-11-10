@@ -1,5 +1,26 @@
 # Changelog
 
+## 3.3.0 — November 11, 2026
+
+### Changed
+
+- Aligned the canonical Foundgine .NET and Java release versions on `3.3.0`.
+- Updated NuGet package metadata, Maven reactor and flattened consumer POMs,
+  CI package versioning, MCP manifests, installation examples, public
+  documentation, website metadata and AI reference files to `3.3.0`.
+- Preserved third-party dependency versions; Foundgine release numbering is
+  independent of the versions of .NET, Java, xUnit, Model Context Protocol,
+  Maven plugins and other external dependencies.
+- Fixed Docker metrics summarization under PowerShell strict mode by
+  normalizing collector errors to an array and restoring the zero-sample
+  error-handling branch.
+
+### Release
+
+- Version: `3.3.0`
+- Target framework: `.NET 10` / Java 21
+- License: Apache License, Version 2.0
+
 ## Unreleased
 
 ## 2.3.1 — November 9, 2026

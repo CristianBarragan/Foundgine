@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IsAotCompatible>true</IsAotCompatible>
     <Authors>Foundgine</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageId>Foundgine.Providers.EntityFrameworkCore</PackageId>
@@ -10,6 +11,7 @@
     <RootNamespace>Foundgine.Providers.EntityFrameworkCore</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
     <ProjectReference Include="../Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />

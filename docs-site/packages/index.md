@@ -15,12 +15,12 @@ A Java port of the same four packages is published to Maven Central under the `i
 <dependency>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-runtime</artifactId>
-  <version>2.3.1</version>
+  <version>3.3.0</version>
 </dependency>
 <dependency>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-providers</artifactId>
-  <version>2.3.1</version>
+  <version>3.3.0</version>
 </dependency>
 ```
 
