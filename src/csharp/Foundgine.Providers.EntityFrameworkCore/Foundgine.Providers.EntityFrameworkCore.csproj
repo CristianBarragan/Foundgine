@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageId>Foundgine.Providers.EntityFrameworkCore</PackageId>
+    <Description>Entity Framework Core execution provider for Foundgine. Executes the provider-neutral ExecutionIR through generated, strongly typed LINQ expressions (AOT-friendly), preserving Foundgine authorization.</Description>
+    <RootNamespace>Foundgine.Providers.EntityFrameworkCore</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+</Project>

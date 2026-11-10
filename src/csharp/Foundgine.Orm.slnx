@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/aot-validation/">
+    <Project Path="aot/Foundgine.Aot.EfCore/Foundgine.Aot.EfCore.csproj" />
+  </Folder>
+  <Folder Name="/orm/">
+    <Project Path="Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj" />
+    <Project Path="Foundgine.Providers.Orm.Generator/Foundgine.Providers.Orm.Generator.csproj" />
+    <Project Path="Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj" />
+    <Project Path="tests/Foundgine.Orm.Tests/Foundgine.Orm.Tests.csproj" />
+  </Folder>
+  <Project Path="Foundgine.Core/Foundgine.Core.csproj" />
+  <Project Path="Foundgine.Providers/Foundgine.Providers.csproj" />
+</Solution>

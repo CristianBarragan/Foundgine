@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 /** Applies the embedded, append-only event-store migrations. Never edit an applied migration; add a new one. */
 public final class EventStoreMigrator {
-    private static final String[] MIGRATIONS = {"001_initial", "002_correlation", "003_outbox"};
+    private static final String[] MIGRATIONS = {"001_initial", "002_correlation", "003_outbox", "004_gateway_approvals"};
     private static final String LOCK_KEY = "foundgine_event_store_migrations";
 
     private EventStoreMigrator() { }

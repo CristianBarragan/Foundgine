@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "planVersion": "step70",
+  "provider": "Jakarta Persistence (JPA)",
+  "module": "foundgine-providers",
+  "adapterPackage": "com.foundgine.providers.storage.orm.jpa",
+  "statusPolicy": "A capability is enabled only after provider-specific SQL translation and database runtime tests pass. Source presence and test definitions are not passing evidence.",
+  "currentBaseline": {
+    "scalarCriteriaQueries": "implemented-unverified",
+    "tupleProjection": "implemented-unverified",
+    "scalarPredicates": "implemented-unverified",
+    "offsetLimit": "implemented-unverified",
+    "resourceLocalMutations": "implemented-unverified",
+    "relationshipTraversal": "correlated-exists-bounded-depth-source-unverified",
+    "relationshipQuantifiers": "correlated-some-none-all-bounded-depth-source-unverified",
+    "aggregateFilters": "implemented-unverified",
+    "aggregateOrdering": "implemented-unverified-nonpaged-one-hop",
+    "aggregateCursorPagination": "ci-execution-evidence-gate-added-unverified",
+    "aggregateCursorSnapshotConsistency": "repeatable-read-page-session-and-h2-postgresql-concurrency-tests-implemented-unverified",
+    "databaseIntegration": "implemented-unverified",
+    "nativeImage": "not-assessed"
+  },
+  "milestones": [
+    {
+      "id": "JPA-0",
+      "name": "Real integration harness",
+      "dependsOn": [],
+      "scope": [
+        "Java 27 Maven build",
+        "Hibernate ORM + H2",
+        "PostgreSQL integration",
+        "EntityManager lifecycle",
+        "SQL capture"
+      ],
+      "exitGate": "Real provider and database tests pass; no API stubs."
+    },
+    {
+      "id": "JPA-1",
+      "name": "Scalar query and predicate parity",
+      "dependsOn": [
+        "JPA-0"
+      ],
+      "scope": [
+        "typed Criteria parameters",
+        "comparison and IN semantics",
+        "null and empty-set semantics",
+        "tuple alias integrity",
+        "type and dialect validation"
+      ],
+      "exitGate": "SQL and runtime results match the semantic oracle for every enabled scalar operator."
+    },
+    {
+      "id": "JPA-2",
+      "name": "Authorization, projection, and relationship traversal",
+      "dependsOn": [
+        "JPA-1"
+      ],
+      "scope": [
+        "mandatory root authorization",
+        "correlated child authorization",
+        "explicit relationship execution",
+        "bounded child batching",
+        "N+1 and hidden-row tests"
+      ],
+      "exitGate": "Cross-tenant and child-authorization tests pass against PostgreSQL."
+    },
+    {
+      "id": "JPA-3",
+      "name": "Relationship quantifiers and aggregate filters",
+      "dependsOn": [
+        "JPA-2"
+      ],
+      "scope": [
+        "Some None All",
+        "Count Min Max filters",
+        "empty-set semantics",
+        "authorized correlated subqueries",
+        "authorized COUNT MIN MAX correlated scalar subqueries",
+        "in-memory aggregate oracle",
+        "empty-set and NULL comparison semantics"
+      ],
+      "exitGate": "SQL and runtime tests pass on H2 and PostgreSQL; unsupported shapes fail closed.",
+      "status": "implemented-unverified",
+      "implementedIn": "step50"
+    },
+    {
+      "id": "JPA-4",
+      "name": "Aggregate ordering and private slots",
+      "dependsOn": [
+        "JPA-3"
+      ],
+      "scope": [
+        "Count Min Max ordering",
+        "private tuple slots",
+        "explicit null ordering",
+        "primary-key tie breaker",
+        "authorized one-hop COUNT MIN MAX ordering",
+        "private tuple slots excluded from semantic projection",
+        "explicit NULLS LAST ordering",
+        "aggregate pagination fail-closed pending JPA-5",
+        "JPA fetch-request continuation tuple compiled against exact correlated aggregate ORDER BY expressions with typed bindings (Step 58)"
+      ],
+      "exitGate": "Canonical typed cursor values and lexicographic continuation predicates compile to provider SQL and pass multi-page authorization, tie, null, and dialect runtime tests; semantic cursor decode and plan identity integration remain required."
+    },
+    {
+      "id": "JPA-5",
+      "name": "Canonical keyset and aggregate cursor parity",
+      "dependsOn": [
+        "JPA-4"
+      ],
+      "scope": [
+        "versioned canonical cursors",
+        "mixed-direction lexicographic predicates",
+        "aggregate cursor slots",
+        "authorization on every page",
+        "multi-page stability",
+        "typed aggregate cursor decoding and NULLS LAST lexicographic continuation descriptors (Step 53)",
+        "private aggregate cursor pipeline joins JPA/in-memory tuple slots to plan-bound cursors with typed primary-key tie-breakers (Step 57)"
+      ],
+      "exitGate": "Canonical typed cursor values and lexicographic continuation predicates compile to provider SQL and pass multi-page authorization, tie, null, and dialect runtime tests.",
+      "implemented": [
+        "ordered cursor tuple pipeline supports interleaved aggregate and ordinary keys (Step 59)"
+      ]
+    },
+    {
+      "id": "JPA-6",
+      "name": "Mutation and transaction parity",
+      "dependsOn": [
+        "JPA-2"
+      ],
+      "scope": [
+        "validate-before-write",
+        "create update delete upsert",
+        "generated-key dependencies",
+        "resource-local and JTA ownership",
+        "optimistic locking and rollback"
+      ],
+      "exitGate": "Atomicity, caller transaction ownership, version conflicts, and rollback pass against a real DB."
+    },
+    {
+      "id": "JPA-7",
+      "name": "Dialect and implementation matrix",
+      "dependsOn": [
+        "JPA-1"
+      ],
+      "scope": [
+        "Hibernate ORM + H2/PostgreSQL",
+        "EclipseLink second implementation",
+        "dialect capability profiles",
+        "SQL and parameter evidence"
+      ],
+      "exitGate": "Every certified capability is tied to exact implementation and database versions."
+    },
+    {
+      "id": "JPA-8",
+      "name": "Java Native Image readiness",
+      "dependsOn": [
+        "JPA-6",
+        "JPA-7"
+      ],
+      "scope": [
+        "reflection inventory",
+        "generated static metamodel",
+        "reachability metadata",
+        "native semantic smoke tests"
+      ],
+      "exitGate": "Exact JPA implementation builds and runs a native image with semantic success evidence."
+    },
+    {
+      "id": "JPA-9",
+      "name": "Operational hardening and release certification",
+      "dependsOn": [
+        "JPA-5",
+        "JPA-6",
+        "JPA-7"
+      ],
+      "scope": [
+        "diagnostics and redaction",
+        "timeouts and cancellation",
+        "resource and load tests",
+        "reproducible artifacts and SBOM"
+      ],
+      "exitGate": "All mandatory security, runtime, dialect, and evidence gates pass."
+    }
+  ],
+  "requiredTestLayers": [
+    "semantic-unit",
+    "jpa-implementation",
+    "database-integration",
+    "cross-runtime-parity",
+    "security-regression",
+    "native-image"
+  ],
+  "initialDatabaseTargets": [
+    "H2",
+    "PostgreSQL"
+  ],
+  "secondJPAImplementation": "EclipseLink",
+  "nativeImagePolicy": "Separate from JVM certification; certify exact JPA implementation and version only.",
+  "releaseGate": "No capability is advertised as supported until all applicable exit gates and security tests pass.",
+  "latestIncrement": {
+    "id": "JPA-5-snapshot-consistency-database-tests",
+    "status": "implemented-unverified",
+    "summary": "Added H2 and PostgreSQL integration tests that keep a repeatable-read JpaOrmSnapshotPageSession open while a separate transaction changes child aggregate values; continuation pages must preserve the original snapshot ordering without duplicates or omissions. H2 and PostgreSQL runtime execution remains unverified pending Java 27 CI."
+  }
+}

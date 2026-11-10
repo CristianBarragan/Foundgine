@@ -278,7 +278,7 @@ function Run-AgentBenchmark {
     $metricsJson = Join-Path $tierDirectory 'docker-metrics-summary.json'
     $metricsStop = Join-Path $tierDirectory '.docker-metrics.stop'
     Remove-Item $metricsStop -Force -ErrorAction SilentlyContinue
-    $metricsProcess = Start-Process -FilePath $PowerShellHost -ArgumentList @('-NoProfile','-File',$MetricsScript,'-ComposeFile',$ComposeFile,'-ProjectName',$ComposeProjectName,'-Services','postgres,foundgine-warm','-OutputCsv',$metricsCsv,'-StopFile',$metricsStop,'-IntervalMs','1000') -PassThru
+    $metricsProcess = Start-Process -FilePath $PowerShellHost -ArgumentList @('-NoProfile','-File',$MetricsScript,'-ComposeFile',$ComposeFile,'-ProjectName',$ComposeProjectName,'-Services','postgres,foundgine-warm','-OutputCsv',$metricsCsv,'-StopFile',$metricsStop,'-ErrorLog',($metricsCsv + '.errors.log'),'-IntervalMs','1000') -PassThru
 
     Write-Host ''
     Write-Host '============================================'
@@ -311,13 +311,16 @@ function Run-AgentBenchmark {
         $tail = if (Test-Path $logPath) { (Get-Content -Path $logPath | Select-Object -Last 40) -join [Environment]::NewLine } else { '<no benchmark console log was produced>' }
         New-Item -ItemType File -Force -Path $metricsStop | Out-Null
         try { Wait-Process -Id $metricsProcess.Id -Timeout 10 -ErrorAction SilentlyContinue } catch {}
-        if (Test-Path $metricsCsv) { & $PowerShellHost -NoProfile -File $MetricsSummaryScript -InputCsv $metricsCsv -OutputJson $metricsJson }
+        if (Test-Path $metricsCsv) { & $PowerShellHost -NoProfile -File $MetricsSummaryScript -InputCsv $metricsCsv -OutputJson $metricsJson -ErrorLog ($metricsCsv + '.errors.log') }
         throw "Agent end-to-end benchmark failed for $CustomerCount customers at concurrency $Concurrency (exit code $exitCode). Console log: $logPath`n$tail"
     }
 
     New-Item -ItemType File -Force -Path $metricsStop | Out-Null
     try { Wait-Process -Id $metricsProcess.Id -Timeout 10 -ErrorAction SilentlyContinue } catch {}
-    if (Test-Path $metricsCsv) { & $PowerShellHost -NoProfile -File $MetricsSummaryScript -InputCsv $metricsCsv -OutputJson $metricsJson }
+    if (Test-Path $metricsCsv) {
+        & $PowerShellHost -NoProfile -File $MetricsSummaryScript -InputCsv $metricsCsv -OutputJson $metricsJson -ErrorLog ($metricsCsv + '.errors.log')
+        if ($LASTEXITCODE -ne 0) { throw "Docker metrics summary failed for $CustomerCount customers / concurrency $Concurrency. See $metricsCsv.errors.log." }
+    }
     Remove-Item $metricsStop -Force -ErrorAction SilentlyContinue
 }
 

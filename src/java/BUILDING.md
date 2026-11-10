@@ -37,3 +37,14 @@ runtime dependency.
 `-Dgpg.skip=true` is useful for local verification when signing keys are not
 configured. Omit it in a release workflow that has the required signing
 credentials configured.
+
+## ORM / JPA parity work
+
+The current Java JPA adapter is a partial implementation baseline. Its staged
+parity programme, exact feature gaps, database targets, and release gates are
+maintained in [`ORM-JPA-PARITY-PLAN.md`](ORM-JPA-PARITY-PLAN.md). Validate the
+machine-readable plan with:
+
+```bash
+python conformance/validate-orm-jpa-parity-plan.py
+```

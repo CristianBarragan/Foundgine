@@ -137,9 +137,10 @@ class GatewayJournalParityTest {
     }
 
     @Test void migrationsShipAsResourcesInOrder() {
-        assertEquals(List.of("001_initial", "002_correlation", "003_outbox"), List.of(EventStoreMigrator.migrations()));
+        assertEquals(List.of("001_initial", "002_correlation", "003_outbox", "004_gateway_approvals"), List.of(EventStoreMigrator.migrations()));
         for (String v : EventStoreMigrator.migrations()) assertTrue(EventStoreMigrator.load(v).contains("CREATE") || EventStoreMigrator.load(v).contains("ALTER"));
         assertTrue(EventStoreMigrator.load("003_outbox").contains("foundgine_outbox"));
+        assertTrue(EventStoreMigrator.load("004_gateway_approvals").contains("foundgine_gateway_approvals"));
         assertThrows(IllegalStateException.class, () -> EventStoreMigrator.load("999_missing"));
     }
 }

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+    <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj" />
+    <ProjectReference Include="../../Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj" />
+    <!-- Analyzer references are not transitive: the generator must be referenced by the consuming project. -->
+    <ProjectReference Include="../../Foundgine.Providers.Orm.Generator/Foundgine.Providers.Orm.Generator.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all"
+                      SkipGetTargetFrameworkProperties="true" UndefineProperties="TargetFramework" />
+  </ItemGroup>
+</Project>

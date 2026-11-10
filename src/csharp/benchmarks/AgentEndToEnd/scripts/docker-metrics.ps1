@@ -1,367 +1,154 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
-[Parameter(Mandatory = $true)]
-[string]$ComposeFile,
-
-[string]$ProjectName = '',
-
-[Parameter()]
-[string]$Services = 'postgres,foundgine-warm',
-
-[Parameter(Mandatory = $true)]
-[string]$OutputCsv,
-
-[Parameter(Mandatory = $true)]
-[string]$StopFile,
-
-[int]$IntervalMs = 1000
-
+    [Parameter(Mandatory = $true)][string]$ComposeFile,
+    [string]$ProjectName = '',
+    [string]$Services = 'postgres,foundgine-warm',
+    [Parameter(Mandatory = $true)][string]$OutputCsv,
+    [Parameter(Mandatory = $true)][string]$StopFile,
+    [string]$ErrorLog = '',
+    [int]$IntervalMs = 1000
 )
 
-$ErrorActionPreference = 'SilentlyContinue'
+# Metrics are diagnostic evidence. Never hide collector failures: persist them
+# separately from the benchmark process so a failed sampler cannot look like
+# a successful run with zero resource usage.
+$ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 Set-StrictMode -Version Latest
 
-# ---------------------------------------------------------------------------
-
-# Validation
-
-# ---------------------------------------------------------------------------
-
-if ([string]::IsNullOrWhiteSpace($ComposeFile)) {
-throw 'ComposeFile is required.'
+if ([string]::IsNullOrWhiteSpace($ComposeFile) -or -not (Test-Path -LiteralPath $ComposeFile)) {
+    throw "Compose file not found: $ComposeFile"
 }
+if ([string]::IsNullOrWhiteSpace($OutputCsv)) { throw 'OutputCsv is required.' }
+if ([string]::IsNullOrWhiteSpace($StopFile)) { throw 'StopFile is required.' }
+if ($IntervalMs -lt 100) { $IntervalMs = 100 }
+if ([string]::IsNullOrWhiteSpace($ErrorLog)) { $ErrorLog = "$OutputCsv.errors.log" }
 
-if (-not (Test-Path -LiteralPath $ComposeFile)) {
-throw "Compose file not found: $ComposeFile"
+$servicesToSample = @($Services -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ } | Select-Object -Unique)
+if ($servicesToSample.Count -eq 0) { throw 'At least one Docker Compose service must be supplied.' }
+
+foreach ($path in @($OutputCsv, $ErrorLog)) {
+    $parent = Split-Path -Parent $path
+    if ($parent) { New-Item -ItemType Directory -Force -Path $parent | Out-Null }
 }
-
-if ([string]::IsNullOrWhiteSpace($OutputCsv)) {
-throw 'OutputCsv is required.'
-}
-
-if ([string]::IsNullOrWhiteSpace($StopFile)) {
-throw 'StopFile is required.'
-}
-
-if ($IntervalMs -lt 100) {
-$IntervalMs = 100
-}
-
-# Normalize the service list. This also protects against callers accidentally
-
-# supplying empty entries.
-
-$Services = @(
-($Services -split ',') |
-Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
-ForEach-Object { $_.Trim() } |
-Select-Object -Unique
-)
-
-if ($Services.Count -eq 0) {
-throw 'At least one Docker Compose service must be supplied.'
-}
-
-# ---------------------------------------------------------------------------
-
-# Output setup
-
-# ---------------------------------------------------------------------------
-
-$dir = Split-Path -Parent $OutputCsv
-
-if (-not [string]::IsNullOrWhiteSpace($dir)) {
-New-Item -ItemType Directory -Force -Path $dir | Out-Null
-}
-
-if (Test-Path -LiteralPath $OutputCsv) {
-Remove-Item -LiteralPath $OutputCsv -Force
-}
-
-$header = @(
-'TimestampUtc',
-'Service',
-'ContainerId',
-'ContainerName',
-'CpuPercent',
-'MemoryUsageBytes',
-'MemoryLimitBytes',
-'MemoryPercent',
-'NetRxBytes',
-'NetTxBytes',
-'BlockReadBytes',
-'BlockWriteBytes',
-'Pids'
-) -join ','
-
+Remove-Item -LiteralPath $OutputCsv -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath $ErrorLog -Force -ErrorAction SilentlyContinue
+$header = 'TimestampUtc,Service,ContainerId,ContainerName,CpuPercent,MemoryUsageBytes,MemoryLimitBytes,MemoryPercent,NetRxBytes,NetTxBytes,BlockReadBytes,BlockWriteBytes,Pids'
 Set-Content -LiteralPath $OutputCsv -Value $header -Encoding utf8
 
-# ---------------------------------------------------------------------------
+$script:ErrorCount = 0
+function Write-CollectorError([string]$Message) {
+    $script:ErrorCount++
+    $line = "$( [DateTimeOffset]::UtcNow.ToString('o') ) $Message"
+    Add-Content -LiteralPath $ErrorLog -Value $line -Encoding utf8
+}
 
-# Helpers
+function Invoke-Docker([string[]]$Arguments) {
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $output = @(& docker @Arguments 2>&1)
+        $code = $LASTEXITCODE
+    }
+    finally { $ErrorActionPreference = $previous }
+    [pscustomobject]@{ ExitCode = $code; Output = $output }
+}
 
-# ---------------------------------------------------------------------------
+function Get-ContainerId([string]$Service) {
+    $args = @('compose')
+    if ($ProjectName) { $args += @('-p', $ProjectName) }
+    $args += @('-f', $ComposeFile, 'ps', '-q', $Service)
+    $result = Invoke-Docker -Arguments $args
+    if ($result.ExitCode -ne 0) {
+        Write-CollectorError "docker compose ps failed for service '$Service' (exit $($result.ExitCode)): $($result.Output -join ' ')"
+        return ''
+    }
+    foreach ($item in $result.Output) {
+        $candidate = ([string]$item).Trim()
+        if ($candidate -match '^[0-9a-f]{12,64}$') { return $candidate }
+    }
+    return ''
+}
 
-function Convert-SizeToBytes {
-param(
-[AllowNull()]
-[string]$Value
-)
-
-if ([string]::IsNullOrWhiteSpace($Value)) {
+function Convert-SizeToBytes([string]$Value) {
+    if ([string]::IsNullOrWhiteSpace($Value)) { return [double]0 }
+    if ($Value.Trim() -match '^([0-9.]+)\s*(B|kB|KB|KiB|MB|MiB|GB|GiB)$') {
+        $number = [double]::Parse($Matches[1], [Globalization.CultureInfo]::InvariantCulture)
+        switch ($Matches[2].ToUpperInvariant()) {
+            'B' { return $number }
+            'KB' { return $number * 1000 }
+            'KIB' { return $number * 1024 }
+            'MB' { return $number * 1000000 }
+            'MIB' { return $number * 1048576 }
+            'GB' { return $number * 1000000000 }
+            'GIB' { return $number * 1073741824 }
+        }
+    }
+    Write-CollectorError "Unrecognized Docker size value '$Value'."
     return [double]0
 }
 
-$valueNormalized = ($Value.Trim() -replace ',', '')
-
-if ($valueNormalized -match '^([0-9.]+)\s*(B|kB|KB|KiB|MB|MiB|GB|GiB)$') {
-    $number = [double]$Matches[1]
-    $unit = $Matches[2].ToUpperInvariant()
-
-    switch ($unit) {
-        'B'   { return $number }
-        'KB'  { return $number * 1000 }
-        'KIB' { return $number * 1024 }
-        'MB'  { return $number * 1000 * 1000 }
-        'MIB' { return $number * 1024 * 1024 }
-        'GB'  { return $number * 1000 * 1000 * 1000 }
-        'GIB' { return $number * 1024 * 1024 * 1024 }
+function Get-DockerStats([string]$ContainerId) {
+    $result = Invoke-Docker -Arguments @('stats', '--no-stream', '--format', '{{.ID}}|{{.Name}}|{{.CPUPerc}}|{{.MemUsage}}|{{.MemPerc}}|{{.NetIO}}|{{.BlockIO}}|{{.PIDs}}', $ContainerId)
+    if ($result.ExitCode -ne 0) {
+        Write-CollectorError "docker stats failed for container '$ContainerId' (exit $($result.ExitCode)): $($result.Output -join ' ')"
+        return ''
     }
-}
-
-return [double]0
-
-}
-
-function Invoke-ComposePs {
-param(
-[Parameter(Mandatory = $true)]
-[string]$Service
-)
-
-if ([string]::IsNullOrWhiteSpace($ProjectName)) {
-    & docker compose -f $ComposeFile ps -q $Service 2>$null
-}
-else {
-    & docker compose -p $ProjectName -f $ComposeFile ps -q $Service 2>$null
-}
-
-}
-
-function Get-ContainerId {
-param(
-[Parameter(Mandatory = $true)]
-[string]$Service
-)
-
-$result = @(Invoke-ComposePs -Service $Service)
-
-foreach ($candidate in $result) {
-    if ($null -eq $candidate) {
-        continue
+    foreach ($item in $result.Output) {
+        $line = ([string]$item).Trim()
+        if ($line) { return $line }
     }
-
-    $id = $candidate.ToString().Trim()
-
-    if (-not [string]::IsNullOrWhiteSpace($id)) {
-        return $id
-    }
+    Write-CollectorError "docker stats returned no row for container '$ContainerId'."
+    return ''
 }
 
-return ''
-
-}
-
-function Get-DockerStats {
-param(
-[Parameter(Mandatory = $true)]
-[string]$ContainerId
-)
-
-
-$result = & docker stats `
-    --no-stream `
-    --format '{{.ID}}|{{.Name}}|{{.CPUPerc}}|{{.MemUsage}}|{{.MemPerc}}|{{.NetIO}}|{{.BlockIO}}|{{.PIDs}}' `
-    $ContainerId 2>$null
-
-foreach ($line in @($result)) {
-    if ($null -eq $line) {
-        continue
-    }
-
-    $text = $line.ToString().Trim()
-
-    if (-not [string]::IsNullOrWhiteSpace($text)) {
-        return $text
-    }
-}
-
-return ''
-
-}
-
-function Get-MemoryBytes {
-param(
-[Parameter(Mandatory = $true)]
-[string]$Value
-)
-
-if ([string]::IsNullOrWhiteSpace($Value)) {
-    return [double]0
-}
-
-$normalized = $Value.Trim()
-
-if ($normalized -match '^([0-9.]+)\s*(B|kB|KB|KiB|MB|MiB|GB|GiB)$') {
-    return Convert-SizeToBytes $normalized
-}
-
-return [double]0
-
-}
-
-# ---------------------------------------------------------------------------
-
-# Metrics loop
-
-# ---------------------------------------------------------------------------
-
+$missingReported = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 while (-not (Test-Path -LiteralPath $StopFile)) {
-
-$timestamp = [DateTimeOffset]::UtcNow.ToString('o')
-
-foreach ($service in $Services) {
-
-    if ([string]::IsNullOrWhiteSpace($service)) {
-        continue
-    }
-
-    $id = Get-ContainerId -Service $service
-
-    if ([string]::IsNullOrWhiteSpace($id)) {
-        continue
-    }
-
-    $line = Get-DockerStats -ContainerId $id
-
-    if ([string]::IsNullOrWhiteSpace($line)) {
-        continue
-    }
-
-    $parts = $line -split '\|'
-
-    if ($parts.Count -lt 8) {
-        continue
-    }
-
-    $cpu = ($parts[2] -replace '%', '').Trim()
-
-    # -------------------------------------------------------------------
-    # Memory
-    # Docker returns:
-    #
-    #   12.34MiB / 1.00GiB
-    # -------------------------------------------------------------------
-
-    $memoryParts = $parts[3] -split '/'
-
-    if ($memoryParts.Count -ge 2) {
-        $memoryUsedText = $memoryParts[0].Trim()
-        $memoryLimitText = $memoryParts[1].Trim()
-
-        $memoryUsedBytes = Get-MemoryBytes -Value $memoryUsedText
-        $memoryLimitBytes = Get-MemoryBytes -Value $memoryLimitText
-    }
-    else {
-        $memoryUsedBytes = [double]0
-        $memoryLimitBytes = [double]0
-    }
-
-    $memoryPercent = ($parts[4] -replace '%', '').Trim()
-
-    # -------------------------------------------------------------------
-    # Network
-    # Docker returns:
-    #
-    #   1.23MB / 4.56MB
-    # -------------------------------------------------------------------
-
-    $networkParts = $parts[5] -split '/'
-
-    if ($networkParts.Count -ge 2) {
-        $rx = Convert-SizeToBytes $networkParts[0]
-        $tx = Convert-SizeToBytes $networkParts[1]
-    }
-    else {
-        $rx = [double]0
-        $tx = [double]0
-    }
-
-    # -------------------------------------------------------------------
-    # Block IO
-    # Docker returns:
-    #
-    #   1.23MB / 4.56MB
-    # -------------------------------------------------------------------
-
-    $blockParts = $parts[6] -split '/'
-
-    if ($blockParts.Count -ge 2) {
-        $blockRead = Convert-SizeToBytes $blockParts[0]
-        $blockWrite = Convert-SizeToBytes $blockParts[1]
-    }
-    else {
-        $blockRead = [double]0
-        $blockWrite = [double]0
-    }
-
-    $containerName = $parts[1]
-    $pids = $parts[7]
-
-    # -------------------------------------------------------------------
-    # CSV escaping
-    # -------------------------------------------------------------------
-
-    $fields = @(
-        $timestamp
-        $service
-        $id
-        $containerName
-        $cpu
-        $memoryUsedBytes
-        $memoryLimitBytes
-        $memoryPercent
-        $rx
-        $tx
-        $blockRead
-        $blockWrite
-        $pids
-    )
-
-    $safeFields = foreach ($field in $fields) {
-        $text = if ($null -eq $field) { '' } else { $field.ToString() }
-
-        if ($text.Contains(',') -or
-            $text.Contains('"') -or
-            $text.Contains("`r") -or
-            $text.Contains("`n")) {
-
-            '"' + ($text -replace '"', '""') + '"'
+    $timestamp = [DateTimeOffset]::UtcNow.ToString('o')
+    foreach ($service in $servicesToSample) {
+        $id = Get-ContainerId -Service $service
+        if (-not $id) {
+            if ($missingReported.Add($service)) { Write-CollectorError "No running container found for compose service '$service'." }
+            continue
         }
-        else {
-            $text
+        $line = Get-DockerStats -ContainerId $id
+        if (-not $line) { continue }
+        $parts = $line -split '\|', 8
+        if ($parts.Count -ne 8) { Write-CollectorError "Malformed docker stats row for '$service': $line"; continue }
+
+        $memory = $parts[3] -split '/', 2
+        $network = $parts[5] -split '/', 2
+        $block = $parts[6] -split '/', 2
+        if ($memory.Count -ne 2 -or $network.Count -ne 2 -or $block.Count -ne 2) {
+            Write-CollectorError "Malformed docker stats units for '$service': $line"
+            continue
         }
+        $cpu = ($parts[2] -replace '%', '').Trim()
+        $memPercent = ($parts[4] -replace '%', '').Trim()
+        $fields = @(
+            $timestamp, $service, $id, $parts[1], $cpu,
+            (Convert-SizeToBytes $memory[0]), (Convert-SizeToBytes $memory[1]), $memPercent,
+            (Convert-SizeToBytes $network[0]), (Convert-SizeToBytes $network[1]),
+            (Convert-SizeToBytes $block[0]), (Convert-SizeToBytes $block[1]), $parts[7]
+        )
+        $safe = foreach ($field in $fields) {
+            $text = if ($null -eq $field) { '' } else { [string]$field }
+            if ($text.Contains(',') -or $text.Contains('"') -or $text.Contains("`r") -or $text.Contains("`n")) {
+                '"' + ($text -replace '"', '""') + '"'
+            } else { $text }
+        }
+        Add-Content -LiteralPath $OutputCsv -Value ($safe -join ',') -Encoding utf8
     }
-
-    $csvLine = $safeFields -join ','
-
-    Add-Content `
-        -LiteralPath $OutputCsv `
-        -Value $csvLine `
-        -Encoding utf8
+    Start-Sleep -Milliseconds $IntervalMs
 }
 
-Start-Sleep -Milliseconds $IntervalMs
-
+$rows = 0
+if (Test-Path -LiteralPath $OutputCsv) {
+    $lineCount = @(Get-Content -LiteralPath $OutputCsv).Count
+    $rows = [Math]::Max(0, $lineCount - 1)
 }
+$status = if ($rows -eq 0) { 'no-samples' } elseif ($script:ErrorCount -gt 0) { 'partial' } else { 'samples-collected' }
+@{ Status = $status; SampleCount = $rows; ErrorCount = $script:ErrorCount; ErrorLog = $ErrorLog } |
+    ConvertTo-Json -Depth 4 | Set-Content -LiteralPath "$OutputCsv.collector.json" -Encoding utf8
+if ($rows -eq 0) { exit 2 }
+if ($script:ErrorCount -gt 0) { exit 3 }

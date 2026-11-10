@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "matrixVersion": "step42",
+  "policy": "A capability is certified only by executed provider-specific evidence. Source presence, expression construction, and a configured CI job are not passing evidence. Native AOT warning classification is diagnostic evidence only; no warning count is treated as a passing certification result. The .NET ORM provider track contains EF Core only.",
+  "providers": [
+    {
+      "id": "efcore-sqlite",
+      "provider": "EF Core",
+      "database": "SQLite in-memory",
+      "capabilities": {
+        "semantic-query-execution": {
+          "implementation": "implemented",
+          "translation": "test-defined-not-run",
+          "runtime": "test-defined-not-run",
+          "nativeAotPublish": "warning-gate-configured-not-run",
+          "nativeAotExecution": "test-defined-not-run"
+        },
+        "relationship-filters": {
+          "implementation": "implemented",
+          "translation": "test-defined-not-run",
+          "runtime": "test-defined-not-run",
+          "nativeAotPublish": "warning-gate-configured-not-run",
+          "nativeAotExecution": "not-certified"
+        },
+        "aggregate-filters": {
+          "implementation": "implemented",
+          "translation": "test-defined-not-run",
+          "runtime": "test-defined-not-run",
+          "nativeAotPublish": "warning-gate-configured-not-run",
+          "nativeAotExecution": "not-certified"
+        },
+        "aggregate-ordering-count": {
+          "implementation": "implemented-opt-in",
+          "translation": "test-defined-not-run",
+          "runtime": "test-defined-not-run",
+          "nativeAotPublish": "warning-gate-configured-not-run",
+          "nativeAotExecution": "not-certified"
+        },
+        "aggregate-cursor-pagination": {
+          "implementation": "groundwork-only",
+          "translation": "not-certified",
+          "runtime": "not-certified",
+          "nativeAotPublish": "warning-gate-configured-not-run",
+          "nativeAotExecution": "not-certified",
+          "gate": "disabled"
+        }
+      },
+      "evidence": [
+        "tests/Foundgine.Orm.Tests/EfCoreProviderTests.cs",
+        ".github/workflows/orm-conformance.yml",
+        "conformance/orm/classify-aot-diagnostics.py",
+        "conformance/orm/compare-aot-warning-baseline.py",
+        "conformance/orm/aot-warning-baseline.json",
+        "conformance/orm/tests/test_classify_aot_diagnostics.py",
+        "conformance/orm/record-aot-certification.py",
+        "conformance/orm/tests/test_aot_certification_record.py"
+      ]
+    }
+  ],
+  "statusVocabulary": {
+    "implemented": "Code path exists; not a claim of provider certification.",
+    "implemented-opt-in": "Code path exists but capability is not enabled by the default provider profile.",
+    "groundwork-only": "Partial primitives exist; complete capability is not implemented.",
+    "test-defined-not-run": "A test and CI command are present; no successful execution result is asserted by this source manifest.",
+    "release-gate-blocked": "The aggregate release gate fails unless every expected lane is present, provenance-valid, internally consistent, and all required EF Core RIDs are certified.",
+    "not-certified": "No qualifying evidence is recorded.",
+    "disabled": "Runtime validation gate must remain closed.",
+    "diagnostic-configured-not-run": "A warning-capture and classification step is configured in CI but has not been executed; it is not publish or runtime evidence.",
+    "warning-gate-configured-not-run": "CI runs unit tests for the ownership classifier and configures a blocking EF Core IL2026/IL3050 policy; this source manifest does not assert that the workflow has run or passed.",
+    "certified-for-rid": "Provider-specific Native AOT publish, native execution, and required warning-baseline checks passed for the recorded runtime identifier in an executed CI run.",
+    "incomplete-or-failed": "A provider/RID Native AOT evidence record exists, but one or more required certification checks did not pass."
+  },
+  "version": "step42"
+}

@@ -44,6 +44,7 @@
     <junit.version>5.11.4</junit.version>
     <postgresql.version>42.7.12</postgresql.version>
     <graphql-java.version>22.3</graphql-java.version>
+    <jakarta-persistence.version>3.2.0</jakarta-persistence.version>
 
     <maven.compiler.plugin.version>3.16.0</maven.compiler.plugin.version>
     <maven.surefire.plugin.version>3.6.1</maven.surefire.plugin.version>
@@ -78,6 +79,12 @@
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${postgresql.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.persistence</groupId>
+        <artifactId>jakarta.persistence-api</artifactId>
+        <version>${jakarta-persistence.version}</version>
       </dependency>
 
       <dependency>

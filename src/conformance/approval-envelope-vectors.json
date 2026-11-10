@@ -1,0 +1,86 @@
+{
+  "description": "Approval payload envelope v1 cross-runtime vectors. Keys are hex; AAD = 'foundgine.approval.v1|<kid>'. PostgreSQL jsonb may reorder properties and add whitespace; decoders accept those canonicalizations but reject duplicate, missing, or extra properties.",
+  "keys": {
+    "k1": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "k2": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f"
+  },
+  "currentKeyId": "k1",
+  "sealCases": [
+    {
+      "name": "ascii-json",
+      "keyId": "k1",
+      "nonceHex": "000102030405060708090a0b",
+      "plaintext": "{\"plan\":\"abc\",\"tenant\":null}",
+      "envelope": "{\"v\":1,\"kid\":\"k1\",\"n\":\"AAECAwQFBgcICQoL\",\"c\":\"PCCmd6SL4CGvIPXok8VaGea45lqEWWUSTQuJ+I03rC57LF5FRKeVot+4AmQ=\"}"
+    },
+    {
+      "name": "unicode-and-escapes",
+      "keyId": "k2",
+      "nonceHex": "6465666768696a6b6c6d6e6f",
+      "plaintext": "{\"note\":\"café ☃ 🔒\",\"q\":\"a\\\"b\\\\c\"}",
+      "envelope": "{\"v\":1,\"kid\":\"k2\",\"n\":\"ZGVmZ2hpamtsbW5v\",\"c\":\"zk/gvKvU1vf+N76+Sb6+j1EBxY6hXvxv72IfXU1rRn9MdEkvPVbRP3En7Blc3s1sKoczCeynWg==\"}"
+    },
+    {
+      "name": "empty-plaintext",
+      "keyId": "k1",
+      "nonceHex": "070707070707070707070707",
+      "plaintext": "",
+      "envelope": "{\"v\":1,\"kid\":\"k1\",\"n\":\"BwcHBwcHBwcHBwcH\",\"c\":\"+UarUQ0SSDO0CGK0sV33YQ==\"}"
+    }
+  ],
+  "acceptCases": [
+    {
+      "name": "jsonb-whitespace",
+      "envelope": " { \"v\" : 1, \"kid\" : \"k1\", \"n\" : \"AAECAwQFBgcICQoL\", \"c\" : \"PH95IKHxL+F4tcd/4Os7pRN6\" } ",
+      "plaintext": "{}"
+    },
+    {
+      "name": "jsonb-reordered-properties",
+      "envelope": "{\"c\": \"PH95IKHxL+F4tcd/4Os7pRN6\", \"n\": \"AAECAwQFBgcICQoL\", \"kid\": \"k1\", \"v\": 1}",
+      "plaintext": "{}"
+    },
+    {
+      "name": "trailing-json-whitespace",
+      "envelope": "{\"v\":1,\"kid\":\"k1\",\"n\":\"AAECAwQFBgcICQoL\",\"c\":\"PH95IKHxL+F4tcd/4Os7pRN6\"}  ",
+      "plaintext": "{}"
+    }
+  ],
+  "rejectCases": [
+    {
+      "name": "tampered-ciphertext",
+      "envelope": "{\"v\":1,\"kid\":\"k1\",\"n\":\"AAECAwQFBgcICQoL\",\"c\":\"PX95IKHxL+F4tcd/4Os7pRN6\"}"
+    },
+    {
+      "name": "relabelled-key-id",
+      "envelope": "{\"v\":1,\"kid\":\"k2\",\"n\":\"AAECAwQFBgcICQoL\",\"c\":\"PH95IKHxL+F4tcd/4Os7pRN6\"}"
+    },
+    {
+      "name": "unknown-key-id",
+      "envelope": "{\"v\":1,\"kid\":\"k9\",\"n\":\"AAECAwQFBgcICQoL\",\"c\":\"PH95IKHxL+F4tcd/4Os7pRN6\"}"
+    },
+    {
+      "name": "version-2",
+      "envelope": "{\"v\":2,\"kid\":\"k1\",\"n\":\"AAECAwQFBgcICQoL\",\"c\":\"PH95IKHxL+F4tcd/4Os7pRN6\"}"
+    },
+    {
+      "name": "extra-field",
+      "envelope": "{\"v\":1,\"kid\":\"k1\",\"n\":\"AAECAwQFBgcICQoL\",\"c\":\"PH95IKHxL+F4tcd/4Os7pRN6\",\"x\":1}"
+    },
+    {
+      "name": "short-nonce",
+      "envelope": "{\"v\":1,\"kid\":\"k1\",\"n\":\"AAECAwQFBgc=\",\"c\":\"PH95IKHxL+F4tcd/4Os7pRN6\"}"
+    },
+    {
+      "name": "empty-ciphertext",
+      "envelope": "{\"v\":1,\"kid\":\"k1\",\"n\":\"AAECAwQFBgcICQoL\",\"c\":\"\"}"
+    },
+    {
+      "name": "not-json",
+      "envelope": "plain text"
+    },
+    {
+      "name": "raw-plaintext-json",
+      "envelope": "{\"plan\":\"abc\"}"
+    }
+  ]
+}

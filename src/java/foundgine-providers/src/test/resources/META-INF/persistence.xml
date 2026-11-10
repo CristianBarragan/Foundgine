@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
+             version="3.2">
+  <persistence-unit name="foundgine-jpa-baseline" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>com.foundgine.providers.storage.orm.jpa.JpaBaselineCustomer</class>
+    <class>com.foundgine.providers.storage.orm.jpa.JpaBaselineOrderLine</class>
+    <class>com.foundgine.providers.storage.orm.jpa.JpaTypeFixture</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:foundgine_jpa_baseline;DB_CLOSE_DELAY=-1"/>
+      <property name="jakarta.persistence.jdbc.user" value="sa"/>
+      <property name="jakarta.persistence.jdbc.password" value=""/>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="hibernate.connection.isolation" value="4"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.session_factory.statement_inspector" value="com.foundgine.providers.storage.orm.jpa.JpaBaselineStatementInspector"/>
+    </properties>
+  </persistence-unit>
+  <persistence-unit name="foundgine-jpa-postgres" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>com.foundgine.providers.storage.orm.jpa.JpaBaselineCustomer</class>
+    <class>com.foundgine.providers.storage.orm.jpa.JpaBaselineOrderLine</class>
+    <class>com.foundgine.providers.storage.orm.jpa.JpaTypeFixture</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.session_factory.statement_inspector" value="com.foundgine.providers.storage.orm.jpa.JpaBaselineStatementInspector"/>
+    </properties>
+  </persistence-unit>
+</persistence>

@@ -53,6 +53,20 @@ public static class FoundgineGatewayServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>Registers the PostgreSQL approval store. The host must register NpgsqlDataSource and an AOT-safe payload codec.</summary>
+    public static IServiceCollection AddFoundgineGatewayPostgresApprovalStore<TCodec>(this IServiceCollection services)
+        where TCodec : class, IFoundgineGatewayApprovalPayloadCodec
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        services.TryAddSingleton<TCodec>();
+        services.TryAddSingleton<PostgresFoundgineGatewayApprovalStore>(sp =>
+            new PostgresFoundgineGatewayApprovalStore(
+                sp.GetRequiredService<Npgsql.NpgsqlDataSource>(), sp.GetRequiredService<TCodec>()));
+        services.Replace(ServiceDescriptor.Singleton<IFoundgineGatewayApprovalStore>(sp =>
+            sp.GetRequiredService<PostgresFoundgineGatewayApprovalStore>()));
+        return services;
+    }
+
     /// <summary>Registers the single-process approval store for development and single-instance deployments only.</summary>
     /// <remarks>Production multi-instance hosts must register a durable, distributed implementation of <see cref="IFoundgineGatewayApprovalStore"/> instead.</remarks>
     public static IServiceCollection AddFoundgineGatewayInMemoryApprovalStore(this IServiceCollection services)
