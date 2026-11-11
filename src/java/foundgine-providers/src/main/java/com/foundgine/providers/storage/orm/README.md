@@ -45,6 +45,22 @@ ExecutionIR (validated, authorized)
 - Provider-neutral cursor and relationship groundwork must not be interpreted
   as JPA database support. Keep unsupported JPA query shapes fail-closed.
 
+## Generic entity gateway (`JpaEntities`)
+
+`jpa/JpaEntities` gives name-addressed CRUD and semantic reads over every entity bound in an `OrmRegistry`, with no
+per-entity code (the counterpart of .NET's `FoundgineEntities`). Persistent classes come from the registry's
+`entityTypes`, exactly as for the query source.
+
+- **Reads** run only through a caller-supplied `ReadGate`, which must return an authorized provider plan and its
+  execution context. The gateway never builds a read plan, so a read cannot bypass authorization or tenant
+  predicates.
+- **Writes** (`create`, `update`, `delete`, by single primary key) are mechanical and hold no authorization:
+  authorize the capability before calling. They join an active resource-local transaction or own one, like
+  `JpaOrmMutationSource`. Attributes are set through fields; entities need a no-arg constructor. Unknown fields and
+  key updates are rejected; composite keys are not supported by the by-key operations.
+- Status: source and `JpaEntitiesTest` only. Not yet compiled or run against Hibernate/H2 (no Java toolchain was
+  available where it was written); it carries the same JPA-0/JPA-1 evidence gate as the rest of the adapter.
+
 ## Wiring
 
 ```java

@@ -21,11 +21,23 @@ the .NET NuGet packages:
 
 ## Current state
 
-This module is the Java **domain and authorization port**: the semantic model, authorization
-context, and adversarial scenario helpers are in place, and `Main` wires them up as a smoke test.
-Provider/database wiring — the equivalent of the C# starter's MCP + PostgreSQL stack
-(`SemanticSqlQueryExecutor`, `Program.cs`) — has not been added to this module yet; it is being
-built out incrementally as the Java provider contracts stabilize.
+This module is the Java **domain, authorization and persistence port**: the semantic model,
+authorization context, adversarial scenario helpers, and a **JPA + PostgreSQL read path**
+(`jpa/SupplyChainJpa`, `SupplyChainSemantics`, `SupplyChainPolicy`) are in place, and `Main` runs them as a smoke test.
+
+The persistence path is: semantic read → `SemanticAuthorizer` with a real tenant/role policy
+(`SupplyChainPolicy`: row-level tenant predicate, field-level `riskScore`, customer entity limits) →
+`Planner` →
+`ExecutionIR` → `JpaOrmProvider` plan → JPA Criteria execution through Hibernate → PostgreSQL.
+Three entities are mapped to JPA classes (`Supplier`, `Warehouse`, `Product`); the rest of the
+domain stays semantic-only (the semantic contract is scoped to the mapped entities, because
+`ProductComponent` has a composite key and cannot become a contract entity). The MCP transport and the mutation path are **not** wired in this
+starter yet.
+
+> **Status.** The Foundgine half (metadata → authorization → plan → `ExecutionIR` → ORM plan →
+> execution) is covered by `SupplyChainSemanticsTest` and was run against the in-memory ORM source
+> on JDK 21. The Hibernate/PostgreSQL half (`SupplyChainJpa`, `persistence.xml`, the SQL files) has
+> **not** been compiled or run: no JPA 3.2 jars or network were available when it was written.
 
 If you want to see the **complete** MCP → semantic model → authorization → planning/execution →
 PostgreSQL path already wired up in Java today, use
@@ -45,12 +57,24 @@ equivalent of what the C# starter's `Program.cs` and `SemanticSqlQueryExecutor` 
 ## Run
 
 ```bash
-cd src/java
+cd src/java/samples/foundgine-supply-chain
+docker compose up -d          # PostgreSQL on localhost:4429, schema + seed applied on first start
+cd ../..
 mvn -pl samples/foundgine-supply-chain -am compile exec:java \
   -Dexec.mainClass=com.foundgine.samples.supplychain.Main
 ```
 
+Run the in-memory test (no database needed):
+
+```bash
+cd src/java
+mvn -pl samples/foundgine-supply-chain -am test -Dtest=SupplyChainSemanticsTest -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Connection settings come from `SUPPLYCHAIN_JDBC_URL`, `SUPPLYCHAIN_JDBC_USER` and
+`SUPPLYCHAIN_JDBC_PASSWORD` (defaults match `docker-compose.yml`). If PostgreSQL is not reachable,
+`Main` prints a "JPA demo skipped" line instead of failing.
+
 This compiles the module (running the AOT annotation processor embedded in the `foundgine-providers` JAR over
-`SupplyChainDomain`) and runs `Main`, which prints the configured `FoundgineOptions` as a smoke
-test that the Java `foundgine-core` / `foundgine-runtime` packages resolve correctly from this
-module.
+`SupplyChainDomain`) and runs `Main`, which prints the configured `FoundgineOptions` and then lists the
+`tenant-a` US suppliers an `ANALYST` can read through JPA.

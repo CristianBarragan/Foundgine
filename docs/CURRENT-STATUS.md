@@ -1,4 +1,4 @@
-# Current status — Foundgine 3.3.0 (.NET & Java)
+# Current status — Foundgine 3.3.1 (.NET & Java)
 
 The repository ships two implementations of the same architecture, released together on a single aligned version line: the .NET implementation targets .NET 10, and the Java implementation targets Java 27 (Maven, groupId `io.github.cristianbarragan`). Except where noted below, everything on this page applies to both.
 
@@ -97,7 +97,7 @@ Both implementations carry `ParityTest`-style tests asserting the SQL provider b
 
 ### ORM providers (EF Core and JPA)
 
-An ORM-neutral execution core (`Foundgine.Providers.Orm` in .NET, `storage/orm` in Java) validates plans, binds authorization and executes through typed expression fragments. The concrete adapters are **EF Core** (`Foundgine.Providers.EntityFrameworkCore`, .NET) and **JPA** (`storage/orm/jpa`, Java); .NET also has a Roslyn ORM map generator (`Foundgine.Providers.Orm.Generator`). Capability and evidence status is tracked per capability: implemented is not the same as certified, and aggregate cursor pagination stays disabled until a real database test proves it. See the [ORM providers wiki page](wiki/orm-providers.md) and [`SOURCE-COVERAGE.md`](SOURCE-COVERAGE.md).
+An ORM-neutral execution core (`Foundgine.Providers.Orm` in .NET, `storage/orm` in Java) validates plans, binds authorization and executes through typed expression fragments. The concrete adapters are **EF Core** (`Foundgine.Providers.EntityFrameworkCore`, .NET) and **JPA** (`storage/orm/jpa`, Java); .NET also has a Roslyn ORM map generator (`Foundgine.Providers.Orm.Generator`). Capability and evidence status is tracked per capability: implemented is not the same as certified, and aggregate cursor pagination stays disabled until a real database test proves it. Both adapters also expose a fluent `SemanticQuery` builder (same members in C# and Java, held together by shared vectors in `src/conformance/semantic-query-vectors.json`) and generic CRUD (`IFoundgineRepository<T>` / `AddFoundgineEf` in .NET, `JpaEntities` in Java); all of this is implemented-unverified and the vectors have not yet been run. See [Fluent semantic reads](wiki/semantic-query-builder.md) and the [ORM providers wiki page](wiki/orm-providers.md) and [`SOURCE-COVERAGE.md`](SOURCE-COVERAGE.md).
 
 ## Current adapters
 

@@ -1,0 +1,203 @@
+{
+  "spec": "semantic-query-v1",
+  "model": {
+    "entities": {
+      "Warehouse": [
+        [
+          "Id",
+          "int"
+        ],
+        [
+          "Name",
+          "string"
+        ],
+        [
+          "Region",
+          "string"
+        ]
+      ],
+      "InventoryLot": [
+        [
+          "Id",
+          "int"
+        ],
+        [
+          "Sku",
+          "string"
+        ],
+        [
+          "OnHand",
+          "int"
+        ]
+      ]
+    },
+    "relationships": [
+      {
+        "name": "Lots",
+        "source": "Warehouse",
+        "target": "InventoryLot"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "default_selects_all_fields",
+      "entity": "Warehouse",
+      "steps": [],
+      "rendered": "#1 Warehouse(Id, Name, Region)"
+    },
+    {
+      "name": "select_by_name_case_insensitive",
+      "entity": "Warehouse",
+      "steps": [
+        {
+          "op": "select",
+          "names": [
+            "id",
+            "NAME"
+          ]
+        }
+      ],
+      "rendered": "#1 Warehouse(Id, Name)"
+    },
+    {
+      "name": "where_eq_single_filter_is_not_wrapped",
+      "entity": "Warehouse",
+      "steps": [
+        {
+          "op": "whereEq",
+          "field": "Region",
+          "value": "NZ"
+        }
+      ],
+      "rendered": "#1 Warehouse(Id, Name, Region) where Region eq \"NZ\""
+    },
+    {
+      "name": "several_conditions_are_anded",
+      "entity": "Warehouse",
+      "steps": [
+        {
+          "op": "whereEq",
+          "field": "Region",
+          "value": "NZ"
+        },
+        {
+          "op": "whereNeq",
+          "field": "Name",
+          "value": "Depot"
+        },
+        {
+          "op": "whereIn",
+          "field": "Id",
+          "values": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "rendered": "#1 Warehouse(Id, Name, Region) where (Region eq \"NZ\" AND Name neq \"Depot\" AND Id in [1, 2, 3])"
+    },
+    {
+      "name": "order_take_skip",
+      "entity": "Warehouse",
+      "steps": [
+        {
+          "op": "orderBy",
+          "field": "Name",
+          "dir": "desc"
+        },
+        {
+          "op": "orderBy",
+          "field": "Id",
+          "dir": "asc"
+        },
+        {
+          "op": "take",
+          "n": 5
+        },
+        {
+          "op": "skip",
+          "n": 10
+        }
+      ],
+      "rendered": "#1 Warehouse(Id, Name, Region) order Name desc, Id asc limit 5 offset 10"
+    },
+    {
+      "name": "include_infers_target_and_all_fields",
+      "entity": "Warehouse",
+      "steps": [
+        {
+          "op": "include",
+          "relationship": "Lots",
+          "steps": []
+        }
+      ],
+      "rendered": "#1 Warehouse(Id, Name, Region) [#2 InventoryLot(Id, Sku, OnHand) via Lots]"
+    },
+    {
+      "name": "include_with_refinement",
+      "entity": "Warehouse",
+      "steps": [
+        {
+          "op": "select",
+          "names": [
+            "Id"
+          ]
+        },
+        {
+          "op": "whereEq",
+          "field": "Region",
+          "value": "NZ"
+        },
+        {
+          "op": "include",
+          "relationship": "Lots",
+          "steps": [
+            {
+              "op": "select",
+              "names": [
+                "Sku",
+                "OnHand"
+              ]
+            },
+            {
+              "op": "whereNeq",
+              "field": "OnHand",
+              "value": 0
+            },
+            {
+              "op": "orderBy",
+              "field": "Sku",
+              "dir": "asc"
+            },
+            {
+              "op": "take",
+              "n": 50
+            }
+          ]
+        }
+      ],
+      "rendered": "#1 Warehouse(Id) where Region eq \"NZ\" [#2 InventoryLot(Sku, OnHand) via Lots where OnHand neq 0 order Sku asc limit 50]"
+    },
+    {
+      "name": "error_unknown_entity",
+      "entity": "Nope",
+      "steps": [],
+      "error": "Unknown entity Nope"
+    },
+    {
+      "name": "error_unknown_field",
+      "entity": "Warehouse",
+      "steps": [
+        {
+          "op": "select",
+          "names": [
+            "Nope"
+          ]
+        }
+      ],
+      "error": "Unknown field Warehouse.Nope"
+    }
+  ]
+}

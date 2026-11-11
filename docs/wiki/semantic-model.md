@@ -50,6 +50,7 @@ Types and null semantics affect filtering, ordering, projection, and aggregate r
 
 - C#: `src/csharp/Foundgine.Core/Semantic/Configuration`, `SemanticEntityBuilder.cs`, `SemanticGraph*.cs`, `SemanticField.cs`, `SemanticRelationship.cs`, `SemanticModelFingerprint.cs`.
 - Java: `src/java/foundgine-core/src/main/java/com/foundgine/core/semantic` and its configuration/model subpackages.
+- Reading the model from code: [Fluent semantic reads (`SemanticQuery`)](semantic-query-builder), the same builder in C# and Java.
 - Existing deeper guides: [Metadata to semantics](../METADATA-TO-SEMANTICS), [Mapping](../MAPPING), [Public API](../PUBLIC-API).
 
 ## Design rules

@@ -58,6 +58,7 @@ nav:
       - Providers:
           - Provider catalogue: wiki/providers.md
           - ORM providers (EF Core and JPA): wiki/orm-providers.md
+          - Fluent semantic reads (SemanticQuery): wiki/semantic-query-builder.md
           - Providers and storage: wiki/providers-storage.md
       - Extensions (GraphQL, Keycloak, Temporal): wiki/extensions.md
       - AI agents and MCP: wiki/agents-mcp.md

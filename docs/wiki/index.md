@@ -23,24 +23,25 @@ Foundgine is a semantic execution boundary: it lets applications, APIs, automati
 8. [Provider catalogue](providers) — **every provider by name**, in plain words: SQL, **EF Core**, **JPA**, in-memory, Elasticsearch, pgvector, PostgreSQL retrieval, event store, outbox, gateway, MCP, AI models.
 9. [ORM providers: EF Core (.NET) and JPA (Java)](orm-providers) — use the ORM you already have; permissions are still always enforced; honest maturity table.
 10. [Providers and storage](providers-storage) — conceptual provider contracts and safety boundaries.
+11. [Fluent semantic reads (`SemanticQuery`)](semantic-query-builder) — build a read with the same builder in C# and Java; generic CRUD next to it.
 
 **Extensions and AI**
 
-11. [Extensions](extensions) — GraphQL, Keycloak and Temporal in one place (the old Integrations page now points here).
-12. [AI agents and MCP](agents-mcp) — safe tool discovery and invocation patterns.
+12. [Extensions](extensions) — GraphQL, Keycloak and Temporal in one place (the old Integrations page now points here).
+13. [AI agents and MCP](agents-mcp) — safe tool discovery and invocation patterns.
 
 **Trust, proof and operations**
 
-13. [Insights, evidence and auditing](insights-evidence-auditing) — receipts, audit, diagnostics and live events.
-14. [Approvals, audit and governance](approvals-audit-governance) — who said yes, and can we prove it.
-15. [Conformance and hardening](conformance-hardening) — what is proven versus only implemented.
-16. [AOT and generated metadata](aot) — build-time metadata generation and trimming-friendly deployment.
-17. [Operations and extension points](operations) — configuration, diagnostics, testing, and adding capabilities.
+14. [Insights, evidence and auditing](insights-evidence-auditing) — receipts, audit, diagnostics and live events.
+15. [Approvals, audit and governance](approvals-audit-governance) — who said yes, and can we prove it.
+16. [Conformance and hardening](conformance-hardening) — what is proven versus only implemented.
+17. [AOT and generated metadata](aot) — build-time metadata generation and trimming-friendly deployment.
+18. [Operations and extension points](operations) — configuration, diagnostics, testing, and adding capabilities.
 
 **Reference**
 
-18. [Cross-language implementation map](implementation-map) — where capabilities live in C# and Java.
-19. [Glossary (plain words)](glossary) — short, friendly definitions.
+19. [Cross-language implementation map](implementation-map) — where capabilities live in C# and Java.
+20. [Glossary (plain words)](glossary) — short, friendly definitions.
 
 > Looking for **EF Core** or **JPA**? Go to [ORM providers](orm-providers). Looking for GraphQL, Keycloak or Temporal? Go to [Extensions](extensions).
 

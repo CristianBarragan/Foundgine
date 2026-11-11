@@ -1,6 +1,6 @@
 # Foundgine website
 
-Static public documentation for Foundgine **3.3.0 · .NET 10 and Java 27**.
+Static public documentation for Foundgine **3.3.1 · .NET 10 and Java 27**.
 
 ## Public reading path
 

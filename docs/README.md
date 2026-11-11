@@ -1,6 +1,6 @@
 # Foundgine documentation
 
-This directory contains the **current** Foundgine documentation, covering both implementations, released together as **3.3.0**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
+This directory contains the **current** Foundgine documentation, covering both implementations, released together as **3.3.1**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
 
 The repository itself is the source of truth. Documentation describes implemented architecture and tested behavior; it does not use old release notes or historical benchmark snapshots as current product guidance.
 
@@ -46,6 +46,7 @@ The [Foundgine feature and capability wiki](wiki/index.md) explains Foundgine by
 
 - [Provider catalogue](wiki/providers.md): every provider by name (SQL, **EF Core**, **JPA**, in-memory, Elasticsearch, pgvector, PostgreSQL retrieval, event store, outbox, gateway, MCP, AI models).
 - [ORM providers (EF Core and JPA)](wiki/orm-providers.md): run Foundgine plans through the ORM you already use, with an honest maturity table.
+- [Fluent semantic reads (`SemanticQuery`)](wiki/semantic-query-builder.md): one read builder with the same members in C# and Java, with snippets for both.
 - [Extensions](wiki/extensions.md): GraphQL, Keycloak and Temporal in one place.
 - [Insights, evidence and auditing](wiki/insights-evidence-auditing.md): receipts, audit, diagnostics and live events.
 - [Glossary](wiki/glossary.md): short, friendly definitions.

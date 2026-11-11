@@ -1,7 +1,5 @@
 namespace Foundgine.SupplyChain.Application;
 
-public sealed record OrderLine(int ProductId, int Quantity);
-
 public interface ISupplyChainQueries
 {
     Task<object> GetOrders(int customerId, CancellationToken ct);
