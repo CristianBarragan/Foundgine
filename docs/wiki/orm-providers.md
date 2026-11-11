@@ -46,12 +46,11 @@ Both ORM providers give you the same three things, with the same shape in both l
 | Plain CRUD, no per-entity code | `IFoundgineRepository<T>` via `AddFoundgineEf(...)` | `JpaEntities` (name-addressed, by primary key) |
 
 ```csharp
-services.AddFoundgineEf(model, (sp, o) => o.UseNpgsql(cs));      // C#: one-line registration
-var rows = await reader.ReadAsync(warehouseEntityId, q => q.WhereEq("Region", "NZ"), ct);
+var rows = await reader.ReadAsync(warehouseEntityId, q => q.WhereEq("Region", "NZ"), ct); //csharp
 ```
 
 ```java
-var plan = semantics.planRead(caller, "Warehouse", q -> q.whereEq("Region", "NZ"));   // Java
+var plan = semantics.planRead(caller, "Warehouse", q -> q.whereEq("Region", "NZ")); //java
 ```
 
 Reads always pass through authorization. CRUD writes are mechanical and hold **no** authorization of their own, so check
@@ -95,10 +94,10 @@ The neutral core references **no** ORM package. The .NET ORM track contains EF C
 |---|---|---|
 | Scalar filters, projection, root authorization | implemented; translation and runtime evidence *test-defined, not run* in the matrix | partial Criteria translation; previously type-checked against API stubs, not a database |
 | Relationship traversal (batched child keys) | implemented | existing child-fetch architecture |
-| Relationship filters (some/none/all) | implemented | unsupported |
-| Aggregate filters (count/min/max) | implemented | implemented-unverified |
-| Aggregate ordering | implemented, opt-in (count) | implemented-unverified for non-paged one-hop orders |
-| Aggregate cursor pagination | **disabled** until a database test proves mixed keyset boundaries | typed decode and branch foundation; execution continues to be unverified |
+| Relationship filters (some/none/all) | implemented; translation and runtime evidence *test-defined, not run* | predicate-level translation (`SOME`/`NONE`/`ALL` as correlated `EXISTS` subqueries) implemented-unverified; semantic filter lowering is not wired, so the shape still fails closed end to end |
+| Aggregate filters (count/min/max) | implemented; translation and runtime evidence *test-defined, not run* | predicate-level translation implemented-unverified; semantic filter lowering is not wired, so the shape still fails closed end to end |
+| Aggregate ordering | implemented, opt-in (count only); translation and runtime evidence *test-defined, not run* | implemented-unverified (count, min, max) for non-paged one-hop orders |
+| Aggregate cursor pagination | groundwork-only, **disabled** until a database test proves mixed keyset boundaries | typed decode and branch foundation; execution continues to be unverified |
 | Snapshot reads across pages | not claimed | opt-in `JpaOrmSnapshotPageSession`: one `EntityManager` and transaction for a whole multi-page read; caller must acknowledge `REPEATABLE_READ_OR_STRONGER`. JPA cannot set or inspect isolation portably, so this is an assertion. H2 and PostgreSQL tests are defined; **not yet run** |
 | Atomic mutation batches | one transaction, rollback | basic resource-local adapter |
 | Native AOT / Native Image | CI scoped to `linux-x64` and `linux-arm64`; not yet certified by a run | not established |
