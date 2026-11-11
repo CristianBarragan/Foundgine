@@ -357,3 +357,63 @@ sets `hibernate.connection.isolation` to JDBC
 isolation level. These tests are mandatory CI evidence, not a claim that they
 have already executed successfully. A deployment must preserve the configured
 isolation through its datasource and transaction manager.
+
+## Native/AOT-friendly JPA entity access
+
+The JPA adapter now has an explicit generated-access path. The annotation processor emits
+`GeneratedJpaModels.create()` alongside `GeneratedFoundgineMetadata`. The generated models
+use direct constructor references and public JavaBean getter/setter method references; they do
+not discover members, call `setAccessible`, or invoke constructors reflectively.
+
+Pass the generated models to the strict `JpaEntities` constructor:
+
+```java
+var entities = new JpaEntities(entityManager, registry, readGate,
+        GeneratedJpaModels.create());
+```
+
+That constructor verifies that every registered persistent type has a generated model and
+fails closed if one is missing. It never falls back to reflective construction or field access.
+The original three-argument constructor remains as a compatibility path and is explicitly
+reflection-based for generic create/update operations.
+
+The current generator intentionally emits models only for public entity classes with a public
+no-argument constructor. It emits direct accessors only where matching public JavaBean methods
+exist. For protected/package-private constructors, field-access entities, immutable entities,
+or non-JavaBean access patterns, provide an explicit `JpaEntityModel` using application-owned
+constructors/accessors. This keeps the generated path honest rather than silently introducing
+reflection. JPA provider runtime certification and GraalVM Native Image verification remain
+separate CI gates; annotation processing alone is not proof that a complete Hibernate stack is
+Native Image compatible.
+
+## Fluent JPA configuration (`FoundgineOrm`) — implemented-unverified
+
+`FoundgineOrm` replaces per-application glue (entity map, attribute map, contract setup, plan lowering) with one
+immutable configuration. The annotation processor emits `GeneratedOrmMaps.entityTypes()` (semantic entity name ->
+persistence class) next to `GeneratedJpaModels.create()`.
+
+```java
+FoundgineOrm<Caller> orm = FoundgineOrm.<Caller>configure()
+        .metadata(GeneratedFoundgineMetadata.build())
+        .entities(GeneratedOrmMaps.entityTypes())
+        .generatedModels(GeneratedJpaModels.create())
+        .attributeNaming(FoundgineOrm.AttributeNaming.CAMEL_CASE)   // RiskScore -> riskScore
+        .authorization(myAuthorization)                              // required
+        .build();
+
+var rows = orm.reader(emf).read(caller, "Supplier", q -> q.select("Name").whereEq("Country", "NZ"));
+var repo = orm.repository(em, SupplierEntity.class);                // mechanical CRUD, no authorization
+var gateway = orm.entities(caller, em);                              // name-addressed, reads gated
+var plan = orm.plan(caller, "Supplier", q -> q.select("Name"));     // dry run, no database
+```
+
+- **Fail closed:** `build()` throws without an authorization binding, for a mapped entity missing from the
+  semantic metadata, for a mapped entity without a generated model, and for a field bound to an attribute the
+  entity does not declare.
+- **Reads** always run authorization -> plan -> ExecutionIR -> provider plan -> JPA Criteria. Repositories and
+  `entities(...)` writes are mechanical: authorize the capability before calling them.
+- **Native Image:** the default path needs no reflective attribute access. `allowReflection()` is a JVM-only opt-in.
+- **Entity naming:** `@FoundgineOrmEntity(entity = "...")`, else the class's `@FoundgineEntity` name, else the
+  class name without a trailing `Entity`.
+
+See `ORM-JPA-PARITY-PLAN.md` Step 72 for evidence status.

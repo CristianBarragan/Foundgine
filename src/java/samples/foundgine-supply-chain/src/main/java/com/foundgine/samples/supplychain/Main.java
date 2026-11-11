@@ -19,6 +19,12 @@ public final class Main {
             var suppliers = jpa.read(caller, "Supplier", List.of("id", "name", "country", "riskScore"), "country", "US");
             System.out.println("tenant-a US suppliers via JPA: " + suppliers.size());
             suppliers.forEach(r -> System.out.println("  " + r.values()));
+
+            // Typed repository from the same FoundgineOrm configuration (mechanical CRUD, generated accessors).
+            try (var em = jpa.openEntityManager()) {
+                var repo = jpa.orm().repository(em, com.foundgine.samples.supplychain.jpa.SupplierEntity.class);
+                System.out.println("suppliers in table (repository.count, unauthorized by design): " + repo.count());
+            }
         } catch (RuntimeException e) {
             System.out.println("JPA demo skipped (is PostgreSQL running on SUPPLYCHAIN_JDBC_URL?): " + e);
         }

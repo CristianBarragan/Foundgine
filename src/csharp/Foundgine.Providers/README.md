@@ -13,10 +13,28 @@ The v2 package consolidates the provider surface into one package, including the
 - MCP/tool provider integrations.
 - AOT-friendly metadata support.
 - The `Foundgine.Providers.Aot.Generator` Roslyn source generator as a **build-time analyzer**.
+- **Entity Framework Core execution provider** (namespace `Foundgine.Providers.EntityFrameworkCore`) and the shared ORM core
+  (`Foundgine.Providers.Orm`). They are compiled into `Foundgine.Providers.dll`, so there is no separate package or
+  assembly for them. The `Foundgine.Providers.Orm.Generator` map generator ships alongside the AOT generator as a
+  **build-time analyzer**.
 
 `Foundgine.Providers` depends only on `Foundgine.Core` and `Foundgine.Runtime`. Hot Chocolate GraphQL translation _and_ secure query/mutation execution both live in `Foundgine.Extensions`, not here — add that package separately if your application uses GraphQL.
 
 The exact provider implementation you use determines which external infrastructure and configuration your application needs. Note that installing this package brings in every provider's dependencies (including Npgsql, Pgvector, Microsoft.Extensions.AI and ModelContextProtocol) regardless of which provider(s) you actually use, since they currently ship as one package.
+
+## Entity Framework Core provider
+
+The EF Core provider is part of this package. Add `Foundgine.Providers` and use the types in
+`Foundgine.Providers.EntityFrameworkCore`:
+
+- `AddFoundgineEf(...)` (on `IServiceCollection`) registers the provider.
+- `FoundgineEfOptions` / `FoundgineEfModel` configure the entity maps and the EF model.
+- `FoundgineEfReader` runs authorized semantic reads; `FoundgineEfRepository<T>` (`IFoundgineRepository<T>`) is the typed CRUD surface;
+  `FoundgineEntities` gives name-addressed access.
+
+It needs no extra Foundgine package. `Microsoft.EntityFrameworkCore` and `Microsoft.EntityFrameworkCore.Relational`
+flow in as dependencies; add the EF Core database provider you use (SQLite, Npgsql, ...) yourself. The package contents
+are checked by `ci/verify-providers-package.sh`.
 
 ## AOT generator behavior
 
@@ -47,7 +65,7 @@ For AOT generation, no separate generator installation or package reference is r
 ## Install
 
 ```bash
-dotnet add package Foundgine.Providers --version 3.3.1
+dotnet add package Foundgine.Providers --version 3.3.2
 ```
 
 ## Typical application stack

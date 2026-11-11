@@ -29,7 +29,7 @@ The consuming application must configure Hot Chocolate, register `Foundgine.Runt
 ## Install
 
 ```bash
-dotnet add package Foundgine.Extensions --version 3.3.1
+dotnet add package Foundgine.Extensions --version 3.3.2
 ```
 
 ## Typical use

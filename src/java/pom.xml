@@ -36,7 +36,7 @@
   </scm>
 
   <properties>
-    <revision>3.3.1</revision>
+    <revision>3.3.2</revision>
     <maven.compiler.release>27</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -61,14 +61,15 @@
     <module>foundgine-core</module>
     <module>foundgine-runtime</module>
     <module>foundgine-providers</module>
-    <!-- Compile-time metadata generator (Java counterpart of Foundgine.Providers.Aot.Generator). -->
-    <module>foundgine-aot-generator</module>
     <module>foundgine-extensions</module>
+    <!-- Optional Spring Boot wiring for FoundgineOrm. UNVERIFIED; not published (see ORM-JPA-PARITY-PLAN.md Step 72). -->
+    <module>foundgine-spring</module>
     <module>security/foundgine-redteam</module>
     <!-- Keep the annotation-processor consumer in the same reactor as its
          build-time-only processor so Maven resolves it without Maven Central. -->
     <module>samples/foundgine-supply-chain</module>
     <module>samples/foundgine-supply-chain-advanced</module>
+    <module>samples/foundgine-jpa-native</module>
   </modules>
 
   <dependencyManagement>
@@ -229,13 +230,14 @@
           <autoPublish>true</autoPublish>
           <waitUntil>published</waitUntil>
 
-          <!-- Publish only the four public libraries. The generator is a
-               reactor-only annotation processor; redteam and sample modules
+          <!-- Publish only the four public libraries. The annotation processor is
+               packaged inside foundgine-providers; redteam and sample modules
                are internal verification/example artifacts. -->
           <excludeArtifacts>
             <excludeArtifact>foundgine-parent</excludeArtifact>
-            <excludeArtifact>foundgine-aot-generator</excludeArtifact>
             <excludeArtifact>foundgine-redteam</excludeArtifact>
+            <excludeArtifact>foundgine-spring</excludeArtifact>
+            <excludeArtifact>foundgine-sample-jpa-native</excludeArtifact>
             <excludeArtifact>foundgine-sample-supply-chain</excludeArtifact>
             <excludeArtifact>foundgine-sample-supply-chain-advanced</excludeArtifact>
           </excludeArtifacts>

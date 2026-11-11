@@ -26,9 +26,11 @@ public final class AdvancedJpaPolicy {
 
     private AdvancedJpaPolicy() {}
 
-    public static ConfiguredSemanticAuthorizationPolicy create(AdvancedJpaSemantics semantics, Authorization.Context caller) {
-        var warehouse = semantics.entity("Warehouse").entityId();
-        var lot = semantics.entity("InventoryLot").entityId();
+    /** Metadata-addressed form: the {@code FoundgineOrm} authorization binding resolves entities by name. */
+    public static ConfiguredSemanticAuthorizationPolicy create(
+            com.foundgine.core.semantic.metadata.MetadataRegistry metadata, Authorization.Context caller) {
+        var warehouse = entityId(metadata, "Warehouse");
+        var lot = entityId(metadata, "InventoryLot");
         var config = new SemanticAuthorizationConfiguration()
                 .addEntityRule((ctx, entity, op) -> op == AuthorizationOperation.READ
                         && (entity.equals(warehouse) || entity.equals(lot))
@@ -39,6 +41,12 @@ public final class AdvancedJpaPolicy {
                         op == AuthorizationOperation.READ && entity.equals(warehouse) ? tenantPredicate() : null);
         return new ConfiguredSemanticAuthorizationPolicy(
                 config, new SemanticAuthorizationContext(caller.tenantId(), caller.role().name(), Map.of()));
+    }
+
+    private static com.foundgine.core.abstractions.EntityId entityId(
+            com.foundgine.core.semantic.metadata.MetadataRegistry metadata, String name) {
+        for (var e : metadata.entities()) if (e.name().equals(name)) return e.entityId();
+        throw new IllegalStateException("Entity '" + name + "' is not in the metadata.");
     }
 
     /** The values the tenant predicate reads at execution time; a missing value fails closed. */
