@@ -22,6 +22,7 @@ Release rules from the plan: no parity claim from matching generated text; no sn
 | `warrant-signatures.json` | RSA PKCS#1 v1.5 / SHA-256 signatures reproduce byte for byte; 19 accept/reject cases (test-only keys) |
 | `delegation-scenarios.json` | Delegation attenuation and chain validation, 32 scenarios, identical error messages |
 | `approval-envelope-vectors.json` | Encrypted approval envelope: 3 seal and 12 reject vectors |
+| `semantic-query-vectors.json` | The fluent `SemanticQuery` builder builds the same operation in C# and Java (spec `semantic-query-v1`): 9 cases covering defaults, name matching, AND, `Neq`/`In`, order/limit/offset, include and two error messages. **Written, not yet run** in either runtime; see [Fluent semantic reads](semantic-query-builder) |
 | `tenant-first-gate-scenarios.json` | Nine scenarios for the tenant-first gate (not yet loaded by the tests, which mirror them by hand) |
 
 Vectors come from independent Python generators in `src/conformance/tools`. Never edit the JSON by hand; change the generator and regenerate. Canonical form notes: UTF-8, no whitespace, UTF-16 code-unit ordering, seven-digit UTC timestamps, scale-preserving decimals. Digests of older C# warrants containing `+ & < > '` or non-ASCII text changed when the serializer stopped escaping them; re-issue such warrants.

@@ -3,7 +3,6 @@ using Foundgine.SupplyChain.Application;
 using ModelContextProtocol.Server;
 using Foundgine.Providers.Tools.MCP;
 using Foundgine.Runtime;
-using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,13 +21,8 @@ builder.Services.AddMcpServer().WithHttpTransport(o => o.Stateless = true).WithT
 var app = builder.Build();
 app.MapMcp("/mcp");
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
-app.MapGet("/health/ready", async (NpgsqlDataSource ds, CancellationToken ct) =>
-{
-    await using var c = await ds.OpenConnectionAsync(ct);
-    await using var cmd = new NpgsqlCommand("SELECT 1", c);
-    await cmd.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready" });
-});
+app.MapGet("/health/ready", async (Foundgine.Providers.EntityFrameworkCore.FoundgineDbContext db, CancellationToken ct) =>
+    await db.Database.CanConnectAsync(ct) ? Results.Ok(new { status = "ready" }) : Results.StatusCode(503));
 app.Run();
 
 // Every tool requires a 'token' proving the caller actually controls the identity

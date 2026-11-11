@@ -1,20 +1,28 @@
+using Foundgine.Core.Abstractions;
+using Foundgine.Core.Semantic.IR;
+using Foundgine.Core.Semantic.Query;
+using Foundgine.Providers.Aot;
+using Foundgine.Providers.EntityFrameworkCore;
 using Foundgine.SupplyChain.Domain;
+using Foundgine.SupplyChain.Domain.Models;
 
 namespace Foundgine.SupplyChain.Application;
 
-public sealed class SupplyChainApplication
+/// <summary>
+/// Capability facade. Every capability: authenticate + authorize the actor, then call Foundgine directly.
+/// Reads are semantic operations (<see cref="FoundgineEfReader"/>: authorized plan -> ExecutionIR -> EF Core).
+/// Writes call the generic repository (<see cref="IFoundgineRepository{T}"/>); the two multi-step workflows live
+/// in <see cref="OrderWorkflows"/>. No DTOs, no mapping layer, no query abstraction: the domain classes are the
+/// EF entities and the result rows are returned as they come.
+/// </summary>
+public sealed class SupplyChainApplication(
+    ICapabilityAuthorizer _auth,
+    FoundgineEfReader reader,
+    IFoundgineRepository<InventoryPosition> inventory,
+    IFoundgineRepository<Shipment> shipments,
+    OrderWorkflows orders)
 {
-    private readonly ICapabilityAuthorizer _auth;
-    private readonly ISupplyChainQueries _queries;
-    private readonly ISupplyChainMutations _mutations;
-
-    public SupplyChainApplication(ICapabilityAuthorizer auth, ISupplyChainQueries queries,
-        ISupplyChainMutations mutations)
-    {
-        _auth = auth;
-        _queries = queries;
-        _mutations = mutations;
-    }
+    private static readonly string[] ShipmentStatuses = ["In Transit", "Out for Delivery", "Delivered", "Delayed"];
 
     public object DescribeCapabilities(string actor, string token)
     {
@@ -48,82 +56,126 @@ public sealed class SupplyChainApplication
         };
     }
 
-    public Task<object> GetMyOrders(string actor, string token, int customerId, CancellationToken ct)
+    public async Task<object> GetMyOrders(string actor, string token, int customerId, CancellationToken ct)
     {
         _auth.Demand(actor, token, "get_my_orders", customerId);
-        return _queries.GetOrders(customerId, ct);
+        var r = await reader.ReadAsync(SupplyChainSemantics.SalesOrder.Entity, SupplyChainSemantics.SalesOrder.All,
+            SupplyChainSemantics.SalesOrder.CustomerId.Eq(customerId),
+            [SupplyChainSemantics.SalesOrder.Id.Asc()], ct);
+        return new { customerId, orders = r.Rows.Select(x => x.Values).ToArray(), plan = r.Fingerprint };
     }
 
-    public Task<object> GetOrder(string actor, string token, int customerId, int orderId, CancellationToken ct)
+    public async Task<object> GetOrder(string actor, string token, int customerId, int orderId, CancellationToken ct)
     {
         _auth.Demand(actor, token, "get_order", customerId);
-        return _queries.GetOrder(customerId, orderId, ct);
+        var r = await reader.ReadAsync(SupplyChainSemantics.SalesOrder.Entity, q => q
+            .Where(SupplyChainSemantics.SalesOrder.Id.Eq(orderId),
+                SupplyChainSemantics.SalesOrder.CustomerId.Eq(customerId))
+            .Include(SupplyChainSemantics.SalesOrder.Relationships.Lines), ct);
+        var row = r.FirstOrThrow("Sales order not found.");
+        return new { order = row.Values, lines = r.Rows.Select(x => x.Values).ToArray(), plan = r.Fingerprint };
     }
 
-    public Task<object> GetShipment(string actor, string token, int customerId, int shipmentId, CancellationToken ct)
+    public async Task<object> GetShipment(string actor, string token, int customerId, int shipmentId,
+        CancellationToken ct)
     {
         _auth.Demand(actor, token, "get_shipment", customerId);
-        return _queries.GetShipment(customerId, shipmentId, ct);
+        // Ownership = read the shipment, then prove its order belongs to the customer (two authorized reads).
+        var r = await reader.ReadAsync(SupplyChainSemantics.Shipment.Entity, SupplyChainSemantics.Shipment.All,
+            SupplyChainSemantics.Shipment.Id.Eq(shipmentId), ct: ct);
+        var row = r.Rows.FirstOrDefault() ?? throw new KeyNotFoundException("Shipment not found.");
+        var owned = await reader.ReadAsync(SupplyChainSemantics.SalesOrder.Entity,
+            [SupplyChainSemantics.SalesOrder.Id.Id],
+            new SemanticAndFilter([
+                SupplyChainSemantics.SalesOrder.Id.Eq(Convert.ToInt32(row.Values["OrderId"])),
+                SupplyChainSemantics.SalesOrder.CustomerId.Eq(customerId)]), ct: ct);
+        if (owned.Rows.Count == 0) throw new KeyNotFoundException("Shipment not found.");
+        return new { shipment = row.Values, plan = r.Fingerprint };
     }
 
-    public Task<object> ListProducts(string actor, string token, CancellationToken ct)
+    public async Task<object> ListProducts(string actor, string token, CancellationToken ct)
     {
         _auth.Demand(actor, token, "list_products");
-        return _queries.ListProducts(ct);
+        return await List("products", SupplyChainSemantics.CatalogProduct.Entity,
+            SupplyChainSemantics.CatalogProduct.All, ct);
     }
 
-    public Task<object> ListCustomers(string actor, string token, CancellationToken ct)
+    public async Task<object> ListCustomers(string actor, string token, CancellationToken ct)
     {
         _auth.Demand(actor, token, "list_customers");
-        return _queries.ListCustomers(ct);
+        return await List("customers", SupplyChainSemantics.Customer.Entity, SupplyChainSemantics.Customer.All, ct);
     }
 
-    public Task<object> GetProduct(string actor, string token, int id, CancellationToken ct)
-    {
-        _auth.Demand(actor, token, "get_product");
-        return _queries.GetProduct(id, ct);
-    }
-
-    public Task<object> GetInventory(string actor, string token, int id, CancellationToken ct)
-    {
-        _auth.Demand(actor, token, "get_inventory");
-        return _queries.GetInventory(id, ct);
-    }
-
-    public Task<object> ListSuppliers(string actor, string token, CancellationToken ct)
+    public async Task<object> ListSuppliers(string actor, string token, CancellationToken ct)
     {
         _auth.Demand(actor, token, "list_suppliers");
-        return _queries.ListSuppliers(ct);
+        return await List("suppliers", SupplyChainSemantics.Supplier.Entity, SupplyChainSemantics.Supplier.All, ct);
     }
 
-    public Task<object> UpdateInventory(string actor, string token, int w, int p, int q, CancellationToken ct)
+    public async Task<object> GetProduct(string actor, string token, int id, CancellationToken ct)
+    {
+        _auth.Demand(actor, token, "get_product");
+        var r = await reader.ReadAsync(SupplyChainSemantics.CatalogProduct.Entity,
+            SupplyChainSemantics.CatalogProduct.All, SupplyChainSemantics.CatalogProduct.Id.Eq(id), ct: ct);
+        return new Dictionary<string, object?> { ["product"] = r.Rows.FirstOrDefault()?.Values, ["plan"] = r.Fingerprint };
+    }
+
+    public async Task<object> GetInventory(string actor, string token, int id, CancellationToken ct)
+    {
+        _auth.Demand(actor, token, "get_inventory");
+        var r = await reader.ReadAsync(SupplyChainSemantics.InventoryPosition.Entity,
+            SupplyChainSemantics.InventoryPosition.All, SupplyChainSemantics.InventoryPosition.ProductId.Eq(id),
+            [SupplyChainSemantics.InventoryPosition.WarehouseId.Asc()], ct);
+        return new Dictionary<string, object?>
+            { ["inventory"] = r.Rows.FirstOrDefault()?.Values, ["plan"] = r.Fingerprint, ["productId"] = id };
+    }
+
+    public async Task<object> UpdateInventory(string actor, string token, int w, int p, int q, CancellationToken ct)
     {
         _auth.Demand(actor, token, "update_inventory");
-        return _mutations.UpdateInventory(w, p, q, ct);
+        if (q < 0) throw new ArgumentOutOfRangeException(nameof(q));
+        var row = (await inventory.ListAsync(x => x.WarehouseId == w && x.ProductId == p, ct)).FirstOrDefault()
+                  ?? throw new KeyNotFoundException("Inventory position not found.");
+        var rows = await inventory.UpdateAsync(row.Id, x => x.QuantityOnHand, q, ct);
+        return new { warehouseId = w, productId = p, quantity = q, result = new { rowsAffected = rows } };
     }
 
-    public Task<object> CreateShipment(string actor, string token, int o, int c, int w, string t, CancellationToken ct)
+    public async Task<object> CreateShipment(string actor, string token, int o, int c, int w, string t,
+        CancellationToken ct)
     {
         _auth.Demand(actor, token, "create_shipment");
-        return _mutations.CreateShipment(o, c, w, t, ct);
+        if (string.IsNullOrWhiteSpace(t)) throw new ArgumentException("Tracking number is required.");
+        var s = await shipments.AddAsync(new Shipment
+            { OrderId = o, CarrierId = c, WarehouseId = w, TrackingNumber = t, Status = "In Transit" }, ct);
+        return new { shipment = new { s.Id, s.OrderId, s.CarrierId, s.WarehouseId, s.TrackingNumber, s.Status } };
     }
 
-    public Task<object> UpdateShipment(string actor, string token, int id, string s, CancellationToken ct)
+    public async Task<object> UpdateShipment(string actor, string token, int id, string status, CancellationToken ct)
     {
         _auth.Demand(actor, token, "update_shipment");
-        return _mutations.UpdateShipment(id, s, ct);
+        if (!ShipmentStatuses.Contains(status, StringComparer.Ordinal))
+            throw new InvalidOperationException("Invalid shipment status.");
+        if (await shipments.UpdateAsync(id, x => x.Status, status, ct) == 0)
+            throw new KeyNotFoundException("Shipment not found.");
+        return new { shipment = new { Id = id, Status = status } };
     }
 
     public Task<object> PlaceOrder(string actor, string token, int customerId, OrderLine[] lines, string key,
         CancellationToken ct)
     {
         _auth.Demand(actor, token, "place_order", customerId);
-        return _mutations.PlaceOrder(actor, customerId, lines, key, ct);
+        return orders.PlaceOrder(actor, customerId, lines, key, ct);
     }
 
     public Task<object> CancelOrder(string actor, string token, int customerId, int orderId, CancellationToken ct)
     {
         _auth.Demand(actor, token, "cancel_order", customerId);
-        return _mutations.CancelOrder(actor, customerId, orderId, ct);
+        return orders.CancelOrder(customerId, orderId, ct);
+    }
+
+    private async Task<object> List(string name, EntityId entity, IReadOnlyList<FieldId> fields, CancellationToken ct)
+    {
+        var r = await reader.ReadAsync(entity, fields, ct: ct);
+        return new Dictionary<string, object?> { [name] = r.Rows.Select(x => x.Values).ToArray(), ["plan"] = r.Fingerprint };
     }
 }

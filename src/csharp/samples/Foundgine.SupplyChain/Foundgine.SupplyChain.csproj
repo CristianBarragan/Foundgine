@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.3.1" />
   </ItemGroup>
 
@@ -15,6 +15,8 @@
     <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
     <ProjectReference Include="../../Foundgine.Runtime/Foundgine.Runtime.csproj" />
     <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj" />
+    <ProjectReference Include="../../Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj" />
 
     <ProjectReference
       Include="../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"

@@ -1,10 +1,10 @@
 namespace Foundgine.SupplyChain.Domain.Models;
 
-// Plain application models. Everything Foundgine needs to know about them (entity
-// names, relationships, storage mapping) lives in the fluent configuration classes
-// in this project, so these types carry no Foundgine attributes and no dependency
-// on Foundgine.Providers. The navigation members exist only so configuration can
-// name relationships with lambdas; Foundgine never instantiates or populates them.
+// Plain domain classes. Each one is BOTH the Foundgine semantic model and the EF Core entity: there is no
+// separate storage type and no mapping layer. Tables and columns are configured fluently in
+// SupplyChainModel.cs; the types carry no Foundgine or EF attributes. Scalar members are the mapped fields;
+// navigation members exist only so configuration can name relationships with lambdas (EF ignores them,
+// Foundgine never populates them - related rows are read through the semantic layer).
 
 public sealed class Customer
 {
@@ -44,6 +44,8 @@ public sealed class CatalogProduct
     public string Name { get; init; } = "";
     public string Sku { get; init; } = "";
     public decimal UnitPrice { get; init; }
+    public int SupplierId { get; init; }
+    public int CategoryId { get; init; }
 
     public Supplier Supplier { get; init; } = null!;
     public Category Category { get; init; } = null!;

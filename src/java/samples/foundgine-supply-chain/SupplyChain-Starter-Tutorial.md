@@ -32,15 +32,19 @@ AI agent / MCP client
   Authorization (tenant + role scoped)
         │
         ▼
-  Foundgine planning/execution → storage
+  Foundgine planning/execution → JPA (Hibernate) → PostgreSQL
 ```
 
 The starter keeps the Java port small on purpose: it proves out the domain, the annotation-driven
-metadata generation, and the authorization shape first. The full MCP transport and PostgreSQL
-execution path already exist in Java — see
-[`../foundgine-supply-chain-advanced`](../foundgine-supply-chain-advanced/README.md) — and this
-starter is where that same wiring will land for the minimal case as the Java provider surface
-stabilizes.
+metadata generation, the authorization shape, and one **JPA + PostgreSQL read path**. The MCP
+transport and the mutation path already exist in Java — see
+[`../foundgine-supply-chain-advanced`](../foundgine-supply-chain-advanced/README.md) — and are not
+part of this starter yet.
+
+> **Status.** The Foundgine half (metadata → authorization → plan → `ExecutionIR` → ORM plan →
+> execution) is covered by `SupplyChainSemanticsTest` and was run against the in-memory ORM source
+> on JDK 21. The Hibernate/PostgreSQL half (`SupplyChainJpa`, `persistence.xml`, the SQL files) has
+> **not** been compiled or run: no JPA 3.2 jars or network were available when it was written.
 
 ---
 
@@ -48,8 +52,7 @@ stabilizes.
 
 - **JDK 27** (`maven.compiler.release` for this reactor)
 - **Maven 3.9+**
-- **Docker with Compose support** (only needed once you add the PostgreSQL provider — see
-  the [Advanced tutorial](../foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md))
+- **Docker with Compose support** (runs the PostgreSQL used by the JPA read path in section 7)
 - A clone of this repository — the module uses `${revision}` project references into
   `foundgine-core`, `foundgine-runtime`, `foundgine-providers`, and `foundgine-providers`
   from the same Maven reactor, exactly like the real sample
@@ -72,7 +75,7 @@ the `io.github.cristianbarragan` groupId:
 | ---------------------- | ------------------------------------------------------------ |
 | `foundgine-core`       | Contracts, semantic model, metadata, planning, serialization |
 | `foundgine-runtime`    | Orchestration, execution, application-facing APIs            |
-| `foundgine-providers`  | Storage (PostgreSQL), MCP, and AOT provider implementations  |
+| `foundgine-providers`  | Storage (ORM/JPA, PostgreSQL), MCP, and AOT provider implementations |
 | `foundgine-extensions` | Optional caller-facing adapters                              |
 
 For a normal application the minimum footprint is `foundgine-runtime` + `foundgine-providers` —
@@ -124,6 +127,15 @@ module:
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
+    </dependency>
+    <!-- JPA + Hibernate ORM: the persistence layer behind Foundgine's storage.orm.jpa provider. -->
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -364,46 +376,485 @@ metadata class in the background containing your `SupplyChainDomain` entities as
 
 ---
 
-## 6. Wire it together in `Main`
+## 6. Persistence: JPA entities, schema and compose file
 
-The starter's `Main` is intentionally a small smoke test rather than a full server — it proves the
-module compiles against `foundgine-runtime` and that the annotation-processed metadata is on the
-classpath:
+The data layer is **JPA (Hibernate) + PostgreSQL**, reached through Foundgine's
+`foundgine-providers` ORM provider (`storage.orm.jpa`). The semantic layers above it never see a
+table or column name; only the JPA entity classes do.
+
+The domain types are immutable `record`s, which JPA cannot hydrate, so each persisted entity gets a
+small mutable JPA class in `jpa/`. **Attribute names equal the semantic field names** (`id`,
+`name`, `riskScore`, ...), which is how the ORM registry binds a semantic field to a JPA attribute
+without any extra mapping. Columns are declared with `@Column`:
+
+```java
+package com.foundgine.samples.supplychain.jpa;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import java.math.BigDecimal;
+
+/** JPA entity behind the semantic {@code Supplier}. Attribute names equal the semantic field names. */
+@Entity
+@Table(name = "suppliers")
+public class SupplierEntity {
+    @Id @Column(name = "supplier_id") private Integer id;
+    @Column(name = "supplier_name") private String name;
+    @Column(name = "country") private String country;
+    @Column(name = "risk_score") private BigDecimal riskScore;
+    @Column(name = "tenant_id") private String tenantId;
+
+    protected SupplierEntity() {}
+
+    public SupplierEntity(Integer id, String name, String country, BigDecimal riskScore, String tenantId) {
+        this.id = id; this.name = name; this.country = country; this.riskScore = riskScore; this.tenantId = tenantId;
+    }
+
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
+    public BigDecimal getRiskScore() { return riskScore; }
+    public void setRiskScore(BigDecimal riskScore) { this.riskScore = riskScore; }
+    public String getTenantId() { return tenantId; }
+    public void setTenantId(String tenantId) { this.tenantId = tenantId; }
+}
+```
+
+`WarehouseEntity` and `ProductEntity` follow the same shape (copy them from
+`src/main/java/com/foundgine/samples/supplychain/jpa/`). They are listed in
+`src/main/resources/META-INF/persistence.xml`, which sets `hibernate.hbm2ddl.auto=none`: the schema
+belongs to `src/main/resources/database/schema.sql`, never to Hibernate. `seed.sql` inserts two
+tenants' worth of rows so tenant filtering is visible, and `docker-compose.yml` starts PostgreSQL
+on port 4429 and applies both files on first start:
+
+```bash
+cd src/java/samples/foundgine-supply-chain
+docker compose up -d
+```
+
+> **Scope.** Only `Supplier`, `Warehouse` and `Product` are mapped. Relationship traversal needs
+> both ends mapped, so extend `ENTITY_TYPES` (and the schema) before querying across entities.
+
+---
+
+## 7. The JPA query path
+
+The read path is split in three so the Foundgine half can be tested without a database.
+
+### 7a. The policy
+
+`jpa/SupplyChainPolicy.java` turns the caller's `Authorization.Context` (section 4) into a real
+Foundgine authorization policy. It enforces row-level tenant isolation and role-based access instead of allowing everything:
+
+```java
+package com.foundgine.samples.supplychain.jpa;
+
+import com.foundgine.core.abstractions.AuthorizationOperation;
+import com.foundgine.core.abstractions.AuthorizationPredicate;
+import com.foundgine.core.semantic.authorization.ConfiguredSemanticAuthorizationPolicy;
+import com.foundgine.core.semantic.authorization.SemanticAuthorizationConfiguration;
+import com.foundgine.core.semantic.authorization.SemanticAuthorizationContext;
+import com.foundgine.samples.supplychain.Authorization;
+
+import java.util.Map;
+
+/**
+ * The starter's real authorization policy, built from the caller's {@link Authorization.Context}.
+ *
+ * <ul>
+ *   <li><b>Entity access:</b> a {@code CUSTOMER} may read only {@code Product}; every other role may read the
+ *       three mapped entities.
+ *   <li><b>Field access:</b> {@code Supplier.riskScore} needs {@link Authorization#canReadSupplierRisk}.
+ *       Unauthorized fields are dropped from the plan rather than failing the request.
+ *   <li><b>Row-level tenant isolation:</b> reads of {@code Supplier} and {@code Warehouse} carry the predicate
+ *       {@code resource.tenantId == context.tenantId}, which the ORM provider ANDs onto the query. A caller
+ *       filter on another tenant therefore returns no rows instead of that tenant's data.
+ *   <li><b>Writes and relationships:</b> denied. The starter has no mutation path and maps no relationships.
+ * </ul>
+ *
+ * <p>The tenant value is supplied at execution time through {@link #executionContext}; a missing value fails
+ * closed. Warehouse-level scoping ({@code allowedWarehouses}) is not enforced here.
+ */
+public final class SupplyChainPolicy {
+    /** Resource member (JPA attribute) and context path used by the tenant predicate. */
+    static final String TENANT_ATTRIBUTE = "tenantId";
+    static final String TENANT_CONTEXT_KEY = "context.tenantId";
+
+    private SupplyChainPolicy() {}
+
+    public static ConfiguredSemanticAuthorizationPolicy create(
+            SupplyChainSemantics semantics, Authorization.Context caller) {
+        var supplier = semantics.entity("Supplier").entityId();
+        var warehouse = semantics.entity("Warehouse").entityId();
+        var product = semantics.entity("Product").entityId();
+        var riskScore = semantics.field("Supplier", "riskScore");
+
+        var config = new SemanticAuthorizationConfiguration()
+                .addEntityRule((ctx, entity, op) -> {
+                    if (op != AuthorizationOperation.READ) return false;
+                    if (entity.equals(product)) return true;
+                    return (entity.equals(supplier) || entity.equals(warehouse))
+                            && caller.role() != Authorization.Role.CUSTOMER;
+                })
+                .addFieldRule((ctx, entity, field, op) -> {
+                    if (op != AuthorizationOperation.READ) return false;
+                    return !field.equals(riskScore) || Authorization.canReadSupplierRisk(caller);
+                })
+                .addRelationshipRule((ctx, entity, relationship, op) -> false)
+                .addPredicateRule((ctx, entity, op) ->
+                        op == AuthorizationOperation.READ && (entity.equals(supplier) || entity.equals(warehouse))
+                                ? tenantPredicate()
+                                : null);
+        return new ConfiguredSemanticAuthorizationPolicy(
+                config, new SemanticAuthorizationContext(caller.tenantId(), caller.role().name(), Map.of()));
+    }
+
+    /** The values the tenant predicate reads at execution time. */
+    public static com.foundgine.core.execution.ExecutionContext executionContext(Authorization.Context caller) {
+        return new com.foundgine.core.execution.ExecutionContext(Map.of(TENANT_CONTEXT_KEY, caller.tenantId()));
+    }
+
+    private static AuthorizationPredicate tenantPredicate() {
+        return AuthorizationPredicate.equal(
+                AuthorizationPredicate.member(AuthorizationPredicate.resourceParameter("resource"), TENANT_ATTRIBUTE),
+                AuthorizationPredicate.member(AuthorizationPredicate.contextParameter("context"), "tenantId"));
+    }
+}
+```
+
+- **Entity access.** A `CUSTOMER` may read only `Product`; other roles may read the three mapped
+  entities. Writes and relationships are denied.
+- **Field access.** `Supplier.riskScore` needs `Authorization.canReadSupplierRisk`. A field the
+  caller may not see is dropped from the plan instead of failing the request.
+- **Row-level tenant isolation.** Reads of `Supplier` and `Warehouse` carry the predicate
+  `resource.tenantId == context.tenantId`. The ORM provider ANDs it onto the query, so a caller
+  filter on another tenant returns no rows. The tenant value comes from the execution context
+  (`context.tenantId`), and a missing value fails closed.
+- **Not enforced:** `allowedWarehouses` (warehouse-level scoping). Add it as another predicate if
+  you need it.
+
+### 7b. Semantics: metadata, registry, plan
+
+`jpa/SupplyChainSemantics.java` is persistence-neutral. It turns the generated metadata into an ORM
+registry and a frozen contract, then takes a read through authorization, planning and lowering to a
+provider plan:
+
+```java
+package com.foundgine.samples.supplychain.jpa;
+
+import com.foundgine.core.abstractions.EntityId;
+import com.foundgine.core.abstractions.FieldId;
+import com.foundgine.core.execution.ExecutionIRCompiler;
+import com.foundgine.core.execution.ProviderPlan;
+import com.foundgine.core.semantic.SemanticContractSnapshot;
+import com.foundgine.core.semantic.authorization.SemanticAuthorizer;
+import com.foundgine.core.semantic.ir.SemanticOperation;
+import com.foundgine.core.semantic.ir.SemanticReadNode;
+import com.foundgine.core.semantic.metadata.EntityMetadata;
+import com.foundgine.core.semantic.metadata.MetadataRegistry;
+import com.foundgine.core.semantic.metadata.SemanticModelDiscovery;
+import com.foundgine.core.semantic.planning.Planner;
+import com.foundgine.core.semantic.query.SemanticFieldFilter;
+import com.foundgine.core.semantic.query.SemanticFilterOperator;
+import com.foundgine.core.semantic.query.SemanticQueryOptions;
+import com.foundgine.samples.supplychain.Authorization;
+import com.foundgine.samples.supplychain.generated.GeneratedFoundgineMetadata;
+import com.foundgine.providers.storage.orm.OrmPlanCompiler;
+import com.foundgine.providers.storage.orm.OrmRegistry;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.StreamSupport;
+
+/**
+ * The persistence-neutral half of the read path: generated metadata -> ORM registry -> frozen contract, and
+ * semantic read -> authorization (with provenance) -> plan -> ExecutionIR -> provider plan. It has no JPA
+ * dependency, so it can be exercised against any {@code IOrmQuerySource}; {@link SupplyChainJpa} adds JPA.
+ *
+ * <p>The contract is scoped to the mapped entities: the generated metadata for the full domain cannot be turned
+ * into a semantic contract because {@code ProductComponent} has a composite key and no {@code id} field, and
+ * the ORM provider can only execute mapped entities anyway.
+ *
+ * <p>Generated semantic field names are PascalCase ({@code RiskScore}); JPA attributes are camelCase
+ * ({@code riskScore}). The registry is given that mapping explicitly, and callers may use either casing.
+ */
+public final class SupplyChainSemantics {
+    /** Semantic entity name -> persistent class. Only these entities are queryable through the ORM provider. */
+    public static final Map<String, Class<?>> ENTITY_TYPES = Map.of(
+            "Supplier", SupplierEntity.class,
+            "Warehouse", WarehouseEntity.class,
+            "Product", ProductEntity.class);
+
+    private final String provider;
+    /** Only the mapped entities (and relationships between them); see the class comment for why. */
+    private final MetadataRegistry metadata = scoped(GeneratedFoundgineMetadata.build());
+    private final OrmRegistry registry;
+    private final SemanticContractSnapshot contract;
+    private final Planner planner = new Planner();
+
+    public SupplyChainSemantics(String provider) {
+        this.provider = provider;
+        var mapped = StreamSupport.stream(metadata.entities().spliterator(), false).toList();
+        var relationships = StreamSupport.stream(metadata.relationships().spliterator(), false).toList();
+        var attributeNames = new HashMap<String, String>();
+        for (var e : mapped) {
+            for (var f : e.effectiveFields()) attributeNames.put(e.name() + "." + f.name(), decapitalize(f.name()));
+        }
+        this.registry = OrmRegistry.create(mapped, relationships, ENTITY_TYPES, attributeNames);
+        requireAttributes(registry);
+        this.contract = SemanticModelDiscovery.fromMetadata(metadata).build().freeze().createSnapshot();
+    }
+
+    public OrmRegistry registry() {
+        return registry;
+    }
+
+    public EntityMetadata entity(String name) {
+        return StreamSupport.stream(metadata.entities().spliterator(), false)
+                .filter(x -> x.name().equals(name)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown entity " + name));
+    }
+
+    public FieldId field(String entity, String field) {
+        return entity(entity).effectiveFields().stream().filter(f -> f.name().equalsIgnoreCase(field)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown field " + entity + "." + field)).id();
+    }
+
+    /**
+     * Plans a read of {@code fields} from {@code entity} where {@code filterField = value}, authorized for
+     * {@code caller} by {@link SupplyChainPolicy}. Execute the result with {@link SupplyChainPolicy#executionContext}.
+     */
+    public ProviderPlan planRead(
+            Authorization.Context caller, String entity, List<String> fields, String filterField, Object value) {
+        EntityMetadata e = entity(entity);
+        List<FieldId> selected = fields.stream().map(f -> field(entity, f)).toList();
+        var options = new SemanticQueryOptions(
+                new SemanticFieldFilter(field(entity, filterField), SemanticFilterOperator.EQ, value),
+                List.of(), null, null, null);
+        var operation = new SemanticOperation(
+                new SemanticReadNode(1, e.entityId(), selected, null, null, List.of(), options, null));
+        var authorizer = new SemanticAuthorizer(SupplyChainPolicy.create(this, caller));
+        var semanticPlan = planner.plan(contract, authorizer.authorizeWithEvidence(contract, operation));
+        return new OrmPlanCompiler(provider, registry).compile(ExecutionIRCompiler.compile(semanticPlan));
+    }
+
+    /** The provider does not check this: without it a misnamed attribute only fails on the first query. */
+    private static void requireAttributes(OrmRegistry registry) {
+        for (var mapping : registry.all()) {
+            for (var binding : mapping.fields()) {
+                if (!hasField(mapping.type(), binding.name())) {
+                    throw new IllegalStateException("Semantic entity '" + mapping.name() + "' field " + binding.id()
+                            + " is bound to attribute '" + binding.name() + "', which "
+                            + mapping.type().getSimpleName() + " does not declare.");
+                }
+            }
+        }
+    }
+
+    private static boolean hasField(Class<?> type, String name) {
+        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+            try {
+                c.getDeclaredField(name);
+                return true;
+            } catch (NoSuchFieldException ignored) {
+                // keep walking up
+            }
+        }
+        return false;
+    }
+
+    private static MetadataRegistry scoped(MetadataRegistry all) {
+        var out = new MetadataRegistry();
+        var ids = new HashSet<EntityId>();
+        for (var e : all.entities()) {
+            if (ENTITY_TYPES.containsKey(e.name())) {
+                out.register(e);
+                ids.add(e.entityId());
+            }
+        }
+        for (var r : all.relationships()) {
+            if (ids.contains(r.source()) && ids.contains(r.target())) out.register(r);
+        }
+        return out;
+    }
+
+    private static String decapitalize(String s) {
+        return s.isEmpty() ? s : Character.toLowerCase(s.charAt(0)) + s.substring(1);
+    }
+}
+```
+
+**What matters here:**
+
+- `GeneratedFoundgineMetadata.build()` is the class the annotation processor emitted from
+  `SupplyChainDomain`; the module's `pom.xml` passes
+  `-Afoundgine.generated.package=com.foundgine.samples.supplychain.generated`, so that is its
+  package (the processor's own default would be `com.foundgine.generated`).
+- **Names differ by case.** Generated semantic fields are PascalCase (`RiskScore`); JPA attributes
+  are camelCase (`riskScore`). The registry is given an explicit `Entity.Field -> attribute` map,
+  and `field(...)` matches names case-insensitively. The tenant predicate's resource member is the
+  JPA attribute name (`tenantId`).
+- **The contract is scoped to mapped entities.** The full generated metadata cannot become a
+  semantic contract: `ProductComponent` has a composite key and no `id` field, so discovery
+  rejects it. Only entities that have a JPA class can execute anyway.
+- **Attribute names are checked at startup by this class**, not by the provider: `requireAttributes`
+  fails fast if a bound attribute does not exist on the JPA class. Without it a misnamed attribute
+  only fails on the first query.
+- `authorizeWithEvidence` stamps the plan with authorization provenance, and the ORM compiler
+  refuses a plan that lacks it.
+
+### 7c. JPA execution
+
+`jpa/SupplyChainJpa.java` adds only JPA: it opens the `EntityManagerFactory` and runs the plan
+through the JPA Criteria adapter with the caller's execution context. Filter values are bound
+parameters in the generated query.
+
+```java
+package com.foundgine.samples.supplychain.jpa;
+
+import com.foundgine.core.execution.CancellationToken;
+import com.foundgine.core.execution.ExecutionRow;
+import com.foundgine.providers.storage.orm.jpa.JpaOrmProvider;
+import com.foundgine.samples.supplychain.Authorization;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * JPA + PostgreSQL execution for the starter. {@link SupplyChainSemantics} does the Foundgine half (authorize,
+ * plan, lower to a provider plan); this class only opens JPA and runs the plan through the JPA Criteria adapter
+ * on Hibernate. Foundgine, not JPA, owns planning and authorization.
+ *
+ * <p>UNVERIFIED: the Foundgine half is exercised against the in-memory ORM source, but this class itself has
+ * not been compiled or run against Hibernate/PostgreSQL (no JPA 3.2 jars or network where it was written).
+ */
+public final class SupplyChainJpa implements AutoCloseable {
+    private final EntityManagerFactory emf;
+    private final SupplyChainSemantics semantics = new SupplyChainSemantics(JpaOrmProvider.PROVIDER);
+
+    public SupplyChainJpa() {
+        this.emf = Persistence.createEntityManagerFactory("foundgine-supply-chain", connectionProperties());
+    }
+
+    /**
+     * Reads {@code entity} rows (the listed fields) where {@code filterField = value}, as {@code caller}: the
+     * policy adds tenant isolation and drops fields the caller may not see. Field names are case-insensitive.
+     */
+    public List<ExecutionRow> read(
+            Authorization.Context caller, String entity, List<String> fields, String filterField, Object value) {
+        var providerPlan = semantics.planRead(caller, entity, fields, filterField, value);
+        try (EntityManager em = emf.createEntityManager()) {
+            return JpaOrmProvider.execution(semantics.registry(), em)
+                    .execute(providerPlan, SupplyChainPolicy.executionContext(caller), CancellationToken.NONE)
+                    .rows();
+        }
+    }
+
+    private static Map<String, Object> connectionProperties() {
+        return Map.of(
+                "jakarta.persistence.jdbc.url", env("SUPPLYCHAIN_JDBC_URL", "jdbc:postgresql://localhost:4429/foundgine_supply_chain"),
+                "jakarta.persistence.jdbc.user", env("SUPPLYCHAIN_JDBC_USER", "benchmark"),
+                "jakarta.persistence.jdbc.password", env("SUPPLYCHAIN_JDBC_PASSWORD", "benchmark"));
+    }
+
+    private static String env(String key, String fallback) {
+        var v = System.getenv(key);
+        return v == null || v.isBlank() ? fallback : v;
+    }
+
+    @Override
+    public void close() {
+        if (emf.isOpen()) emf.close();
+    }
+}
+```
+
+### 7d. The test
+
+`src/test/.../SupplyChainSemanticsTest.java` runs `SupplyChainSemantics` and the policy against
+`InMemoryOrmQuerySource`. It asserts that:
+
+- a `tenant-a` caller sees only `tenant-a` rows;
+- a filter on `tenant-b` returns nothing (the predicate wins over the caller's filter);
+- `riskScore` appears for an `ANALYST` and is dropped for a `WAREHOUSE_OPERATOR`;
+- a `CUSTOMER` reading suppliers is refused, and so is an unmapped entity;
+- a missing tenant value in the execution context fails closed.
+
+```bash
+cd src/java
+mvn -pl samples/foundgine-supply-chain -am test -Dtest=SupplyChainSemanticsTest -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+---
+
+## 8. Wire it together in `Main`
+
+`Main` prints the runtime options, then reads the US suppliers visible to an `ANALYST` in
+`tenant-a`. If PostgreSQL is not reachable it prints a "skipped" line instead of failing:
 
 ```java
 package com.foundgine.samples.supplychain;
 
 import com.foundgine.runtime.*;
+import com.foundgine.samples.supplychain.jpa.SupplyChainJpa;
+
+import java.util.List;
+import java.util.Set;
 
 public final class Main {
-  public static void main(String[] args) {
-    FoundgineOptions options = new FoundgineOptions();
-    System.out.println("Foundgine Supply Chain Java sample");
-    System.out.println("Runtime configured: " + options);
-  }
+    public static void main(String[] args) {
+        FoundgineOptions options = new FoundgineOptions();
+        System.out.println("Foundgine Supply Chain Java sample");
+        System.out.println("Runtime configured: " + options);
+
+        // JPA + PostgreSQL demo: start the database first (docker compose up -d), then run this class.
+        // The caller's tenant and role are enforced by SupplyChainPolicy, not by the filter below.
+        var caller = new Authorization.Context("tenant-a", Set.of(1, 2), Authorization.Role.ANALYST, true);
+        try (var jpa = new SupplyChainJpa()) {
+            var suppliers = jpa.read(caller, "Supplier", List.of("id", "name", "country", "riskScore"), "country", "US");
+            System.out.println("tenant-a US suppliers via JPA: " + suppliers.size());
+            suppliers.forEach(r -> System.out.println("  " + r.values()));
+        } catch (RuntimeException e) {
+            System.out.println("JPA demo skipped (is PostgreSQL running on SUPPLYCHAIN_JDBC_URL?): " + e);
+        }
+    }
 }
 ```
 
 Run it:
 
 ```bash
-cd src/java
+cd src/java/samples/foundgine-supply-chain && docker compose up -d && cd ../..
 mvn -pl samples/foundgine-supply-chain -am compile exec:java \
   -Dexec.mainClass=com.foundgine.samples.supplychain.Main
 ```
 
+Expected output ends with `tenant-a US suppliers via JPA: 1` followed by the `Acme Components`
+row, including `riskScore`. The `tenant-b` US supplier is excluded by the tenant predicate, not by
+the `country` filter, and the `tenant-a` German supplier is excluded by that filter.
+
 ---
 
-## 7. Where to go next
+## 9. Where to go next
 
-You now have the Java domain, authorization shape, and adversarial-scenario smoke test in place —
-the same starting point the C# starter reaches by step 7 of its own tutorial, before it adds the
-MCP transport and the PostgreSQL-backed query/mutation repositories.
+You now have the Java domain, authorization shape, adversarial-scenario smoke test and a JPA read
+path in place. Still missing compared with the C# starter: the MCP transport and the mutation
+repository (`place_order`, `cancel_order`).
 
 For the **complete** MCP → semantic model → authorization → planning/execution → PostgreSQL path,
 already implemented in Java, continue with
 [`../foundgine-supply-chain-advanced`](../foundgine-supply-chain-advanced/README.md) and its
 [step-by-step tutorial](../foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md), which
-walks through `AdvancedMcpServer`, `AdvancedMutationPipeline`, and `PostgresSupplyChainStore` —
-the Java equivalents of the C# starter's `Program.cs` and `SemanticSqlQueryExecutor`, plus the
-high-assurance mutation, grounding, and adversarial-security coverage from the C# advanced sample.
+walks through `AdvancedMcpServer`, `AdvancedMutationPipeline`, and `PostgresSupplyChainStore`.

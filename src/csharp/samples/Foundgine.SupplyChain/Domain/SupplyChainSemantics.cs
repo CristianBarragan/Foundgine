@@ -61,14 +61,14 @@ public static class SupplyChainSemantics
 
     public static class Customer
     {
-        private const string EntityName = "CustomerERP";
+        private const string EntityName = "Customer";
         public static readonly EntityId Entity = EntityOf(EntityName);
         public static IReadOnlyList<FieldId> All { get; } = AllFieldsOf(Entity);
     }
 
     public static class SalesOrder
     {
-        private const string EntityName = "SalesOrderERP";
+        private const string EntityName = "SalesOrder";
         public static readonly EntityId Entity = EntityOf(EntityName);
         public static readonly GeneratedSemanticField Id = FieldOf(Entity, EntityName, "Id");
         public static readonly GeneratedSemanticField CustomerId = FieldOf(Entity, EntityName, "CustomerId");
@@ -82,14 +82,14 @@ public static class SupplyChainSemantics
 
     public static class SalesOrderLine
     {
-        private const string EntityName = "SalesOrderLineERP";
+        private const string EntityName = "SalesOrderLine";
         public static readonly EntityId Entity = EntityOf(EntityName);
         public static IReadOnlyList<FieldId> All { get; } = AllFieldsOf(Entity);
     }
 
     public static class CatalogProduct
     {
-        private const string EntityName = "CatalogProductERP";
+        private const string EntityName = "CatalogProduct";
         public static readonly EntityId Entity = EntityOf(EntityName);
         public static readonly GeneratedSemanticField Id = FieldOf(Entity, EntityName, "Id");
         public static IReadOnlyList<FieldId> All { get; } = AllFieldsOf(Entity);
@@ -97,14 +97,14 @@ public static class SupplyChainSemantics
 
     public static class Supplier
     {
-        private const string EntityName = "SupplierERP";
+        private const string EntityName = "Supplier";
         public static readonly EntityId Entity = EntityOf(EntityName);
         public static IReadOnlyList<FieldId> All { get; } = AllFieldsOf(Entity);
     }
 
     public static class InventoryPosition
     {
-        private const string EntityName = "InventoryPositionERP";
+        private const string EntityName = "InventoryPosition";
         public static readonly EntityId Entity = EntityOf(EntityName);
         public static readonly GeneratedSemanticField WarehouseId = FieldOf(Entity, EntityName, "WarehouseId");
         public static readonly GeneratedSemanticField ProductId = FieldOf(Entity, EntityName, "ProductId");
@@ -114,7 +114,7 @@ public static class SupplyChainSemantics
 
     public static class Shipment
     {
-        private const string EntityName = "ShipmentERP";
+        private const string EntityName = "Shipment";
         public static readonly EntityId Entity = EntityOf(EntityName);
         public static readonly GeneratedSemanticField Id = FieldOf(Entity, EntityName, "Id");
         public static readonly GeneratedSemanticField OrderId = FieldOf(Entity, EntityName, "OrderId");

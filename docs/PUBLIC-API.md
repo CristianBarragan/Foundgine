@@ -47,6 +47,25 @@ x => x.TenantId == tenantId && x.IsActive == true
 
 More complex semantic predicate algebra belongs in the semantic/planning layers rather than being silently interpreted by the typed convenience API.
 
+## Fluent semantic reads (`SemanticQuery`)
+
+For reads built against the compiled metadata (instead of a typed or dynamic intent), `SemanticQuery` assembles a
+`SemanticOperation` with the same members in both runtimes: `From`, `Where`, `WhereEq`, `WhereNeq`, `WhereIn`, `OrderBy`,
+`Select`, `Take`, `Skip`, `Include` (with an optional child lambda) and `Build` (camelCase in Java).
+
+```csharp
+var op = SemanticQuery.From(metadata, "Warehouse").WhereEq("Region", "NZ")
+    .Include(lots, l => l.Select("Sku", "OnHand")).Build();
+```
+
+```java
+var op = SemanticQuery.from(metadata, "Warehouse").whereEq("Region", "NZ")
+        .include(lots, l -> l.select("Sku", "OnHand")).build();
+```
+
+It adds no authority: the operation still goes through authorization and planning. See
+[Fluent semantic reads](wiki/semantic-query-builder.md).
+
 ## Dynamic query API
 
 `DynamicQuery` supports:
@@ -172,7 +191,7 @@ The public API must not make it easier to accidentally replace trusted context w
 
 ## Versioning
 
-The repository is currently on the 3.3.0 release line.
+The repository is currently on the 3.3.1 release line.
 
 The most stable conceptual contracts are:
 

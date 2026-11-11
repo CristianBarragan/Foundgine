@@ -1,13 +1,14 @@
 using Foundgine.Core.Semantic.Configuration;
-using Foundgine.SupplyChain.Domain.Storage;
+using Foundgine.SupplyChain.Domain.Models;
 
 namespace Foundgine.SupplyChain.Domain;
 
-// Persistence configuration: table, key and column names only.
+// Persistence configuration: table, key and column names only. Applied to the domain classes themselves
+// (they are the EF entities); the provider derives the EF model from this.
 
-internal sealed class CustomerERPConfiguration : FoundginePersistenceConfiguration<CustomerERP>
+internal sealed class CustomerTable : FoundginePersistenceConfiguration<Customer>
 {
-    public override void Configure(FoundginePersistenceBuilder<CustomerERP> model)
+    public override void Configure(FoundginePersistenceBuilder<Customer> model)
     {
         model.ToTable("customers").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("customer_id");
@@ -17,9 +18,9 @@ internal sealed class CustomerERPConfiguration : FoundginePersistenceConfigurati
     }
 }
 
-internal sealed class SalesOrderERPConfiguration : FoundginePersistenceConfiguration<SalesOrderERP>
+internal sealed class SalesOrderTable : FoundginePersistenceConfiguration<SalesOrder>
 {
-    public override void Configure(FoundginePersistenceBuilder<SalesOrderERP> model)
+    public override void Configure(FoundginePersistenceBuilder<SalesOrder> model)
     {
         model.ToTable("orders").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("order_id");
@@ -29,9 +30,9 @@ internal sealed class SalesOrderERPConfiguration : FoundginePersistenceConfigura
     }
 }
 
-internal sealed class SalesOrderLineERPConfiguration : FoundginePersistenceConfiguration<SalesOrderLineERP>
+internal sealed class SalesOrderLineTable : FoundginePersistenceConfiguration<SalesOrderLine>
 {
-    public override void Configure(FoundginePersistenceBuilder<SalesOrderLineERP> model)
+    public override void Configure(FoundginePersistenceBuilder<SalesOrderLine> model)
     {
         model.ToTable("order_items").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("order_item_id");
@@ -42,9 +43,9 @@ internal sealed class SalesOrderLineERPConfiguration : FoundginePersistenceConfi
     }
 }
 
-internal sealed class CatalogProductERPConfiguration : FoundginePersistenceConfiguration<CatalogProductERP>
+internal sealed class CatalogProductTable : FoundginePersistenceConfiguration<CatalogProduct>
 {
-    public override void Configure(FoundginePersistenceBuilder<CatalogProductERP> model)
+    public override void Configure(FoundginePersistenceBuilder<CatalogProduct> model)
     {
         model.ToTable("products").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("product_id");
@@ -56,9 +57,9 @@ internal sealed class CatalogProductERPConfiguration : FoundginePersistenceConfi
     }
 }
 
-internal sealed class SupplierERPConfiguration : FoundginePersistenceConfiguration<SupplierERP>
+internal sealed class SupplierTable : FoundginePersistenceConfiguration<Supplier>
 {
-    public override void Configure(FoundginePersistenceBuilder<SupplierERP> model)
+    public override void Configure(FoundginePersistenceBuilder<Supplier> model)
     {
         model.ToTable("suppliers").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("supplier_id");
@@ -67,9 +68,9 @@ internal sealed class SupplierERPConfiguration : FoundginePersistenceConfigurati
     }
 }
 
-internal sealed class CategoryERPConfiguration : FoundginePersistenceConfiguration<CategoryERP>
+internal sealed class CategoryTable : FoundginePersistenceConfiguration<Category>
 {
-    public override void Configure(FoundginePersistenceBuilder<CategoryERP> model)
+    public override void Configure(FoundginePersistenceBuilder<Category> model)
     {
         model.ToTable("categories").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("category_id");
@@ -77,9 +78,9 @@ internal sealed class CategoryERPConfiguration : FoundginePersistenceConfigurati
     }
 }
 
-internal sealed class InventoryPositionERPConfiguration : FoundginePersistenceConfiguration<InventoryPositionERP>
+internal sealed class InventoryPositionTable : FoundginePersistenceConfiguration<InventoryPosition>
 {
-    public override void Configure(FoundginePersistenceBuilder<InventoryPositionERP> model)
+    public override void Configure(FoundginePersistenceBuilder<InventoryPosition> model)
     {
         model.ToTable("inventory").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("inventory_id");
@@ -90,9 +91,9 @@ internal sealed class InventoryPositionERPConfiguration : FoundginePersistenceCo
     }
 }
 
-internal sealed class WarehouseERPConfiguration : FoundginePersistenceConfiguration<WarehouseERP>
+internal sealed class WarehouseTable : FoundginePersistenceConfiguration<Warehouse>
 {
-    public override void Configure(FoundginePersistenceBuilder<WarehouseERP> model)
+    public override void Configure(FoundginePersistenceBuilder<Warehouse> model)
     {
         model.ToTable("warehouses").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("warehouse_id");
@@ -101,9 +102,9 @@ internal sealed class WarehouseERPConfiguration : FoundginePersistenceConfigurat
     }
 }
 
-internal sealed class ShipmentERPConfiguration : FoundginePersistenceConfiguration<ShipmentERP>
+internal sealed class ShipmentTable : FoundginePersistenceConfiguration<Shipment>
 {
-    public override void Configure(FoundginePersistenceBuilder<ShipmentERP> model)
+    public override void Configure(FoundginePersistenceBuilder<Shipment> model)
     {
         model.ToTable("shipments").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("shipment_id");
@@ -115,9 +116,9 @@ internal sealed class ShipmentERPConfiguration : FoundginePersistenceConfigurati
     }
 }
 
-internal sealed class CarrierERPConfiguration : FoundginePersistenceConfiguration<CarrierERP>
+internal sealed class CarrierTable : FoundginePersistenceConfiguration<Carrier>
 {
-    public override void Configure(FoundginePersistenceBuilder<CarrierERP> model)
+    public override void Configure(FoundginePersistenceBuilder<Carrier> model)
     {
         model.ToTable("carriers").HasKey(x => x.Id);
         model.Property(x => x.Id).HasColumnName("carrier_id");

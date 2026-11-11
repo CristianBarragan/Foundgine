@@ -4,18 +4,28 @@ The smallest realistic Foundgine application in this repository.
 
 It demonstrates the complete basic path without splitting the application into a collection of projects:
 
-**MCP → application → semantic model → Foundgine planning/execution → PostgreSQL**
+**MCP → application facade → Foundgine (semantic reads) / generic repository (writes) → EF Core → PostgreSQL**
 
 The folders are architectural boundaries; they do not require separate assemblies. The fluent model (`SupplyChainModel`) sees the whole application project, so the starter stays easy to read and easy to run.
 
 ## What it demonstrates
 
-- A small Supply Chain domain and explicit model-to-storage mappings.
-- A fluent-configured semantic model (`Domain/SupplyChainModel.cs`) compiled to a metadata registry at startup, with typed handles in `Domain/SupplyChainSemantics.cs`.
-- Capability authorization before execution.
-- MCP as the agent-facing transport.
-- Foundgine planning and SQL execution against PostgreSQL.
-- Basic read and mutation capabilities, including `place_order` and `cancel_order`.
+- Domain classes that are **both** the Foundgine semantic model and the EF Core entity: no storage types, no
+  mapping layer, no DTOs (`Domain/Models.cs`).
+- Fluent Foundgine configuration only: semantic relationships (`ModelConfigurations.cs`), tables and columns
+  (`PersistenceConfigurations.cs`), foreign keys (`Connections.cs`), registered once in `SupplyChainModel`.
+  `IdentityEntityMap<T>` from the EF provider replaces the model-to-storage maps.
+- One-line registration of everything ORM-side: `services.AddFoundgineEf(metadata, (sp, o) => o.UseNpgsql(...))`
+  (EF model, ORM maps, `FoundgineDbContext`, `IFoundgineRepository<T>` per entity, `FoundgineEfReader`). The
+  reusable parts live in `Foundgine.Providers.EntityFrameworkCore`, not in this sample.
+- Reads are semantic operations (`FoundgineEfReader`); writes call the minimal generic repository directly
+  (`Add/Get/List/Update/Delete`, plus `Query()` and `Context` as escape hatches).
+- Capability authorization before execution, MCP as the agent-facing transport.
+- `place_order` / `cancel_order` (`Application/OrderWorkflows.cs`): repository writes plus a few labelled `[native]`
+  PostgreSQL statements (advisory lock, idempotency, `FOR UPDATE SKIP LOCKED`) on the same transaction.
+
+> Not compiled yet (no .NET SDK in the authoring sandbox). `SupplyChain-Starter-Tutorial.md` and
+> `Foundgine-SupplyChain-Explained.md` still describe the earlier SQL-provider version.
 
 ## Run
 

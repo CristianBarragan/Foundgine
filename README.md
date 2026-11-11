@@ -227,11 +227,11 @@ Foundgine's architecture is specified independently of this implementation as th
 - [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, AOT, auditing and operations.
 - [Website](https://cristianbarragan.github.io/Foundgine/docs-site/) · [`CHANGELOG.md`](CHANGELOG.md)
 
-## Release 3.3.0
+## Release 3.3.1
 
-**Current release: 3.3.0 · .NET 10 and Java 27**
+**Current release: 3.3.1 · .NET 10 and Java 27**
 
-The .NET and Java implementations ship as aligned, same-numbered releases. This release establishes the 3.3.x line and aligns package, build, MCP and documentation metadata. Version 2.3.0 introduced the fluent configuration API (`FoundgineModel`) in both languages as a code-first alternative to attributes and annotations; see [`docs/MAPPING.md`](docs/MAPPING.md). See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes.
+The .NET and Java implementations ship as aligned, same-numbered releases. 3.3.1 is a patch release on the 3.3.x line: it adds the fluent `SemanticQuery` read builder with the same members in C# and Java (held together by shared conformance vectors), the matching EF Core reader overloads and Java plan helper, and fixes EF model creation for metadata without a column catalog. Version 2.3.0 introduced the fluent configuration API (`FoundgineModel`) in both languages as a code-first alternative to attributes and annotations; see [`docs/MAPPING.md`](docs/MAPPING.md). See [`RELEASE-NOTES-3.3.1.md`](RELEASE-NOTES-3.3.1.md) and [`CHANGELOG.md`](CHANGELOG.md) for the full release notes.
 
 ## License
 

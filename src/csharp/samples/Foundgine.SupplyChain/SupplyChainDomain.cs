@@ -1,14 +1,13 @@
 using Foundgine.Core.Semantic.Authorization;
 using Foundgine.Core.Semantic.Metadata;
 using Foundgine.Core.Semantic.Planning;
+using Foundgine.Providers.EntityFrameworkCore;
 using Foundgine.Runtime;
-using Foundgine.SupplyChain.Domain;
 using Foundgine.SupplyChain.Application;
-using Foundgine.SupplyChain.Infrastructure.Mutations;
-using Foundgine.SupplyChain.Infrastructure.Queries;
+using Foundgine.SupplyChain.Domain;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 
 namespace Foundgine.SupplyChain;
 
@@ -17,8 +16,8 @@ namespace Foundgine.SupplyChain;
 /// <c>Infrastructure/DependencyInjection.cs</c> used to register (see
 /// <c>src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered</c> for the layered version this sample
 /// grew out of), folded into one capability now that it's a single project: the per-actor
-/// <see cref="ICapabilityAuthorizer"/>, the <see cref="SupplyChainApplication"/> facade, the Postgres
-/// connection, the metadata registry compiled from the fluent model, and the query/mutation repositories.
+/// <see cref="ICapabilityAuthorizer"/>, the <see cref="SupplyChainApplication"/> facade, the EF Core
+/// provider registration and the metadata registry compiled from the fluent model.
 ///
 /// Also supplies the <see cref="Foundgine.Core.Semantic.SemanticModel"/> Foundgine itself needs (via
 /// <see cref="FoundgineOptions.UseMetadata"/>) and a permissive Foundgine authorization policy: this
@@ -41,22 +40,16 @@ public sealed class SupplyChainDomain : IFoundgineCapability
         context.Options.UseMetadata(Metadata);
         context.Options.AuthorizationPolicy ??= new AllowAllSemanticAuthorizationPolicy();
 
-        services.AddSingleton<ICapabilityAuthorizer, SupplyChainAuthorizer>();
-        services.AddScoped<SupplyChainApplication>();
+        // Registration: the EF provider turns the fluent model into the EF model, the ORM maps, the DbContext,
+        // IFoundgineRepository<T> for every entity and the semantic reader. One call.
+        services.AddFoundgineEf(Metadata,
+            (sp, o) => o.UseNpgsql(ResolveConnectionString(sp.GetRequiredService<IConfiguration>())));
 
-        services.AddSingleton(sp =>
-            NpgsqlDataSource.Create(ResolveConnectionString(sp.GetRequiredService<IConfiguration>())));
-
-        // Metadata is compiled from the fluent configuration in Domain/ (SupplyChainModel) - it already implements
-        // IMetadataProvider and IMetadataCatalog, so there is nothing to wrap here.
-        services.AddSingleton<IMetadataProvider>(Metadata);
-        services.AddSingleton<IMetadataCatalog>(Metadata);
-        services.AddSingleton(Metadata);
-
+        services.AddSingleton(new SemanticAuthorizer(new AllowAllSemanticAuthorizationPolicy()));
         services.AddSingleton<Planner>();
-        services.AddSingleton<SemanticSqlQueryExecutor>();
-        services.AddScoped<ISupplyChainQueries, SupplyChainQueryRepository>();
-        services.AddScoped<ISupplyChainMutations, SupplyChainMutationRepository>();
+        services.AddSingleton<ICapabilityAuthorizer, SupplyChainAuthorizer>();
+        services.AddScoped<OrderWorkflows>();
+        services.AddScoped<SupplyChainApplication>();
     }
 
     private static string ResolveConnectionString(IConfiguration configuration) =>

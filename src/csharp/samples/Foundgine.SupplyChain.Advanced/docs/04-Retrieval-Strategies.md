@@ -94,7 +94,7 @@ find out it's disabled) without needing any infrastructure to do so.
 Everything above exercises `PostgresRetrievalCandidateSource` directly
 against `SupplyChainSemanticModel.Metadata` and a throwaway fixture schema —
 it's provider-conformance testing for `IApproximateCandidateSource`, not a
-capability. `Semantic/Api/Mcp/Program.cs`'s `SupplyChainExecutionService`
+capability. `MCP.Foundgine/Repositories/SupplyChainExecutionService.cs`'s `SupplyChainExecutionService`
 implements the same three practical strategies (`Fuzzy`, `FullText`,
 `Search`) a second time, independently, scoped to one real question: _does
 the `supplierName` a caller passed to `find_top_supplier_overdue_orders`

@@ -34,6 +34,29 @@ Say a caller asks: *"show me customers whose orders include SKU A."*
 
 Java uses the JPA provider with `jakarta.persistence` as an optional dependency; see `src/java/foundgine-providers/.../storage/orm/jpa` and `src/java/ORM-JPA-PARITY-PLAN` for current wiring. Check exact registration method names in the source for your version.
 
+## Reading and writing from your code
+
+Both ORM providers give you the same three things, with the same shape in both languages. Details and a member table are on
+[Fluent semantic reads](semantic-query-builder).
+
+| Need | C# (EF Core) | Java (JPA) |
+|---|---|---|
+| Build a read | `SemanticQuery.From(metadata, "Warehouse").Select("Id").WhereEq("Region", "NZ").Include(rel).Build()` | `SemanticQuery.from(metadata, "Warehouse").select("Id").whereEq("Region", "NZ").include(rel).build()` |
+| Run it with permissions | `FoundgineEfReader.ReadAsync(query)` or `ReadAsync(entity, q => ...)` | `planRead(caller, entity, q -> ...)` then execute the plan |
+| Plain CRUD, no per-entity code | `IFoundgineRepository<T>` via `AddFoundgineEf(...)` | `JpaEntities` (name-addressed, by primary key) |
+
+```csharp
+services.AddFoundgineEf(model, (sp, o) => o.UseNpgsql(cs));      // C#: one-line registration
+var rows = await reader.ReadAsync(warehouseEntityId, q => q.WhereEq("Region", "NZ"), ct);
+```
+
+```java
+var plan = semantics.planRead(caller, "Warehouse", q -> q.whereEq("Region", "NZ"));   // Java
+```
+
+Reads always pass through authorization. CRUD writes are mechanical and hold **no** authorization of their own, so check
+the capability before calling them.
+
 ## Shape of the family
 
 ```text
@@ -49,7 +72,7 @@ Semantic operation
 | Layer | C# | Java |
 |---|---|---|
 | Provider-neutral ORM core | `Foundgine.Providers.Orm` (`OrmPlanCompiler`, `OrmExecutionProvider`, `OrmMutationExecutionProvider`, `OrmRegistry`, `OrmEntityMap`, `OrmFieldBinding`, `OrmRelationshipBinding`, `OrmCursor`, `OrmProviderCapabilities`) | `foundgine-providers/.../storage/orm` (`OrmPlanCompiler`, `OrmExecutionProvider`, `OrmMutationExecutionProvider`, `OrmRegistry`, `OrmEntityMapping`, `OrmPredicate`, `OrmCursor`, `OrmAggregateCursor*`) |
-| Concrete adapter | `Foundgine.Providers.EntityFrameworkCore` (`EfCoreProvider`, `EfCoreQuerySource`, `EfCoreMutationSource`) | `storage/orm/jpa` (`JpaOrmProvider`, `JpaOrmQuerySource`, `JpaPredicates`, `JpaOrmMutationSource`, `JpaOrmSnapshotPageSession`) |
+| Concrete adapter | `Foundgine.Providers.EntityFrameworkCore` (`EfCoreProvider`, `EfCoreQuerySource`, `EfCoreMutationSource`; application surface `FoundgineEfReader`, `IFoundgineRepository<T>`, `AddFoundgineEf`) | `storage/orm/jpa` (`JpaOrmProvider`, `JpaOrmQuerySource`, `JpaPredicates`, `JpaOrmMutationSource`, `JpaOrmSnapshotPageSession`) |
 | Test doubles | n/a | `InMemoryOrmQuerySource`, `InMemoryOrmMutationSource` |
 | Build-time maps | `Foundgine.Providers.Orm.Generator` (`OrmMapGenerator`, Roslyn) | provider-neutral maps today; see [AOT](aot) |
 
@@ -116,6 +139,7 @@ C#: `Foundgine.Providers.Orm`, `Foundgine.Providers.EntityFrameworkCore`, `tests
 
 ## Related pages
 
+- [Fluent semantic reads (`SemanticQuery`)](semantic-query-builder)
 - [Provider catalogue](providers)
 - [Providers and storage](providers-storage)
 - [Insights, evidence and auditing](insights-evidence-auditing)

@@ -36,7 +36,7 @@
   </scm>
 
   <properties>
-    <revision>3.3.0</revision>
+    <revision>3.3.1</revision>
     <maven.compiler.release>27</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -45,6 +45,8 @@
     <postgresql.version>42.7.12</postgresql.version>
     <graphql-java.version>22.3</graphql-java.version>
     <jakarta-persistence.version>3.2.0</jakarta-persistence.version>
+    <!-- JPA implementation used by the sample applications (the provider itself only needs the JPA API). -->
+    <hibernate.version>7.4.15.Final</hibernate.version>
 
     <maven.compiler.plugin.version>3.16.0</maven.compiler.plugin.version>
     <maven.surefire.plugin.version>3.6.1</maven.surefire.plugin.version>
@@ -87,6 +89,12 @@
         <groupId>jakarta.persistence</groupId>
         <artifactId>jakarta.persistence-api</artifactId>
         <version>${jakarta-persistence.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
       </dependency>
 
       <dependency>

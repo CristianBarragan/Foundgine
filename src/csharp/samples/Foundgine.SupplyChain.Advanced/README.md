@@ -110,6 +110,23 @@ A few more walkthrough-shaped cases that would extend this further, not yet impl
 - **Near-tie below a confidence threshold.** Today "ambiguous" (the tie case) means an exact numeric tie on `total_order_value`. A more realistic case is two candidates close enough (e.g. within 5%) that guessing is risky even without an exact tie — worth its own threshold-based `clarification_needed` variant, distinct from the approximate-name-match case above (that one is about a misspelled _string_, this one would be about closeness in a _ranking value_).
 - **Multi-field ambiguity.** Combine an ambiguous supplier with an ambiguous product/category reference in the same request, to check that the graph carries and resolves more than one candidate node at once.
 
+## Code layout of `MCP.Foundgine`
+
+| Layer | Where | Owns |
+|---|---|---|
+| Host | `Program.cs` | Composition root only: DI, MCP transport, health endpoints. |
+| Api | `Api/` | MCP tools (transport only: one DI scope per call) and the HTTP security-context provider. |
+| Services | `Services/SupplyChainService.cs` | Actor authorization (`SupplyChainAuthorizer`), uniform blocked-call error shaping + correlation ids, capability discovery, and the generic entity operations. |
+| Repositories | `Repositories/` | `ISupplyChainRepository` and its implementation `SupplyChainExecutionService`: the complex queries and mutations (ranked ambiguity resolution, plan evidence, the `PlaceOrder` transaction), unchanged. Hand-written Npgsql stays where EF Core cannot express it (advisory locks, `FOR UPDATE SKIP LOCKED`, idempotency tables, `pg_trgm`). |
+| Persistence wiring | `OpenIntentPersistence.cs` | One `AddFoundgineEf(...)` call: generated ORM maps (`AddMaps`), CLR types for the generated metadata (`MapClrTypes`), and the engine execution provider (`UseEngineProvider`). Replaces the former hand-written `DbContext`, registry and execution provider. |
+
+### Generic entity tools (admin only)
+
+Besides the closed capability surface, `admin` can address any entity of the model by name, with no per-entity code
+(`FoundgineEntities` in `Foundgine.Providers.EntityFrameworkCore`): `list_entities`, `read_entity` (field = value
+filters through the authorized semantic read path), `get_entity`, `create_entity`, `update_entity`, `delete_entity`.
+Every other actor is denied by the same uniform blocked-call error as any other unauthorized capability.
+
 ## Run
 
 ```powershell

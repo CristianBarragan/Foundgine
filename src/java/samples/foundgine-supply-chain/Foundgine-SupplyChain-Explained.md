@@ -12,9 +12,9 @@ same order (sections match the tutorial's numbered steps).
 ## 0. The mental model
 
 The mental model is identical to the C# sample: Foundgine sits between "an AI agent calling a tool"
-and "SQL running against your database," and **no layer above the SQL compiler is allowed to know
+and "SQL running against your database," and **no layer above the persistence provider (JPA here) is allowed to know
 column names, table names, or write raw SQL** — everything is expressed as _semantic_ operations
-that only get turned into SQL at the last step. Java doesn't change that boundary; it changes the
+that only get turned into database work at the last step, by the JPA provider. Java doesn't change that boundary; it changes the
 mechanism used to declare it at compile time (annotation processing instead of Roslyn source
 generation) and the idioms used to express it (`record`s and static factory methods instead of
 `init`-only properties and attributes with named arguments).
@@ -27,7 +27,7 @@ generation) and the idioms used to express it (`record`s and static factory meth
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **JDK 27**                            | The `foundgine-providers` module is a Java **annotation processor** (`javax.annotation.processing.Processor`), which is the JDK's compile-time code-generation mechanism — the Java analogue of a Roslyn source generator. Annotation processors run as part of `javac`, so any reasonably current JDK works; this reactor pins `maven.compiler.release` to 27. |
 | **Maven 3.9+**                        | The Java port is a standard multi-module Maven reactor (`src/java/pom.xml` as parent, one child module per package, `samples/*` for sample applications) — the Java analogue of the `.sln` + `<ProjectReference>` graph on the C# side.                                                                                                                             |
-| **Docker with Compose**               | Once you move past the domain/authorization port covered by this starter and into the fully wired [advanced sample](../foundgine-supply-chain-advanced/README.md), data is stored in real PostgreSQL, not an in-memory fake, so the generated SQL is exercised against a real engine.                                                                               |
+| **Docker with Compose**               | The starter's JPA read path and the fully wired [advanced sample](../foundgine-supply-chain-advanced/README.md) store data in real PostgreSQL, not an in-memory fake, so the JPA queries are exercised against a real engine.                                                                               |
 | **Git clone with reactor references** | Every module and sample in `src/java` depends on `${revision}` — a single Maven property in `src/java/pom.xml` — instead of a published Maven Central version, so you always build against the exact source in the repo, the same reasoning the C# tutorial gives for using `<ProjectReference>` over a NuGet version.                                              |
 
 ---
@@ -44,7 +44,7 @@ artifacts under `io.github.cristianbarragan`:
 - **`foundgine-runtime`** — the orchestration layer that executes a plan and exposes
   application-facing APIs (`FoundgineOptions`, the mutation engine used by the advanced sample).
   Sits between Core and Providers.
-- **`foundgine-providers`** — the part that _does_ know PostgreSQL exists, _does_ know MCP exists,
+- **`foundgine-providers`** — the part that _does_ know your ORM exists (JPA via `storage.orm.jpa`, with the PostgreSQL JDBC driver underneath), _does_ know MCP exists,
   and hosts the AOT annotation-processor sub-module (`foundgine-providers`) as a Maven module of
   its own, mirroring `Foundgine.Providers.Aot.Generator`.
 - **`foundgine-extensions`** — optional caller-facing adapters. Not used by this starter.
@@ -125,14 +125,49 @@ authorization policy, not just the in-memory fixture here.
 
 ---
 
-## 7. Where this leaves you
+## 7. JPA entities next to immutable records
 
-By the end of the tutorial you have exactly what the C# starter has by its own step 6: a compiled,
-annotation-processor-generated semantic model, plus an authorization shape and a smoke test proving
-the adversarial invariants hold. The next concepts — MCP as the transport, a query/mutation
-repository translating semantic operations into SQL, and `Program.cs`'s dependency wiring — are
-already implemented in Java in the [advanced sample](../foundgine-supply-chain-advanced/README.md),
-because that is where this port's MCP server (`AdvancedMcpServer`) and PostgreSQL store
-(`PostgresSupplyChainStore`) live today. Its own
-[step-by-step tutorial](../foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md) picks
-up exactly where this one leaves off.
+The domain `record`s are immutable, and JPA needs a no-arg constructor and mutable attributes, so
+the starter keeps two parallel shapes: the `record` is the semantic domain type that
+`@FoundgineEntity` reads at compile time, and `jpa/*Entity` is the persistence class. The link
+between them is **naming**, with one wrinkle: the generated semantic field is `RiskScore`, the JPA
+attribute is `riskScore`, and `@Column(name = "risk_score")` ties that to the table.
+`SupplyChainSemantics` hands the ORM registry an explicit map for the case difference and then
+checks every bound attribute exists on its JPA class, because the provider itself does not: a
+misnamed attribute would otherwise only surface on the first query. The C# starter avoids the
+duplication by deriving its EF Core model from the fluent configuration; the Java starter currently
+declares both by hand.
+
+## 8. The read path, step by step
+
+`SupplyChainSemantics.planRead` builds a `SemanticOperation`, authorizes it with a policy built
+from the caller (`SupplyChainPolicy`), plans it, and lowers the plan to provider-neutral
+`ExecutionIR`, which the ORM compiler turns into a provider plan. `SupplyChainJpa` then runs that
+plan through a Criteria query on an `EntityManager`. Foundgine owns everything up to the plan; JPA
+only executes it, and filter values are bound parameters throughout.
+
+## 8b. Why tenant isolation is a predicate, not a filter
+
+The caller supplies a filter (`country = 'US'`), but isolation must not depend on the caller
+remembering one. So the policy attaches a row-level predicate to `Supplier` and `Warehouse`:
+`resource.tenantId == context.tenantId`. The provider ANDs it onto whatever the caller asked for,
+which is why a request filtered on `tenant-b` returns nothing for a `tenant-a` caller. The tenant
+value is read from the execution context at run time and a missing value is an error, not an
+unrestricted read. Field-level rules work the same way in spirit: `riskScore` is removed from the
+plan for roles that may not read it, so it never reaches the query.
+
+Two scoping decisions are worth knowing. The contract covers only the mapped entities, because the
+full generated metadata cannot become a contract (`ProductComponent` has a composite key and no
+`id`). And warehouse-level scoping (`allowedWarehouses`) is not enforced by this policy.
+
+---
+
+## 9. Where this leaves you
+
+By the end of the tutorial you have a compiled, annotation-processor-generated semantic model, an
+authorization shape, an adversarial smoke test, and a JPA + PostgreSQL read path. The remaining
+concepts — MCP as the transport and a mutation repository — are already implemented in Java in the
+[advanced sample](../foundgine-supply-chain-advanced/README.md), because that is where this port's
+MCP server (`AdvancedMcpServer`) and PostgreSQL store (`PostgresSupplyChainStore`) live today. Its
+own [step-by-step tutorial](../foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md)
+picks up where this one leaves off.
