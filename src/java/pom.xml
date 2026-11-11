@@ -178,6 +178,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${maven.javadoc.plugin.version}</version>
+          <configuration>
+            <!-- Do not let strict doclint rules fail the build; Central only needs the jar. -->
+            <doclint>none</doclint>
+            <encoding>${project.build.sourceEncoding}</encoding>
+          </configuration>
           <executions>
             <execution>
               <id>attach-javadocs</id>
@@ -229,11 +234,24 @@
                are internal verification/example artifacts. -->
           <excludeArtifacts>
             <excludeArtifact>foundgine-parent</excludeArtifact>
+            <excludeArtifact>foundgine-aot-generator</excludeArtifact>
             <excludeArtifact>foundgine-redteam</excludeArtifact>
             <excludeArtifact>foundgine-sample-supply-chain</excludeArtifact>
             <excludeArtifact>foundgine-sample-supply-chain-advanced</excludeArtifact>
           </excludeArtifacts>
         </configuration>
+      </plugin>
+
+      <!-- Central requires a -sources.jar and a -javadoc.jar for every published artifact.
+           pluginManagement alone does not execute these plugins, so activate them here. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
 
       <!-- Activate the GPG plugin; pluginManagement alone does not execute it. -->
