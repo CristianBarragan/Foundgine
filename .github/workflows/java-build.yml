@@ -61,13 +61,19 @@ jobs:
       - name: Build and run unit tests
         run: |
           set -euo pipefail
+          CANONICAL="$(mvn -f src/java/pom.xml --batch-mode --no-transfer-progress -q -N help:evaluate -Dexpression=revision -DforceStdout)"
+          if [[ -z "$CANONICAL" || "$CANONICAL" == "null object or invalid expression" ]]; then
+            echo "::error::Unable to read <revision> from src/java/pom.xml."
+            exit 1
+          fi
+          echo "Canonical version: $CANONICAL"
           mvn \
             -f src/java/pom.xml \
             --batch-mode \
             --no-transfer-progress \
             --errors \
             -Dgpg.skip=true \
-            -Drevision="3.3.0-ci.${GITHUB_RUN_NUMBER}" \
+            -Drevision="${CANONICAL}-ci.${GITHUB_RUN_NUMBER}" \
             clean package
 
       - name: Upload Maven build reports
@@ -117,13 +123,19 @@ jobs:
       - name: Run Foundgine Redteam tests
         run: |
           set -euo pipefail
+          CANONICAL="$(mvn -f src/java/pom.xml --batch-mode --no-transfer-progress -q -N help:evaluate -Dexpression=revision -DforceStdout)"
+          if [[ -z "$CANONICAL" || "$CANONICAL" == "null object or invalid expression" ]]; then
+            echo "::error::Unable to read <revision> from src/java/pom.xml."
+            exit 1
+          fi
+          echo "Canonical version: $CANONICAL"
           mvn \
             -f src/java/pom.xml \
             --batch-mode \
             --no-transfer-progress \
             --errors \
             -Dgpg.skip=true \
-            -Drevision="3.3.0-ci.${GITHUB_RUN_NUMBER}" \
+            -Drevision="${CANONICAL}-ci.${GITHUB_RUN_NUMBER}" \
             -pl security/foundgine-redteam \
             -am \
             verify
@@ -186,13 +198,19 @@ jobs:
       - name: Run PostgreSQL integration and E2E tests
         run: |
           set -euo pipefail
+          CANONICAL="$(mvn -f src/java/pom.xml --batch-mode --no-transfer-progress -q -N help:evaluate -Dexpression=revision -DforceStdout)"
+          if [[ -z "$CANONICAL" || "$CANONICAL" == "null object or invalid expression" ]]; then
+            echo "::error::Unable to read <revision> from src/java/pom.xml."
+            exit 1
+          fi
+          echo "Canonical version: $CANONICAL"
           mvn \
             -f src/java/pom.xml \
             --batch-mode \
             --no-transfer-progress \
             --errors \
             -Dgpg.skip=true \
-            -Drevision="3.3.0-ci.${GITHUB_RUN_NUMBER}" \
+            -Drevision="${CANONICAL}-ci.${GITHUB_RUN_NUMBER}" \
             verify
 
       - name: Upload E2E test reports
@@ -242,8 +260,15 @@ jobs:
             exit 1
           fi
 
-          if [[ "$VERSION" != "3.3.0" ]]; then
-            echo "::error::Release tag v$VERSION does not match canonical Foundgine version 3.3.0."
+          CANONICAL="$(mvn -f src/java/pom.xml --batch-mode --no-transfer-progress -q -N help:evaluate -Dexpression=revision -DforceStdout)"
+          if [[ -z "$CANONICAL" || "$CANONICAL" == "null object or invalid expression" ]]; then
+            echo "::error::Unable to read <revision> from src/java/pom.xml."
+            exit 1
+          fi
+          echo "Canonical version: $CANONICAL"
+
+          if [[ "$VERSION" != "$CANONICAL" ]]; then
+            echo "::error::Release tag v$VERSION does not match <revision> $CANONICAL in src/java/pom.xml."
             exit 1
           fi
 

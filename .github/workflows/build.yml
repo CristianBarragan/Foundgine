@@ -28,6 +28,7 @@ jobs:
           fetch-depth: 0
 
       - name: Validate canonical and release versions
+        id: canon
         shell: bash
         run: |
           set -euo pipefail
@@ -47,10 +48,13 @@ jobs:
           PY
           )"
 
-          if [[ "$canonical" != "3.3.0" ]]; then
-            echo "::error::Directory.Build.props must define 3.3.0; found '$canonical'."
+          if [[ ! "$canonical" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::VersionPrefix in Directory.Build.props must be MAJOR.MINOR.PATCH; found '$canonical'."
             exit 1
           fi
+
+          echo "canonical=$canonical" >> "$GITHUB_OUTPUT"
+          echo "Canonical version: $canonical"
 
           if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
             tag_version="${GITHUB_REF_NAME#v}"
@@ -73,13 +77,15 @@ jobs:
 
       - name: Pack NuGet packages
         shell: bash
+        env:
+          CANONICAL_VERSION: ${{ steps.canon.outputs.canonical }}
         run: |
           set -euo pipefail
 
           if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
             version="${GITHUB_REF_NAME#v}"
           else
-            version="3.3.0-ci.${GITHUB_RUN_NUMBER}"
+            version="${CANONICAL_VERSION}-ci.${GITHUB_RUN_NUMBER}"
           fi
 
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-].*)?$ ]]; then
