@@ -1,5 +1,111 @@
 # Changelog
 
+## 3.3.1 — November 11, 2026
+
+### Changed
+
+- Aligned the canonical Foundgine .NET and Java release versions on `3.3.1`
+  (`VersionPrefix` in `Directory.Build.props` and `<revision>` in
+  `src/java/pom.xml`).
+
+### CI
+
+- `build.yml` and `java-build.yml` no longer hardcode the canonical version.
+  `build.yml` reads `VersionPrefix` from `Directory.Build.props` and
+  `java-build.yml` reads `<revision>` from `src/java/pom.xml`. A release tag
+  must equal that value, and non-tag builds are versioned
+  `<canonical>-ci.<run-number>`. This fixes release tags such as `v3.3.1`
+  failing with `Release tag … does not match canonical version 3.3.0`, and
+  means the next release only needs the two version files bumped.
+
+### Java build
+
+- The root `pom.xml` now activates `maven-source-plugin` and
+  `maven-javadoc-plugin` (with `doclint` disabled), so every published module
+  produces the `-sources` and `-javadoc` jars Maven Central requires. They were
+  previously declared in `pluginManagement` only and never executed.
+- `foundgine-aot-generator` is excluded from the Central Portal deployment,
+  matching its documented role as a reactor-only annotation processor.
+
+### Providers
+
+- **Java JPA provider (`storage.orm.jpa`).** Hibernate ORM 7.4.15.Final with H2
+  2.5.252 and a PostgreSQL persistence unit are now test-scoped dependencies,
+  with SQL statement capture, Criteria tuple-query integration tests,
+  `EntityManager` ownership checks and owned/caller-owned transaction coverage.
+  New or extended capabilities, all implemented-unverified until the Java 27
+  H2/PostgreSQL workflow passes:
+  - Scalar translation: typed, per-execution named `ParameterExpression`
+    binding for comparisons and every `IN` member; explicit empty and NULL-only
+    `IN` handling; mapped-type checks; an ordering allowlist (boxed numerics,
+    `BigDecimal`/`BigInteger`, `String`, supported `java.time` types) that
+    rejects enum and UUID ordering.
+  - Relationship predicates: correlated `EXISTS` and `SOME`/`NONE`/`ALL`
+    quantifiers over the authorization-visible child set (ALL is vacuously true
+    when no authorized child exists), bounded by `OrmPredicateValidator`
+    (256 nodes, nesting depth 8, cycle detection).
+  - Authorized relationship aggregates (`COUNT`, `MIN`, `MAX`) as filters, and
+    non-paged one-hop aggregate ordering.
+  - Aggregate cursor groundwork and execution integration: canonical typed
+    cursor values, plan-bound cursor envelope with a SHA-256 fingerprint,
+    private aggregate tuple transport, and `JpaAggregateContinuation`
+    lexicographic continuation predicates.
+  - Opt-in `JpaOrmSnapshotPageSession`: one `EntityManager` and transaction for
+    a whole multi-page read. The caller must acknowledge
+    `REPEATABLE_READ_OR_STRONGER`, because JPA cannot set or inspect
+    isolation portably. H2 and PostgreSQL concurrency tests are defined.
+- **.NET EF Core provider.** `Foundgine.Providers.Orm` and
+  `Foundgine.Providers.EntityFrameworkCore` carry the explicit, versioned
+  `OrmProviderCapabilities` declaration (relationship filters, aggregate
+  filters, aggregate ordering, per-parent pagination as separate features), and
+  `FluentEfModel.Apply` maps fluent Foundgine metadata onto an EF Core model
+  (table, key and column names from the metadata; navigation members ignored).
+  Aggregate cursor pagination stays disabled until translation and runtime
+  tests pass.
+- **Conformance evidence.** The .NET matrix
+  (`src/csharp/conformance/orm/provider-conformance-matrix.json`) and the Java
+  plan (`src/java/ORM-JPA-PARITY-PLAN.md` and
+  `conformance/orm-jpa-parity-plan.json`) record translation, runtime and
+  Native AOT status per capability. Source presence or a configured CI job is
+  not counted as passing evidence.
+
+### Samples
+
+- **.NET Supply Chain starter** (`src/csharp/samples/Foundgine.SupplyChain`)
+  runs on EF Core with `Npgsql.EntityFrameworkCore.PostgreSQL`, referencing
+  `Foundgine.Providers.Orm` and `Foundgine.Providers.EntityFrameworkCore`.
+- **Java Supply Chain starter**
+  (`src/java/samples/foundgine-supply-chain`) now has a JPA + PostgreSQL read
+  path (`SupplyChainJpa`, `SupplyChainSemantics`, `SupplyChainPolicy`) mapping
+  `Supplier`, `Warehouse` and `Product`; `SupplyChainSemanticsTest` exercises
+  the semantic, authorization and planning half against the in-memory ORM
+  source. The Hibernate/PostgreSQL half has not been compiled or run, and the
+  MCP transport and mutation path are not wired in this starter.
+- Java advanced sample gains `AdvancedJpaSemanticsTest`.
+- Starter tutorials and README files updated for the new provider wiring and
+  version.
+  
+### Documentation
+
+- Corrected the ORM provider status table in `docs/wiki/orm-providers.md`:
+  Java relationship filters (`SOME`/`NONE`/`ALL`) and aggregate filters were
+  listed as unsupported or unqualified, but the JPA predicate translation
+  exists and is implemented-unverified. Semantic filter lowering to those
+  predicates is not wired, so the shapes still fail closed end to end. The
+  .NET cells now state that translation and runtime evidence is
+  test-defined, not run, and Java aggregate ordering now lists count, min and
+  max.
+- Fixed a stale bullet in the Java ORM README
+  (`storage/orm/README.md`) that listed relationship quantifiers, aggregate
+  filters and aggregate ordering as not implemented, contradicting its own
+  step sections.
+
+### Release
+
+- Version: `3.3.1`
+- Target framework: `.NET 10` / Java 27
+- License: Apache License, Version 2.0
+
 ## 3.3.0 — November 11, 2026
 
 ### Changed
@@ -20,8 +126,6 @@
 - Version: `3.3.0`
 - Target framework: `.NET 10` / Java 21
 - License: Apache License, Version 2.0
-
-## Unreleased
 
 ## 2.3.1 — November 9, 2026
 
