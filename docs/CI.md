@@ -4,7 +4,7 @@ This page describes the repository checks that protect the .NET 10 and Java 27 i
 
 ## Canonical release version
 
-`Directory.Build.props` is the canonical .NET package version source. The build workflow parses it as XML (rather than using a shell regular expression), requires `3.3.1`, and rejects a Git tag whose version differs. Java's Maven reactor uses `src/java/pom.xml` with the same release version; CI uses a run-scoped `3.3.1-ci.<run-number>` revision for non-release builds.
+`Directory.Build.props` (`VersionPrefix`) is the canonical .NET package version source, currently `3.3.2`. The build workflow parses it as XML (rather than using a shell regular expression), requires `MAJOR.MINOR.PATCH`, and rejects a Git tag whose version differs. Nothing in the workflows hardcodes the release number: Java's Maven reactor reads the same version from `<revision>` in `src/java/pom.xml`, and CI uses a run-scoped `<canonical>-ci.<run-number>` version (for example `3.3.2-ci.<run-number>`) for non-release builds. A release therefore only needs those two version files bumped.
 
 ## .NET build
 
@@ -18,7 +18,7 @@ The Java reactor is `src/java/pom.xml`. CI installs Temurin 27 and runs:
 mvn --file src/java/pom.xml \
   --batch-mode --no-transfer-progress --errors \
   -Dgpg.skip=true \
-  -Drevision=3.3.1-ci.<run-number> \
+  -Drevision=3.3.2-ci.<run-number> \
   clean package
 ```
 
