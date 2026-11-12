@@ -78,3 +78,20 @@ Connection settings come from `SUPPLYCHAIN_JDBC_URL`, `SUPPLYCHAIN_JDBC_USER` an
 This compiles the module (running the AOT annotation processor embedded in the `foundgine-providers` JAR over
 `SupplyChainDomain`) and runs `Main`, which prints the configured `FoundgineOptions` and then lists the
 `tenant-a` US suppliers an `ANALYST` can read through JPA.
+
+## Fluent ORM path (Step 72 — implemented-unverified)
+
+The starter's JPA path now runs on `FoundgineOrm` (`jpa/SupplyChainOrm`): generated metadata, generated entity
+maps (`GeneratedOrmMaps`) and generated direct-access models (`GeneratedJpaModels`) feed one fluent,
+fail-closed configuration with a mandatory authorization binding.
+
+```java
+var orm = SupplyChainOrm.build();
+var rows = orm.reader(emf).read(caller, "Supplier", q -> q.select("Name").whereEq("Country", "US"));
+var repo = orm.repository(em, SupplierEntity.class);   // typed CRUD, generated accessors, no reflection
+var plan = orm.plan(caller, "Supplier", q -> q.select("Name"));   // dry run, no database
+```
+
+`SupplyChainJpa` is now a thin wrapper over this. `SupplyChainSemantics` remains as the hand-written baseline
+that `SupplyChainSemanticsTest` compares against; `SupplyChainOrmTest` covers the fluent path. Nothing here has been
+compiled or run in the environment that wrote it; see `../../ORM-JPA-PARITY-PLAN.md` Step 72 for the CI checklist.

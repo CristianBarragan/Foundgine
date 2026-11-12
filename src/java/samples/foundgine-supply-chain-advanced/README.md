@@ -111,3 +111,14 @@ idempotency key so concurrent replays of the same key serialize instead of racin
   — the reference this sample keeps parity with, including the ambiguity-resolution
   (`find_top_supplier_overdue_orders`) and weighted-alias-evidence features not yet ported to this
   module.
+
+## Fluent ORM path (Step 72 — implemented-unverified)
+
+The advanced JPA read path now runs on `FoundgineOrm` (`jpa/AdvancedJpaOrm`). The semantic metadata still comes
+from the fluent `SupplyChainFoundgineModel` (so the Warehouse -> InventoryLot relationship is declared once, in the
+model's connections); the persistence classes are marked `@FoundgineOrmEntity`, and the annotation processor
+(configured in this module's `pom.xml`) generates `GeneratedOrmMaps` and `GeneratedJpaModels` into
+`com.foundgine.samples.supplychain.advanced.generated`. `AdvancedJpaSemantics` is a facade over the ORM, and
+`AdvancedJpaReads` uses `orm.reader(emf)`; typed repositories come from `orm().repository(em, WarehouseEntity.class)`.
+`AdvancedJpaOrmTest` and the existing `AdvancedJpaSemanticsTest` cover it without a database. Not compiled or run
+where it was written; see `../../ORM-JPA-PARITY-PLAN.md` Step 72.

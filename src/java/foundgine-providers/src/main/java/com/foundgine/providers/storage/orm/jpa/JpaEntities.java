@@ -14,6 +14,7 @@ import jakarta.persistence.EntityManager;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +27,9 @@ import java.util.Objects;
  * different: they only run through the {@link ReadGate}, which must return an authorized provider plan.
  *
  * <p>One instance wraps one {@link EntityManager} and is not thread-safe. Writes join an already active
- * transaction or own one (see {@link JpaOrmMutationSource}). Entities need a no-arg constructor (JPA requires
- * one); attributes are set through their fields, so entities do not need setters. Composite keys are not
- * supported by the by-key operations.
+ * transaction or own one (see {@link JpaOrmMutationSource}). The compatibility constructor uses reflective
+ * access; the generated-model constructor uses direct factories/accessors only. Composite keys are not supported
+ * by the by-key operations.
  *
  * <p>UNVERIFIED: written without a Java compiler or the JPA jars available.
  */
@@ -53,11 +54,37 @@ public final class JpaEntities {
     private final EntityManager em;
     private final OrmRegistry registry;
     private final ReadGate readGate;
+    private final Map<Class<?>, JpaEntityModel<?>> generatedModels;
+    private final boolean requireGeneratedModels;
 
     public JpaEntities(EntityManager em, OrmRegistry registry, ReadGate readGate) {
+        this(em, registry, readGate, List.of(), false);
+    }
+
+    /** Creates a strictly AOT-safe gateway. Every entity must have a generated direct-access model. */
+    public JpaEntities(EntityManager em, OrmRegistry registry, ReadGate readGate,
+            Collection<JpaEntityModel<?>> generatedModels) {
+        this(em, registry, readGate, generatedModels, true);
+    }
+
+    private JpaEntities(EntityManager em, OrmRegistry registry, ReadGate readGate,
+            Collection<JpaEntityModel<?>> models, boolean requireGeneratedModels) {
         this.em = Objects.requireNonNull(em, "em");
         this.registry = Objects.requireNonNull(registry, "registry");
         this.readGate = Objects.requireNonNull(readGate, "readGate");
+        var index = new LinkedHashMap<Class<?>, JpaEntityModel<?>>();
+        for (var model : Objects.requireNonNull(models, "generatedModels")) {
+            if (index.put(model.type(), model) != null)
+                throw new IllegalArgumentException("Duplicate generated JPA model for " + model.type().getName());
+        }
+        this.generatedModels = Map.copyOf(index);
+        this.requireGeneratedModels = requireGeneratedModels;
+        if (requireGeneratedModels) {
+            for (var mapping : registry.all()) {
+                if (!this.generatedModels.containsKey(mapping.type()))
+                    throw new IllegalArgumentException("Missing generated JPA model for " + mapping.type().getName());
+            }
+        }
     }
 
     public List<String> names() {
@@ -134,13 +161,18 @@ public final class JpaEntities {
         public Object create(Map<String, Object> values) {
             Objects.requireNonNull(values, "values");
             Object entity;
-            try {
-                var ctor = mapping.type().getDeclaredConstructor();
-                ctor.setAccessible(true);
-                entity = ctor.newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new IllegalStateException(
-                        mapping.type().getSimpleName() + " needs a no-arg constructor to be created generically.", e);
+            var generated = generatedModels.get(mapping.type());
+            if (generated != null) entity = generated.create();
+            else if (requireGeneratedModels) throw new IllegalStateException("Missing generated JPA model.");
+            else {
+                try {
+                    var ctor = mapping.type().getDeclaredConstructor();
+                    ctor.setAccessible(true);
+                    entity = ctor.newInstance();
+                } catch (ReflectiveOperationException e) {
+                    throw new IllegalStateException(
+                            mapping.type().getSimpleName() + " needs a no-arg constructor to be created generically.", e);
+                }
             }
             for (var kv : values.entrySet()) set(entity, binding(kv.getKey()), kv.getValue());
             try (var tx = new JpaOrmMutationSource(em).begin()) {
@@ -196,6 +228,14 @@ public final class JpaEntities {
         }
 
         private void set(Object entity, OrmFieldBinding binding, Object value) {
+            var generated = generatedModels.get(mapping.type());
+            if (generated != null) {
+                if (!generated.canWrite(binding.name()))
+                    throw new IllegalArgumentException("Attribute '" + binding.name() + "' is not writable in the generated JPA model.");
+                writeGenerated(generated, entity, binding, value);
+                return;
+            }
+            if (requireGeneratedModels) throw new IllegalStateException("Missing generated JPA model.");
             Field field = declaredField(entity.getClass(), binding.name());
             try {
                 field.setAccessible(true);
@@ -203,6 +243,11 @@ public final class JpaEntities {
             } catch (IllegalAccessException e) {
                 throw new IllegalStateException("Cannot set " + binding.name() + ".", e);
             }
+        }
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        private void writeGenerated(JpaEntityModel model, Object entity, OrmFieldBinding binding, Object value) {
+            model.write(entity, binding.name(), OrmValues.coerce(value, binding.type()));
         }
 
         private Field declaredField(Class<?> type, String name) {

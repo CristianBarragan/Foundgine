@@ -40,6 +40,18 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>3.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>7.4.15.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-runtime</artifactId>
       <version>3.3.3</version>

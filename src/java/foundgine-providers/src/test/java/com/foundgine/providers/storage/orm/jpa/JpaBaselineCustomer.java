@@ -20,7 +20,7 @@ public class JpaBaselineCustomer {
     @Column(nullable = false)
     private Boolean enabled;
 
-    protected JpaBaselineCustomer() {}
+    public JpaBaselineCustomer() {}
 
     public JpaBaselineCustomer(Long id, String name, String region) {
         this.id = id;
@@ -33,4 +33,8 @@ public class JpaBaselineCustomer {
     public String getName() { return name; }
     public String getRegion() { return region; }
     public Boolean getEnabled() { return enabled; }
+    public void setId(Long id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setRegion(String region) { this.region = region; }
+    public void setEnabled(Boolean enabled) { this.enabled = enabled; }
 }

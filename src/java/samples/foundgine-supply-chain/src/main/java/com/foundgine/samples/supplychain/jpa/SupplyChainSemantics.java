@@ -25,7 +25,8 @@ import java.util.stream.StreamSupport;
 /**
  * The persistence-neutral half of the read path: generated metadata -> ORM registry -> frozen contract, and
  * semantic read -> authorization (with provenance) -> plan -> ExecutionIR -> provider plan. It has no JPA
- * dependency, so it can be exercised against any {@code IOrmQuerySource}; {@link SupplyChainJpa} adds JPA.
+ * dependency, so it can be exercised against any {@code IOrmQuerySource}. It is the hand-written baseline; the JPA
+ * path is {@link SupplyChainOrm}, wrapped by {@link SupplyChainJpa}.
  *
  * <p>The contract is scoped to the mapped entities: the generated metadata for the full domain cannot be turned
  * into a semantic contract because {@code ProductComponent} has a composite key and no {@code id} field, and
