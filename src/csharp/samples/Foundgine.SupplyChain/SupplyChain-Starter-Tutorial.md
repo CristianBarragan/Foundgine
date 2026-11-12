@@ -86,8 +86,8 @@ dotnet new web -n MySupplyChain
 Add the packages (if you're consuming Foundgine from NuGet):
 
 ```bash
-dotnet add package Foundgine.Runtime --version 3.3.2
-dotnet add package Foundgine.Providers --version 3.3.2
+dotnet add package Foundgine.Runtime --version 3.3.3
+dotnet add package Foundgine.Providers --version 3.3.3
 dotnet add package Npgsql
 dotnet add package ModelContextProtocol.AspNetCore
 ```

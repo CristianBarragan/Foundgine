@@ -227,11 +227,11 @@ Foundgine's architecture is specified independently of this implementation as th
 - [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, AOT, auditing and operations.
 - [Website](https://cristianbarragan.github.io/Foundgine/docs-site/) · [`CHANGELOG.md`](CHANGELOG.md)
 
-## Release 3.3.2
+## Release 3.3.3
 
-**Current release: 3.3.2 · .NET 10 and Java 27**
+**Current release: 3.3.3 · .NET 10 and Java 27**
 
-The .NET and Java implementations ship as aligned, same-numbered releases. 3.3.2 is a patch release on the 3.3.x line. 3.3.1 added the fluent `SemanticQuery` read builder with the same members in C# and Java (held together by shared conformance vectors), the matching EF Core reader overloads and Java plan helper, and fixed EF model creation for metadata without a column catalog; see [`RELEASE-NOTES-3.3.1.md`](RELEASE-NOTES-3.3.1.md). Version 2.3.0 introduced the fluent configuration API (`FoundgineModel`) in both languages as a code-first alternative to attributes and annotations; see [`docs/MAPPING.md`](docs/MAPPING.md). See [`CHANGELOG.md`](CHANGELOG.md) for the full release notes.
+The .NET and Java implementations ship as aligned, same-numbered releases. 3.3.3 is a packaging and release-metadata patch on the 3.3.x line. The `Foundgine.Providers` NuGet package now carries the Foundgine-owned ORM and EF Core provider assemblies together with both source generators as compiler analyzers. EF Core 10 and its relational/DI dependencies are declared as NuGet dependencies; third-party DLLs are not bundled. CI checks the package contents and dependency manifest. This release also aligns the .NET, Maven, MCP, package-installation, documentation-site and AI-reference version labels on 3.3.3, and removes obsolete product-level “Foundgine v2” wording. Features introduced in 3.3.1 remain documented in [`RELEASE-NOTES-3.3.1.md`](RELEASE-NOTES-3.3.1.md). See [`RELEASE-NOTES-3.3.3.md`](RELEASE-NOTES-3.3.3.md) and [`CHANGELOG.md`](CHANGELOG.md) for release details and verification gates.
 
 ## License
 

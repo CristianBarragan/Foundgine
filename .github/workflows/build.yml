@@ -176,7 +176,10 @@ jobs:
           # Required package assets.
           required=(
             "lib/net10.0/Foundgine.Providers.dll"
+            "lib/net10.0/Foundgine.Providers.Orm.dll"
+            "lib/net10.0/Foundgine.Providers.EntityFrameworkCore.dll"
             "analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
+            "analyzers/dotnet/cs/Foundgine.Providers.Orm.Generator.dll"
             "README.md"
             "LICENSE/LICENSE"
           )
@@ -190,10 +193,50 @@ jobs:
             echo "OK: $file"
           done
 
-          # The generator must be packaged as an analyzer,
-          # not as a runtime library.
-          if grep -Eq '^lib/[^/]+/Foundgine\.Providers\.Aot\.Generator\.dll$' <<< "$entries"; then
-            echo "ERROR: AOT generator was incorrectly packaged as a runtime library."
+          # Generators must be packaged as analyzers, not runtime libraries.
+          if grep -Eq '^lib/[^/]+/Foundgine\.Providers\.(Aot|Orm)\.Generator\.dll$' <<< "$entries"; then
+            echo "ERROR: A Foundgine generator was incorrectly packaged as a runtime library."
+            exit 1
+          fi
+
+          # The only runtime DLLs bundled here must be Foundgine-owned components.
+          runtime_dlls="$(grep -E '^lib/net10\.0/[^/]+\.dll$' <<< "$entries" | sed 's#^lib/net10.0/##' | sort)"
+          expected_runtime_dlls="$(printf '%s\n' \
+            'Foundgine.Providers.EntityFrameworkCore.dll' \
+            'Foundgine.Providers.Orm.dll' \
+            'Foundgine.Providers.dll' | sort)"
+          if [[ "$runtime_dlls" != "$expected_runtime_dlls" ]]; then
+            echo "ERROR: Unexpected runtime DLL set in Foundgine.Providers package."
+            echo "Found:"
+            printf '%s\n' "$runtime_dlls"
+            exit 1
+          fi
+
+          # EF Core must be declared as a NuGet dependency, not copied into lib/.
+          nuspec="$(unzip -p "$package" Foundgine.Providers.nuspec)"
+          python3 - "$nuspec" <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+
+          root = ET.fromstring(sys.argv[1])
+          dependencies = {
+              item.attrib.get("id", "")
+              for item in root.iter()
+              if item.tag.rsplit("}", 1)[-1] == "dependency"
+          }
+          required = {
+              "Microsoft.EntityFrameworkCore",
+              "Microsoft.EntityFrameworkCore.Relational",
+              "Microsoft.Extensions.DependencyInjection.Abstractions",
+          }
+          missing = sorted(required - dependencies)
+          if missing:
+              raise SystemExit("Missing NuGet dependencies: " + ", ".join(missing))
+          print("OK: EF Core dependencies declared in nuspec")
+          PY
+
+          if grep -Eq '^lib/[^/]+/(Microsoft\.EntityFrameworkCore|Microsoft\.Extensions\.DependencyInjection)[^/]*\.dll$' <<< "$entries"; then
+            echo "ERROR: Third-party EF Core/DI DLL was bundled instead of declared as a dependency."
             exit 1
           fi
 
@@ -855,17 +898,36 @@ jobs:
 
           providers_package="${providers_packages[0]}"
 
-          required_analyzer="analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
-
           entries="$(unzip -Z1 "$providers_package")"
+          required_assets=(
+            "lib/net10.0/Foundgine.Providers.Orm.dll"
+            "lib/net10.0/Foundgine.Providers.EntityFrameworkCore.dll"
+            "analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
+            "analyzers/dotnet/cs/Foundgine.Providers.Orm.Generator.dll"
+          )
+          for asset in "${required_assets[@]}"; do
+            if ! grep -Fxq "$asset" <<< "$entries"; then
+              echo "ERROR: Required Providers asset is missing: $asset"
+              exit 1
+            fi
+          done
 
-          if ! grep -Fxq "$required_analyzer" <<< "$entries"; then
-            echo "ERROR: AOT generator is missing from the downloaded Providers package."
-            exit 1
-          fi
+          nuspec="$(unzip -p "$providers_package" Foundgine.Providers.nuspec)"
+          python3 - "$nuspec" <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+          root = ET.fromstring(sys.argv[1])
+          dependencies = {item.attrib.get("id", "") for item in root.iter()
+                          if item.tag.rsplit("}", 1)[-1] == "dependency"}
+          required = {"Microsoft.EntityFrameworkCore", "Microsoft.EntityFrameworkCore.Relational"}
+          missing = sorted(required - dependencies)
+          if missing:
+              raise SystemExit("Missing EF Core dependencies: " + ", ".join(missing))
+          PY
 
           echo "OK: all four expected packages validated"
-          echo "OK: AOT analyzer present in Providers package"
+          echo "OK: EF Core/ORM runtime assemblies and both analyzers present"
+          echo "OK: EF Core dependencies declared in Providers nuspec"
           echo "Downloaded NuGet packages validated."
 
       - name: NuGet login (OIDC)

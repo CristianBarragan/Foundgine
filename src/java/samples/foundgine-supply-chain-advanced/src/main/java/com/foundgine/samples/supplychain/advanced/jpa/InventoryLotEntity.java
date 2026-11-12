@@ -1,6 +1,5 @@
 package com.foundgine.samples.supplychain.advanced.jpa;
 
-import com.foundgine.providers.aot.FoundgineOrmEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
  * Warehouse -> InventoryLot relationship is declared once, in the fluent model's connections, and Foundgine
  * (not a JPA association) joins it. Columns follow database/schema.sql.
  */
-@FoundgineOrmEntity
 @Entity
 @Table(name = "inventory_lots")
 public class InventoryLotEntity {
@@ -26,7 +24,7 @@ public class InventoryLotEntity {
     @Column(name = "quarantined") private BigDecimal quarantined;
     @Column(name = "received_on") private LocalDate receivedOn;
 
-    public InventoryLotEntity() {}
+    protected InventoryLotEntity() {}
 
     public InventoryLotEntity(Integer id, Integer warehouseId, Integer productId, BigDecimal onHand,
                               BigDecimal reserved, BigDecimal quarantined, LocalDate receivedOn) {
@@ -41,11 +39,4 @@ public class InventoryLotEntity {
     public BigDecimal getReserved() { return reserved; }
     public BigDecimal getQuarantined() { return quarantined; }
     public LocalDate getReceivedOn() { return receivedOn; }
-    public void setId(Integer id) { this.id = id; }
-    public void setWarehouseId(Integer warehouseId) { this.warehouseId = warehouseId; }
-    public void setProductId(Integer productId) { this.productId = productId; }
-    public void setOnHand(java.math.BigDecimal onHand) { this.onHand = onHand; }
-    public void setReserved(java.math.BigDecimal reserved) { this.reserved = reserved; }
-    public void setQuarantined(java.math.BigDecimal quarantined) { this.quarantined = quarantined; }
-    public void setReceivedOn(java.time.LocalDate receivedOn) { this.receivedOn = receivedOn; }
 }

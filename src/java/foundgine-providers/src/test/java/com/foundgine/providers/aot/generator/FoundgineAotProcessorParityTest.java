@@ -23,7 +23,6 @@ class FoundgineAotProcessorParityTest {
                 package fixture;
                 import com.foundgine.providers.aot.*;
                 @FoundgineEntity(name="Customer")
-                @FoundgineOrmEntity
                 @FoundgineAlias(value="Client", weight=95)
                 public class Fixture {
                     @FoundgineField(id=11, isPrimaryKey=true)
@@ -31,14 +30,9 @@ class FoundgineAotProcessorParityTest {
                     @FoundgineSemanticDimension("tenant")
                     String tenantId;
                     String name;
-                    public int getId() { return id; }
-                    public void setId(int id) { this.id = id; }
-                    public String getName() { return name; }
-                    public void setName(String name) { this.name = name; }
                     @FoundgineRelationship(target=Account.class, foreignKey="customerId", principalKey="id", id=77, name="Accounts")
                     Account accounts;
                     @FoundgineEntity(name="Account")
-                    @FoundgineOrmEntity
                     public static class Account {
                         @FoundgineField(id=88, isPrimaryKey=true)
                         int id;
@@ -94,21 +88,5 @@ class FoundgineAotProcessorParityTest {
         assertTrue(text.contains("\"tenant\""));
         assertTrue(text.contains("new RelationshipId(77L)"));
         assertFalse(text.contains("FoundgineMetadataGenerator"));
-        Path jpaModels = generated.resolve(Path.of("fixture", "generated", "GeneratedJpaModels.java"));
-        assertTrue(Files.exists(jpaModels), "Generated direct-access JPA model source was not created");
-        String jpaText = Files.readString(jpaModels);
-        assertTrue(jpaText.contains("java.util.Set.of(") && jpaText.contains("\"id\")"),
-                "generated model must carry its attribute set and identifier attribute");
-        Path ormMaps = generated.resolve(Path.of("fixture", "generated", "GeneratedOrmMaps.java"));
-        assertTrue(Files.exists(ormMaps), "Generated ORM entity map source was not created");
-        String mapsText = Files.readString(ormMaps);
-        assertTrue(mapsText.contains("Map.entry(\"Customer\", fixture.Fixture.class)"),
-                "an @FoundgineEntity name backs the ORM entity when @FoundgineOrmEntity names none");
-        assertTrue(jpaText.contains("new JpaEntityModel<>(fixture.Fixture.class"));
-        assertTrue(jpaText.contains("new JpaEntityModel<>(fixture.Fixture.Account.class"));
-        assertFalse(jpaText.contains("java.lang.reflect"));
-        assertFalse(jpaText.contains("setAccessible"));
-        assertTrue(jpaText.contains("e.getId()"));
-        assertTrue(jpaText.contains("e.setId((int) v)"));
     }
 }

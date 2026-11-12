@@ -7,7 +7,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
     <PackageId>Foundgine.Runtime</PackageId>
-    <Description>Foundgine.Runtime is the application-facing execution layer for Foundgine v2. It coordinates intent handling, semantic resolution, authorization and plan approval, provider dispatch, mutation execution, dependency-injection composition, task routing, resource/security controls, and the agent/tool governance control plane. It depends on Foundgine.Core but does not itself provide a database provider, GraphQL server, MCP transport, or LLM client. Consumers are expected to register the runtime with dependency injection and provide an appropriate semantic model and provider implementation.</Description>
+    <Description>Foundgine.Runtime is the application-facing execution layer for Foundgine 3.x. It coordinates intent handling, semantic resolution, authorization and plan approval, provider dispatch, mutation execution, dependency-injection composition, task routing, resource/security controls, and the agent/tool governance control plane. It depends on Foundgine.Core but does not itself provide a database provider, GraphQL server, MCP transport, or LLM client. Consumers are expected to register the runtime with dependency injection and provide an appropriate semantic model and provider implementation.</Description>
     <PackageTags>semantic-execution;authorization;execution-plan;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Runtime</RootNamespace>

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`Foundgine.Core` is the foundation of Foundgine v2. It contains the provider-independent contracts and semantic structures that describe **what an application or agent wants to do**, without coupling that intent to a database, GraphQL server, MCP transport, LLM, or specific execution provider.
+`Foundgine.Core` is the foundation of Foundgine 3.x. It contains the provider-independent contracts and semantic structures that describe **what an application or agent wants to do**, without coupling that intent to a database, GraphQL server, MCP transport, LLM, or specific execution provider.
 
 ## What this package provides
 
@@ -32,9 +32,9 @@ You are responsible for creating/composing the semantic model and supplying the 
 ## Install
 
 ```bash
-dotnet add package Foundgine.Core --version 3.3.2
+dotnet add package Foundgine.Core --version 3.3.3
 ```
 
-## Relationship to other v2 packages
+## Relationship to other Foundgine packages
 
 `Foundgine.Core` is the base layer. `Foundgine.Runtime` builds the application execution boundary on top of it; `Foundgine.Extensions` provides optional integrations; `Foundgine.Providers` supplies concrete providers and integrations.
