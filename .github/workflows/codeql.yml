@@ -100,7 +100,7 @@ jobs:
           set -euo pipefail
           java -version
           mvn --version
-          mvn --file src/java/pom.xml --batch-mode --no-transfer-progress --errors -Drevision="3.3.0-codeql.${GITHUB_RUN_NUMBER}" -Dgpg.skip=true -DskipTests clean package
+          mvn --file src/java/pom.xml --batch-mode --no-transfer-progress --errors -Drevision="3.3.2-codeql.${GITHUB_RUN_NUMBER}" -Dgpg.skip=true -DskipTests clean package
 
       - if: matrix.build-mode == 'manual' && matrix.language != 'java-kotlin'
         shell: bash

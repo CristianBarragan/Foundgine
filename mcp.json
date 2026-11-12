@@ -2,7 +2,7 @@
   "schemaVersion": "1.0",
   "name": "Foundgine",
   "description": "Foundgine semantic execution layer and MCP adapter for exposing authorized, provider-neutral application capabilities to AI agents.",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "protocol": {
     "name": "Model Context Protocol",
     "transport": "Streamable HTTP",

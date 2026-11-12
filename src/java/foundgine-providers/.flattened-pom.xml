@@ -57,6 +57,7 @@
       <artifactId>jakarta.persistence-api</artifactId>
       <version>3.2.0</version>
       <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
   </dependencies>
   <build>

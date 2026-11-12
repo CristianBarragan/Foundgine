@@ -1,5 +1,80 @@
 # Changelog
 
+## 3.3.2 — November 12, 2026
+
+### Changed
+
+- Aligned the canonical Foundgine .NET and Java release versions on `3.3.2`
+  (`VersionPrefix` in `Directory.Build.props` and `<revision>` in
+  `src/java/pom.xml`), including the regenerated Maven `.flattened-pom.xml`
+  files, package READMEs, tutorials, `mcp.json` and `.well-known/mcp.json`,
+  `llms*.txt`, `llms-full.md`, `ai.seo.md`, the documentation pages under
+  `docs/` and the documentation site.
+- `.well-known/mcp.json`, the CodeQL workflow's build revision and the
+  agent-benchmark pages' footers were still labelled `3.3.0`; they now say
+  `3.3.2`. The benchmark measurements themselves are unchanged and were taken
+  on earlier builds.
+- `docs/CI.md` no longer says the build requires a specific hardcoded version;
+  it now describes the actual behaviour (the tag must equal `VersionPrefix`).
+
+### Java AOT generator
+
+Reference for the Java compile-time metadata generator as it ships in this
+release, written from the source in `src/java`. It describes the current
+behaviour rather than a diff against 3.3.1.
+
+- **What it is.** `FoundgineAotProcessor`
+  (`com.foundgine.providers.aot.generator`) is a standard
+  `javax.annotation.processing` annotation processor. It is triggered by
+  `@FoundgineEntity`, inspects the application's annotated types during
+  compilation and emits plain Java source, so the generated metadata path needs
+  no runtime reflection. It is not GraalVM native-image configuration, and a
+  successful generator run is not proof of Native Image compatibility.
+- **Generated contract.** One class, `GeneratedFoundgineMetadata.build()`,
+  returning a `MetadataRegistry` with entities, fields and columns (stable
+  identities), entity and field aliases with weights, semantic dimensions,
+  indexed flags, primary-key metadata, event/temporal metadata, and
+  relationships with stable relationship identities.
+- **Options.** `-Afoundgine.generated.package` (default
+  `com.foundgine.generated`) and `-Afoundgine.generated.name` (default
+  `GeneratedFoundgineMetadata`).
+- **Declarations.** The annotations live in `foundgine-providers` under
+  `com.foundgine.providers.aot`: `FoundgineEntity`, `FoundgineField`,
+  `FoundgineRelationship`, `FoundgineAlias`/`FoundgineAliases`,
+  `FoundgineSemanticDimension`, `FoundgineEvent`, `FoundgineAuthorization`,
+  `FoundgineConnection`/`FoundgineConnectionMap(s)`,
+  `FoundgineConversionAttribute` and `FoundgineModel`/`FoundgineModelEntityMap(s)`.
+- **Determinism.** Entities are processed in order of semantic name, then
+  qualified class name, never in source declaration order. Identities come from
+  `GeneratorSemanticIdentity`, which hashes canonical keys in separate
+  namespaces (`entity`, `field`, `relationship`, `table`, `column`, `model`,
+  `connection`, `authorization`), so the same declarations always generate the
+  same ids.
+- **Primary keys.** A field with `@FoundgineField(isPrimaryKey = true)` wins;
+  otherwise a field named `id` (case-insensitive) is the implicit key; an
+  entity with neither has a `null` primary key, which is valid. More than one
+  primary-key field is a compile error, because the Java `EntityMetadata`
+  carries a single primary-key `ColumnReference`.
+- **Validation at compile time.** A relationship must have a resolvable target
+  type, and its `principalKey` (on the declaring entity) and `foreignKey` (on
+  the target) must resolve to fields. For an `@FoundgineEvent` entity a
+  non-blank `occurredAtField` must name an existing field; a blank value yields
+  `null` temporal metadata and no `OccurredAt` field is assumed. Failures are
+  reported as compiler errors prefixed `Foundgine AOT generation failed:`.
+- **Packaging.** The processor is registered through
+  `META-INF/services/javax.annotation.processing.Processor` in
+  `foundgine-aot-generator`, which is a reactor-only module excluded from the
+  Central Portal deployment. The samples put `foundgine-providers` on
+  `annotationProcessorPaths`, which also carries the processor class. Both
+  modules compile with `<proc>none</proc>` so the processor never runs on
+  itself.
+- **Tests.** `FoundgineAotProcessorParityTest` runs the processor over a fixture
+  and asserts the generated source is deterministic and reflection-free.
+- **Known gap.** `FoundgineAotProcessor.java` and its parity test exist as two
+  byte-identical copies (in `foundgine-aot-generator` and in
+  `foundgine-providers`). Fix one without the other and they will diverge;
+  consolidating them into one module is open.
+
 ## 3.3.1 — November 11, 2026
 
 ### Changed
