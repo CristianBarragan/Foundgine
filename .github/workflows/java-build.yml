@@ -237,7 +237,8 @@ jobs:
       - java-security-penetration
       - java-postgres-e2e
 
-    if: startsWith(github.ref, 'refs/tags/v')
+    #if: startsWith(github.ref, 'refs/tags/v')
+    if: false
     timeout-minutes: 45
 
     permissions:
