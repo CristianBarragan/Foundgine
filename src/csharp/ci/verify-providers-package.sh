@@ -32,7 +32,7 @@ for a in Foundgine.Providers.Aot.Generator.dll Foundgine.Providers.Orm.Generator
 done
 
 # EF Core is restored from NuGet, never bundled.
-for d in Microsoft.EntityFrameworkCore Microsoft.EntityFrameworkCore.Relational; do
+for d in Microsoft.EntityFrameworkCore Microsoft.EntityFrameworkCore.Relational Microsoft.Extensions.DependencyInjection.Abstractions; do
   grep -q "id=\"$d\"" "$work"/*.nuspec || { echo "MISSING nuspec dependency: $d"; fail=1; }
   if find "$work/lib" -name "$d.dll" | grep -q .; then echo "UNEXPECTED bundled third-party DLL: $d.dll"; fail=1; fi
 done
