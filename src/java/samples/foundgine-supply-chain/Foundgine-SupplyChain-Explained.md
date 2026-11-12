@@ -132,18 +132,21 @@ the starter keeps two parallel shapes: the `record` is the semantic domain type 
 `@FoundgineEntity` reads at compile time, and `jpa/*Entity` is the persistence class. The link
 between them is **naming**, with one wrinkle: the generated semantic field is `RiskScore`, the JPA
 attribute is `riskScore`, and `@Column(name = "risk_score")` ties that to the table.
-`SupplyChainSemantics` hands the ORM registry an explicit map for the case difference and then
-checks every bound attribute exists on its JPA class, because the provider itself does not: a
-misnamed attribute would otherwise only surface on the first query. The C# starter avoids the
-duplication by deriving its EF Core model from the fluent configuration; the Java starter currently
-declares both by hand.
+`SupplyChainOrm` configures `FoundgineOrm` with the generated entity map and JPA models (the
+annotation processor produces them from `@FoundgineOrmEntity`) and a camel-case attribute naming rule
+for the case difference. `FoundgineOrm` then checks every bound attribute against the generated model
+when it is built, because the provider itself does not: a misnamed attribute would otherwise only
+surface on the first query. The C# starter derives its EF Core model from the fluent configuration;
+the Java starter still keeps the record and the entity as two parallel shapes, but the entity map,
+attribute access and JPA models are no longer written by hand.
 
 ## 8. The read path, step by step
 
-`SupplyChainSemantics.planRead` builds a `SemanticOperation`, authorizes it with a policy built
-from the caller (`SupplyChainPolicy`), plans it, and lowers the plan to provider-neutral
-`ExecutionIR`, which the ORM compiler turns into a provider plan. `SupplyChainJpa` then runs that
-plan through a Criteria query on an `EntityManager`. Foundgine owns everything up to the plan; JPA
+`FoundgineOrm`'s reader (reached through `SupplyChainJpa.read`) builds a `SemanticOperation`,
+authorizes it with a policy built from the caller (`SupplyChainPolicy`), plans it, and lowers the plan
+to provider-neutral `ExecutionIR`, which the ORM compiler turns into a provider plan. It then runs that
+plan through a Criteria query on an `EntityManager`. `SupplyChainSemantics` is the hand-written
+baseline of the same steps, kept so its test can compare against it. Foundgine owns everything up to the plan; JPA
 only executes it, and filter values are bound parameters throughout.
 
 ## 8b. Why tenant isolation is a predicate, not a filter
