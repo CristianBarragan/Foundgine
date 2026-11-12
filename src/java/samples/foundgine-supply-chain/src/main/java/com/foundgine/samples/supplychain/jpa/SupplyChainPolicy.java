@@ -35,34 +35,11 @@ public final class SupplyChainPolicy {
 
     public static ConfiguredSemanticAuthorizationPolicy create(
             SupplyChainSemantics semantics, Authorization.Context caller) {
-        return create(
-                semantics.entity("Supplier").entityId(),
-                semantics.entity("Warehouse").entityId(),
-                semantics.entity("Product").entityId(),
-                semantics.field("Supplier", "riskScore"),
-                caller);
-    }
+        var supplier = semantics.entity("Supplier").entityId();
+        var warehouse = semantics.entity("Warehouse").entityId();
+        var product = semantics.entity("Product").entityId();
+        var riskScore = semantics.field("Supplier", "riskScore");
 
-    /** Metadata-addressed form used by {@link SupplyChainOrm} (the {@code FoundgineOrm} authorization binding). */
-    public static ConfiguredSemanticAuthorizationPolicy create(
-            com.foundgine.core.semantic.metadata.MetadataRegistry metadata, Authorization.Context caller) {
-        var supplier = find(metadata, "Supplier");
-        var riskScore = supplier.effectiveFields().stream().filter(f -> f.name().equalsIgnoreCase("riskScore"))
-                .findFirst().orElseThrow(() -> new IllegalStateException("Supplier.riskScore is not in the metadata.")).id();
-        return create(supplier.entityId(), find(metadata, "Warehouse").entityId(),
-                find(metadata, "Product").entityId(), riskScore, caller);
-    }
-
-    private static com.foundgine.core.semantic.metadata.EntityMetadata find(
-            com.foundgine.core.semantic.metadata.MetadataRegistry metadata, String name) {
-        for (var e : metadata.entities()) if (e.name().equals(name)) return e;
-        throw new IllegalStateException("Entity '" + name + "' is not in the metadata.");
-    }
-
-    private static ConfiguredSemanticAuthorizationPolicy create(
-            com.foundgine.core.abstractions.EntityId supplier, com.foundgine.core.abstractions.EntityId warehouse,
-            com.foundgine.core.abstractions.EntityId product, com.foundgine.core.abstractions.FieldId riskScore,
-            Authorization.Context caller) {
         var config = new SemanticAuthorizationConfiguration()
                 .addEntityRule((ctx, entity, op) -> {
                     if (op != AuthorizationOperation.READ) return false;

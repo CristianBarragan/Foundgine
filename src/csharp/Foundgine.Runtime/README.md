@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`Foundgine.Runtime` is the application-facing execution boundary of Foundgine v2. It turns resolved semantic intent into controlled execution while keeping authorization, planning, approvals, routing, and execution policy outside individual providers.
+`Foundgine.Runtime` is the application-facing execution boundary of Foundgine 3.x. It turns resolved semantic intent into controlled execution while keeping authorization, planning, approvals, routing, and execution policy outside individual providers.
 
 ## Small application-facing surface
 
@@ -54,7 +54,7 @@ The application must compose a semantic model, authorization/security policy and
 ## Install
 
 ```bash
-dotnet add package Foundgine.Runtime --version 3.3.2
+dotnet add package Foundgine.Runtime --version 3.3.3
 ```
 
 ## Typical relationship

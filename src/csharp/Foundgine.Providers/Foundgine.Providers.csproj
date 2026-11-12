@@ -4,7 +4,7 @@
     <Authors>Foundgine</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageId>Foundgine.Providers</PackageId>
-    <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine v2, including storage providers and adapters, AI/model and MCP tooling integrations, EventStore, gateway integrations, Elasticsearch and vector-store support, and the Entity Framework Core execution provider. The package includes Foundgine-owned ORM and EF Core assemblies plus the AOT and ORM source generators as build-time analyzers. EF Core and other third-party libraries are restored as NuGet dependencies and are not bundled as DLLs. Secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers supply the semantic model and runtime configuration required by Foundgine.</Description>
+    <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine 3.x, including storage providers and adapters, AI/model and MCP tooling integrations, EventStore, gateway integrations, Elasticsearch and vector-store support, and the Entity Framework Core execution provider. The package includes Foundgine-owned ORM and EF Core assemblies plus the AOT and ORM source generators as build-time analyzers. EF Core and other third-party libraries are restored as NuGet dependencies and are not bundled as DLLs. Secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers supply the semantic model and runtime configuration required by Foundgine.</Description>
     <PackageTags>providers;storage;orm;entity-framework-core;aot;ai;mcp;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Providers</RootNamespace>
@@ -85,7 +85,7 @@
     <!-- EF Core is a consumer-restored dependency, never a DLL bundled in this package. -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
-
+    
     <PackageReference Include="Microsoft.Extensions.AI"
                       Version="10.9.0" />
 

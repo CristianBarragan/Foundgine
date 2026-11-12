@@ -1,13 +1,11 @@
 package com.foundgine.samples.supplychain.jpa;
 
-import com.foundgine.providers.aot.FoundgineOrmEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /** JPA entity behind the semantic {@code Warehouse}. Attribute names equal the semantic field names. */
-@FoundgineOrmEntity
 @Entity
 @Table(name = "warehouses")
 public class WarehouseEntity {
@@ -16,7 +14,7 @@ public class WarehouseEntity {
     @Column(name = "warehouse_name") private String name;
     @Column(name = "tenant_id") private String tenantId;
 
-    public WarehouseEntity() {}
+    protected WarehouseEntity() {}
 
     public WarehouseEntity(Integer id, Integer businessUnitId, String name, String tenantId) {
         this.id = id; this.businessUnitId = businessUnitId; this.name = name; this.tenantId = tenantId;

@@ -31,8 +31,8 @@ mvn -U -pl samples/foundgine-supply-chain -am verify -Dgpg.skip=true
 ```
 
 Do not run the sample's build in isolation against Maven Central before building
-the reactor: the AOT annotation processor is packaged inside `foundgine-providers`
-(there is no separate generator artifact) and is not a runtime dependency.
+the reactor: the AOT generator is deliberately not a separately published
+runtime dependency.
 
 `-Dgpg.skip=true` is useful for local verification when signing keys are not
 configured. Omit it in a release workflow that has the required signing

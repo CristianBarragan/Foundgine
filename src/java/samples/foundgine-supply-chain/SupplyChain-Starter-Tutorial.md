@@ -43,7 +43,7 @@ part of this starter yet.
 
 > **Status.** The Foundgine half (metadata → authorization → plan → `ExecutionIR` → ORM plan →
 > execution) is covered by `SupplyChainSemanticsTest` and was run against the in-memory ORM source
-> on JDK 21. The Hibernate/PostgreSQL half (`SupplyChainOrm`, `SupplyChainJpa`, `persistence.xml`, the SQL files) has
+> on JDK 21. The Hibernate/PostgreSQL half (`SupplyChainJpa`, `persistence.xml`, the SQL files) has
 > **not** been compiled or run: no JPA 3.2 jars or network were available when it was written.
 
 ---
@@ -577,8 +577,7 @@ import java.util.stream.StreamSupport;
 /**
  * The persistence-neutral half of the read path: generated metadata -> ORM registry -> frozen contract, and
  * semantic read -> authorization (with provenance) -> plan -> ExecutionIR -> provider plan. It has no JPA
- * dependency, so it can be exercised against any {@code IOrmQuerySource}. It is the hand-written baseline; the JPA
- * path is {@link SupplyChainOrm}, wrapped by {@link SupplyChainJpa}.
+ * dependency, so it can be exercised against any {@code IOrmQuerySource}; {@link SupplyChainJpa} adds JPA.
  *
  * <p>The contract is scoped to the mapped entities: the generated metadata for the full domain cannot be turned
  * into a semantic contract because {@code ProductComponent} has a composite key and no {@code id} field, and
@@ -712,70 +711,18 @@ public final class SupplyChainSemantics {
 - `authorizeWithEvidence` stamps the plan with authorization provenance, and the ORM compiler
   refuses a plan that lacks it.
 
-### 7c. JPA execution on `FoundgineOrm`
+### 7c. JPA execution
 
-The JPA path runs on `FoundgineOrm`, the Java counterpart of the .NET EF Core provider. Two classes
-carry it. `jpa/SupplyChainOrm.java` is the fluent configuration: it loads the generated metadata,
-entity map and JPA models, and plugs in the authorization policy and execution context.
-`jpa/SupplyChainJpa.java` is a thin wrapper that opens the `EntityManagerFactory` and exposes
-`read`, `entities`, `openEntityManager` and the `orm()` accessor. Filter values are bound parameters
-in the generated query, and the generated models mean no reflective entity access.
+`jpa/SupplyChainJpa.java` adds only JPA: it opens the `EntityManagerFactory` and runs the plan
+through the JPA Criteria adapter with the caller's execution context. Filter values are bound
+parameters in the generated query.
 
 ```java
 package com.foundgine.samples.supplychain.jpa;
 
-import com.foundgine.core.execution.ExecutionContext;
-import com.foundgine.core.semantic.authorization.ISemanticAuthorizationPolicy;
-import com.foundgine.core.semantic.metadata.MetadataRegistry;
-import com.foundgine.providers.storage.orm.jpa.FoundgineOrm;
-import com.foundgine.samples.supplychain.Authorization;
-import com.foundgine.samples.supplychain.generated.GeneratedFoundgineMetadata;
-import com.foundgine.samples.supplychain.generated.GeneratedJpaModels;
-import com.foundgine.samples.supplychain.generated.GeneratedOrmMaps;
-
-/**
- * The fluent {@link FoundgineOrm} configuration for the starter. It replaces the hand-written entity map,
- * attribute map and contract setup in {@link SupplyChainSemantics} with generated maps and models.
- *
- * <p>UNVERIFIED: not compiled or run where it was written (no Foundgine/Jakarta jars available).
- */
-public final class SupplyChainOrm {
-    static final FoundgineOrm.Authorization<Authorization.Context> AUTHORIZATION =
-            new FoundgineOrm.Authorization<>() {
-                @Override
-                public ISemanticAuthorizationPolicy policy(Authorization.Context caller, MetadataRegistry metadata) {
-                    return SupplyChainPolicy.create(metadata, caller);
-                }
-
-                @Override
-                public ExecutionContext executionContext(Authorization.Context caller) {
-                    return SupplyChainPolicy.executionContext(caller);
-                }
-            };
-
-    private SupplyChainOrm() {}
-
-    /** Builder pre-loaded with the generated metadata, entity map and models; callers may add to it. */
-    public static FoundgineOrm.Builder<Authorization.Context> configure() {
-        return FoundgineOrm.<Authorization.Context>configure()
-                .metadata(GeneratedFoundgineMetadata.build())
-                .entities(GeneratedOrmMaps.entityTypes())
-                .generatedModels(GeneratedJpaModels.create())
-                .attributeNaming(FoundgineOrm.AttributeNaming.CAMEL_CASE);
-    }
-
-    public static FoundgineOrm<Authorization.Context> build() {
-        return configure().authorization(AUTHORIZATION).build();
-    }
-}
-```
-
-```java
-package com.foundgine.samples.supplychain.jpa;
-
+import com.foundgine.core.execution.CancellationToken;
 import com.foundgine.core.execution.ExecutionRow;
-import com.foundgine.providers.storage.orm.jpa.FoundgineOrm;
-import com.foundgine.providers.storage.orm.jpa.JpaEntities;
+import com.foundgine.providers.storage.orm.jpa.JpaOrmProvider;
 import com.foundgine.samples.supplychain.Authorization;
 
 import jakarta.persistence.EntityManager;
@@ -786,23 +733,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * JPA + PostgreSQL execution for the starter, on the fluent {@link FoundgineOrm} configuration
- * ({@link SupplyChainOrm}). Foundgine, not JPA, owns planning and authorization: every read is
- * authorize -> plan -> ExecutionIR -> JPA Criteria, and the generated models mean no reflective entity access.
+ * JPA + PostgreSQL execution for the starter. {@link SupplyChainSemantics} does the Foundgine half (authorize,
+ * plan, lower to a provider plan); this class only opens JPA and runs the plan through the JPA Criteria adapter
+ * on Hibernate. Foundgine, not JPA, owns planning and authorization.
  *
- * <p>UNVERIFIED: not compiled or run against Hibernate/PostgreSQL (no jars or network where it was written).
+ * <p>UNVERIFIED: the Foundgine half is exercised against the in-memory ORM source, but this class itself has
+ * not been compiled or run against Hibernate/PostgreSQL (no JPA 3.2 jars or network where it was written).
  */
 public final class SupplyChainJpa implements AutoCloseable {
     private final EntityManagerFactory emf;
-    private final FoundgineOrm<Authorization.Context> orm = SupplyChainOrm.build();
+    private final SupplyChainSemantics semantics = new SupplyChainSemantics(JpaOrmProvider.PROVIDER);
 
     public SupplyChainJpa() {
         this.emf = Persistence.createEntityManagerFactory("foundgine-supply-chain", connectionProperties());
-    }
-
-    /** The configured ORM: reader, typed repositories, generic entity gateway, dry-run planning. */
-    public FoundgineOrm<Authorization.Context> orm() {
-        return orm;
     }
 
     /**
@@ -811,20 +754,12 @@ public final class SupplyChainJpa implements AutoCloseable {
      */
     public List<ExecutionRow> read(
             Authorization.Context caller, String entity, List<String> fields, String filterField, Object value) {
-        return orm.reader(emf).read(caller, entity, fields, filterField, value);
-    }
-
-    /**
-     * Generic, name-addressed access to every mapped entity for {@code caller}. Reads go through the same
-     * authorization as {@link #read}; writes are mechanical, so authorize the capability before calling them.
-     * The caller owns {@code em} and closes it.
-     */
-    public JpaEntities entities(Authorization.Context caller, EntityManager em) {
-        return orm.entities(caller, em);
-    }
-
-    public EntityManager openEntityManager() {
-        return emf.createEntityManager();
+        var providerPlan = semantics.planRead(caller, entity, fields, filterField, value);
+        try (EntityManager em = emf.createEntityManager()) {
+            return JpaOrmProvider.execution(semantics.registry(), em)
+                    .execute(providerPlan, SupplyChainPolicy.executionContext(caller), CancellationToken.NONE)
+                    .rows();
+        }
     }
 
     private static Map<String, Object> connectionProperties() {
@@ -846,9 +781,6 @@ public final class SupplyChainJpa implements AutoCloseable {
 }
 ```
 
-`SupplyChainSemantics` (section 7b) stays as the hand-written, persistence-neutral baseline that
-`SupplyChainSemanticsTest` compares against. The JPA path itself does not use it.
-
 ### 7d. The test
 
 `src/test/.../SupplyChainSemanticsTest.java` runs `SupplyChainSemantics` and the policy against
@@ -869,8 +801,8 @@ mvn -pl samples/foundgine-supply-chain -am test -Dtest=SupplyChainSemanticsTest 
 
 ## 8. Wire it together in `Main`
 
-`Main` prints the runtime options, reads the US suppliers visible to an `ANALYST` in
-`tenant-a`, then shows the typed repository from the same `FoundgineOrm` configuration. If PostgreSQL is not reachable it prints a "skipped" line instead of failing:
+`Main` prints the runtime options, then reads the US suppliers visible to an `ANALYST` in
+`tenant-a`. If PostgreSQL is not reachable it prints a "skipped" line instead of failing:
 
 ```java
 package com.foundgine.samples.supplychain;
@@ -894,12 +826,6 @@ public final class Main {
             var suppliers = jpa.read(caller, "Supplier", List.of("id", "name", "country", "riskScore"), "country", "US");
             System.out.println("tenant-a US suppliers via JPA: " + suppliers.size());
             suppliers.forEach(r -> System.out.println("  " + r.values()));
-
-            // Typed repository from the same FoundgineOrm configuration (mechanical CRUD, generated accessors).
-            try (var em = jpa.openEntityManager()) {
-                var repo = jpa.orm().repository(em, com.foundgine.samples.supplychain.jpa.SupplierEntity.class);
-                System.out.println("suppliers in table (repository.count, unauthorized by design): " + repo.count());
-            }
         } catch (RuntimeException e) {
             System.out.println("JPA demo skipped (is PostgreSQL running on SUPPLYCHAIN_JDBC_URL?): " + e);
         }

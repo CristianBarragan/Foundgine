@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-sample-supply-chain-advanced</artifactId>
-  <version>3.3.2</version>
+  <version>3.3.3</version>
   <description>Java implementation of Foundgine, aligned with the current C# source packages.</description>
   <url>https://github.com/CristianBarragan/Foundgine/samples/foundgine-sample-supply-chain-advanced</url>
   <licenses>
@@ -30,19 +30,19 @@
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-core</artifactId>
-      <version>3.3.2</version>
+      <version>3.3.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-runtime</artifactId>
-      <version>3.3.2</version>
+      <version>3.3.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-providers</artifactId>
-      <version>3.3.2</version>
+      <version>3.3.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

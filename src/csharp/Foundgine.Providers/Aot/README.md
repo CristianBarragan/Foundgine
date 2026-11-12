@@ -1,6 +1,6 @@
 # Foundgine.Providers.Aot
 
-`Foundgine.Providers.Aot` is the application-facing declaration and runtime-support code for Foundgine's AOT metadata pipeline. It lives inside `Foundgine.Providers` — the former standalone `Foundgine.Experimental` package was deleted in v2 and this content merged in directly.
+`Foundgine.Providers.Aot` is the application-facing declaration and runtime-support code for Foundgine's AOT metadata pipeline. It lives inside `Foundgine.Providers`; the former standalone `Foundgine.Experimental` package was retired during an earlier package consolidation, and this content now ships as part of the unified provider package.
 
 ## What is in this folder
 

@@ -57,26 +57,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <compilerArgs>
-            <!-- GeneratedOrmMaps / GeneratedJpaModels for the @FoundgineOrmEntity classes (the metadata itself
-                 comes from the fluent SupplyChainFoundgineModel, so no GeneratedFoundgineMetadata is produced). -->
-            <arg>-Afoundgine.generated.package=com.foundgine.samples.supplychain.advanced.generated</arg>
-          </compilerArgs>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>io.github.cristianbarragan</groupId>
-              <artifactId>foundgine-providers</artifactId>
-              <version>${revision}</version>
-            </path>
-          </annotationProcessorPaths>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

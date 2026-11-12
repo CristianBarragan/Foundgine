@@ -1,5 +1,6 @@
 package com.foundgine.samples.supplychain.advanced.jpa;
 
+import com.foundgine.core.execution.CancellationToken;
 import com.foundgine.core.execution.ExecutionRow;
 import com.foundgine.providers.storage.orm.jpa.JpaOrmProvider;
 import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
@@ -29,17 +30,12 @@ public final class AdvancedJpaReads implements AutoCloseable {
     public List<ExecutionRow> warehouseInventory(
             Authorization.Context caller, List<String> warehouseFields, List<String> lotFields,
             String filterField, Object value) {
-        return semantics.orm().reader(emf).read(caller, "Warehouse",
-                semantics.warehouseInventory(warehouseFields, lotFields, filterField, value));
-    }
-
-    /** The configured ORM: reader, typed repositories (e.g. {@code orm().repository(em, WarehouseEntity.class)}). */
-    public com.foundgine.providers.storage.orm.jpa.FoundgineOrm<Authorization.Context> orm() {
-        return semantics.orm();
-    }
-
-    public EntityManager openEntityManager() {
-        return emf.createEntityManager();
+        var plan = semantics.planWarehouseInventory(caller, warehouseFields, lotFields, filterField, value);
+        try (EntityManager em = emf.createEntityManager()) {
+            return JpaOrmProvider.execution(semantics.registry(), em)
+                    .execute(plan, AdvancedJpaPolicy.executionContext(caller), CancellationToken.NONE)
+                    .rows();
+        }
     }
 
     private static Map<String, Object> connectionProperties() {

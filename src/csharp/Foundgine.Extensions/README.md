@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`Foundgine.Extensions` contains optional framework integrations around the Foundgine semantic execution boundary. The current v2 package primarily provides the Hot Chocolate GraphQL integration.
+`Foundgine.Extensions` contains optional framework integrations around the Foundgine semantic execution boundary. The current package provides the Hot Chocolate GraphQL integration, with optional Temporal durable-workflow and Keycloak identity integrations.
 
 ## What this package provides
 
@@ -29,7 +29,7 @@ The consuming application must configure Hot Chocolate, register `Foundgine.Runt
 ## Install
 
 ```bash
-dotnet add package Foundgine.Extensions --version 3.3.2
+dotnet add package Foundgine.Extensions --version 3.3.3
 ```
 
 ## Typical use
