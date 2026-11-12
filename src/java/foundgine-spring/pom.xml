@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.github.cristianbarragan</groupId>
+    <artifactId>foundgine-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>foundgine-spring</artifactId>
+  <name>Foundgine Spring</name>
+  <description>Optional Spring Boot auto-configuration for FoundgineOrm. UNVERIFIED.</description>
+
+  <properties>
+    <!-- UNVERIFIED pin: confirm against the Spring Boot line your Java 27 build targets. -->
+    <spring-boot.version>4.0.0</spring-boot.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.github.cristianbarragan</groupId>
+      <artifactId>foundgine-providers</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <version>${spring-boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>${jakarta-persistence.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

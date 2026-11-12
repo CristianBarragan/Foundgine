@@ -35,10 +35,11 @@
       <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
-      <!-- Only needed when using the JPA ORM provider (storage.orm.jpa). -->
+      <!-- The JPA ORM provider (storage.orm.jpa) is part of this artifact, like the EF Core provider is part of
+           Foundgine.Providers, so the API jar is a normal transitive dependency. The JPA implementation
+           (Hibernate, EclipseLink, ...) is deliberately NOT bundled: the application chooses it. -->
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>

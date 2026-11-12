@@ -1,5 +1,6 @@
 package com.foundgine.samples.supplychain.jpa;
 
+import com.foundgine.providers.aot.FoundgineOrmEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -8,6 +9,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 
 /** JPA entity behind the semantic {@code Supplier}. Attribute names equal the semantic field names. */
+@FoundgineOrmEntity
 @Entity
 @Table(name = "suppliers")
 public class SupplierEntity {
@@ -17,7 +19,7 @@ public class SupplierEntity {
     @Column(name = "risk_score") private BigDecimal riskScore;
     @Column(name = "tenant_id") private String tenantId;
 
-    protected SupplierEntity() {}
+    public SupplierEntity() {}
 
     public SupplierEntity(Integer id, String name, String country, BigDecimal riskScore, String tenantId) {
         this.id = id; this.name = name; this.country = country; this.riskScore = riskScore; this.tenantId = tenantId;

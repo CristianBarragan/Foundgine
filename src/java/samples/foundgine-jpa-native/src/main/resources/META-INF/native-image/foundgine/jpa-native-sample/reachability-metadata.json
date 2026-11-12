@@ -1,0 +1,14 @@
+{
+  "reflection": [
+    {"type": "org.h2.Driver", "allDeclaredConstructors": true},
+    {"type": "org.hibernate.jpa.HibernatePersistenceProvider", "allDeclaredConstructors": true},
+    {"type": "org.hibernate.dialect.H2Dialect", "allDeclaredConstructors": true},
+    {"type": "com.foundgine.samples.supplychain.jpa.SupplierEntity", "allDeclaredConstructors": true, "allDeclaredFields": true, "allDeclaredMethods": true},
+    {"type": "com.foundgine.samples.supplychain.jpa.WarehouseEntity", "allDeclaredConstructors": true, "allDeclaredFields": true, "allDeclaredMethods": true},
+    {"type": "com.foundgine.samples.supplychain.jpa.ProductEntity", "allDeclaredConstructors": true, "allDeclaredFields": true, "allDeclaredMethods": true}
+  ],
+  "resources": [
+    {"glob": "META-INF/persistence.xml"},
+    {"glob": "META-INF/services/**"}
+  ]
+}

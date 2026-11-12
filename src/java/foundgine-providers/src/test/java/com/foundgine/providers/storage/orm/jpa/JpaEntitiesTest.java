@@ -140,4 +140,26 @@ class JpaEntitiesTest {
             assertThrows(SecurityException.class, () -> customers.read(Map.of("region", "north"), null));
         }
     }
+    @Test
+    void strictGeneratedModelPathPerformsCrudWithoutReflectionFallback() {
+        var model = new JpaEntityModel<>(JpaBaselineCustomer.class, JpaBaselineCustomer::new,
+                Map.of(
+                        "id", e -> e.getId(), "name", e -> e.getName(),
+                        "region", e -> e.getRegion(), "enabled", e -> e.getEnabled()),
+                Map.of(
+                        "id", (e, v) -> e.setId((Long) v),
+                        "name", (e, v) -> e.setName((String) v),
+                        "region", (e, v) -> e.setRegion((String) v),
+                        "enabled", (e, v) -> e.setEnabled((Boolean) v)));
+        try (EntityManager em = factory.createEntityManager()) {
+            var customers = new JpaEntities(em, registry(), denyAll(), List.of(model)).entity("JpaBaselineCustomer");
+            var created = (JpaBaselineCustomer) customers.create(
+                    Map.of("id", 21, "name", "AOT", "region", "west", "enabled", true));
+            assertEquals(21L, created.getId());
+            assertEquals(1, customers.update(21, Map.of("region", "east")));
+            em.clear();
+            assertEquals("east", ((JpaBaselineCustomer) customers.get(21)).getRegion());
+        }
+    }
+
 }
