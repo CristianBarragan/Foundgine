@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.github.cristianbarragan</groupId>
+    <artifactId>foundgine-parent</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>foundgine-langchain4j</artifactId>
+  <name>Foundgine LangChain4j</name>
+  <description>Optional LangChain4j tool adapter for the Foundgine MCP tools. Compiled and tested outside Maven; not in the root reactor, like foundgine-spring. Version pin unverified against Maven Central.</description>
+  <properties>
+    <!-- UNVERIFIED pin: confirm against the LangChain4j release you use. -->
+    <langchain4j.version>1.0.0</langchain4j.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>io.github.cristianbarragan</groupId>
+      <artifactId>foundgine-providers</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>dev.langchain4j</groupId>
+      <artifactId>langchain4j-core</artifactId>
+      <version>${langchain4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>dev.langchain4j</groupId>
+      <artifactId>langchain4j</artifactId>
+      <version>${langchain4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

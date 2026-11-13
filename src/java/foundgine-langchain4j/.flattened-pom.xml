@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.github.cristianbarragan</groupId>
+  <artifactId>foundgine-langchain4j</artifactId>
+  <version>3.3.3</version>
+  <name>Foundgine LangChain4j</name>
+  <description>Optional LangChain4j tool adapter for the Foundgine MCP tools. Compiled and tested outside Maven; not in the root reactor, like foundgine-spring. Version pin unverified against Maven Central.</description>
+  <url>https://github.com/CristianBarragan/Foundgine/foundgine-langchain4j</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Foundgine</name>
+      <organization>Foundgine</organization>
+      <organizationUrl>https://github.com/CristianBarragan/Foundgine</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/CristianBarragan/Foundgine.git/foundgine-langchain4j</connection>
+    <developerConnection>scm:git:ssh://git@github.com/CristianBarragan/Foundgine.git/foundgine-langchain4j</developerConnection>
+    <url>https://github.com/CristianBarragan/Foundgine/foundgine-langchain4j</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>io.github.cristianbarragan</groupId>
+      <artifactId>foundgine-providers</artifactId>
+      <version>3.3.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>dev.langchain4j</groupId>
+      <artifactId>langchain4j-core</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>dev.langchain4j</groupId>
+      <artifactId>langchain4j</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.8.0</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
