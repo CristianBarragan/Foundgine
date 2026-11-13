@@ -24,11 +24,17 @@ public static class FoundgineMcpServiceCollectionExtensions
     /// Obsolete delegate form of <paramref name="securityContextProvider"/>, retained for
     /// existing hosts.
     /// </param>
+    /// <param name="approvalTokenSigner"></param>
+    /// <param name="approvalTokenKeys"></param>
+    /// <param name="approvalTokenPolicy"></param>
     public static IServiceCollection AddFoundgineMcp(
         this IServiceCollection services,
         Func<ExecutionContext>? contextFactory = null,
         ISecurityExecutionContextProvider? securityContextProvider = null,
-        Func<SecurityExecutionContext?>? securityContextFactory = null)
+        Func<SecurityExecutionContext?>? securityContextFactory = null,
+        IFoundgineMcpApprovalTokenSigner? approvalTokenSigner = null,
+        IFoundgineMcpApprovalTokenKeyResolver? approvalTokenKeys = null,
+        FoundgineMcpApprovalTokenPolicy? approvalTokenPolicy = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -39,7 +45,13 @@ public static class FoundgineMcpServiceCollectionExtensions
 
         services.AddSingleton<JsonReadIntentAdapter>();
         services.AddSingleton<FoundgineMcpTools>();
-        services.AddSingleton<FoundgineMcpMutationTools>();
+        services.AddSingleton<FoundgineMcpMutationTools>(sp => new FoundgineMcpMutationTools(
+            sp.GetService<Foundgine.Runtime.IFoundgineMutations>(),
+            securityContextFactory,
+            sp.GetService<ISecurityExecutionContextProvider>(),
+            approvalTokenSigner,
+            approvalTokenKeys,
+            approvalTokenPolicy));
 
         if (contextFactory is not null)
             services.AddSingleton(contextFactory);

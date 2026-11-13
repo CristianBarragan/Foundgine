@@ -4,6 +4,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="../../../conformance/mcp-approval-token-golden.json" Link="Conformance/mcp-approval-token-golden.json" LogicalName="Foundgine.MCP.Tests.mcp-approval-token-golden.json" />
     <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageReference Include="xunit" Version="2.9.3" />

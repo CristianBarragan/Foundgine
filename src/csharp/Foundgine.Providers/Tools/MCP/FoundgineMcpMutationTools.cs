@@ -15,6 +15,9 @@ public sealed class FoundgineMcpMutationTools
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly IFoundgineMutations? _mutations;
     private readonly ISecurityExecutionContextProvider _securityContextProvider;
+    private readonly IFoundgineMcpApprovalTokenSigner? _approvalTokenSigner;
+    private readonly IFoundgineMcpApprovalTokenKeyResolver? _approvalTokenKeys;
+    private readonly FoundgineMcpApprovalTokenPolicy? _approvalTokenPolicy;
 
     /// <param name="mutations">The Foundgine mutation execution engine.</param>
     /// <param name="securityContextFactory">
@@ -27,10 +30,16 @@ public sealed class FoundgineMcpMutationTools
     /// over <paramref name="securityContextFactory"/> for new hosts; both may not be supplied
     /// together.
     /// </param>
+    /// <param name="approvalTokenSigner"></param>
+    /// <param name="approvalTokenKeys"></param>
+    /// <param name="approvalTokenPolicy"></param>
     public FoundgineMcpMutationTools(
         IFoundgineMutations? mutations = null,
         Func<SecurityExecutionContext?>? securityContextFactory = null,
-        ISecurityExecutionContextProvider? securityContextProvider = null)
+        ISecurityExecutionContextProvider? securityContextProvider = null,
+        IFoundgineMcpApprovalTokenSigner? approvalTokenSigner = null,
+        IFoundgineMcpApprovalTokenKeyResolver? approvalTokenKeys = null,
+        FoundgineMcpApprovalTokenPolicy? approvalTokenPolicy = null)
     {
         _mutations = mutations;
 
@@ -43,6 +52,11 @@ public sealed class FoundgineMcpMutationTools
                                    ?? (securityContextFactory is not null
                                        ? new DelegateSecurityExecutionContextProvider(securityContextFactory)
                                        : new DelegateSecurityExecutionContextProvider(() => null));
+        if ((approvalTokenSigner is null) != (approvalTokenKeys is null))
+            throw new ArgumentException("Both approval-token signer and key resolver must be supplied together.");
+        _approvalTokenSigner = approvalTokenSigner;
+        _approvalTokenKeys = approvalTokenKeys;
+        _approvalTokenPolicy = approvalTokenPolicy;
     }
 
     [McpServerTool(Name = "foundgine_mutation_dry_run")]
@@ -66,20 +80,33 @@ public sealed class FoundgineMcpMutationTools
         var security = request.Security ??
                        throw new UnauthorizedAccessException(
                            "MCP mutation approval requires a host-supplied SecurityExecutionContext.");
-        return JsonSerializer.Serialize(mutations.Approve(request, security.Subject), JsonOptions);
+        var signer = _approvalTokenSigner ?? throw new InvalidOperationException(
+            "MCP approval-token signing is not configured; unsigned approvals are disabled.");
+        var approval = mutations.Approve(request, security.Subject);
+        return FoundgineMcpApprovalToken.Encode(approval.ApprovalId, approval.PlanFingerprint,
+            approval.ApprovedBy, approval.ApprovedAt, mutationJson, signer);
     }
 
     [McpServerTool(Name = "foundgine_mutation_execute_approved")]
     [Description(
-        "Execute only an approved Foundgine mutation after re-authorization and exact plan fingerprint verification. Pass the approval JSON returned by foundgine_mutation_approve.")]
+        "Execute only an approved Foundgine mutation after signature verification, re-authorization and exact plan fingerprint verification. Pass the signed approval token returned by foundgine_mutation_approve.")]
     public async Task<string> ExecuteApprovedAsync(string approvalJson, CancellationToken cancellationToken = default)
     {
-        var approval = JsonSerializer.Deserialize<MutationPlanApproval>(approvalJson, JsonOptions)
-                       ?? throw new ArgumentException("Approval JSON is invalid.", nameof(approvalJson));
+        var keys = _approvalTokenKeys ?? throw new InvalidOperationException(
+            "MCP approval-token verification is not configured; unsigned approvals are disabled.");
+        var claims = FoundgineMcpApprovalToken.DecodeAndVerify(approvalJson, keys);
+        var request = MutationJsonAdapter.Parse(claims.RequestJson);
         var security = _securityContextProvider.RequireSecurityExecutionContext(
             "MCP", "mutation execution");
-        approval = approval with { Request = approval.Request with { Security = security } };
-        var result = await RequireMutations().ExecuteApprovedAsync(approval, cancellationToken: cancellationToken);
+        var mutations = RequireMutations();
+        cancellationToken.ThrowIfCancellationRequested();
+        (_approvalTokenPolicy ?? throw new InvalidOperationException(
+            "MCP approval-token expiry and replay policy is not configured; execution is disabled."))
+            .ValidateAndConsume(claims);
+        var approval = new MutationPlanApproval(request with { Security = security }, claims.ApprovalId,
+            claims.PlanFingerprint, claims.ApprovedBy,
+            DateTimeOffset.FromUnixTimeMilliseconds(claims.ApprovedAtUnixMilliseconds));
+        var result = await mutations.ExecuteApprovedAsync(approval, cancellationToken: cancellationToken);
         return JsonSerializer.Serialize(result, JsonOptions);
     }
 

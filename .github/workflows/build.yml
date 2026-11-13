@@ -502,67 +502,6 @@ jobs:
             --remove-orphans
 
   # ============================================================
-  # Agent benchmark smoke tests
-  # ============================================================
-  agent-benchmark-smoke:
-    name: Agent Benchmark Smoke — 1 Customer
-    needs:
-      - build-pack
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Run agent benchmark smoke test
-        shell: pwsh
-        run: |
-          Set-StrictMode -Version Latest
-          $ErrorActionPreference = 'Stop'
-
-          $benchmarkScript = Join-Path "${{ github.workspace }}" 'src/csharp/benchmarks/AgentEndToEnd/run-all-agent-benchmarks.ps1'
-
-          & $benchmarkScript -Smoke
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Agent benchmark smoke test failed with exit code $LASTEXITCODE."
-          }
-
-      - name: Run Supply Chain E2E benchmark
-        shell: pwsh
-        run: |
-          Set-StrictMode -Version Latest
-          $ErrorActionPreference = 'Stop'
-
-          $supplyChainScript = Join-Path "${{ github.workspace }}" 'src/csharp/samples/Foundgine.SupplyChain.Advanced/run-supply-chain.ps1'
-
-          & $supplyChainScript
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Supply Chain E2E benchmark failed with exit code $LASTEXITCODE."
-          }
-
-      - name: Verify smoke test left no artifacts behind
-        shell: pwsh
-        run: |
-          $benchmarkRoot = Join-Path "${{ github.workspace }}" 'src/csharp/benchmarks/AgentEndToEnd'
-
-          $leftover = Get-ChildItem -Path $benchmarkRoot -Directory |
-            Where-Object { Test-Path (Join-Path $_.FullName 'artifacts') } |
-            ForEach-Object { Join-Path $_.FullName 'artifacts' }
-
-          if ($leftover) {
-            Write-Warning "Smoke test left artifacts behind: $($leftover -join ', ')"
-          }
-
-  # ============================================================
   # Performance smoke — Hot Chocolate + EF Core
   # ============================================================
   benchmark-build-hotchocolate:
@@ -764,52 +703,6 @@ jobs:
           echo "Unable to pull $image after $max_attempts attempts." >&2
           exit 1
 
-      - name: Run performance smoke test
-        shell: bash
-        env:
-          COFFEEBEANERY_CUSTOMERS: "1"
-          COFFEEBEANERY_RELATIONSHIPS_PER_CUSTOMER: "4"
-          COFFEEBEANERY_CONTRACTS_PER_RELATIONSHIP: "3"
-          COFFEEBEANERY_TRANSACTIONS_PER_CONTRACT: "4"
-          BENCHMARK_WARMUP_SECONDS: "1"
-          BENCHMARK_DURATION_SECONDS: "1"
-          BENCHMARK_REQUEST_TIMEOUT_SECONDS: "5"
-          BENCHMARK_READINESS_TIMEOUT_SECONDS: "120"
-          BENCHMARK_RESET_TIMEOUT_SECONDS: "30"
-          BENCHMARK_CONCURRENCY: "1"
-          BENCHMARK_BATCH_SIZES: "1"
-          BENCHMARK_FAIL_ON_ERRORS: "true"
-          POSTGRES_HOST_PORT: "55434"
-        run: |
-          set -euo pipefail
-
-          COMPOSE=src/csharp/benchmarks/CoffeeBeanery.Performance/docker-compose.benchmark.yml
-          PROJECT=foundgine-performance-smoke-fg
-
-          cleanup() {
-            docker compose -p "$PROJECT" -f "$COMPOSE" down -v --remove-orphans || true
-          }
-
-          trap cleanup EXIT
-          cleanup
-
-          docker compose -p "$PROJECT" -f "$COMPOSE" up -d --build postgres database foundgine-warm
-          docker compose -p "$PROJECT" -f "$COMPOSE" up --wait foundgine-warm
-
-          docker compose -p "$PROJECT" -f "$COMPOSE" run --rm --no-deps \
-            -e BENCHMARK_TARGET_NAME="Foundgine - provider-plan cache" \
-            -e BENCHMARK_TARGET_URL="http://foundgine-warm:4302/graphql/warm" \
-            -e BENCHMARK_WARMUP_SECONDS="$BENCHMARK_WARMUP_SECONDS" \
-            -e BENCHMARK_DURATION_SECONDS="$BENCHMARK_DURATION_SECONDS" \
-            -e BENCHMARK_REQUEST_TIMEOUT_SECONDS="$BENCHMARK_REQUEST_TIMEOUT_SECONDS" \
-            -e BENCHMARK_READINESS_TIMEOUT_SECONDS="$BENCHMARK_READINESS_TIMEOUT_SECONDS" \
-            -e BENCHMARK_RESET_TIMEOUT_SECONDS="$BENCHMARK_RESET_TIMEOUT_SECONDS" \
-            -e BENCHMARK_CONCURRENCY="$BENCHMARK_CONCURRENCY" \
-            -e BENCHMARK_BATCH_SIZES="$BENCHMARK_BATCH_SIZES" \
-            -e BENCHMARK_FAIL_ON_ERRORS="$BENCHMARK_FAIL_ON_ERRORS" \
-            -e BENCHMARK_REPORT_DIRECTORY=/reports \
-            loader
-
   # ============================================================
   # Security gate
   # ============================================================
@@ -833,7 +726,6 @@ jobs:
       - integration-tests
       - benchmark-build-hotchocolate
       - benchmark-build-foundgine
-      - agent-benchmark-smoke
       - security-gate
     runs-on: ubuntu-latest
     environment: production

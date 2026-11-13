@@ -16,11 +16,19 @@ public sealed class McpSecurityIntegrationTests
     {
         var context = CreateSecurityContext("host-subject");
         var mutations = new RecordingMutations();
-        var tools = new FoundgineMcpMutationTools(mutations, () => context);
+        var key = System.Security.Cryptography.RSA.Create(2048);
+        var signer = new FoundgineMcpRsaApprovalTokenSigner("mcp-test-key", key);
+        var resolver = new TestApprovalKeyResolver(key);
+        var tools = new FoundgineMcpMutationTools(mutations, () => context,
+            approvalTokenSigner: signer, approvalTokenKeys: resolver);
 
         var json = "{\"operations\":[{\"entity\":1,\"kind\":\"Create\",\"fields\":{}}]}";
-        _ = tools.Approve(json, "attacker-controlled-name");
+        var token = tools.Approve(json, "attacker-controlled-name");
 
+        Assert.StartsWith("fgmcp1.", token);
+        var claims = FoundgineMcpApprovalToken.DecodeAndVerify(token, resolver);
+        Assert.Equal(json, claims.RequestJson);
+        Assert.Equal("host-subject", claims.ApprovedBy);
         Assert.Equal("host-subject", mutations.LastApprovedBy);
         Assert.Equal("host-subject", mutations.LastRequest?.Security?.Subject);
     }
@@ -44,6 +52,13 @@ public sealed class McpSecurityIntegrationTests
             "mcp",
             "tenant-1",
             null);
+
+    private sealed class TestApprovalKeyResolver(System.Security.Cryptography.RSA key)
+        : IFoundgineMcpApprovalTokenKeyResolver
+    {
+        public System.Security.Cryptography.RSA? Resolve(string keyId) =>
+            keyId == "mcp-test-key" ? key : null;
+    }
 
     private sealed class RecordingMutations : IFoundgineMutations
     {
