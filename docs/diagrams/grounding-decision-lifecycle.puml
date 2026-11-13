@@ -1,0 +1,25 @@
+@startuml grounding-decision-lifecycle
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam ArrowColor #55506A
+skinparam activity {
+  FontSize 15
+  FontColor #17132B
+  BorderThickness 1.5
+  BackgroundColor #FFFFFF
+  BorderColor #55506A
+}
+skinparam titleFontSize 20
+skinparam titleFontColor #17132B
+
+title Where grounding fits in the canonical lifecycle
+
+start
+:Lexical retrieval;
+:Candidate meanings\n(graph-constrained paths);
+#F3EFFF:Grounding decision\n← this stage;
+:Authorization;
+:Planning / execution;
+stop
+@enduml

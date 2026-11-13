@@ -1,0 +1,28 @@
+@startuml lexical-grounding-example-candidates
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam ArrowColor #55506A
+skinparam activity {
+  FontSize 15
+  FontColor #17132B
+  BorderThickness 1.5
+  BackgroundColor #FFF5E8
+  BorderColor #55506A
+}
+skinparam titleFontSize 18
+skinparam titleFontColor #17132B
+skinparam noteBackgroundColor #F8F7FC
+skinparam noteBorderColor #AAA6BA
+
+title Foundgine — Ranked lexical candidates\nfor "bought nike shoes" (Elasticsearch BM25/fuzzy, advisory only)
+
+start
+:**bought** → Orders;
+note right: relationship candidate, score 0.98
+:**nike** → CatalogProduct.Name = "Nike";
+note right: value candidate, score 0.99
+:**shoes** → Category.Name = "Shoes";
+note right: value candidate, score 0.97
+stop
+@enduml

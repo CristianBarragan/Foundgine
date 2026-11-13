@@ -1,0 +1,43 @@
+@startuml
+' Weighted alias evidence is request-scoped and only active during lexical grounding.
+title Weighted Alias Evidence — Scoped Lexical Grounding
+
+start
+:Frozen semantic contract;
+if (Lexical grounding active?) then (yes)
+  :Use only aliases actually matched
+by the current grounding path;
+  if (Model already known with certainty?) then (yes)
+    :Model evidence = KnownWithCertainty\n(distinct provenance, not a 1-100 weight);
+  else (no)
+    :Model evidence = Unknown\nNo model-level weight is invented;
+  endif
+
+  fork
+    :Entity alias match;
+    :Evaluate entity weight only;
+  fork again
+    :Field alias match;
+    :Evaluate field weight only;
+  fork again
+    :Relationship alias match;
+    :Evaluate relationship weight only;
+  end fork
+
+  :Never average field/relationship
+weights into entity/table weight;
+  if (Every grounded scope >= minimum?) then (yes)
+    :Evidence is conclusive;
+  else (no)
+    :Evidence is inconclusive;
+    :Do not narrow solely from weight;
+  endif
+else (no)
+  :Weight feature is inert;
+  :No lexical evidence to gate;
+endif
+
+:Authorization remains a separate boundary;
+:Alias weight never grants capability;
+stop
+@enduml
