@@ -1,8 +1,0 @@
-@startuml
-start
-:Entity access;
-:Field access;
-:Relationship access;
-:Conditional predicate;
-stop
-@enduml

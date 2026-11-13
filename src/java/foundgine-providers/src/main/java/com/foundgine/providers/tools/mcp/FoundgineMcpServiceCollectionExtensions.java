@@ -89,6 +89,25 @@ public final class FoundgineMcpServiceCollectionExtensions {
         return services;
     }
 
+    /**
+     * Registers the session manager and its HTTP gate as singletons. Sessions never replace request authentication; see
+     * {@link FoundgineMcpSessionManager}. Pass {@code null} options or store for the defaults (in-memory store: single
+     * instance only).
+     */
+    public static FoundgineServiceRegistry addFoundgineMcpSessions(
+            FoundgineServiceRegistry services,
+            FoundgineMcpSessionManager.Options options,
+            FoundgineMcpSessionManager.Store store) {
+        Objects.requireNonNull(services, "services");
+        var manager = new FoundgineMcpSessionManager(
+                options != null ? options : FoundgineMcpSessionManager.Options.defaults(),
+                store != null ? store : new FoundgineMcpSessionManager.InMemoryStore(),
+                System::currentTimeMillis);
+        services.addSingletonInstance(FoundgineMcpSessionManager.class, manager);
+        services.addSingletonInstance(FoundgineMcpSessionGate.class, new FoundgineMcpSessionGate(manager));
+        return services;
+    }
+
     /** {@link FoundgineServiceRegistry#addSingleton} calls its supplier on every lookup, so singletons memoize themselves. */
     private static <T> Supplier<T> memo(Supplier<T> factory) {
         return new Supplier<>() {

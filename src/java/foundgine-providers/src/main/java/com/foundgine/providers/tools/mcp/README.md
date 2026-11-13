@@ -121,3 +121,87 @@ remains independently enforced by the mutation engine.
 The shared golden-vector fixture contains a private key explicitly marked `privateKeyPem_TEST_ONLY`.
 It exists solely to prove deterministic RSA PKCS#1 v1.5/SHA-256 signing parity in tests. Never use
 that key in a deployed application.
+
+## Approval-token key rotation
+
+`FoundgineMcpApprovalKeyRing` is both the `Signer` and the `KeyResolver`; it matches the C# `FoundgineMcpApprovalKeyRing`.
+It signs with one active key and keeps older public keys verifiable so outstanding approvals survive a rotation.
+
+```java
+var policy = FoundgineMcpApprovalTokenPolicy.defaults(replayStore);
+var ring = FoundgineMcpApprovalKeyRing.forPolicy(policy);   // minimum retention = max age + skew
+ring.activateSigningKey("2026-11", currentPrivate, currentPublic);
+ring.activateSigningKey("2026-12", nextPrivate, nextPublic, policy.minimumKeyRetention());
+addFoundgineMcp(services, ctx, provider, null, ring, ring, policy);
+```
+
+- Key ids are never reused, even after expiry or `revoke`; `revoke` is immediate (compromise response).
+- Verify-only instances use `addVerificationKey` and `retireAfter` (which can only shorten a deadline).
+- `encode` signs through `Signer.snapshot()`, so a rotation cannot split key id from signature.
+- RSA keys must be at least 2048 bits. The wire format and the golden vector are unchanged.
+
+## MCP session lifecycle
+
+`FoundgineMcpSessionManager` (C#: same name) issues opaque `Mcp-Session-Id` values (256 random bits, base64url), slides an
+idle timeout, enforces an absolute lifetime and a session cap, validates, and terminates on request. The store keeps only
+a digest of the id (`Store`; `InMemoryStore` is for single-instance hosts, clusters need a shared store).
+
+**A session is not authentication.** Authenticate every request first; a valid session never yields a security context,
+approval or warrant. Bind it to the authenticated subject with `create(owner)` and pass the same owner to
+`validate`/`terminate`. Answer every non-`VALID` status with the same HTTP 404. Call `purgeExpired()` periodically.
+The Spring controller uses the gate when `foundgine.mcp.sessions-enabled=true`.
+
+## MCP SSE replay (spec `mcp-sse-replay-v1`)
+
+`FoundgineMcpSseBuffer` (C#: same name) is a bounded per-session event log. Event ids are the decimal sequence (from 1, never
+reused). `replayAfter(Last-Event-ID)` returns the retained events after that id; a missing id yields none, an unparseable or
+future id is `INVALID`, and an id older than the retained window is `EVICTED` (events were lost: the client must
+resynchronise, never silently skipped). Only space and tab are trimmed from the header. `format` writes one `id:` line and one
+`data:` line per payload line, so embedded newlines cannot inject fields. `FoundgineMcpSseRegistry` holds one buffer per
+session (LRU-bounded, `remove` on termination). `FoundgineMcpSessionGate.admitGet` admits the GET (400 missing, 404 otherwise);
+only then may the transport touch a buffer. In-process only.
+
+**Live stream.** `FoundgineMcpSseBuffer.subscribe` hands out one wake-up slot per session (a second GET is refused: BUSY).
+`FoundgineMcpSseStream` (Java) drives a connection through a `Sink` and an `Executor`: it keeps a cursor and, on every nudge,
+writes `replayAfter(cursor)`, so replay and live events are one path (ordered, exactly once, no gap). A client that falls so far
+behind that unsent events are evicted is closed, not skipped; a write failure closes the stream; `heartbeat()` writes a
+`: keep-alive` comment. `FoundgineMcpSsePublisher.publish(sessionId, message)` is how host code sends a notification, server
+request or response: it must be a single JSON-RPC 2.0 object (batches refused), is re-serialised to one line, and is dropped
+(empty result) for a session with no buffer. The Spring controller creates the buffer when the session is issued and removes it,
+closing the live stream, on DELETE.
+
+**Lifecycle.** A buffer is *retired* (`retire()`) whenever it leaves the registry: evicted as least recently used, `remove`d on
+DELETE, or dropped by `registry.sweep(isLive)`. Retiring tells the holder of the live-stream slot (`onRetire`, outside the
+lock), frees the slot for good (a later `subscribe` returns null; the stream layer reports `GONE`) and leaves the retained events
+readable. `FoundgineMcpSessionManager.isLive` is the non-sliding, owner-agnostic liveness check used by the sweep (never use it to
+admit a request); the session store is keyed by digest, so only this check can tell which buffers belong to expired sessions.
+
+**Limits and audit.** `FoundgineMcpSseLimits` caps open streams in total and per principal (sessions without an owner share one
+bucket); a permit is released on every close and on every refused open. A stream older than `maxLifetimeMillis` is closed at its
+next heartbeat (the client reconnects with `Last-Event-ID`; an open stream does not extend the session's idle deadline). The
+stream emits `SSE_OPENED` (`resume=true|false`), `SSE_REJECTED` (`status=BUSY|EVICTED|INVALID|LIMIT|GONE`) and `SSE_CLOSED`
+(`reason=client_closed|write_failed|evicted|session_ended|lifetime|shutdown`, only the first close is recorded) with the session
+fingerprint and principal, never the session id, a payload or a `Last-Event-ID`.
+
+Spring statuses for GET: 400 invalid `Last-Event-ID`, 404 the session ended meanwhile, 409 a stream is already open, 410 the id
+was evicted (resynchronise), 429 a stream limit is reached, 405 SSE not enabled. Properties: `foundgine.mcp.sse-enabled=true`;
+`sse-heartbeat-seconds` (25); `sse-max-stream-seconds` (3600, 0 = no limit); `sse-sweep-seconds` (60: purges expired sessions
+and drops their buffers); `sse-max-open-streams` (5000); `sse-max-streams-per-principal` (10). A `FoundgineMcpAuditSink` bean
+receives the events. The controller's `SseOptions` record carries the same settings.
+C#: the buffer, registry, manager and gate have the same behaviour (`Subscribe(onAppend, onRetire)`, `Retire`, `Sweep`, `IsLive`,
+`SseOpened/SseRejected/SseClosed` audit types), and `FoundgineMcpSseStream` / `FoundgineMcpSseLimits` mirror the Java classes
+(`Open(buffer, lastEventId, sink, executor, options)` with an `IFoundgineMcpSseSink` and an `Action<Action>` executor).
+`FoundgineMcpSsePublisher.Publish` returns null for a session with no buffer. ASP.NET: `services.AddFoundgineMcpSessions();
+services.AddFoundgineMcpSse(options)` registers the registry, publisher, `FoundgineMcpSseEndpointOptions` and the
+`FoundgineMcpSseSweeper` hosted service (purge + sweep every `SweepSeconds`); `app.MapFoundgineMcpSse("/mcp")` maps GET (the live
+stream: same statuses as Spring, 400/403/404/405-by-absence/409/410/429) and DELETE. Frames reach the response through a bounded
+queue per client, so a slow client is closed (`write_failed`) instead of blocking a publisher. The host keeps POST (it is
+typically the ModelContextProtocol SDK): call `gate.AdmitPost`, and `registry.Stream(issuedId)` for a newly issued session.
+Authenticate before the endpoints; the principal is `HttpContext.User.Identity.Name`. Unverified: written without a .NET SDK.
+
+**Transport and conformance.** `FoundgineMcpSseTransport` holds the HTTP decisions (origin 403, gate 400/404, then the stream
+result 400/409/410/429/404 or 200; DELETE 204) free of Spring, and `FoundgineMcpController` is a thin adapter over it. The C#
+`FoundgineMcpSseTransport` is the same logic. Both runtimes run `src/conformance/mcp-sse-scenarios.json` (buffer) and
+`mcp-sse-transport-scenarios.json` (statuses). Single instance only: the registry, buffers, limits and sweep are in-process, so a
+cluster needs a shared event log and shared limits. The `foundgine.mcp.*` properties are described in
+`META-INF/additional-spring-configuration-metadata.json` of `foundgine-spring`.

@@ -1,0 +1,44 @@
+name: Publish TypeScript SDK to npm
+
+on:
+  push:
+    tags:
+      - 'sdk-v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+
+      - name: Update npm CLI
+        run: npm install --global npm@latest
+
+      - name: Install dependencies
+        working-directory: src/typescript/foundgine-sdk
+        run: npm ci
+
+      - name: Build and test
+        working-directory: src/typescript/foundgine-sdk
+        run: npm test
+
+      - name: Verify package
+        working-directory: src/typescript/foundgine-sdk
+        run: npm pack --dry-run
+
+      - name: Publish to npm
+        working-directory: src/typescript/foundgine-sdk
+        run: npm publish --access public

@@ -1,9 +1,0 @@
-@startuml
-start
-:semantic meaning;
-:authorization decision;
-:logical plan;
-:execution IR;
-:provider artifact;
-stop
-@enduml

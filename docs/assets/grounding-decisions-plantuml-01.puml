@@ -1,9 +1,0 @@
-@startuml
-start
-:Lexical retrieval;
-:Candidate meanings (graph-constrained paths);
-:Grounding decision   ← this stage;
-:Authorization;
-:Planning / execution;
-stop
-@enduml

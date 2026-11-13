@@ -1,9 +1,0 @@
-@startuml
-start
-:semantic authorization;
-:security invariants;
-:approval / plan binding where configured;
-:revalidation;
-:provider execution;
-stop
-@enduml

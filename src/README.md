@@ -1,4 +1,4 @@
-﻿# Source layout
+# Source layout
 
 Foundgine keeps each language implementation under its own language-specific
 source root:
@@ -11,13 +11,17 @@ src/
 │   ├── Foundgine.Providers/
 │   └── Foundgine.Extensions/
 │
-└── java/                   # Java implementation
-    ├── pom.xml
-    └── foundgine-core/
-        ├── pom.xml
-        └── src/
-            ├── main/java/
-            └── test/java/
+├── java/                   # Java implementation
+│   ├── pom.xml
+│   └── foundgine-core/
+│       ├── pom.xml
+│       └── src/
+│           ├── main/java/
+│           └── test/java/
+│
+├── typescript/foundgine-sdk/   # @foundgine/sdk (MCP + workflow client)
+├── python/foundgine-sdk/       # foundgine-sdk, mirrors the TypeScript SDK module for module
+└── wasm/foundgine-sdk-wasm/    # Rust crate for WebAssembly, mirrors both (sans-IO core, host-injected fetch)
 ```
 
 ## Why this layout?
@@ -37,3 +41,11 @@ the same conceptual Foundgine module boundaries.
 ## Dual-runtime hardening
 
 See [DUAL-RUNTIME-HARDENING-PLAN.md](DUAL-RUNTIME-HARDENING-PLAN.md) for the evidence-based .NET/Java hardening matrix and release gates.
+
+## MCP server-to-client SSE
+
+Both runtimes can push server-initiated MCP messages down a per-session SSE stream with `Last-Event-ID` replay, per-principal
+stream limits and audit events. Setup and statuses are in the MCP READMEs
+([Java](java/foundgine-providers/src/main/java/com/foundgine/providers/tools/mcp/README.md),
+[C#](csharp/Foundgine.Providers/Tools/MCP/README.md)); the shared test scenarios are in `conformance/`. Single instance only for
+now. There is no separate changelog; this section and those READMEs are the record.

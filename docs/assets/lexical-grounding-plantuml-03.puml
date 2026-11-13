@@ -1,5 +1,0 @@
-@startuml
-start
-:bought → Orders                    0.98 nike   → CatalogProduct.Name=...   0.99 shoes  → Category.Name=...         0.97;
-stop
-@enduml

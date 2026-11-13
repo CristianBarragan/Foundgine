@@ -1,0 +1,23 @@
+[package]
+name = "foundgine-sdk-wasm"
+version = "3.3.4"
+edition = "2021"
+rust-version = "1.75"
+description = "Thin WebAssembly client core for Foundgine MCP and workflow endpoints. Mirrors @foundgine/sdk (TypeScript) and foundgine-sdk (Python)."
+license = "Apache-2.0"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde_json = "1"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "=0.2.92"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"

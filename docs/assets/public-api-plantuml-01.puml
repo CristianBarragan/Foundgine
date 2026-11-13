@@ -1,6 +1,0 @@
-@startuml
-start
-:ordinary application;
-:Foundgine;
-stop
-@enduml

@@ -1,9 +1,0 @@
-@startuml
-start
-:Intent;
-:Semantic model;
-:Authorization;
-:Execution plan;
-:Provider;
-stop
-@enduml

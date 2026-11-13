@@ -49,7 +49,7 @@ For AOT and ORM map generation, no separate generator installation or package re
 ## Install
 
 ```bash
-dotnet add package Foundgine.Providers --version 3.3.3
+dotnet add package Foundgine.Providers --version 3.3.4
 ```
 
 ## Typical application stack

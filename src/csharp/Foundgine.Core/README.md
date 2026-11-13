@@ -32,7 +32,7 @@ You are responsible for creating/composing the semantic model and supplying the 
 ## Install
 
 ```bash
-dotnet add package Foundgine.Core --version 3.3.3
+dotnet add package Foundgine.Core --version 3.3.4
 ```
 
 ## Relationship to other Foundgine packages

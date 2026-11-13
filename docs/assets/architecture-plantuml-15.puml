@@ -1,7 +1,0 @@
-@startuml
-start
-:authority/recovery subsystem;
-:validated authority context;
-:Foundgine semantic execution;
-stop
-@enduml

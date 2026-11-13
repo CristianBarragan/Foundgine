@@ -1,7 +1,0 @@
-@startuml
-start
-:LLM;
-:SQL;
-:database credentials;
-stop
-@enduml

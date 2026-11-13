@@ -1,8 +1,0 @@
-@startuml
-start
-:attributes;
-:source generator;
-:generated metadata;
-:metadata/semantic model;
-stop
-@enduml

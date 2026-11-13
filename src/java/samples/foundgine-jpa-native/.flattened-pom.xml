@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-sample-jpa-native</artifactId>
-  <version>3.3.2</version>
+  <version>3.3.4</version>
   <name>Foundgine JPA Native Image smoke sample</name>
   <description>Runs the FoundgineOrm smoke path on Hibernate + H2, on the JVM and as a GraalVM native executable. UNVERIFIED.</description>
   <url>https://github.com/CristianBarragan/Foundgine/samples/foundgine-sample-jpa-native</url>
@@ -31,13 +31,13 @@
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-sample-supply-chain</artifactId>
-      <version>3.3.2</version>
+      <version>3.3.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-providers</artifactId>
-      <version>3.3.2</version>
+      <version>3.3.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

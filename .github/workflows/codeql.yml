@@ -100,7 +100,9 @@ jobs:
           set -euo pipefail
           java -version
           mvn --version
-          mvn --file src/java/pom.xml --batch-mode --no-transfer-progress --errors -Drevision="3.3.3-codeql.${GITHUB_RUN_NUMBER}" -Dgpg.skip=true -DskipTests clean package
+          canonical="$(mvn --file src/java/pom.xml --batch-mode --no-transfer-progress -q -N help:evaluate -Dexpression=revision -DforceStdout)"
+          test -n "$canonical"
+          mvn --file src/java/pom.xml --batch-mode --no-transfer-progress --errors -Drevision="${canonical}-codeql.${GITHUB_RUN_NUMBER}" -Dgpg.skip=true -DskipTests clean package
 
       - if: matrix.build-mode == 'manual' && matrix.language != 'java-kotlin'
         shell: bash

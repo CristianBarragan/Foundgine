@@ -1,9 +1,0 @@
-@startuml
-start
-:LLM;
-:semantic tool;
-:Foundgine;
-:authorization;
-:provider;
-stop
-@enduml

@@ -1,5 +1,0 @@
-@startuml
-start
-:Customer → Orders → SalesOrder → Lines → SalesOrderLine → Product → CatalogProduct → Category → Category.Name;
-stop
-@enduml

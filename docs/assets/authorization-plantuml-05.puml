@@ -1,5 +1,0 @@
-@startmindmap
-* Equal
-** MemberAccess(resource, TenantId)
-** MemberAccess(context, TenantId)
-@endmindmap

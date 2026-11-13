@@ -1,6 +1,0 @@
-@startuml
-start
-:custom planner/provider;
-:Planning + Execution;
-stop
-@enduml

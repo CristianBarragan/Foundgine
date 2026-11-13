@@ -31,6 +31,18 @@ public sealed class FoundgineMcpApprovalTokenPolicy
         _clock = unixMillisecondsClock ?? (() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
     }
 
+    /// <summary>Maximum accepted token age.</summary>
+    public TimeSpan MaximumAge => _maximumAge;
+
+    /// <summary>Tolerated future clock skew.</summary>
+    public TimeSpan AllowedFutureSkew => _allowedFutureSkew;
+
+    /// <summary>
+    /// Shortest time a superseded signing key must stay verifiable so every token it could still have signed (age plus
+    /// skew) verifies until the policy rejects it anyway. Use it as the retention for key rotation.
+    /// </summary>
+    public TimeSpan MinimumKeyRetention => _maximumAge + _allowedFutureSkew;
+
     /// <summary>Must be called only after signature verification and before provider execution.</summary>
     public void ValidateAndConsume(FoundgineMcpApprovalTokenClaims claims)
     {

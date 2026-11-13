@@ -1,8 +1,0 @@
-@startuml
-start
-:host context;
-:capability contract;
-:LLM;
-:structured intent;
-stop
-@enduml

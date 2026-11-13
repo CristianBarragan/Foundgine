@@ -1,9 +1,0 @@
-@startuml
-start
-:request;
-:known model/connection graph;
-:traversal + planning;
-:provider;
-:EF / SQL / other source;
-stop
-@enduml

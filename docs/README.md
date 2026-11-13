@@ -1,6 +1,6 @@
 # Foundgine documentation
 
-This directory contains the **current** Foundgine documentation, covering both implementations, released together as **3.3.3**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
+This directory contains the **current** Foundgine documentation, covering both implementations, released together as **3.3.4**: .NET and Java. The two share the same architecture and vocabulary; pages below describe that shared model unless a section calls out a language-specific difference. See [Current status](CURRENT-STATUS.md) for exactly what is and isn't ported to Java today.
 
 The repository itself is the source of truth. Documentation describes implemented architecture and tested behavior; it does not use old release notes or historical benchmark snapshots as current product guidance.
 

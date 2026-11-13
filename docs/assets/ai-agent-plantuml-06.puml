@@ -1,9 +1,0 @@
-@startuml
-start
-:untrusted text;
-:model-generated intent;
-:semantic resolution;
-:host-backed authorization;
-:controlled provider execution;
-stop
-@enduml

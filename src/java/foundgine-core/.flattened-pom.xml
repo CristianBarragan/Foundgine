@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-core</artifactId>
-  <version>3.3.3</version>
+  <version>3.3.4</version>
   <name>Foundgine Core</name>
   <description>Port of Foundgine.Core: the foundational, provider-independent semantic layer. Defines the semantic model, metadata, intent contracts and serialization, intermediate representation, provider-neutral execution contracts, planning primitives, and core abstractions/identifiers used by the rest of the platform.</description>
   <url>https://github.com/CristianBarragan/Foundgine/foundgine-core</url>

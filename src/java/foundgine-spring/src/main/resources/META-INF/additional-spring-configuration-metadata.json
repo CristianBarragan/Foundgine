@@ -1,0 +1,118 @@
+{
+  "properties": [
+    {
+      "name": "foundgine.mcp.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Expose the MCP server (read tools). Needs a host ISecurityExecutionContextProvider."
+    },
+    {
+      "name": "foundgine.mcp.mutations-enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Register the mutation tools."
+    },
+    {
+      "name": "foundgine.mcp.path",
+      "type": "java.lang.String",
+      "defaultValue": "/mcp",
+      "description": "Path of the MCP endpoint."
+    },
+    {
+      "name": "foundgine.mcp.allowed-origins",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": [],
+      "description": "Origins accepted in the Origin header; a request without one is accepted."
+    },
+    {
+      "name": "foundgine.mcp.server-name",
+      "type": "java.lang.String",
+      "defaultValue": "foundgine-mcp",
+      "description": "Server name reported at initialize."
+    },
+    {
+      "name": "foundgine.mcp.server-version",
+      "type": "java.lang.String",
+      "defaultValue": "1.0.0",
+      "description": "Server version reported at initialize."
+    },
+    {
+      "name": "foundgine.mcp.sessions-enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Issue and require Mcp-Session-Id sessions."
+    },
+    {
+      "name": "foundgine.mcp.session-idle-minutes",
+      "type": "java.lang.Long",
+      "defaultValue": 30,
+      "description": "Minutes of inactivity before a session expires."
+    },
+    {
+      "name": "foundgine.mcp.session-max-lifetime-minutes",
+      "type": "java.lang.Long",
+      "defaultValue": 1440,
+      "description": "Maximum lifetime of a session in minutes."
+    },
+    {
+      "name": "foundgine.mcp.max-sessions",
+      "type": "java.lang.Integer",
+      "defaultValue": 10000,
+      "description": "Maximum concurrent sessions."
+    },
+    {
+      "name": "foundgine.mcp.sse-enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enable server-to-client SSE (GET) with replay buffers. Needs sessions-enabled."
+    },
+    {
+      "name": "foundgine.mcp.sse-max-streams",
+      "type": "java.lang.Integer",
+      "defaultValue": 10000,
+      "description": "Maximum sessions with a replay buffer."
+    },
+    {
+      "name": "foundgine.mcp.sse-max-events",
+      "type": "java.lang.Integer",
+      "defaultValue": 256,
+      "description": "Replay buffer size per session, in events."
+    },
+    {
+      "name": "foundgine.mcp.sse-max-bytes",
+      "type": "java.lang.Long",
+      "defaultValue": 1048576,
+      "description": "Replay buffer size per session, in bytes."
+    },
+    {
+      "name": "foundgine.mcp.sse-heartbeat-seconds",
+      "type": "java.lang.Integer",
+      "defaultValue": 25,
+      "description": "Interval of the heartbeat comment that keeps idle streams open."
+    },
+    {
+      "name": "foundgine.mcp.sse-max-stream-seconds",
+      "type": "java.lang.Integer",
+      "defaultValue": 3600,
+      "description": "A stream older than this is ended so the client reconnects with Last-Event-ID; 0 = no limit."
+    },
+    {
+      "name": "foundgine.mcp.sse-sweep-seconds",
+      "type": "java.lang.Integer",
+      "defaultValue": 60,
+      "description": "Interval of the sweep that purges expired sessions and drops their buffers."
+    },
+    {
+      "name": "foundgine.mcp.sse-max-open-streams",
+      "type": "java.lang.Integer",
+      "defaultValue": 5000,
+      "description": "Maximum concurrently open SSE streams (429 beyond)."
+    },
+    {
+      "name": "foundgine.mcp.sse-max-streams-per-principal",
+      "type": "java.lang.Integer",
+      "defaultValue": 10,
+      "description": "Maximum concurrently open SSE streams per authenticated principal (429 beyond)."
+    }
+  ]
+}

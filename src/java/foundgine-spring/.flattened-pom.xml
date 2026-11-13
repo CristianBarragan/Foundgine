@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-spring</artifactId>
-  <version>3.3.3</version>
+  <version>3.3.4</version>
   <name>Foundgine Spring</name>
   <description>Optional Spring Boot auto-configuration for FoundgineOrm. UNVERIFIED.</description>
   <url>https://github.com/CristianBarragan/Foundgine/foundgine-spring</url>
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-providers</artifactId>
-      <version>3.3.3</version>
+      <version>3.3.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -51,6 +51,12 @@
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
       <version>3.2.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
+      <version>4.0.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

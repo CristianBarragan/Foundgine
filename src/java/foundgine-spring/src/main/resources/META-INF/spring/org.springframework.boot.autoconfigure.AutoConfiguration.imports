@@ -1,2 +1,3 @@
 com.foundgine.spring.FoundgineJpaAutoConfiguration
 com.foundgine.spring.FoundgineMcpAutoConfiguration
+com.foundgine.spring.FoundgineMcpWebAutoConfiguration
