@@ -1,9 +1,0 @@
-@startuml
-start
-:capability description;
-:caller constructs intent;
-:Foundgine resolves;
-:authorization;
-:execution;
-stop
-@enduml

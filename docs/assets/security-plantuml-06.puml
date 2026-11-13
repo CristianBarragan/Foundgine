@@ -1,9 +1,0 @@
-@startmindmap
-* plan requirements
-* ↓
-* provider guarantees
-* ↓
-* conformance
-** satisfied → execute
-** missing   → reject
-@endmindmap

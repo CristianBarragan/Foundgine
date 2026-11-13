@@ -1,9 +1,0 @@
-@startuml
-start
-:Foundgine.Providers.Aot declarations;
-:Foundgine.Providers.Aot.Generator;
-:generated metadata;
-:metadata/semantic discovery;
-:runtime;
-stop
-@enduml

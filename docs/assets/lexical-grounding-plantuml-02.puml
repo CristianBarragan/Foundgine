@@ -1,7 +1,0 @@
-@startmindmap
-* Customer
-* └─ Orders → SalesOrder
-* └─ Lines → SalesOrderLine
-* └─ Product → CatalogProduct
-* └─ Category → Category
-@endmindmap

@@ -1,7 +1,0 @@
-@startuml
-start
-:Authentication / trusted host;
-:SecurityExecutionContext;
-:semantic execution;
-stop
-@enduml

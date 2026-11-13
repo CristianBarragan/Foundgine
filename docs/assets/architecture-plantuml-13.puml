@@ -1,9 +1,0 @@
-@startuml
-start
-:Semantic mutation graph;
-:Mutation plan;
-:dependency levels;
-:src/csharp/security/conformance gate;
-:provider execution;
-stop
-@enduml

@@ -1,6 +1,0 @@
-@startuml
-start
-:custom physical provider;
-:Execution + provider package;
-stop
-@enduml

@@ -1,5 +1,0 @@
-@startuml
-start
-:Customer → CustomerRelationship → Contract → Transaction;
-stop
-@enduml

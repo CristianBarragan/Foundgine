@@ -1,7 +1,0 @@
-@startuml
-start
-:Microsoft.Extensions.AI;
-:Foundgine.Providers.Models;
-:Foundgine;
-stop
-@enduml

@@ -1,9 +1,0 @@
-@startuml
-start
-:LLM intent;
-:Foundgine resolution;
-:authorization;
-:plan;
-:provider;
-stop
-@enduml

@@ -1,9 +1,0 @@
-@startuml
-start
-:LLM;
-:Foundgine.Providers.Models;
-:Foundgine;
-:authorization + planning;
-:provider;
-stop
-@enduml

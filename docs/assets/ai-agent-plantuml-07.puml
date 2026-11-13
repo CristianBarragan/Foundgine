@@ -1,8 +1,0 @@
-@startuml
-start
-:AI;
-:semantic intent;
-:Foundgine;
-:provider;
-stop
-@enduml

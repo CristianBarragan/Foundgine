@@ -1,9 +1,0 @@
-@startuml
-start
-:Semantic Operation Graph;
-:Resolution;
-:Authorization;
-:Plan Binding;
-:Execution IR;
-stop
-@enduml

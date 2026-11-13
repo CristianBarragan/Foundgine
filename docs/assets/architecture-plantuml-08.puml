@@ -1,7 +1,0 @@
-@startuml
-start
-:Scan;
-:Traverse;
-:TraverseConnection;
-stop
-@enduml

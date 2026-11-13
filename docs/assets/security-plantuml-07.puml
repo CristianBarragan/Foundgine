@@ -1,8 +1,0 @@
-@startuml
-start
-:MCP request;
-:host authentication;
-:ISecurityExecutionContextProvider;
-:Foundgine;
-stop
-@enduml

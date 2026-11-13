@@ -1,6 +1,0 @@
-@startuml
-start
-:custom intent adapter;
-:Foundgine.Core.Semantic;
-stop
-@enduml

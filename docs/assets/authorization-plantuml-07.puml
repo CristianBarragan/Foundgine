@@ -1,6 +1,0 @@
-@startuml
-start
-:cacheable plan shape + retained authorization predicate + current execution context;
-:safe provider execution;
-stop
-@enduml

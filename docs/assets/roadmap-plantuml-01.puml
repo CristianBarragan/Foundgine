@@ -1,7 +1,0 @@
-@startuml
-start
-:logical plan / ExecutionIR;
-:provider compiler;
-:provider execution;
-stop
-@enduml

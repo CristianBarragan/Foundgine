@@ -1,7 +1,0 @@
-@startuml
-start
-:AI;
-:SQL;
-:database;
-stop
-@enduml
