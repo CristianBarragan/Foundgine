@@ -78,6 +78,9 @@ The fastest path is the Supply Chain sample pair:
 - **Advanced:** richer semantics, grounding, retrieval, authorization and adversarial testing.
   - .NET — [`src/csharp/samples/Foundgine.SupplyChain.Advanced`](src/csharp/samples/Foundgine.SupplyChain.Advanced): start at [`docs/00-Overview-And-Setup.md`](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) and follow 01–05.
   - Java — [`src/java/samples/foundgine-supply-chain-advanced`](src/java/samples/foundgine-supply-chain-advanced): [`SupplyChain-Advanced-Tutorial.md`](src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md).
+ 
+- **Complete Polyglot Enterprise Example with all Foundgine features and capabilities:**
+  - .NET/Java — [`https://github.com/CristianBarragan/Foundgine-e2e-example`](https://github.com/CristianBarragan/Foundgine-e2e-example): [`Tutorial`](https://github.com/CristianBarragan/Foundgine-e2e-example/blob/main/docs/tutorial.md)
 
 For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://cristianbarragan.github.io/Foundgine/docs-site/).
 
