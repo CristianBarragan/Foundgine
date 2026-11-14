@@ -15,8 +15,11 @@ import com.foundgine.core.semantic.metadata.ConnectionMetadata;
 import com.foundgine.core.semantic.metadata.ConversionMetadata;
 import com.foundgine.core.semantic.metadata.ColumnMetadata;
 import com.foundgine.core.semantic.metadata.ColumnReference;
+import com.foundgine.core.semantic.metadata.ForeignKeyMetadata;
+import com.foundgine.core.semantic.metadata.CheckConstraintMetadata;
 import com.foundgine.core.semantic.metadata.EntityMetadata;
 import com.foundgine.core.semantic.metadata.FieldMetadata;
+import com.foundgine.core.semantic.metadata.IndexMetadata;
 import com.foundgine.core.semantic.metadata.MetadataRegistry;
 import com.foundgine.core.semantic.metadata.ModelMetadata;
 import com.foundgine.core.semantic.metadata.RelationshipMetadata;
@@ -92,6 +95,12 @@ final class FoundgineModelCompiler {
                         .add(field.target());
 
         for (EntityMapDefinition map : maps) compileEntity(map, connectionMembers);
+        // Persistence-only row types are physical schema declarations even when they do not
+        // participate in semantic entity mapping (for example transactional/outbox tables).
+        Set<Class<?>> mappedStorageTypes = new HashSet<>();
+        for (EntityMapDefinition map : maps) mappedStorageTypes.add(map.entityType);
+        for (PersistenceDefinition persistence : context.persistence.values())
+            if (!mappedStorageTypes.contains(persistence.entityType)) compileStorageOnlyEntity(persistence);
 
         for (ModelDefinition model : context.models.values()) {
             CompiledEntity compiled = byModel.get(model.modelType);
@@ -432,11 +441,37 @@ final class FoundgineModelCompiler {
             compiled.columns.put(column.member.name(), columnId);
             columnMetadata.add(
                     new ColumnMetadata(
-                            columnId, column.effectiveColumnName(), null, column.maxLength, column.required));
+                            columnId,
+                            column.effectiveColumnName(),
+                            null,
+                            column.maxLength,
+                            column.required,
+                            column.member.type(),
+                            column.sqlType,
+                            column.precision,
+                            column.scale,
+                            column.defaultExpression,
+                            column.identityGeneration));
         }
 
         Set<String> indexedMembers = new HashSet<>();
         for (List<MemberRef> index : persistence.indexes) indexedMembers.add(index.get(0).name());
+
+        Map<String, String> physicalByMember = new LinkedHashMap<>();
+        for (ColumnDefinition column : columns)
+            physicalByMember.put(column.member.name(), column.effectiveColumnName());
+        List<IndexMetadata> indexMetadata = new ArrayList<>();
+        String tableName = storageName.substring(storageName.lastIndexOf('.') + 1);
+        for (int i = 0; i < persistence.indexes.size(); i++) {
+            List<String> indexColumns = new ArrayList<>();
+            for (MemberRef member : persistence.indexes.get(i)) indexColumns.add(physicalByMember.get(member.name()));
+            IndexOptions options = persistence.indexOptions.get(i);
+            String indexName =
+                    options.name() != null
+                            ? options.name()
+                            : (options.unique() ? "ux_" : "ix_") + tableName + "_" + String.join("_", indexColumns);
+            indexMetadata.add(new IndexMetadata(indexName, indexColumns, options.unique(), options.method(), options.operatorClass()));
+        }
 
         List<FieldMetadata> fields = new ArrayList<>();
         Map<String, FieldMetadata> fieldByMember = new LinkedHashMap<>();
@@ -502,7 +537,57 @@ final class FoundgineModelCompiler {
                         map.modelType,
                         model.event,
                         temporalColumn,
-                        model.aliases.isEmpty() ? null : List.copyOf(model.aliases)));
+                        model.aliases.isEmpty() ? null : List.copyOf(model.aliases),
+                        indexMetadata,
+                        persistence.foreignKeys.stream().map(fk -> new ForeignKeyMetadata(
+                                fk.name(), fk.columns().stream().map(m -> physicalByMember.get(m.name())).toList(),
+                                fk.referencedTable(), fk.referencedColumns(), fk.onDelete(), fk.onUpdate())).toList(),
+                        persistence.checks.stream().map(c -> new CheckConstraintMetadata(c.name(), c.expression())).toList(),
+                        List.copyOf(persistence.extensions)));
+    }
+
+    private void compileStorageOnlyEntity(PersistenceDefinition persistence) {
+        String entityName = persistence.entityType.getSimpleName();
+        String storageName = storageNameOf(persistence);
+        EntityId entityId = EntityId.create(entityName);
+        List<ColumnDefinition> columns = new ArrayList<>(persistence.columns);
+        Map<String, List<String>> byName = new LinkedHashMap<>();
+        for (ColumnDefinition column : columns)
+            byName.computeIfAbsent(column.effectiveColumnName(), ignored -> new ArrayList<>()).add(column.member.name());
+        byName.forEach((name, members) -> {
+            if (members.size() > 1) errors.add(entityName + ": members " + join(members) + " share the column name '" + name + "'.");
+        });
+
+        Map<String, String> physicalByMember = new LinkedHashMap<>();
+        List<ColumnMetadata> metadata = new ArrayList<>();
+        for (ColumnDefinition column : columns) {
+            String name = column.effectiveColumnName();
+            physicalByMember.put(column.member.name(), name);
+            metadata.add(new ColumnMetadata(ColumnId.create(storageName, name), name, null,
+                    column.maxLength, column.required, column.member.type(), column.sqlType,
+                    column.precision, column.scale, column.defaultExpression, column.identityGeneration));
+        }
+        String keyColumn = null;
+        if (persistence.key == null) errors.add(entityName + ": no key declared; call hasKey(...).");
+        else keyColumn = physicalByMember.get(persistence.key.name());
+        ColumnReference primaryKey = keyColumn == null ? null : new ColumnReference(entityId, ColumnId.create(storageName, keyColumn));
+
+        String tableName = storageName.substring(storageName.lastIndexOf('.') + 1);
+        List<IndexMetadata> indexes = new ArrayList<>();
+        for (int i = 0; i < persistence.indexes.size(); i++) {
+            List<String> indexColumns = persistence.indexes.get(i).stream().map(m -> physicalByMember.get(m.name())).toList();
+            IndexOptions options = persistence.indexOptions.get(i);
+            String indexName = options.name() != null ? options.name()
+                    : (options.unique() ? "ux_" : "ix_") + tableName + "_" + String.join("_", indexColumns);
+            indexes.add(new IndexMetadata(indexName, indexColumns, options.unique(), options.method(), options.operatorClass()));
+        }
+        List<ForeignKeyMetadata> foreignKeys = persistence.foreignKeys.stream()
+                .map(fk -> new ForeignKeyMetadata(fk.name(), fk.columns().stream().map(m -> physicalByMember.get(m.name())).toList(),
+                        fk.referencedTable(), fk.referencedColumns(), fk.onDelete(), fk.onUpdate())).toList();
+        List<CheckConstraintMetadata> checks = persistence.checks.stream()
+                .map(c -> new CheckConstraintMetadata(c.name(), c.expression())).toList();
+        entities.add(new EntityMetadata(entityId, entityName, metadata, storageName, List.of(), primaryKey,
+                persistence.entityType, false, null, null, indexes, foreignKeys, checks, List.copyOf(persistence.extensions)));
     }
 
     private static void ensureColumn(List<ColumnDefinition> columns, MemberRef member) {

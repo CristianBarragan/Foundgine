@@ -1,0 +1,86 @@
+{
+  "tables" : [ {
+    "name" : "products",
+    "columns" : [ {
+      "name" : "product_id",
+      "type" : "integer",
+      "nullable" : false
+    }, {
+      "name" : "sku",
+      "type" : "varchar(50)",
+      "nullable" : false
+    }, {
+      "name" : "product_name",
+      "type" : "varchar(100)",
+      "nullable" : false
+    }, {
+      "name" : "category",
+      "type" : "varchar(50)",
+      "nullable" : false
+    }, {
+      "name" : "safety_stock",
+      "type" : "numeric(10,2)",
+      "nullable" : false
+    } ],
+    "primaryKey" : [ "product_id" ],
+    "indexes" : [ {
+      "name" : "ux_products_sku",
+      "columns" : [ "sku" ],
+      "unique" : true
+    } ]
+  }, {
+    "name" : "suppliers",
+    "columns" : [ {
+      "name" : "supplier_id",
+      "type" : "integer",
+      "nullable" : false
+    }, {
+      "name" : "supplier_name",
+      "type" : "varchar(100)",
+      "nullable" : false
+    }, {
+      "name" : "country",
+      "type" : "varchar(2)",
+      "nullable" : false
+    }, {
+      "name" : "risk_score",
+      "type" : "numeric(5,2)",
+      "nullable" : false
+    }, {
+      "name" : "tenant_id",
+      "type" : "varchar(50)",
+      "nullable" : false
+    } ],
+    "primaryKey" : [ "supplier_id" ],
+    "indexes" : [ {
+      "name" : "ix_suppliers_tenant_id",
+      "columns" : [ "tenant_id" ],
+      "unique" : false
+    } ]
+  }, {
+    "name" : "warehouses",
+    "columns" : [ {
+      "name" : "warehouse_id",
+      "type" : "integer",
+      "nullable" : false
+    }, {
+      "name" : "business_unit_id",
+      "type" : "integer",
+      "nullable" : false
+    }, {
+      "name" : "warehouse_name",
+      "type" : "varchar(100)",
+      "nullable" : false
+    }, {
+      "name" : "tenant_id",
+      "type" : "varchar(50)",
+      "nullable" : false
+    } ],
+    "primaryKey" : [ "warehouse_id" ],
+    "indexes" : [ {
+      "name" : "ix_warehouses_tenant_id",
+      "columns" : [ "tenant_id" ],
+      "unique" : false
+    } ]
+  } ]
+}

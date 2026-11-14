@@ -1,5 +1,33 @@
 # Changelog
 
+## 3.3.5 — November 15, 2026
+
+### Added
+
+- Added Java PostgreSQL migration schema support for column defaults, identity generation, named single/composite foreign keys and referential actions, CHECK constraints, index access methods/operator classes, and required extensions.
+- Added metadata-to-schema projection, PostgreSQL schema differ/SQL generation (including rollback ordering), migration snapshots/history, and migration CLI integration.
+- Added physical-schema projections for the Java Starter sample (three persisted tables) and Advanced sample (the eleven-table V1 contract), reusing the same fluent persistence declarations rather than duplicating DDL.
+- Added Java schema parity tests, including a PostgreSQL 16 catalog comparison for columns, constraints, indexes, unique indexes and the GIN `pg_trgm` operator class.
+- Expanded the .NET Supply Chain starter with typed semantic query helpers, ownership-scoped relationship filtering, CRUD endpoints, EF Core migrations and database initialization/demo-data support.
+
+### Changed
+
+- Extended Java fluent persistence configuration and compiled metadata to retain physical PostgreSQL schema declarations end to end.
+- Updated the Java Starter and Advanced Supply Chain samples to use the fluent model/JPA path, model-derived migration workflows, and current setup/tutorial documentation.
+- Aligned canonical .NET, Maven, MCP, TypeScript, Python and Rust/WASM package/user-agent versions to `3.3.5`, including Maven flattened POM metadata and documentation-site install examples.
+
+### Fixed
+
+- Kept storage-only persistence row types in the structural metadata catalog without trying to discover them as semantic entities; semantic discovery continues to require valid primary-key field mappings for entities with semantic fields.
+- Corrected Advanced relationship parity expectations to compare physical column names (including explicitly renamed primary-key and foreign-key columns), not Java member names.
+- Corrected the Advanced structural catalog test to distinguish all 25 metadata entities from the 17 semantic entities.
+
+### Verification status
+
+- The latest reported Maven run had the Java Starter sample passing but the Advanced sample test phase failing. This checkpoint includes fixes for the identified semantic-discovery cascade, physical-column expectations and catalog-count assertion; those fixes have **not yet been re-run**.
+- The PostgreSQL 16 catalog-parity test is present but has not been executed. Full Java 27 Maven verification, PostgreSQL 16 parity, .NET tests/package checks, and the TypeScript/Python/Rust-WASM CI gates remain required before tagging or publishing.
+- The handwritten Advanced V1 migration remains the authoritative baseline until the generated schema passes the PostgreSQL 16 comparison. Do not replace it or apply generated production migrations before that gate passes.
+
 ## 3.3.4 — November 14, 2026
 
 ### Fixed

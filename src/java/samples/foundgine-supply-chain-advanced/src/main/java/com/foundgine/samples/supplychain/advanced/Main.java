@@ -76,5 +76,35 @@ public final class Main {
                         + cancelled.resultFingerprint()
                         + ", replay-result="
                         + cancelReplay.resultFingerprint());
+
+        jpaDemo();
+    }
+
+    /**
+     * JPA + PostgreSQL demo (docker compose up -d): Flyway migrates on start, then semantic reads with method
+     * references and CRUD run through the fluent FoundgineOrm. Skipped when PostgreSQL is not reachable.
+     */
+    private static void jpaDemo() {
+        var manager = new Authorization.Context(
+                "tenant-a", Set.of(1, 2), Authorization.Role.SUPPLY_CHAIN_MANAGER, false);
+        try (var jpa = new com.foundgine.samples.supplychain.advanced.jpa.AdvancedJpaReads();
+                var em = jpa.openEntityManager()) {
+            var reader = new com.foundgine.samples.supplychain.advanced.application.AdvancedReader(
+                    jpa.orm().reader(em), manager);
+            var warehouses = reader.from(com.foundgine.samples.supplychain.advanced.domain.Domain.Warehouse.class)
+                    .select(com.foundgine.samples.supplychain.advanced.domain.Domain.Warehouse::id,
+                            com.foundgine.samples.supplychain.advanced.domain.Domain.Warehouse::name)
+                    .rows();
+            System.out.println("tenant-a warehouses via JPA: " + warehouses.size());
+
+            var crud = new com.foundgine.samples.supplychain.advanced.application.AdvancedCrud(jpa.orm(), em, manager);
+            crud.create("Product", Map.of("id", 100, "sku", "DEMO-X", "name", "Demo Product", "category", "Demo",
+                    "safetyStock", new java.math.BigDecimal("1.00"), "unitPrice", new java.math.BigDecimal("2.00")));
+            crud.update("Product", 100, Map.of("unitPrice", new java.math.BigDecimal("3.00")));
+            System.out.println("product after update: " + crud.get("Product", 100));
+            crud.delete("Product", 100);
+        } catch (RuntimeException e) {
+            System.out.println("JPA demo skipped (is PostgreSQL running on SUPPLYCHAIN_JDBC_URL?): " + e);
+        }
     }
 }

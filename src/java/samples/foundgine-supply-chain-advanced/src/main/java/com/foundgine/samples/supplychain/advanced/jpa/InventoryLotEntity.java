@@ -12,7 +12,7 @@ import java.time.LocalDate;
 /**
  * JPA entity behind the semantic {@code InventoryLot}. {@code warehouseId} is a plain column: the
  * Warehouse -> InventoryLot relationship is declared once, in the fluent model's connections, and Foundgine
- * (not a JPA association) joins it. Columns follow database/schema.sql.
+ * (not a JPA association) joins it. Columns follow db/migration/V1__supply_chain_advanced.sql.
  */
 @FoundgineOrmEntity
 @Entity

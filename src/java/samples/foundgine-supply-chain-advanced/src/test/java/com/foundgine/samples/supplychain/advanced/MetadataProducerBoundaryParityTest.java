@@ -21,7 +21,7 @@ class MetadataProducerBoundaryParityTest {
         var relationships =
                 java.util.stream.StreamSupport.stream(catalog.relationships().spliterator(), false)
                         .toList();
-        assertEquals(17, entityList.size());
+        assertEquals(25, entityList.size(), "catalog includes 17 semantic entities and 8 persistence-only row types");
         assertEquals(15, relationships.size());
         assertTrue(entityList.stream().anyMatch(e -> e.name().equals("Product")));
         assertTrue(entityList.stream().anyMatch(e -> e.name().equals("ComplianceIncident")));
@@ -43,6 +43,7 @@ class MetadataProducerBoundaryParityTest {
         var model = SupplyChainSemanticModel.MODEL;
         var entityCount =
                 java.util.stream.StreamSupport.stream(catalog.entities().spliterator(), false)
+                        .filter(e -> !e.effectiveFields().isEmpty())
                         .count();
         var relationshipCount =
                 java.util.stream.StreamSupport.stream(catalog.relationships().spliterator(), false)

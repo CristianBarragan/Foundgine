@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "foundgine-sdk"
-version = "3.3.4"
+version = "3.3.5"
 description = "Thin MCP client for Foundgine (transport only). Python mirror of @foundgine/sdk."
 readme = "README.md"
 requires-python = ">=3.11"

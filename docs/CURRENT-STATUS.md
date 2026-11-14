@@ -1,4 +1,4 @@
-# Current status — Foundgine 3.3.4 (.NET & Java)
+# Current status — Foundgine 3.3.5 (.NET & Java)
 
 The repository ships two implementations of the same architecture, released together on a single aligned version line: the .NET implementation targets .NET 10, and the Java implementation targets Java 27 (Maven, groupId `io.github.cristianbarragan`). Except where noted below, everything on this page applies to both.
 
@@ -99,6 +99,20 @@ Both implementations carry `ParityTest`-style tests asserting the SQL provider b
 
 An ORM-neutral execution core (`Foundgine.Providers.Orm` in .NET, `storage/orm` in Java) validates plans, binds authorization and executes through typed expression fragments. The concrete adapters are **EF Core** (`Foundgine.Providers.EntityFrameworkCore`, .NET) and **JPA** (`storage/orm/jpa`, Java); .NET also has a Roslyn ORM map generator (`Foundgine.Providers.Orm.Generator`). Capability and evidence status is tracked per capability: implemented is not the same as certified, and aggregate cursor pagination stays disabled until a real database test proves it. Both adapters also expose a fluent `SemanticQuery` builder (same members in C# and Java, held together by shared vectors in `src/conformance/semantic-query-vectors.json`) and generic CRUD (`IFoundgineRepository<T>` / `AddFoundgineEf` in .NET, `JpaEntities` in Java); all of this is implemented-unverified and the vectors have not yet been run. See [Fluent semantic reads](wiki/semantic-query-builder.md) and the [ORM providers wiki page](wiki/orm-providers.md) and [`SOURCE-COVERAGE.md`](SOURCE-COVERAGE.md).
 
+## PostgreSQL schema and migration support
+
+The Java implementation now includes `foundgine-migrations`, which derives a PostgreSQL schema model from compiled fluent persistence metadata and supports schema snapshots, diffs, forward SQL and rollback SQL. The fluent persistence declarations preserve:
+
+- column defaults and identity generation;
+- named single-column and composite foreign keys, including referential actions;
+- named CHECK constraints;
+- index access methods and operator classes (including GIN with `gin_trgm_ops`); and
+- required PostgreSQL extensions.
+
+The Java Starter sample projects its three persisted tables into the migration model. The Advanced sample uses a separate physical-schema projection over the same configured persistence declarations to select exactly the eleven tables in its handwritten V1 baseline. This intentionally keeps semantic/planning-only entities out of the physical schema.
+
+**Verification boundary:** the metadata/schema mapping, generator and parity tests are implemented, but the final Java 27 Maven run and PostgreSQL 16 catalog comparison are still required. The handwritten Advanced V1 migration remains authoritative until that comparison passes; generated SQL must be reviewed before application.
+
 ## Current adapters
 
 ### GraphQL
@@ -142,6 +156,8 @@ The core libraries (`foundgine-core`, `foundgine-runtime`, `foundgine-providers`
 - the `Foundgine.SupplyChain.Advanced` sample's retrieval-strategy tests (fuzzy/full-text, `pg_search`/BM25, Apache AGE graph-similarity, and retrieval-capability selection);
 - the `AgentEndToEnd` Supply Chain benchmark harness (the `SupplyChain.Layered` fixture and `Run1`–`Run5` orchestration) — only the `HighAssurance.Postgres`/`TransferFunds` banking fixture has a Java equivalent, under `benchmarks/foundgine-agent`;
 - the standalone `security/pentest` module (the 14-case GraphQL+MCP PenTest harness).
+
+The Java fluent persistence and migration path has also been extended: `foundgine-migrations` maps compiled persistence metadata to PostgreSQL schema snapshots/diffs and forward/rollback SQL, and the Starter/Advanced samples have physical-schema projections and migration workflows. This work is implemented but not yet fully verified on the supported Java 27/PostgreSQL 16 toolchain. See [`src/java/CHECKPOINT-JAVA.md`](../src/java/CHECKPOINT-JAVA.md) and [`RELEASE-NOTES-3.3.5.md`](../RELEASE-NOTES-3.3.5.md).
 
 The advanced sample's ambiguity-resolution capability (`find_top_supplier_overdue_orders`) has also been ported, as `TopSupplierOverdueOrdersService` hand-registered into `AdvancedMcpServer`, backed by new `suppliers`/`purchase_orders` tables in the sample's Postgres schema. Unlike the rest of that port, this one is **unverified against a live database** — there is no Postgres available in the environment it was written in, so it has not been run. It also knowingly simplifies one thing versus the C# original: the returned `plan` fingerprint is a stable hash of the fixed Supplier read shape rather than a real `SemanticPlan`/`ExecutionIRCompiler`-derived fingerprint, since wiring that whole chain for one demo capability was out of scope. Treat this port as a draft to verify, not as parity-tested.
 

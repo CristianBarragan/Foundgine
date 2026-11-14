@@ -1,6 +1,6 @@
 [package]
 name = "foundgine-sdk-wasm"
-version = "3.3.4"
+version = "3.3.5"
 edition = "2021"
 rust-version = "1.75"
 description = "Thin WebAssembly client core for Foundgine MCP and workflow endpoints. Mirrors @foundgine/sdk (TypeScript) and foundgine-sdk (Python)."

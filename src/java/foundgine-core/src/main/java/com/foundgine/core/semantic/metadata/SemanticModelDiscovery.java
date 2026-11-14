@@ -13,6 +13,11 @@ public final class SemanticModelDiscovery {
         var entities =
                 new LinkedHashMap<com.foundgine.core.abstractions.EntityId, SemanticEntity>();
         for (var item : metadata.entities()) {
+            // Persistence-only entities (for example transactional row types) have columns and
+            // keys but no semantic field projection. They belong to the structural catalog, not
+            // the semantic model discovered from it.
+            if (item.effectiveFields().isEmpty()) continue;
+
             var fields = new ArrayList<SemanticField>();
             for (var f : item.effectiveFields())
                 fields.add(

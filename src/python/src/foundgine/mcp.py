@@ -248,7 +248,7 @@ class McpSession:
             "params": {
                 "protocolVersion": self._requested_version,
                 "capabilities": {},
-                "clientInfo": {"name": "foundgine-python", "version": "3.3.4"},
+                "clientInfo": {"name": "foundgine-python", "version": "3.3.5"},
             },
         }
         try:

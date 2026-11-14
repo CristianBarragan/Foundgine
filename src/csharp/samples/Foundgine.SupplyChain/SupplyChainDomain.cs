@@ -4,7 +4,9 @@ using Foundgine.Core.Semantic.Planning;
 using Foundgine.Providers.EntityFrameworkCore;
 using Foundgine.Runtime;
 using Foundgine.SupplyChain.Application;
+using Foundgine.SupplyChain.Application.Querying;
 using Foundgine.SupplyChain.Domain;
+using Foundgine.SupplyChain.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,8 +32,12 @@ public sealed class SupplyChainDomain : IFoundgineCapability
     /// <summary>Configuration key / environment variable name for the Postgres connection string.</summary>
     public const string ConnectionStringName = "SupplyChainConnectionString";
 
+    /// <summary>Local docker compose database; created and migrated by the first start (Database:MigrateOnStart).</summary>
+    public const string DevConnectionString =
+        "Host=localhost;Port=4429;Database=foundgine_supply_chain;Username=benchmark;Password=benchmark";
+
     // Compiled once from the fluent configuration in Domain/ (SupplyChainModel).
-    private static readonly MetadataRegistry Metadata = new SupplyChainModel().Build();
+    public static readonly MetadataRegistry Metadata = new SupplyChainModel().Build();
 
     public static void Configure(FoundgineCapabilityContext context)
     {
@@ -40,14 +46,17 @@ public sealed class SupplyChainDomain : IFoundgineCapability
         context.Options.UseMetadata(Metadata);
         context.Options.AuthorizationPolicy ??= new AllowAllSemanticAuthorizationPolicy();
 
-        // Registration: the EF provider turns the fluent model into the EF model, the ORM maps, the DbContext,
-        // IFoundgineRepository<T> for every entity and the semantic reader. One call.
+        // Registration: the EF provider turns the fluent model (+ SupplyChainStorage) into the EF model, the ORM maps,
+        // the DbContext, IFoundgineRepository<T> for every entity and the semantic reader. One call.
         services.AddFoundgineEf(Metadata,
-            (sp, o) => o.UseNpgsql(ResolveConnectionString(sp.GetRequiredService<IConfiguration>())));
+            (sp, o) => o.UseSupplyChainNpgsql(ResolveConnectionString(sp.GetRequiredService<IConfiguration>())),
+            SupplyChainEf.ConfigureModel);
 
         services.AddSingleton(new SemanticAuthorizer(new AllowAllSemanticAuthorizationPolicy()));
         services.AddSingleton<Planner>();
         services.AddSingleton<ICapabilityAuthorizer, SupplyChainAuthorizer>();
+        services.AddScoped<SupplyChainReader>();
+        services.AddSingleton<DatabaseMigrator>();
         services.AddScoped<OrderWorkflows>();
         services.AddScoped<SupplyChainApplication>();
     }

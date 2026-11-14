@@ -1,4 +1,6 @@
 using Foundgine.SupplyChain;
+using Foundgine.SupplyChain.Api;
+using Foundgine.SupplyChain.Infrastructure;
 using Foundgine.SupplyChain.Application;
 using ModelContextProtocol.Server;
 using Foundgine.Providers.Tools.MCP;
@@ -19,7 +21,14 @@ builder.Services.AddFoundgineMcp();
 builder.Services.AddMcpServer().WithHttpTransport(o => o.Stateless = true).WithTools<SupplyChainMcpTools>();
 
 var app = builder.Build();
+
+// EF migrations (Migrations/) and optional demo rows; both are switched on in appsettings.Development.json.
+if (app.Configuration.GetValue<bool>("Database:MigrateOnStart"))
+    await app.Services.GetRequiredService<DatabaseMigrator>()
+        .MigrateAsync(app.Configuration.GetValue<bool>("Database:SeedDemoData"), CancellationToken.None);
+
 app.MapMcp("/mcp");
+app.MapReferenceDataCrud();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.MapGet("/health/ready", async (Foundgine.Providers.EntityFrameworkCore.FoundgineDbContext db, CancellationToken ct) =>
     await db.Database.CanConnectAsync(ct) ? Results.Ok(new { status = "ready" }) : Results.StatusCode(503));

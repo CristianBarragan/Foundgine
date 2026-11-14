@@ -91,7 +91,7 @@ public final class SupplyChainSemantics {
             Authorization.Context caller, String entity, java.util.function.Consumer<SemanticQuery> configure) {
         var query = SemanticQuery.from(metadata, entity);
         configure.accept(query);
-        var authorizer = new SemanticAuthorizer(SupplyChainPolicy.create(this, caller));
+        var authorizer = new SemanticAuthorizer(SupplyChainPolicy.create(metadata, caller));
         var semanticPlan = planner.plan(contract, authorizer.authorizeWithEvidence(contract, query.build()));
         return new OrmPlanCompiler(provider, registry).compile(ExecutionIRCompiler.compile(semanticPlan));
     }
@@ -105,7 +105,7 @@ public final class SupplyChainSemantics {
         var query = SemanticQuery.from(metadata, entity).select(selected.toArray(FieldId[]::new));
         equals.forEach(query::whereEq);
         var operation = query.build();
-        var authorizer = new SemanticAuthorizer(SupplyChainPolicy.create(this, caller));
+        var authorizer = new SemanticAuthorizer(SupplyChainPolicy.create(metadata, caller));
         var semanticPlan = planner.plan(contract, authorizer.authorizeWithEvidence(contract, operation));
         return new OrmPlanCompiler(provider, registry).compile(ExecutionIRCompiler.compile(semanticPlan));
     }

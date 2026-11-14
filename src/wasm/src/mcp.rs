@@ -13,7 +13,7 @@ use serde_json::{json, Map, Value};
 pub const DEFAULT_PROTOCOL_VERSION: &str = "2025-06-18";
 pub const SESSION_HEADER: &str = "Mcp-Session-Id";
 pub const PROTOCOL_HEADER: &str = "MCP-Protocol-Version";
-pub const DEFAULT_USER_AGENT: &str = "foundgine-sdk-wasm/3.3.4";
+pub const DEFAULT_USER_AGENT: &str = "foundgine-sdk-wasm/3.3.5";
 pub const DEFAULT_RECONNECT_DELAY_MS: u64 = 1000;
 const ACCEPT_BOTH: &str = "application/json, text/event-stream";
 const ACCEPT_STREAM: &str = "text/event-stream";
@@ -132,7 +132,7 @@ impl McpProtocol {
             "params": {
                 "protocolVersion": self.requested_version,
                 "capabilities": {},
-                "clientInfo": { "name": "foundgine-wasm", "version": "3.3.4" }
+                "clientInfo": { "name": "foundgine-wasm", "version": "3.3.5" }
             }
         });
         let request = HttpRequest { method: "POST", url: self.url.clone(), headers: self.headers(None, true, ACCEPT_BOTH, token), body: Some(payload.to_string()) };

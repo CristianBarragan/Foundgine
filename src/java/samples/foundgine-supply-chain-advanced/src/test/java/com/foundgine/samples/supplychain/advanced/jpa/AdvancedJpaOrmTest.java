@@ -16,7 +16,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 /**
- * Database-free checks for the advanced {@link FoundgineOrm}: generated maps cover both mapped entities with an
+ * Database-free checks for the advanced {@link FoundgineOrm}: generated maps cover the three mapped entities with an
  * identifier, the build fails closed, and the model-declared relationship is reachable through the plan path.
  * Test definitions only: not executed where they were written.
  */
@@ -26,10 +26,10 @@ class AdvancedJpaOrmTest {
     }
 
     @Test
-    void generatedMapsAndModelsCoverBothEntities() {
-        assertEquals(Set.of("Warehouse", "InventoryLot"), GeneratedOrmMaps.entityTypes().keySet());
+    void generatedMapsAndModelsCoverEveryMappedEntity() {
+        assertEquals(Set.of("Warehouse", "InventoryLot", "Product"), GeneratedOrmMaps.entityTypes().keySet());
         var orm = AdvancedJpaOrm.build();
-        assertEquals(2, orm.registry().all().size());
+        assertEquals(3, orm.registry().all().size());
         for (var mapping : orm.registry().all()) {
             assertEquals("id", orm.model(mapping).idAttribute(), mapping.name());
         }

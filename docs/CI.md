@@ -4,7 +4,7 @@ This page describes the repository checks that protect the .NET 10 and Java 27 i
 
 ## Canonical release version
 
-`Directory.Build.props` is the canonical .NET package version source. The build workflow parses it as XML (rather than using a shell regular expression), currently reads `3.3.4`, and rejects a Git tag whose version differs. Java's Maven reactor uses `src/java/pom.xml` with the same release version; CI uses a run-scoped `3.3.4-ci.<run-number>` revision for non-release builds.
+`Directory.Build.props` is the canonical .NET package version source. The build workflow parses it as XML (rather than using a shell regular expression), currently reads `3.3.5`, and rejects a Git tag whose version differs. Java's Maven reactor uses `src/java/pom.xml` with the same release version; CI uses a run-scoped `3.3.5-ci.<run-number>` revision for non-release builds.
 
 ## .NET build
 
@@ -18,11 +18,13 @@ The Java reactor is `src/java/pom.xml`. CI installs Temurin 27 and runs:
 mvn --file src/java/pom.xml \
   --batch-mode --no-transfer-progress --errors \
   -Dgpg.skip=true \
-  -Drevision=3.3.4-ci.<run-number> \
+  -Drevision=3.3.5-ci.<run-number> \
   clean package
 ```
 
 The reactor contains the core, runtime, providers, extensions, red-team verification and runnable samples. The PostgreSQL E2E job runs the reactor's verification lifecycle with Docker available.
+
+The Advanced sample also contains an opt-in PostgreSQL 16 schema-catalog parity test. To enable it, point `FOUNDGINE_POSTGRES16_JDBC_URL` (and optionally `FOUNDGINE_POSTGRES16_USER` / `FOUNDGINE_POSTGRES16_PASSWORD`) at a disposable PostgreSQL 16 database. It applies the handwritten V1 and fluent-generated schema into isolated schemas and compares the resulting catalog projections. This is a separate gate from ordinary compilation and must be run before adopting generated migrations as the Advanced sample's physical baseline.
 
 ## CodeQL
 

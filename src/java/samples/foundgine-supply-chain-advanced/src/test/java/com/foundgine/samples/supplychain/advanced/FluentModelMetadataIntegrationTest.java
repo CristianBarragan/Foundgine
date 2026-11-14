@@ -106,16 +106,16 @@ class FluentModelMetadataIntegrationTest {
                 Map.ofEntries(
                         Map.entry("Supplier.purchaseOrders", new Object[] {"id", "supplierId", true}),
                         Map.entry("PurchaseOrder.supplier", new Object[] {"supplierId", "id", false}),
-                        Map.entry("Warehouse.inventory", new Object[] {"id", "warehouseId", true}),
-                        Map.entry("InventoryLot.warehouse", new Object[] {"warehouseId", "id", false}),
-                        Map.entry("Warehouse.businessUnit", new Object[] {"businessUnitId", "id", false}),
-                        Map.entry("Product.components", new Object[] {"id", "parentProductId", true}),
+                        Map.entry("Warehouse.inventory", new Object[] {"warehouse_id", "warehouse_id", true}),
+                        Map.entry("InventoryLot.warehouse", new Object[] {"warehouse_id", "warehouse_id", false}),
+                        Map.entry("Warehouse.businessUnit", new Object[] {"business_unit_id", "id", false}),
+                        Map.entry("Product.components", new Object[] {"product_id", "parentProductId", true}),
                         Map.entry(
                                 "Product.usedInComponents",
-                                new Object[] {"id", "componentProductId", true}),
+                                new Object[] {"product_id", "componentProductId", true}),
                         Map.entry(
                                 "ProductComponent.componentProduct",
-                                new Object[] {"componentProductId", "id", false}),
+                                new Object[] {"componentProductId", "product_id", false}),
                         Map.entry("PurchaseOrder.lines", new Object[] {"id", "purchaseOrderId", true}),
                         Map.entry(
                                 "PurchaseOrderLine.purchaseOrder",

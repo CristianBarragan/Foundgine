@@ -370,9 +370,9 @@ contract against real PostgreSQL instead of the in-memory fixture, using:
 - A `request_fingerprint` column on `supply_chain_idempotency`, checked with `FOR SHARE` before any
   write — the SQL-level version of the in-memory service's fingerprint check.
 - The same schema shape as the C# sample's PostgreSQL tables, adapted to this sample's entities —
-  see `src/main/resources/database/schema.sql` (`customers`, `products`, `warehouses`,
+  see `src/main/resources/db/migration/V1__supply_chain_advanced.sql` (`customers`, `products`, `warehouses`,
   `inventory_lots`, `orders`, `order_items`, `order_allocations`, `supply_chain_idempotency`,
-  `supply_chain_cancellation_idempotency`) and `seed.sql` for the deterministic fixture data,
+  `supply_chain_cancellation_idempotency`) and `db/demo/R__demo_data.sql` for the deterministic fixture data,
   matching `SupplyChainData.seed()` row for row.
 
 `postgres/PostgresAdvancedMutationProvider.java` is the `IMutationBatchExecutionProvider`
@@ -380,14 +380,12 @@ implementation that plugs `PostgresSupplyChainStore` into `AdvancedMutationPipel
 in-memory `DomainMutationProvider` — swap it in when you construct the pipeline against a real
 `Connection` and every guarantee above holds against PostgreSQL instead of a `List` in memory.
 
-Apply the schema and seed once PostgreSQL is up:
-
-```bash
-docker exec -i $(docker compose ps -q postgres) \
-  psql -U foundgine -d foundgine_supply_chain < src/main/resources/database/schema.sql
-docker exec -i $(docker compose ps -q postgres) \
-  psql -U foundgine -d foundgine_supply_chain < src/main/resources/database/seed.sql
-```
+The schema is currently owned by the handwritten Flyway baseline. The repository now includes
+`foundgine-migrations` and uses it for the starter sample, but the Advanced model is not yet
+reconciled with its physical tables; do not generate or apply an Advanced migration until the
+[Advanced schema audit](./ADVANCED-SCHEMA-AUDIT.md) is completed. With PostgreSQL up, the JPA path
+(`AdvancedJpaReads`) applies them on start: `SUPPLYCHAIN_MIGRATE_ON_START` (default true) runs `db/migration`, and
+`SUPPLYCHAIN_SEED_DEMO` (default true here) also runs the repeatable demo data in `db/demo`. Hibernate only validates.
 
 ---
 

@@ -6,6 +6,3 @@ services:
       POSTGRES_USER: benchmark
       POSTGRES_PASSWORD: benchmark
     ports: ["4429:5432"]
-    volumes:
-      - ./src/main/resources/database/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql:ro
-      - ./src/main/resources/database/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql:ro

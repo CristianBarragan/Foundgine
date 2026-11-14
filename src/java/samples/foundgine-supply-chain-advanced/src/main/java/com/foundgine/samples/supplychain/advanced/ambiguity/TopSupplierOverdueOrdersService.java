@@ -344,7 +344,7 @@ public final class TopSupplierOverdueOrdersService {
     // pg_trgm's % operator: true when trigram similarity clears the
     // (session-configurable, default 0.3) similarity threshold. Ships in
     // every stock PostgreSQL image's contrib modules and is provisioned by
-    // schema.sql (CREATE EXTENSION IF NOT EXISTS pg_trgm).
+    // V1__supply_chain_advanced.sql (CREATE EXTENSION IF NOT EXISTS pg_trgm).
     private List<Map<String, Object>> tryFuzzy(String state, String supplierName) {
         try (var stmt =
                 connection.prepareStatement(

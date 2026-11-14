@@ -59,6 +59,11 @@ final class ConfigurationDefinitions {
         String columnName;
         Integer maxLength;
         boolean required;
+        String sqlType;
+        Integer precision;
+        Integer scale;
+        String defaultExpression;
+        String identityGeneration;
 
         ColumnDefinition(MemberRef member) {
             this.member = member;
@@ -77,6 +82,11 @@ final class ConfigurationDefinitions {
         final List<ColumnDefinition> columns = new ArrayList<>();
         /** Each entry is the member list of one index. */
         final List<List<MemberRef>> indexes = new ArrayList<>();
+        /** Name and uniqueness of each index, parallel to {@link #indexes}. */
+        final List<IndexOptions> indexOptions = new ArrayList<>();
+        final List<ForeignKeyDefinition> foreignKeys = new ArrayList<>();
+        final List<CheckDefinition> checks = new ArrayList<>();
+        final List<String> extensions = new ArrayList<>();
 
         PersistenceDefinition(Class<?> entityType) {
             this.entityType = entityType;
@@ -90,6 +100,10 @@ final class ConfigurationDefinitions {
             return created;
         }
     }
+
+    record IndexOptions(String name, boolean unique, String method, String operatorClass) {}
+    record ForeignKeyDefinition(String name, List<MemberRef> columns, String referencedTable, List<String> referencedColumns, String onDelete, String onUpdate) {}
+    record CheckDefinition(String name, String expression) {}
 
     record MemberPair(MemberRef model, MemberRef entity) {}
 
