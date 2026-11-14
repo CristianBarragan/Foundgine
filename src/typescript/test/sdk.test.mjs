@@ -87,21 +87,39 @@ test('404 on an MCP session expires it and the next call initializes again', asy
 
 test('SSE parser reads all shared frame-format vectors as individual payload lines', async () => {
   const fs = await import('node:fs/promises');
-  const path = new URL('../../../conformance/mcp-sse-scenarios.json', import.meta.url);
-  const vectors = JSON.parse(await fs.readFile(path, 'utf8'));
-  const scenario = vectors.scenarios.find((s) => s.name === 'frame format keeps payload lines apart');
+  const path = await import('node:path');
+  const { fileURLToPath } = await import('node:url');
+
+  const conformanceDir = process.env.FOUNDGINE_CONFORMANCE_DIR
+    ?? path.resolve(fileURLToPath(new URL('../../conformance/', import.meta.url)));
+
+  const vectorsPath = path.join(conformanceDir, 'mcp-sse-scenarios.json');
+  const vectors = JSON.parse(await fs.readFile(vectorsPath, 'utf8'));
+
+  const scenario = vectors.scenarios.find(
+    (s) => s.name === 'frame format keeps payload lines apart',
+  );
+
   assert.ok(scenario);
+
   for (const step of scenario.steps.filter((s) => s.op === 'format')) {
     const parser = new SseParser();
     const expected = step.expect;
     const whole = parser.push(expected);
+
     assert.equal(whole.length, 1, step.name ?? step.sequence);
     assert.equal(whole[0].id, step.sequence);
+
     const expectedData = step.data.replace(/\r\n|\r|\n/g, '\n');
     assert.equal(whole[0].data, expectedData);
+
     const split = new SseParser();
     const chunked = [];
-    for (const char of expected) chunked.push(...split.push(char));
+
+    for (const char of expected) {
+      chunked.push(...split.push(char));
+    }
+
     assert.deepEqual(chunked, whole);
   }
 });
