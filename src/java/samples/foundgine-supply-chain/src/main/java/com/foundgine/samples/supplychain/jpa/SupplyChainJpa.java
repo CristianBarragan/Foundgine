@@ -10,7 +10,6 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * JPA + PostgreSQL execution for the starter, on the fluent {@link FoundgineOrm} configuration
@@ -23,8 +22,10 @@ public final class SupplyChainJpa implements AutoCloseable {
     private final EntityManagerFactory emf;
     private final FoundgineOrm<Authorization.Context> orm = SupplyChainOrm.build();
 
+    /** Applies pending Flyway migrations first (see {@link SupplyChainDatabase#migrateFromEnvironment}). */
     public SupplyChainJpa() {
-        this.emf = Persistence.createEntityManagerFactory("foundgine-supply-chain", connectionProperties());
+        SupplyChainDatabase.migrateFromEnvironment();
+        this.emf = Persistence.createEntityManagerFactory("foundgine-supply-chain", SupplyChainDatabase.jpaProperties());
     }
 
     /** The configured ORM: reader, typed repositories, generic entity gateway, dry-run planning. */
@@ -52,18 +53,6 @@ public final class SupplyChainJpa implements AutoCloseable {
 
     public EntityManager openEntityManager() {
         return emf.createEntityManager();
-    }
-
-    private static Map<String, Object> connectionProperties() {
-        return Map.of(
-                "jakarta.persistence.jdbc.url", env("SUPPLYCHAIN_JDBC_URL", "jdbc:postgresql://localhost:4429/foundgine_supply_chain"),
-                "jakarta.persistence.jdbc.user", env("SUPPLYCHAIN_JDBC_USER", "benchmark"),
-                "jakarta.persistence.jdbc.password", env("SUPPLYCHAIN_JDBC_PASSWORD", "benchmark"));
-    }
-
-    private static String env(String key, String fallback) {
-        var v = System.getenv(key);
-        return v == null || v.isBlank() ? fallback : v;
     }
 
     @Override

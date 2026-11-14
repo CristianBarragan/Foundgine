@@ -1,23 +1,88 @@
-# foundgine-sdk-wasm (Rust, WebAssembly)
+# foundgine (Rust, WebAssembly)
 
-Thin WebAssembly client core for Foundgine MCP and Temporal workflow HTTP transports. It mirrors
-[`@foundgine/sdk`](../../typescript/foundgine-sdk) and [`foundgine-sdk`](../../python/foundgine-sdk) module for
-module. It hosts no MCP server and has no business logic.
+A thin WebAssembly client core for Foundgine MCP and Temporal workflow HTTP transports.
 
-**Status: development, checkpoint 4.** The Rust core, the wasm-bindgen layer and the ES-module wrapper are built and
-tested together: 53 Rust unit tests, and a Node harness (29 tests) that drives the compiled `.wasm` against a real
-in-process HTTP server. Not yet run in CI or against a real Foundgine server.
+Requires Rust (`wasm32-unknown-unknown` target), `wasm-bindgen-cli` (`=0.2.92`), and Node.js 20+.
+
+## Install
 
 ```sh
-cd src/wasm/foundgine-sdk-wasm
+cd src/wasm/
 cargo test                                   # native; also runs the shared SSE vectors
 rustup target add wasm32-unknown-unknown
-cargo install wasm-bindgen-cli --version 0.2.92 --locked   # must equal the wasm-bindgen crate version (=0.2.92)
+cargo install wasm-bindgen-cli --version 0.2.92 --locked   # must match the wasm-bindgen crate version (=0.2.92)
 npm run build                                # cargo build --release --target wasm32 + wasm-bindgen -> pkg/
-npm test                                     # Node >= 20: the harness in test/
+npm test                                     # Node >= 20: runs the harness in test/
 ```
 
-## Parity map
+## MCP client
+
+```js
+import { FoundgineClient, init } from "@foundgine/wasm";
+
+await init(); // loads the .wasm once (Node reads it from disk, browsers fetch it)
+const client = new FoundgineClient({
+  baseUrl: "https://example.invalid",
+  token: async () => process.env.FOUNDGINE_TOKEN,
+  fetch, // optional; defaults to globalThis.fetch
+});
+
+try {
+  const tools = await client.listCapabilities(); // canonical cross-SDK name; follows nextCursor
+  const result = await client.execute("query_semantic", { entity: "Customer", limit: 20 }); // result.isError is data, not a throw
+  console.log(tools, result.content, result.isError);
+} finally {
+  await client.close();
+}
+```
+
+`token` may be a string or a sync/async provider; it is resolved for every HTTP request (separately for `initialize` and `notifications/initialized`). The SDK uses the supplied `fetch` implementation when provided, otherwise `globalThis.fetch`. Backwards-compatible aliases `client.listTools()` and `client.callTool(...)` are also provided.
+
+## Notifications
+
+```js
+const controller = new AbortController();
+for await (const message of client.mcp.notifications({ signal: controller.signal })) {
+  console.log(message);
+}
+```
+
+The notification stream resumes using `Last-Event-ID` after a clean end of stream (not after errors). Stop it with the supplied `AbortSignal`, which throws `FoundgineAbortError`.
+
+## Temporal workflows
+
+The workflow client follows the HTTP routes exposed by Foundgine Temporal:
+
+```js
+const { started, watch } = await client.workflows.startAndWatch(
+  "order-approval",
+  "order-1042",
+  { orderId: "order-1042" },
+  { intervalMs: 1_000, timeoutMs: 120_000 },
+);
+console.log(started.workflowId);
+for await (const status of watch.updates()) {
+  console.log(status.temporalStatus);
+}
+const finalStatus = await watch.done;
+```
+
+The catalog can also be inspected before starting work:
+
+```js
+const names = await client.workflows.processes();
+const definition = await client.workflows.describe(names[0]);
+console.log(definition.steps.map((step) => [step.name, step.requiresApproval]));
+```
+
+Also available: `processes`, `describe`, `start`, `status`, `decide`, `cancel`, `waitForCompletion`, and `watch`. Catalog descriptions expose safe step metadata only; internal operation identifiers are not returned by the server. `watch()` returns immediately; its `updates()` iterator replays distinct observed states to late consumers. `watch.stop()` rejects `done` with `FoundgineAbortError`, and `watch.updates()` throws the failure (including an abort) once the history is replayed. Process and business-key path segments are percent-encoded. `decide` has no caller-identity field: the server stamps the decision subject from its trusted security context.
+
+## Architecture and parity map
+
+- **Sans-IO core.** Request building, response interpretation, SSE parsing, error mapping, and the workflow state machine are pure Rust (`src/`). The same code runs natively in unit tests and compiles to `wasm32`.
+- **Host-injected I/O.** Like `@foundgine/wasm`'s `fetch` option, the JS host passes its own `fetch` (browser, Worker, Deno, or Node 20+). The crate never opens sockets, so there is no WASI networking dependency.
+- **Layered boundary.** Pure Rust modules (no I/O) $\rightarrow$ `src/bindings.rs` (`wasm-bindgen`; JSON strings in and out, errors thrown as JSON `{name, message, status?, ...}`) $\rightarrow$ `js/` wrapper (everything requiring `fetch`, a clock, or an `AbortSignal`). `pkg/` is build output and is not committed.
+- **Wire JSON stays camelCase**; the Rust API is `snake_case`, as in Python.
 
 | TypeScript | Python | Rust (this crate) | Checkpoint |
 |---|---|---|---|
@@ -30,55 +95,20 @@ npm test                                     # Node >= 20: the harness in test/
 | `fetch` option | `http_client=` | `bindings.rs` (JSON-string boundary) + `js/` wrapper: injected `fetch`, tokens, abort, sleeping, stream reading | 4 |
 | `FoundgineClient`, `client.mcp`, `client.workflows`, async iterators | same shape | `js/client.js`, `js/mcp.js`, `js/workflows.js`, typed in `js/index.d.ts` | 4 |
 
-## Using it from JavaScript
+## Deliberate differences and parity gaps
 
-```js
-import { FoundgineClient, init } from "@foundgine/sdk-wasm";
-
-await init();                                   // loads the .wasm once (Node reads it from disk, browsers fetch it)
-const client = new FoundgineClient({
-  baseUrl: "https://foundgine.example.com",
-  token: async () => getToken(),                // a string, or a function called once per HTTP request
-  fetch,                                        // optional; defaults to globalThis.fetch
-});
-
-const tools = await client.listCapabilities();  // canonical cross-SDK name; follows nextCursor
-const result = await client.execute("echo", { text: "hi" });   // result.isError is data, not a throw
-// Backwards-compatible aliases: client.listTools() and client.callTool(...)
-
-for await (const message of client.mcp.notifications({ signal })) { /* server-to-client messages */ }
-
-const { watch } = await client.workflows.startAndWatch("order", "order-17", { sku: 1 }, { intervalMs: 1000 });
-for await (const status of watch.updates()) console.log(status.temporalStatus);
-await client.close();
-```
-
-The layers, from the bottom: pure Rust modules (no I/O) -> `src/bindings.rs` (wasm-bindgen; JSON strings in and out,
-errors thrown as JSON `{name, message, status?, ...}`) -> `js/` (everything that needs `fetch`, a clock or an
-`AbortSignal`). `pkg/` is build output and is not committed.
-
-## Remaining choices and parity gaps
-
-The TypeScript and Python sources are now available in the same repository. The following details remain intentionally
-different or need explicit parity work:
-
-- `workflows.decide(process, key, step, approved, { reason })` takes positional arguments (as `decision_request` does).
+- `workflows.decide(process, key, step, approved, { reason })` takes positional arguments (matching `decision_request`).
 - `watch.stop()` rejects `done` with `FoundgineAbortError`; `watch.updates()` throws the failure (including an abort) once the history is replayed.
 - `mcp.notifications()` throws `FoundgineAbortError` when its signal aborts, and reconnects only after a clean end of stream (not after errors).
 - `mcp.request()` on abort sends a best-effort `notifications/cancelled` and throws `FoundgineAbortError`.
 - The handshake resolves the token separately for `initialize` and `notifications/initialized` (per HTTP request).
 - Status objects gain an `isFinished` field; `describe()` steps use `null` (not `undefined`) for a missing `approvalTimeoutSeconds`.
+- Non-JSON error bodies are truncated at 200 Unicode scalar values (`@foundgine/sdk` uses 200 UTF-16 code units).
+- Watch de-duplication compares the raw status object ignoring key order (`@foundgine/sdk` compares `JSON.stringify`, which is key-order sensitive).
+- `retry:` values too large for `u64` are ignored (`@foundgine/wasm` keeps a float).
 
-## Design
+## Status and known limits
 
-- **Sans-IO core.** Request building, response interpretation, SSE parsing, error mapping and the workflow
-  state machine are pure Rust. The same code runs natively (tests) and in `wasm32`.
-- **Host-injected I/O.** Like the TS `fetch` option, the JS host passes its own `fetch` (browser, Worker, Deno,
-  Node 20+; tested on Node 22 here, CI uses 20). The crate never opens sockets, so there is no WASI networking dependency.
-- **Wire JSON stays camelCase**; the Rust API is snake_case, as in Python.
+Implemented and tested (checkpoint 4): typed errors, SSE parser (including shared SSE vectors), MCP session initialization, JSON-RPC requests, paged capability listing, tool execution, cancellation, resumable notification streaming, Temporal start/status/decision/cancel routes, workflow polling/watch helpers, the `wasm-bindgen` layer, and the ES-module wrapper—backed by 53 Rust unit tests and a 29-test Node harness driving the compiled `.wasm` against a real in-process HTTP server.
 
-## Remaining deliberate differences and parity gaps
-
-- Non-JSON error bodies are cut at 200 Unicode scalar values (TS: 200 UTF-16 code units).
-- Watch de-duplication compares the raw status object ignoring key order (TS compares `JSON.stringify`, which is key-order sensitive).
-- `retry:` values too large for `u64` are ignored (TS keeps a float).
+Not yet done or verified: running in CI or against a real Foundgine server. Developed and tested on Node 22 (CI targets Node 20). This is a development package, not a release-ready SDK.

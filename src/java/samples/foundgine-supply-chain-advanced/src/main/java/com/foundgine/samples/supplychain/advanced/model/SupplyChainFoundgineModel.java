@@ -45,6 +45,14 @@ public final class SupplyChainFoundgineModel extends FoundgineModel {
         model.configure(PersistenceConfigurations.InventoryMovementStorage.class);
         model.configure(PersistenceConfigurations.ProductionOutputStorage.class);
         model.configure(PersistenceConfigurations.ComplianceIncidentStorage.class);
+        model.configure(PersistenceConfigurations.CustomerRowStorage.class);
+        model.configure(PersistenceConfigurations.OrderRowStorage.class);
+        model.configure(PersistenceConfigurations.OrderItemRowStorage.class);
+        model.configure(PersistenceConfigurations.OrderAllocationRowStorage.class);
+        model.configure(PersistenceConfigurations.IdempotencyRowStorage.class);
+        model.configure(PersistenceConfigurations.CancellationIdempotencyRowStorage.class);
+        model.configure(PersistenceConfigurations.SupplierRowStorage.class);
+        model.configure(PersistenceConfigurations.PurchaseOrderRowStorage.class);
 
         model.configure(EntityMaps.CompanyMap.class);
         model.configure(EntityMaps.BusinessUnitMap.class);

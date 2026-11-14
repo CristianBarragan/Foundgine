@@ -35,6 +35,21 @@
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
+    <!-- Schema migrations: db/migration/V*.sql, applied by SupplyChainDatabase (Hibernate only validates). -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+    <!-- EF-style migrations: generates db/migration/V*.sql from the fluent model (run through migrations.sh / .cmd). -->
+    <dependency>
+      <groupId>io.github.cristianbarragan</groupId>
+      <artifactId>foundgine-migrations</artifactId>
+      <version>${revision}</version>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -62,7 +77,6 @@
         <configuration>
           <compilerArgs>
             <arg>-Afoundgine.generated.package=com.foundgine.samples.supplychain.generated</arg>
-            <arg>-Afoundgine.generated.name=GeneratedFoundgineMetadata</arg>
           </compilerArgs>
 
           <annotationProcessorPaths>

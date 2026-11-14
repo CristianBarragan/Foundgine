@@ -8,19 +8,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.foundgine.core.abstractions.FieldId;
 import com.foundgine.core.execution.CancellationToken;
+import com.foundgine.core.execution.ExecutionContext;
 import com.foundgine.core.execution.ExecutionRow;
 import com.foundgine.core.semantic.authorization.SemanticAuthorizationException;
 import com.foundgine.providers.storage.orm.InMemoryOrmQuerySource;
 import com.foundgine.providers.storage.orm.OrmExecutionProvider;
 import com.foundgine.providers.storage.orm.jpa.FoundgineOrm;
 import com.foundgine.samples.supplychain.Authorization;
-import com.foundgine.samples.supplychain.generated.GeneratedFoundgineMetadata;
 import com.foundgine.samples.supplychain.generated.GeneratedJpaModels;
 import com.foundgine.samples.supplychain.generated.GeneratedOrmMaps;
+import com.foundgine.samples.supplychain.model.SupplyChainFoundgineModel;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -37,7 +39,7 @@ class SupplyChainOrmTest {
 
     private static FoundgineOrm.Builder<Authorization.Context> bare() {
         return FoundgineOrm.<Authorization.Context>configure()
-                .metadata(GeneratedFoundgineMetadata.build())
+                .metadata(new SupplyChainFoundgineModel().build())
                 .entities(GeneratedOrmMaps.entityTypes())
                 .attributeNaming(FoundgineOrm.AttributeNaming.CAMEL_CASE);
     }
@@ -116,6 +118,38 @@ class SupplyChainOrmTest {
         var operatorRows = new OrmExecutionProvider("orm-jpa", source, orm.registry())
                 .execute(operatorPlan, SupplyChainPolicy.executionContext(operator), CancellationToken.NONE).rows();
         assertFalse(operatorRows.get(0).values().containsKey("riskScore"), "unauthorized field is dropped");
+    }
+
+    @Test
+    void aCallerFilterOnAnotherTenantCannotWidenAccess() {
+        var orm = SupplyChainOrm.build();
+        var source = new InMemoryOrmQuerySource();
+        seed(orm, source, 1, "Acme Components", "US", "tenant-a");
+        seed(orm, source, 3, "Other Tenant Ltd", "US", "tenant-b");
+        var analyst = caller("tenant-a", Authorization.Role.ANALYST);
+        var plan = orm.plan(analyst, "Supplier", q -> q.select("Id", "Name").whereEq("TenantId", "tenant-b"));
+        var rows = new OrmExecutionProvider("orm-jpa", source, orm.registry())
+                .execute(plan, SupplyChainPolicy.executionContext(analyst), CancellationToken.NONE).rows();
+        assertTrue(rows.isEmpty(), "the tenant predicate is ANDed onto the caller's own filter");
+    }
+
+    @Test
+    void aMissingTenantValueFailsClosed() {
+        var orm = SupplyChainOrm.build();
+        var source = new InMemoryOrmQuerySource();
+        seed(orm, source, 1, "Acme Components", "US", "tenant-a");
+        var plan = orm.plan(caller("tenant-a", Authorization.Role.ANALYST), "Supplier", q -> q.select("Id"));
+        var provider = new OrmExecutionProvider("orm-jpa", source, orm.registry());
+        assertThrows(IllegalStateException.class,
+                () -> provider.execute(plan, new ExecutionContext(Map.of()), CancellationToken.NONE));
+    }
+
+    @Test
+    void fluentModelDeclaresTheThreeMappedEntitiesAndTheirAliases() {
+        var metadata = new SupplyChainFoundgineModel().build();
+        var names = new java.util.ArrayList<String>();
+        metadata.entities().forEach(e -> names.add(e.name()));
+        assertEquals(java.util.Set.of("Supplier", "Warehouse", "Product"), new java.util.HashSet<>(names));
     }
 
     @Test

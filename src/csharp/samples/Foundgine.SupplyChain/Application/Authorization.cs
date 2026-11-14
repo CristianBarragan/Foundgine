@@ -4,6 +4,9 @@ public interface ICapabilityAuthorizer
 {
     void Demand(string actor, string token, string capability, int? customerId = null);
     void Authenticate(string actor, string token);
+
+    /// <summary>The capabilities granted to an actor (one table, used by Demand and describe_capabilities).</summary>
+    IReadOnlyCollection<string> Capabilities(string actor);
 }
 
 public sealed class SupplyChainAuthorizer : ICapabilityAuthorizer
@@ -36,6 +39,25 @@ public sealed class SupplyChainAuthorizer : ICapabilityAuthorizer
         "get_my_orders", "get_order", "get_shipment", "place_order", "cancel_order"
     };
 
+    private static readonly string[] CustomerCapabilities =
+        ["get_my_orders", "get_order", "get_product", "get_shipment", "place_order", "cancel_order"];
+
+    private static readonly Dictionary<string, string[]> Grants = new(StringComparer.Ordinal)
+    {
+        ["alice"] = CustomerCapabilities,
+        ["bob"] = [.. CustomerCapabilities, "list_customers"],
+        ["carol"] = ["get_product", "get_inventory", "update_inventory", "create_shipment", "update_shipment"],
+        ["dave"] = ["get_product", "get_inventory", "list_products", "list_suppliers", "update_inventory", "manage_reference_data"],
+        ["admin"] =
+        [
+            .. CustomerCapabilities, "list_customers", "get_inventory", "update_inventory", "create_shipment",
+            "update_shipment", "list_products", "list_suppliers", "manage_reference_data"
+        ],
+    };
+
+    public IReadOnlyCollection<string> Capabilities(string actor) =>
+        Grants.TryGetValue(actor, out var granted) ? granted : [];
+
     public void Authenticate(string actor, string token)
     {
         if (string.IsNullOrEmpty(actor)
@@ -53,28 +75,9 @@ public sealed class SupplyChainAuthorizer : ICapabilityAuthorizer
     {
         Authenticate(actor, token);
 
-        var allowed = actor switch
-        {
-            "alice" => new[]
-                { "get_my_orders", "get_order", "get_product", "get_shipment", "place_order", "cancel_order" },
-            "bob" => new[]
-            {
-                "get_my_orders", "get_order", "get_product", "get_shipment", "place_order", "cancel_order",
-                "list_customers"
-            },
-            "carol" => new[]
-                { "get_product", "get_inventory", "update_inventory", "create_shipment", "update_shipment" },
-            "dave" => new[] { "get_product", "get_inventory", "list_products", "list_suppliers", "update_inventory" },
-            "admin" => new[]
-            {
-                "get_my_orders", "get_order", "get_product", "get_shipment", "place_order", "cancel_order",
-                "list_customers", "get_inventory", "update_inventory", "create_shipment", "update_shipment",
-                "list_products", "list_suppliers"
-            },
-            _ => Array.Empty<string>()
-        };
+        var allowed = Capabilities(actor);
 
-        if (!allowed.Contains(capability, StringComparer.Ordinal))
+        if (!allowed.Contains(capability))
             throw new UnauthorizedAccessException($"Actor '{actor}' is not authorized for capability '{capability}'.");
 
         // Ownership check now applies to EVERY actor for EVERY customer-scoped

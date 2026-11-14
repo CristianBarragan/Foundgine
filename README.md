@@ -239,13 +239,15 @@ Foundgine's architecture is specified independently of this implementation as th
 - [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, AOT, auditing and operations.
 - [Website](https://cristianbarragan.github.io/Foundgine/docs-site/) · [`CHANGELOG.md`](CHANGELOG.md)
 
-## Release 3.3.4
+## Release 3.3.5
 
-**Current release: 3.3.4 · .NET 10, Java 27 and aligned client SDK packages**
+**Current release: 3.3.5 · .NET 10, Java 27 and aligned client SDK packages**
 
-Foundgine 3.3.4 is a cross-SDK maintenance release. It carries the TypeScript, Python and Rust/WASM transport-client parity improvements: canonical capability/tool aliases in the Rust facade, consistent URL path encoding and joining, and configurable notification replay/reconnect options. It also fixes Python Ruff lint and formatting failures, and corrects CI test-report checks so they verify executed .NET tests and the real Java Temporal workflow test report.
+Foundgine 3.3.5 advances the Supply Chain persistence path across the .NET and Java samples and adds Java model-derived PostgreSQL migrations. The Java fluent persistence metadata now carries defaults, identity generation, named/composite foreign keys and referential actions, CHECK constraints, index access methods/operator classes, and required PostgreSQL extensions into the migration schema, differ and SQL generator. The starter and Advanced samples now include physical-schema projections, migration snapshots/history, rollback generation and schema-parity tests.
 
-The platform release version is aligned across .NET, Java, MCP manifests, package-install examples, documentation and the TypeScript/Python/Rust-WASM package metadata. The client SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface. Known parity gaps and release gates are documented in [`SDK-PARITY.md`](SDK-PARITY.md). See [`RELEASE-NOTES-3.3.4.md`](RELEASE-NOTES-3.3.4.md) and [`CHANGELOG.md`](CHANGELOG.md) for details.
+The release also includes the Java fluent-model/JPA integration updates and the .NET Supply Chain starter's typed semantic query and persistence/sample improvements. Version metadata is aligned across .NET, Java/Maven, MCP manifests, TypeScript, Python and Rust/WASM client metadata. The transport SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface. See [`RELEASE-NOTES-3.3.5.md`](RELEASE-NOTES-3.3.5.md), [`CHANGELOG.md`](CHANGELOG.md), and [`SDK-PARITY.md`](SDK-PARITY.md).
+
+**Release gate:** this archive is prepared, not yet publication-cleared. The latest Advanced Java test fixes and PostgreSQL 16 catalog-parity test still require a JDK 27 Maven run and PostgreSQL 16 verification on the final source tree. Do not tag or publish until the required CI gates pass.
 
 ## License
 

@@ -11,10 +11,12 @@ import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import java.util.Map;
 
 /**
- * Read policy for the advanced JPA path (Warehouse and InventoryLot).
+ * Read policy for the advanced JPA path (Warehouse, InventoryLot and Product). Writes go through
+ * {@code application/AdvancedCrud}, which adds the write and tenant rules on top of this read policy.
  *
  * <ul>
- *   <li>A {@code CUSTOMER} may read neither entity; every other role may read both.
+ *   <li>Every role may read {@code Product}; a {@code CUSTOMER} may read neither Warehouse nor InventoryLot, every
+ *       other role may read all three.
  *   <li>{@code Warehouse} rows carry the predicate {@code resource.tenantId == context.tenantId}, ANDed onto the
  *       query by the ORM provider. {@code InventoryLot} has no tenant column, so lots are reachable only through
  *       their (tenant-filtered) warehouse and are never read as a root.
@@ -31,10 +33,12 @@ public final class AdvancedJpaPolicy {
             com.foundgine.core.semantic.metadata.MetadataRegistry metadata, Authorization.Context caller) {
         var warehouse = entityId(metadata, "Warehouse");
         var lot = entityId(metadata, "InventoryLot");
+        var product = entityId(metadata, "Product");
         var config = new SemanticAuthorizationConfiguration()
                 .addEntityRule((ctx, entity, op) -> op == AuthorizationOperation.READ
-                        && (entity.equals(warehouse) || entity.equals(lot))
-                        && caller.role() != Authorization.Role.CUSTOMER)
+                        && (entity.equals(product)
+                                || ((entity.equals(warehouse) || entity.equals(lot))
+                                        && caller.role() != Authorization.Role.CUSTOMER)))
                 .addFieldRule((ctx, entity, field, op) -> op == AuthorizationOperation.READ)
                 .addRelationshipRule((ctx, entity, relationship, op) -> op == AuthorizationOperation.READ)
                 .addPredicateRule((ctx, entity, op) ->

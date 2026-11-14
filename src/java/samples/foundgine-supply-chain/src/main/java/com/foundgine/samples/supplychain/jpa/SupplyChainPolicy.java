@@ -33,17 +33,7 @@ public final class SupplyChainPolicy {
 
     private SupplyChainPolicy() {}
 
-    public static ConfiguredSemanticAuthorizationPolicy create(
-            SupplyChainSemantics semantics, Authorization.Context caller) {
-        return create(
-                semantics.entity("Supplier").entityId(),
-                semantics.entity("Warehouse").entityId(),
-                semantics.entity("Product").entityId(),
-                semantics.field("Supplier", "riskScore"),
-                caller);
-    }
-
-    /** Metadata-addressed form used by {@link SupplyChainOrm} (the {@code FoundgineOrm} authorization binding). */
+    /** Metadata-addressed policy used by {@link SupplyChainOrm} (the {@code FoundgineOrm} authorization binding). */
     public static ConfiguredSemanticAuthorizationPolicy create(
             com.foundgine.core.semantic.metadata.MetadataRegistry metadata, Authorization.Context caller) {
         var supplier = find(metadata, "Supplier");

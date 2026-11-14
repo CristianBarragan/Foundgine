@@ -1,10 +1,10 @@
-# foundgine-sdk (Python)
+# foundgine (Python)
 
-A thin Python client for Foundgine MCP and Temporal workflow HTTP transports. It mirrors
-[`@foundgine/sdk`](../../typescript/foundgine-sdk) module for module (`errors`, `sse`, `http`, `mcp`, `client`,
-`workflows`). It does not host MCP servers or implement business logic.
+A thin Python client for Foundgine MCP and Temporal workflow HTTP transports.
 
 Requires Python 3.11+ and `httpx`.
+
+## Install
 
 ```sh
 pip install -e ".[dev]"
@@ -28,11 +28,9 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-`token` may be a string or a sync/async callable; it is resolved for every request. Redirects are not followed.
-If you pass `http_client=` the SDK never closes it. Without one, the SDK creates its own client with explicit
-timeouts (connect 10 s, read 60 s; `DEFAULT_TIMEOUT`) because httpx's 5 s default would break slow tool calls.
+`token` may be a string or a sync/async callable; it is resolved for every request. Redirects are not followed. If you pass `http_client=`, the SDK never closes it. Without one, the SDK creates its own client with explicit timeouts (connect 10 s, read 60 s; `DEFAULT_TIMEOUT`) because httpx's 5 s default would break slow tool calls.
 
-## Synchronous client (scripts and notebooks)
+### Synchronous client (scripts and notebooks)
 
 ```python
 from foundgine import FoundgineSyncClient
@@ -42,14 +40,13 @@ with FoundgineSyncClient("https://example.invalid", token="tok") as client:
     print(client.workflows.wait_for_completion("order-approval", "order-1042", timeout=60).temporal_status)
 ```
 
-Same methods and exceptions as the async client, run on a private event-loop thread (so it also works inside
-Jupyter). `watch` and the `cancel` event are async-only; Ctrl-C cancels the in-flight call. `notifications()` is a
-blocking generator: wrap it in `contextlib.closing` if you stop early.
+Same methods and exceptions as the async client, run on a private event-loop thread (so it also works inside Jupyter). `watch` and the `cancel` event are async-only; Ctrl-C cancels the in-flight call. `notifications()` is a blocking generator: wrap it in `contextlib.closing` if you stop early.
 
 ## Notifications
 
 ```python
-import contextlib, asyncio
+import asyncio
+import contextlib
 
 cancel = asyncio.Event()
 async with contextlib.aclosing(client.notifications(cancel=cancel)) as stream:
@@ -57,11 +54,11 @@ async with contextlib.aclosing(client.notifications(cancel=cancel)) as stream:
         print(message)
 ```
 
-The stream resumes with `Last-Event-ID` after the server closes it. Setting `cancel` ends the iteration cleanly.
-If you stop early, close the iterator (`contextlib.aclosing`, as above) so the server's single stream slot is
-released. There is no read timeout on the stream (heartbeats keep it alive).
+The stream resumes using `Last-Event-ID` after the server closes it. Setting `cancel` ends the iteration cleanly. If you stop early, close the iterator (`contextlib.aclosing`, as above) so the server's single stream slot is released. There is no read timeout on the stream (heartbeats keep it alive).
 
 ## Temporal workflows
+
+The workflow client follows the HTTP routes exposed by Foundgine Temporal:
 
 ```python
 started, watch = await client.workflows.start_and_watch(
@@ -73,14 +70,17 @@ async for status in watch.updates():
 final = await watch.done
 ```
 
-Also available: `start`, `status`, `decide`, `cancel`, `wait_for_completion`, `watch`. `watch()` returns
-immediately and must be called inside a running event loop. `updates()` replays distinct observed states to late
-consumers. `stop()` aborts polling (`done`/`updates()` then raise `FoundgineAbortError`); `async with watch:` stops
-it on exit. `on_update` / `on_error` may be plain functions or coroutine functions, and their failures never kill
-the poll loop. Path segments are percent-encoded. `decide` has no caller-identity argument: the server stamps the
-decision subject from its trusted security context.
+The catalog can also be inspected before starting work:
 
-## Deliberate differences from the TypeScript SDK
+```python
+names = await client.workflows.processes()
+definition = await client.workflows.describe(names[0])
+print([(step.name, step.requires_approval) for step in definition.steps])
+```
+
+Also available: `processes`, `describe`, `start`, `status`, `decide`, `cancel`, `wait_for_completion`, and `watch`. Catalog descriptions expose safe step metadata only; internal operation identifiers are not returned by the server. `watch()` returns immediately and must be called inside a running event loop. `updates()` replays distinct observed states to late consumers. `stop()` aborts polling (`done` and `updates()` then raise `FoundgineAbortError`); `async with watch:` stops it on exit. `on_update` and `on_error` may be plain functions or coroutine functions, and their failures never kill the poll loop. Process and business-key path segments are percent-encoded. `decide` has no caller-identity argument: the server stamps the decision subject from its trusted security context.
+
+## Deliberate differences from `@foundgine/sdks`
 
 | TypeScript | Python | Why |
 |---|---|---|
@@ -95,13 +95,6 @@ decision subject from its trusted security context.
 
 ## Status and known limits
 
-Implemented and tested: typed errors, SSE parser (incl. shared conformance vectors), MCP session
-initialisation (once, even under concurrency), JSON-RPC requests, paged `list_capabilities`, `execute`,
-cancellation, resumable notification streaming, Temporal start/status/decision/cancel, `wait_for_completion`,
-`watch`, `start_and_watch`, and the workflow catalog (`processes()`, `describe()`). As in the TS SDK, `watch` retries
-other polling errors up to `max_consecutive_errors`, but a 401 is fatal at once.
+Implemented and tested: typed errors, SSE parser (including shared conformance vectors), MCP session initialization (once, even under concurrency), JSON-RPC requests, paged `list_capabilities`, `execute`, cancellation, resumable notification streaming, Temporal start/status/decision/cancel routes, `wait_for_completion`, `watch`, `start_and_watch`, and the workflow catalog (`processes()`, `describe()`). As in `@foundgine/sdk`, `watch` retries other polling errors up to `max_consecutive_errors`, but a 401 is fatal at once.
 
-Not yet done: an integration test against a real Foundgine server. Developed and tested on Python 3.12; CI covers 3.11-3.14. This is a development package, not release-ready.
-
-`tests/test_conformance.py` runs the shared vectors in `src/conformance`; they skip locally when absent and fail
-when `CI` is set.
+Not yet done or verified: an integration test against a real Foundgine server. Developed and tested on Python 3.12; CI covers 3.11–3.14. `tests/test_conformance.py` runs the shared vectors in `src/conformance`; they skip locally when absent and fail when `CI` is set. This is a development package, not a release-ready SDK.

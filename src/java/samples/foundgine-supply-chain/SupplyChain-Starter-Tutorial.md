@@ -376,70 +376,61 @@ metadata class in the background containing your `SupplyChainDomain` entities as
 
 ---
 
-## 6. Persistence: JPA entities, schema and compose file
+## 6. Persistence: JPA entities, generated schema and PostgreSQL
 
 The data layer is **JPA (Hibernate) + PostgreSQL**, reached through Foundgine's
-`foundgine-providers` ORM provider (`storage.orm.jpa`). The semantic layers above it never see a
-table or column name; only the JPA entity classes do.
+`foundgine-providers` ORM provider (`storage.orm.jpa`). The domain records remain annotation-free;
+the fluent configurations under `model/` describe semantic metadata, persistence metadata and
+entity maps. The `jpa/` classes are the mutable persistence types used by Hibernate.
 
-The domain types are immutable `record`s, which JPA cannot hydrate, so each persisted entity gets a
-small mutable JPA class in `jpa/`. **Attribute names equal the semantic field names** (`id`,
-`name`, `riskScore`, ...), which is how the ORM registry binds a semantic field to a JPA attribute
-without any extra mapping. Columns are declared with `@Column`:
+The starter's `PersistenceConfigurations` declares the physical table and column contract,
+including SQL names, lengths, precision, nullability, keys and indexes. This is also the input to
+the migration generator. Hibernate runs in validation mode and does not own schema creation.
 
-```java
-package com.foundgine.samples.supplychain.jpa;
+### Generate and apply schema changes
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+The starter commits a generated baseline migration at
+`src/main/resources/db/migration/V20261114161434__InitialCreate.sql`, with the corresponding
+snapshot and history under `src/main/foundgine/migrations/`. After changing the fluent persistence
+model, run these commands from the sample directory:
 
-import java.math.BigDecimal;
-
-/** JPA entity behind the semantic {@code Supplier}. Attribute names equal the semantic field names. */
-@Entity
-@Table(name = "suppliers")
-public class SupplierEntity {
-    @Id @Column(name = "supplier_id") private Integer id;
-    @Column(name = "supplier_name") private String name;
-    @Column(name = "country") private String country;
-    @Column(name = "risk_score") private BigDecimal riskScore;
-    @Column(name = "tenant_id") private String tenantId;
-
-    protected SupplierEntity() {}
-
-    public SupplierEntity(Integer id, String name, String country, BigDecimal riskScore, String tenantId) {
-        this.id = id; this.name = name; this.country = country; this.riskScore = riskScore; this.tenantId = tenantId;
-    }
-
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
-    public BigDecimal getRiskScore() { return riskScore; }
-    public void setRiskScore(BigDecimal riskScore) { this.riskScore = riskScore; }
-    public String getTenantId() { return tenantId; }
-    public void setTenantId(String tenantId) { this.tenantId = tenantId; }
-}
+```bash
+./migrations.sh migrations add AddSupplierEmail
+./migrations.sh migrations has-pending-model-changes
+# Review the forward SQL and rollback SQL before applying:
+./migrations.sh database update
+./migrations.sh database status
 ```
 
-`WarehouseEntity` and `ProductEntity` follow the same shape (copy them from
-`src/main/java/com/foundgine/samples/supplychain/jpa/`). They are listed in
-`src/main/resources/META-INF/persistence.xml`, which sets `hibernate.hbm2ddl.auto=none`: the schema
-belongs to `src/main/resources/database/schema.sql`, never to Hibernate. `seed.sql` inserts two
-tenants' worth of rows so tenant filtering is visible, and `docker-compose.yml` starts PostgreSQL
-on port 4429 and applies both files on first start:
+Use `migrations.cmd` on Windows. The wrapper loads the model class from
+`foundgine-migrations.properties`; connection settings can be supplied using
+`FOUNDGINE_JDBC_URL`, `FOUNDGINE_JDBC_USER` and `FOUNDGINE_JDBC_PASSWORD` (or the sample's
+`SUPPLYCHAIN_*` equivalents). Other commands include `migrations list`, `migrations script
+[fromVersion]` and `migrations remove` for the newest unapplied migration.
+
+Generated SQL must be reviewed before application. The generator currently handles tables,
+columns, primary keys and indexes. Foreign keys, CHECK constraints, defaults, identity semantics
+and renames are not generated yet; preserve those in reviewed SQL until the migration model
+supports them. See the [starter README](./README.md#ef-style-model-derived-migrations) for the
+complete workflow, baseline-reset guidance and limitations.
+
+### PostgreSQL
+
+Start the sample database with:
 
 ```bash
 cd src/java/samples/foundgine-supply-chain
 docker compose up -d
 ```
 
-> **Scope.** Only `Supplier`, `Warehouse` and `Product` are mapped. Relationship traversal needs
-> both ends mapped, so extend `ENTITY_TYPES` (and the schema) before querying across entities.
+The JDBC settings are `SUPPLYCHAIN_JDBC_URL`, `SUPPLYCHAIN_JDBC_USER` and
+`SUPPLYCHAIN_JDBC_PASSWORD`. The demo data is managed separately from the versioned schema
+migration. Existing databases with the old handwritten V1 history should be recreated for this
+sample's generated baseline (`docker compose down -v`, then `docker compose up -d`).
+
+> **Verification boundary:** the generator and starter migration tests were exercised against
+> PostgreSQL 16. The Flyway Java integration and Hibernate/JPA startup path still need a local
+> `mvn verify`; they were not verified in the checkpoint environment.
 
 ---
 

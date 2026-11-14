@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 
 /**
  * JPA entity behind the semantic {@code Warehouse}. Attribute names equal the decapitalized semantic field
- * names, which is what the ORM registry binds to. Columns follow database/schema.sql.
+ * names, which is what the ORM registry binds to. Columns follow db/migration/V1__supply_chain_advanced.sql.
  */
 @FoundgineOrmEntity
 @Entity

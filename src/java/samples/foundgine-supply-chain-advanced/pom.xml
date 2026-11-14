@@ -34,6 +34,11 @@
       <version>${revision}</version>
     </dependency>
     <dependency>
+      <groupId>io.github.cristianbarragan</groupId>
+      <artifactId>foundgine-migrations</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
@@ -49,6 +54,15 @@
     <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
+    </dependency>
+    <!-- Flyway applies the handwritten V1 baseline; foundgine-migrations is used by schema parity tests only. -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
