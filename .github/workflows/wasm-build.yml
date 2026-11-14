@@ -112,6 +112,7 @@ jobs:
         working-directory: src/wasm
         env:
           RELEASE_TAG: ${{ github.ref_name }}
+          NODE_AUTH_TOKEN: ""
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
           test "$RELEASE_TAG" = "v$PACKAGE_VERSION" || {
@@ -127,6 +128,8 @@ jobs:
 
       - name: Publish tested package
         working-directory: src/wasm
+        env:
+          NODE_AUTH_TOKEN: ""
         run: |
           TARBALL="$(find "$RUNNER_TEMP/pack" -maxdepth 1 -name '*.tgz' -print -quit)"
           test -n "$TARBALL"
