@@ -63,7 +63,10 @@ class McpApprovalTokenInteropTest {
         assertEquals(1794592800123L, claims.approvedAtUnixMilliseconds());
         assertEquals(request, claims.requestJson());
         String[] parts = token.split("\\.");
-        String altered = parts[0] + "." + parts[1] + "." + parts[2].substring(0, parts[2].length() - 2) + "AA";
+        // Change a significant Base64URL character. Replacing the final two characters
+        // with "AA" can be a no-op when the original RSA signature happens to end in 0x00.
+        String alteredSignature = (parts[2].charAt(0) == 'A' ? "B" : "A") + parts[2].substring(1);
+        String altered = parts[0] + "." + parts[1] + "." + alteredSignature;
         assertThrows(GeneralSecurityException.class,
                 () -> FoundgineMcpApprovalToken.decodeAndVerify(altered, id -> pair.getPublic()));
     }

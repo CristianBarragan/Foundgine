@@ -62,8 +62,19 @@ public final class FoundgineMcpApprovalToken {
         String[] parts = token.split("\\.", -1);
         if (parts.length != 3 || !PREFIX.equals(parts[0])) throw new GeneralSecurityException("Approval token format or version is invalid.");
         final byte[] payload, signature;
-        try { payload = DECODER.decode(parts[1]); signature = DECODER.decode(parts[2]); }
-        catch (IllegalArgumentException ex) { throw new GeneralSecurityException("Approval token encoding is invalid.", ex); }
+        try {
+            payload = DECODER.decode(parts[1]);
+            signature = DECODER.decode(parts[2]);
+            // Base64url decoders may ignore unused pad bits. Require the unique unpadded
+            // representation so changing only those bits cannot produce a second token
+            // string for the same signed bytes.
+            if (!ENCODER.encodeToString(payload).equals(parts[1])
+                    || !ENCODER.encodeToString(signature).equals(parts[2])) {
+                throw new GeneralSecurityException("Approval token encoding is not canonical.");
+            }
+        } catch (IllegalArgumentException ex) {
+            throw new GeneralSecurityException("Approval token encoding is invalid.", ex);
+        }
         final String[] f;
         try { f = StandardCharsets.UTF_8.newDecoder().decode(java.nio.ByteBuffer.wrap(payload)).toString().split("\\n", -1); }
         catch (java.nio.charset.CharacterCodingException ex) { throw new GeneralSecurityException("Approval token payload is not valid UTF-8.", ex); }
