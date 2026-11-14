@@ -11,6 +11,7 @@ permissions:
   contents: read
 
 env:
+  SDK_DIR: src/wasm/
   FOUNDGINE_CONFORMANCE_DIR: ${{ github.workspace }}/src/conformance
 
 jobs:
@@ -82,7 +83,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wasm-sdk-package
+          name: wasm
           path: ${{ runner.temp }}/pack/*.tgz
           if-no-files-found: error
 
@@ -101,17 +102,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
 
-      - name: Update npm for OIDC publishing
-        run: npm install --global npm@^11.5.1
+      - name: Update npm to latest for OIDC publishing
+        run: npm install --global npm@latest
 
       - name: Validate release version
         working-directory: src/wasm
         env:
           RELEASE_TAG: ${{ github.ref_name }}
-          NODE_AUTH_TOKEN: ""
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
           test "$RELEASE_TAG" = "v$PACKAGE_VERSION" || {
@@ -122,14 +123,13 @@ jobs:
       - name: Download tested package
         uses: actions/download-artifact@v4
         with:
-          name: wasm-sdk-package
+          name: wasm
           path: ${{ runner.temp }}/pack
 
       - name: Publish tested package
         working-directory: src/wasm
-        env:
-          NODE_AUTH_TOKEN: ""
         run: |
+          npm --version
           TARBALL="$(find "$RUNNER_TEMP/pack" -maxdepth 1 -name '*.tgz' -print -quit)"
           test -n "$TARBALL"
           npm publish "$TARBALL" --access public
