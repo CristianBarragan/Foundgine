@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/python/foundgine-sdk
+        working-directory: src/python/
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,7 +39,7 @@ jobs:
         python: ["3.11", "3.12", "3.13", "3.14"]
     defaults:
       run:
-        working-directory: src/python/foundgine-sdk
+        working-directory: src/python/
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
