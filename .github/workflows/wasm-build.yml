@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/wasm/foundgine-sdk-wasm
+        working-directory: src/wasm
     steps:
       - uses: actions/checkout@v4
       # Pinned to the crate's `rust-version`: fmt and clippy results are then reproducible (a newer stable adds lints).
@@ -29,7 +29,7 @@ jobs:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: src/wasm/foundgine-sdk-wasm
+          workspaces: src/wasm
       - name: Shared vectors are present
         run: test -f "$FOUNDGINE_CONFORMANCE_DIR/mcp-sse-scenarios.json"
       # Native tests: unit tests plus the shared SSE vectors (the test panics, not skips, when they are missing).
@@ -60,5 +60,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: wasm-sdk-pkg
-          path: src/wasm/foundgine-sdk-wasm/pkg/*
+          path: src/wasm/pkg/*
           if-no-files-found: error

@@ -1,5 +1,5 @@
 {
-  "name": "@foundgine/sdk",
+  "name": "@foundgine/typescript",
   "version": "3.3.4",
   "description": "Thin TypeScript client for Foundgine MCP and workflow endpoints.",
   "license": "Apache-2.0",
@@ -19,5 +19,8 @@
     "test": "npm run build && npm run test:unit",
     "pack:check": "npm pack --dry-run"
   },
-  "devDependencies": { "typescript": "^5.8.3" }
+  "devDependencies": { "typescript": "^5.8.3" },
+  "publishConfig": {
+    "access": "public"
+  }
 }

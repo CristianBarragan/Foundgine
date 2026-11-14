@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  SDK_DIR: src/typescript/foundgine-sdk
+  SDK_DIR: src/typescript/
   FOUNDGINE_CONFORMANCE_DIR: ${{ github.workspace }}/src/conformance
 
 jobs:
