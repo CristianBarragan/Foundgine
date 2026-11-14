@@ -35,7 +35,9 @@ public enum FoundgineProviderKind
     Persistence,
     Identity,
     Diagnostics,
-    Metadata
+    Metadata,
+    /// <summary>An AI agent runtime adapter (for example Microsoft Agent Framework). Appended last to keep existing values stable.</summary>
+    Agent
 }
 
 /// <summary>Switch-free, reflection-free flag naming for descriptors, diagnostics and error messages.</summary>

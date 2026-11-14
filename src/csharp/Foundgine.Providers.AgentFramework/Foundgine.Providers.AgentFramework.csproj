@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageId>Foundgine.Providers.AgentFramework</PackageId>
+    <Description>Microsoft Agent Framework (MAF) adapter for Foundgine 3.x. Exposes the application-controlled Foundgine semantic execution boundary to MAF agents as governed tools: capability discovery, semantic and open-intent reads, mutation dry-run, and approval-gated mutation execution. Identity, tenant and authorization context stay host-owned and are never supplied by the model. Registers as a Foundgine Agent provider for gateway discovery and startup negotiation.</Description>
+    <PackageTags>providers;agents;microsoft-agent-framework;maf;ai;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RootNamespace>Foundgine.Providers.AgentFramework</RootNamespace>
+    <AssemblyName>Foundgine.Providers.AgentFramework</AssemblyName>
+    <IsPackable>true</IsPackable>
+    <!-- ApprovalRequiredAIFunction is flagged experimental in some Microsoft.Extensions.AI releases. -->
+    <NoWarn>$(NoWarn);MEAI001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <!-- MAF is GA (1.x). Pinned to a release verified to exist; bump deliberately. -->
+    <PackageReference Include="Microsoft.Agents.AI" Version="1.5.0" />
+  </ItemGroup>
+</Project>

@@ -52,6 +52,24 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>11.8.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+      <version>11.8.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.cristianbarragan</groupId>
+      <artifactId>foundgine-migrations</artifactId>
+      <version>3.3.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-runtime</artifactId>
       <version>3.3.5</version>

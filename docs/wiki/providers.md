@@ -28,11 +28,12 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | **Front door** | **Gateway** (`FoundgineGateway`) with provider registry, approval stores, event stores and HTTP/SSE routes | One stable entrance for other products; tracks providers | Yes | Yes |
 | **AI** | **MCP tools and client** (`FoundgineMcpTools`, `FoundgineMcpMutationTools`, `FoundgineMcpAgentClient`) | Lets AI agents discover and call Foundgine safely | Yes | Yes |
 | | **Models**, Microsoft.Extensions.AI (`FoundgineAiToolset`, `FoundgineAiAgent`) | Describes Foundgine as tools for an AI function-calling loop | Yes | `models` package |
+| | **Microsoft Agent Framework** (`FoundgineAgentTools`, `AddFoundgineAgentFramework`) | Gives a MAF agent governed Foundgine tools, with human approval before any write | Yes | n/a |
 | **Build time** | **AOT metadata generator** (`Foundgine.Providers.Aot.Generator`) | Writes your model description as ordinary code during the build | Yes | `foundgine-aot-generator` |
 | | **ORM map generator** (`Foundgine.Providers.Orm.Generator`) | Writes the typed field maps EF Core needs | Yes | maps are provider-neutral today |
 | **Declarations** | **Graph retrieval capability** (`GraphRetrieval`) | A label saying a provider supports graph lookups | Yes | Yes |
 
-**Provider kinds the gateway understands** (`FoundgineProviderKind`): `EventStore`, `Outbox`, `Workflow`, `Messaging`, `Realtime`, `Persistence`, `Identity`, `Diagnostics`, `Metadata`. Temporal registers as a `Workflow` provider and Keycloak as an `Identity` provider (see [Extensions](extensions)).
+**Provider kinds the gateway understands** (`FoundgineProviderKind`): `EventStore`, `Outbox`, `Workflow`, `Messaging`, `Realtime`, `Persistence`, `Identity`, `Diagnostics`, `Metadata`, `Agent`. Temporal registers as a `Workflow` provider and Keycloak as an `Identity` provider (see [Extensions](extensions)).
 
 **Which query provider should I pick?**
 
@@ -63,6 +64,7 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | MCP tools and client | Expose Foundgine capabilities to MCP clients and consume remote MCP capabilities | `Tools/MCP` | `.../tools/mcp` |
 | AOT metadata | Compile-time declarations and generated semantic metadata | `Aot` + `Foundgine.Providers.Aot.Generator` | `.../aot` + `foundgine-aot-generator` |
 | AI agent/toolset descriptors | Describe agent/toolset integration surfaces | `Models` | `.../models` |
+| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools | `src/csharp/Foundgine.Providers.AgentFramework` | n/a |
 | Graph retrieval capability | Declare graph-retrieval capability metadata for provider negotiation | `Hosting/Capabilities` | `.../capabilities` |
 
 > The table is a source map, not a promise of identical implementation maturity or runtime dependencies. Verify the concrete language module, tests and package release before relying on a feature.

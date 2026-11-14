@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-migrations</artifactId>
-  <version>3.3.4</version>
+  <version>3.3.5</version>
   <name>Foundgine Migrations</name>
   <description>EF-style migrations for Java: derives the database schema from the Foundgine fluent model, diffs it against a model snapshot and writes Flyway versioned migrations (V*.sql), with a CLI to add, list, remove, script and apply them.</description>
   <url>https://github.com/CristianBarragan/Foundgine/foundgine-migrations</url>
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>
       <artifactId>foundgine-core</artifactId>
-      <version>3.3.4</version>
+      <version>3.3.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
