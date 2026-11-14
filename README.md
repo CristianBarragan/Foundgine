@@ -18,10 +18,10 @@
 [![Python Version](https://img.shields.io/pypi/v/foundgine-sdk?label=PyPI%20Version)](https://pypi.org/project/foundgine-sdk/)
 [![Python Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/python-build.yml)
 
-[![TypeScript Version](https://img.shields.io/npm/v/@foundgine/sdk?label=npm%20%40foundgine%2Fsdk)](https://www.npmjs.com/package/@foundgine/sdk)
+[![TypeScript Version](https://img.shields.io/npm/v/@foundgine/typescript?label=npm%20%40foundgine%2Ftypescript)](https://www.npmjs.com/package/@foundgine/typescript)
 [![TypeScript Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/typescript-build.yml?branch=main&label=TypeScript%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/typescript-build.yml)
 
-[![WASM Version](https://img.shields.io/npm/v/@foundgine/sdk-wasm?label=npm%20%40foundgine%2Fsdk-wasm)](https://www.npmjs.com/package/@foundgine/sdk-wasm)
+[![WASM Version](https://img.shields.io/npm/v/@foundgine/wasm?label=npm%20%40foundgine%2Fwasm)](https://www.npmjs.com/package/@foundgine/wasm)
 [![WASM Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/wasm-build.yml?branch=main&label=Rust%20%2F%20WASM%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/wasm-build.yml)
 
 # Foundgine
