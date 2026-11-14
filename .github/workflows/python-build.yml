@@ -61,7 +61,7 @@ jobs:
 
   publish-python:
     name: Publish foundgine-sdk to PyPI
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/py-v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: [python, python-lint]
     runs-on: ubuntu-latest
     environment: pypi             # add required reviewers to this environment for a manual gate
