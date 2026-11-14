@@ -245,9 +245,7 @@ Foundgine's architecture is specified independently of this implementation as th
 
 Foundgine 3.3.5 advances the Supply Chain persistence path across the .NET and Java samples and adds Java model-derived PostgreSQL migrations. The Java fluent persistence metadata now carries defaults, identity generation, named/composite foreign keys and referential actions, CHECK constraints, index access methods/operator classes, and required PostgreSQL extensions into the migration schema, differ and SQL generator. The starter and Advanced samples now include physical-schema projections, migration snapshots/history, rollback generation and schema-parity tests.
 
-The release also includes the Java fluent-model/JPA integration updates and the .NET Supply Chain starter's typed semantic query and persistence/sample improvements. Version metadata is aligned across .NET, Java/Maven, MCP manifests, TypeScript, Python and Rust/WASM client metadata. The transport SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface. See [`RELEASE-NOTES-3.3.5.md`](RELEASE-NOTES-3.3.5.md), [`CHANGELOG.md`](CHANGELOG.md), and [`SDK-PARITY.md`](SDK-PARITY.md).
-
-**Release gate:** this archive is prepared, not yet publication-cleared. The latest Advanced Java test fixes and PostgreSQL 16 catalog-parity test still require a JDK 27 Maven run and PostgreSQL 16 verification on the final source tree. Do not tag or publish until the required CI gates pass.
+The release also includes the Java fluent-model/JPA integration updates and the .NET Supply Chain starter's typed semantic query and persistence/sample improvements. Version metadata is aligned across .NET, Java/Maven, MCP manifests, TypeScript, Python and Rust/WASM client metadata. The transport SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface.
 
 ## License
 
