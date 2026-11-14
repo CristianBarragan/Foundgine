@@ -15,6 +15,15 @@
 [![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 [![Java Security Audit](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Audit)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 
+[![Python Version](https://img.shields.io/pypi/v/foundgine-sdk?label=PyPI%20Version)](https://pypi.org/project/foundgine-sdk/)
+[![Python Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/python-build.yml)
+
+[![TypeScript Version](https://img.shields.io/npm/v/@foundgine/sdk?label=npm%20%40foundgine%2Fsdk)](https://www.npmjs.com/package/@foundgine/sdk)
+[![TypeScript Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/typescript-build.yml?branch=main&label=TypeScript%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/typescript-build.yml)
+
+[![WASM Version](https://img.shields.io/npm/v/@foundgine/sdk-wasm?label=npm%20%40foundgine%2Fsdk-wasm)](https://www.npmjs.com/package/@foundgine/sdk-wasm)
+[![WASM Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/wasm-build.yml?branch=main&label=Rust%20%2F%20WASM%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/wasm-build.yml)
+
 # Foundgine
 
 Foundgine gives AI agents and other callers a way to express what they want, while your application retains full control over how anything is executed. It introduces a single, application‑controlled semantic execution boundary that sits between:

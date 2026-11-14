@@ -1,0 +1,53 @@
+name: typescript Build, Test & Pack
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SDK_DIR: src/typescript/foundgine-sdk
+  FOUNDGINE_CONFORMANCE_DIR: ${{ github.workspace }}/src/conformance
+
+jobs:
+  sdk:
+    name: TypeScript SDK (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Shared vectors are present
+        run: |
+          test -f "$FOUNDGINE_CONFORMANCE_DIR/mcp-sse-scenarios.json"
+          test -f "$FOUNDGINE_CONFORMANCE_DIR/mcp-sse-transport-scenarios.json"
+      - name: Install
+        working-directory: ${{ env.SDK_DIR }}
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else echo "::warning::no package-lock.json; commit one for reproducible installs"; npm install; fi
+      - name: Build and unit tests
+        working-directory: ${{ env.SDK_DIR }}
+        run: npm test
+      - name: Pack the tested tarball
+        if: matrix.node == 22
+        working-directory: ${{ env.SDK_DIR }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/pack"
+          npm pack --pack-destination "$RUNNER_TEMP/pack"
+          tar -tzf "$RUNNER_TEMP/pack"/*.tgz
+      - uses: actions/upload-artifact@v4
+        if: matrix.node == 22
+        with:
+          name: sdk-package
+          path: ${{ runner.temp }}/pack/*.tgz
+          if-no-files-found: error

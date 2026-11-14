@@ -1,4 +1,4 @@
-name: Java Build
+name: java Build, Test & Pack
 
 on:
   push:

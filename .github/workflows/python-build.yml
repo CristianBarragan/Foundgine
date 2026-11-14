@@ -1,0 +1,95 @@
+name: python Build, Test & Pack
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-lint:
+    name: Python SDK (ruff, mypy)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/python/foundgine-sdk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -e ".[dev]"
+      - run: ruff --version
+      # `full` prints the rule, file, line and the suggested fix in the log (on Actions ruff otherwise defaults to
+      # annotations only, which hide the diagnostic behind "Found 1 error").
+      - run: ruff check . --output-format=full
+      - run: ruff format --check .
+      - run: mypy
+
+  python:
+    name: Python SDK (tests, ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13", "3.14"]
+    defaults:
+      run:
+        working-directory: src/python/foundgine-sdk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+      - run: pip install -e ".[dev]"
+      # CI=true (set by Actions) makes the conformance tests fail, not skip, when the shared vectors are missing.
+      - run: pytest --cov=foundgine --cov-report=term-missing
+      - name: Build sdist and wheel
+        if: matrix.python == '3.13'
+        run: pip install build twine && python -m build --outdir "$RUNNER_TEMP/py-dist" && twine check "$RUNNER_TEMP/py-dist"/*
+      - uses: actions/upload-artifact@v4
+        if: matrix.python == '3.13'
+        with:
+          name: python-package
+          path: ${{ runner.temp }}/py-dist/*
+          if-no-files-found: error
+
+  publish-python:
+    name: Publish foundgine-sdk to PyPI
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/py-v')
+    needs: [python, python-lint]
+    runs-on: ubuntu-latest
+    environment: pypi             # add required reviewers to this environment for a manual gate
+    permissions:
+      contents: read
+      id-token: write             # PyPI trusted publishing (OIDC); no long-lived token
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Tagged commit is on main
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist
+      - name: Tag matches the built version and it is not on PyPI yet
+        run: |
+          set -euo pipefail
+          wheel=$(ls dist/*.whl)
+          version=$(unzip -p "$wheel" '*.dist-info/METADATA' | sed -n 's/^Version: //p' | head -1)
+          pip install --quiet packaging
+          # PEP 440 normalises 0.1.0-rc.1 to 0.1.0rc1, so compare normalised forms.
+          tag=$(python3 -c "import sys; from packaging.version import Version; print(Version(sys.argv[1]))" "${GITHUB_REF_NAME#py-v}")
+          test "$tag" = "$version" || { echo "::error::tag $GITHUB_REF_NAME does not match package version $version"; exit 1; }
+          if curl -fsS "https://pypi.org/pypi/foundgine-sdk/$version/json" >/dev/null 2>&1; then
+            echo "::error::foundgine-sdk $version is already on PyPI"; exit 1
+          fi
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist

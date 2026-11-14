@@ -1,0 +1,64 @@
+name: rust - wasm Build, Test & Pack
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FOUNDGINE_CONFORMANCE_DIR: ${{ github.workspace }}/src/conformance
+
+jobs:
+  wasm:
+    name: WebAssembly SDK (Rust)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/wasm/foundgine-sdk-wasm
+    steps:
+      - uses: actions/checkout@v4
+      # Pinned to the crate's `rust-version`: fmt and clippy results are then reproducible (a newer stable adds lints).
+      - uses: dtolnay/rust-toolchain@1.75.0
+        with:
+          targets: wasm32-unknown-unknown
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src/wasm/foundgine-sdk-wasm
+      - name: Shared vectors are present
+        run: test -f "$FOUNDGINE_CONFORMANCE_DIR/mcp-sse-scenarios.json"
+      # Native tests: unit tests plus the shared SSE vectors (the test panics, not skips, when they are missing).
+      - run: cargo test --all-targets
+      - run: cargo fmt --check
+      # The crate is clippy-clean natively and on wasm32 (which also lints the wasm-bindgen layer): keep it that way.
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
+      # The JS side: wasm-bindgen glue, the ES-module wrapper and the Node harness. The CLI version must equal the
+      # `wasm-bindgen` crate version pinned in Cargo.toml (the glue and the .wasm are matched exactly).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: wasm-bindgen CLI (version pinned to the crate)
+        id: wbg
+        run: echo "version=$(sed -n 's/^wasm-bindgen = \"=\(.*\)\"$/\1/p' Cargo.toml)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: wbg-cache
+        with:
+          path: ~/.cargo-wbg
+          key: wasm-bindgen-cli-${{ steps.wbg.outputs.version }}-${{ runner.os }}
+      - name: Install wasm-bindgen CLI
+        if: steps.wbg-cache.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version "${{ steps.wbg.outputs.version }}" --locked --root ~/.cargo-wbg
+      - run: echo "$HOME/.cargo-wbg/bin" >> "$GITHUB_PATH"
+      - run: npm run build
+      - run: npm test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wasm-sdk-pkg
+          path: src/wasm/foundgine-sdk-wasm/pkg/*
+          if-no-files-found: error

@@ -1,4 +1,4 @@
-name: Build, Test & Pack
+name: csharp Build, Test & Pack
 
 on:
   push:
