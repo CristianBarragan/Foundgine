@@ -1,4 +1,4 @@
-name: rust - wasm Build, Test & Pack
+name: rust-wasm Build, Test, Pack & Publish
 
 on:
   push:
@@ -20,45 +20,114 @@ jobs:
     defaults:
       run:
         working-directory: src/wasm
+
     steps:
       - uses: actions/checkout@v4
-      # Pinned to the crate's `rust-version`: fmt and clippy results are then reproducible (a newer stable adds lints).
+
       - uses: dtolnay/rust-toolchain@1.75.0
         with:
           targets: wasm32-unknown-unknown
           components: clippy, rustfmt
+
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: src/wasm
+
       - name: Shared vectors are present
         run: test -f "$FOUNDGINE_CONFORMANCE_DIR/mcp-sse-scenarios.json"
-      # Native tests: unit tests plus the shared SSE vectors (the test panics, not skips, when they are missing).
-      - run: cargo test --all-targets
-      - run: cargo fmt --check
-      # The crate is clippy-clean natively and on wasm32 (which also lints the wasm-bindgen layer): keep it that way.
-      - run: cargo clippy --all-targets -- -D warnings
-      - run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
-      # The JS side: wasm-bindgen glue, the ES-module wrapper and the Node harness. The CLI version must equal the
-      # `wasm-bindgen` crate version pinned in Cargo.toml (the glue and the .wasm are matched exactly).
+
+      - name: Rust tests
+        run: cargo test --all-targets
+
+      - name: Rust formatting
+        run: cargo fmt --check
+
+      - name: Native Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: WASM Clippy
+        run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: wasm-bindgen CLI (version pinned to the crate)
+
+      - name: Determine wasm-bindgen CLI version
         id: wbg
         run: echo "version=$(sed -n 's/^wasm-bindgen = \"=\(.*\)\"$/\1/p' Cargo.toml)" >> "$GITHUB_OUTPUT"
+
       - uses: actions/cache@v4
         id: wbg-cache
         with:
           path: ~/.cargo-wbg
           key: wasm-bindgen-cli-${{ steps.wbg.outputs.version }}-${{ runner.os }}
+
       - name: Install wasm-bindgen CLI
         if: steps.wbg-cache.outputs.cache-hit != 'true'
         run: cargo install wasm-bindgen-cli --version "${{ steps.wbg.outputs.version }}" --locked --root ~/.cargo-wbg
+
       - run: echo "$HOME/.cargo-wbg/bin" >> "$GITHUB_PATH"
-      - run: npm run build
-      - run: npm test
+
+      - name: Build JavaScript and WASM package
+        run: npm run build
+
+      - name: JavaScript tests
+        run: npm test
+
+      - name: Pack tested npm tarball
+        run: |
+          mkdir -p "$RUNNER_TEMP/pack"
+          npm pack --pack-destination "$RUNNER_TEMP/pack"
+          tar -tzf "$RUNNER_TEMP/pack"/*.tgz
+
       - uses: actions/upload-artifact@v4
         with:
-          name: wasm-sdk-pkg
-          path: src/wasm/pkg/*
+          name: wasm-sdk-package
+          path: ${{ runner.temp }}/pack/*.tgz
           if-no-files-found: error
+
+  publish:
+    name: Publish WASM SDK to npm
+    runs-on: ubuntu-latest
+    needs: wasm
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Update npm for OIDC publishing
+        run: npm install --global npm@^11.5.1
+
+      - name: Validate release version
+        working-directory: src/wasm
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          test "$RELEASE_TAG" = "v$PACKAGE_VERSION" || {
+            echo "::error::Tag $RELEASE_TAG does not match package version $PACKAGE_VERSION"
+            exit 1
+          }
+
+      - name: Download tested package
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-sdk-package
+          path: ${{ runner.temp }}/pack
+
+      - name: Publish tested package
+        working-directory: src/wasm
+        run: |
+          TARBALL="$(find "$RUNNER_TEMP/pack" -maxdepth 1 -name '*.tgz' -print -quit)"
+          test -n "$TARBALL"
+          npm publish "$TARBALL" --access public
