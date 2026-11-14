@@ -1,0 +1,17 @@
+{
+  "name": "@foundgine/sdk-wasm",
+  "version": "3.3.4",
+  "description": "WebAssembly build of the Foundgine MCP and workflow client (Rust core, ES-module wrapper mirroring @foundgine/sdk).",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "js/index.js",
+  "types": "js/index.d.ts",
+  "exports": { ".": { "types": "./js/index.d.ts", "default": "./js/index.js" } },
+  "files": ["js", "pkg"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "cargo build --release --target wasm32-unknown-unknown && wasm-bindgen target/wasm32-unknown-unknown/release/foundgine_sdk_wasm.wasm --out-dir pkg --target web --typescript",
+    "test": "node --test test/*.test.mjs"
+  }
+}

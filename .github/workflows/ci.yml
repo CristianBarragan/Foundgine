@@ -1,0 +1,286 @@
+name: ci
+
+# Pull requests and pushes to main run every SDK and server test suite. A tag `sdk-vX.Y.Z` on a commit that is on main additionally publishes
+# @foundgine/sdk to npm only after the SDK and server gates pass, publishing the exact tarball tested.
+# A tag `py-vX.Y.Z` does the same for foundgine-sdk on PyPI (trusted publishing, exact sdist and wheel the tests built).
+on:
+  push:
+    branches: [main]
+    tags: ["sdk-v*", "py-v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+env:
+  SDK_DIR: src/typescript/foundgine-sdk
+  # The SDK conformance tests skip (and pass) when they cannot find the vectors, so name them and check they exist.
+  FOUNDGINE_CONFORMANCE_DIR: ${{ github.workspace }}/src/conformance
+
+jobs:
+  sdk:
+    name: TypeScript SDK (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Shared vectors are present
+        run: |
+          test -f "$FOUNDGINE_CONFORMANCE_DIR/mcp-sse-scenarios.json"
+          test -f "$FOUNDGINE_CONFORMANCE_DIR/mcp-sse-transport-scenarios.json"
+      - name: Install
+        working-directory: ${{ env.SDK_DIR }}
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else echo "::warning::no package-lock.json; commit one for reproducible installs"; npm install; fi
+      - name: Build and unit tests
+        working-directory: ${{ env.SDK_DIR }}
+        run: npm test
+      - name: Pack the tested tarball
+        if: matrix.node == 22
+        working-directory: ${{ env.SDK_DIR }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/pack"
+          npm pack --pack-destination "$RUNNER_TEMP/pack"
+          tar -tzf "$RUNNER_TEMP/pack"/*.tgz
+      - uses: actions/upload-artifact@v4
+        if: matrix.node == 22
+        with:
+          name: sdk-package
+          path: ${{ runner.temp }}/pack/*.tgz
+          if-no-files-found: error
+
+  # Lint, format and types do not depend on the interpreter (ruff targets py311, mypy pins python_version 3.11), so they run
+  # once. The test matrix below covers every supported Python (requires-python >= 3.11).
+  python-lint:
+    name: Python SDK (ruff, mypy)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/python/foundgine-sdk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -e ".[dev]"
+      - run: ruff --version
+      # `full` prints the rule, file, line and the suggested fix in the log (on Actions ruff otherwise defaults to
+      # annotations only, which hide the diagnostic behind "Found 1 error").
+      - run: ruff check . --output-format=full
+      - run: ruff format --check .
+      - run: mypy
+
+  python:
+    name: Python SDK (tests, ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13", "3.14"]
+    defaults:
+      run:
+        working-directory: src/python/foundgine-sdk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+      - run: pip install -e ".[dev]"
+      # CI=true (set by Actions) makes the conformance tests fail, not skip, when the shared vectors are missing.
+      - run: pytest --cov=foundgine --cov-report=term-missing
+      - name: Build sdist and wheel
+        if: matrix.python == '3.13'
+        run: pip install build twine && python -m build --outdir "$RUNNER_TEMP/py-dist" && twine check "$RUNNER_TEMP/py-dist"/*
+      - uses: actions/upload-artifact@v4
+        if: matrix.python == '3.13'
+        with:
+          name: python-package
+          path: ${{ runner.temp }}/py-dist/*
+          if-no-files-found: error
+
+  # Rust crate compiled to WebAssembly: src/wasm/foundgine-sdk-wasm (mirrors the TypeScript and Python SDKs).
+  wasm:
+    name: WebAssembly SDK (Rust)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/wasm/foundgine-sdk-wasm
+    steps:
+      - uses: actions/checkout@v4
+      # Pinned to the crate's `rust-version`: fmt and clippy results are then reproducible (a newer stable adds lints).
+      - uses: dtolnay/rust-toolchain@1.75.0
+        with:
+          targets: wasm32-unknown-unknown
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src/wasm/foundgine-sdk-wasm
+      - name: Shared vectors are present
+        run: test -f "$FOUNDGINE_CONFORMANCE_DIR/mcp-sse-scenarios.json"
+      # Native tests: unit tests plus the shared SSE vectors (the test panics, not skips, when they are missing).
+      - run: cargo test --all-targets
+      - run: cargo fmt --check
+      # The crate is clippy-clean natively and on wasm32 (which also lints the wasm-bindgen layer): keep it that way.
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
+      # The JS side: wasm-bindgen glue, the ES-module wrapper and the Node harness. The CLI version must equal the
+      # `wasm-bindgen` crate version pinned in Cargo.toml (the glue and the .wasm are matched exactly).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: wasm-bindgen CLI (version pinned to the crate)
+        id: wbg
+        run: echo "version=$(sed -n 's/^wasm-bindgen = \"=\(.*\)\"$/\1/p' Cargo.toml)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: wbg-cache
+        with:
+          path: ~/.cargo-wbg
+          key: wasm-bindgen-cli-${{ steps.wbg.outputs.version }}-${{ runner.os }}
+      - name: Install wasm-bindgen CLI
+        if: steps.wbg-cache.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version "${{ steps.wbg.outputs.version }}" --locked --root ~/.cargo-wbg
+      - run: echo "$HOME/.cargo-wbg/bin" >> "$GITHUB_PATH"
+      - run: npm run build
+      - run: npm test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wasm-sdk-pkg
+          path: src/wasm/foundgine-sdk-wasm/pkg/*
+          if-no-files-found: error
+
+  dotnet:
+    name: C# (Foundgine.Extensions.Tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Test
+        run: dotnet test src/csharp/Foundgine.sln --configuration Release --logger "trx;LogFileName=results.trx"
+      - name: The .NET test suites ran
+        run: |
+          reports=$(find src/csharp -name results.trx -print)
+          test -n "$reports"
+          total=$(printf '%s\\n' "$reports" | xargs grep -hEo 'total="[0-9]+"' | sed -E 's/[^0-9]//g' | awk '{ sum += $1 } END { print sum + 0 }')
+          test "$total" -gt 0
+          echo "Verified $total .NET test executions"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dotnet-test-results
+          path: "**/results.trx"
+
+  java:
+    name: Java (Maven, JUnit 5)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 27
+          cache: maven
+      - name: Test
+        run: |
+          # Shallowest pom.xml under src/java: the aggregator if there is one, otherwise the module.
+          pom=$(find src/java -maxdepth 3 -name pom.xml | awk '{ print gsub("/","/"), $0 }' | sort -n | head -1 | cut -d' ' -f2-)
+          echo "using $pom"
+          test -n "$pom"
+          mvn -B -ntp -f "$pom" test
+      - name: The Temporal workflow tests ran under the real JUnit engine
+        run: |
+          f=$(find src/java -path '*surefire-reports*' -name 'TEST-*FoundgineTemporalWorkflowTest.xml' | head -1)
+          test -n "$f"
+          grep -o 'tests="[0-9]*"' "$f" | head -1
+          ! grep -q 'tests="0"' "$f"
+
+  publish:
+    name: Publish @foundgine/sdk to npm
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/sdk-v')
+    needs: [sdk, wasm, dotnet, java]
+    runs-on: ubuntu-latest
+    environment: npm            # add required reviewers to this environment for a manual gate
+    permissions:
+      contents: read
+      id-token: write           # only used when NPM_PROVENANCE is enabled
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Tagged commit is on main
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-package
+          path: pack
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - name: Tag matches the package version and it is not published yet
+        id: meta
+        run: |
+          set -euo pipefail
+          tarball=$(ls pack/*.tgz)
+          name=$(tar -xOf "$tarball" package/package.json | node -p 'JSON.parse(require("fs").readFileSync(0,"utf8")).name')
+          version=$(tar -xOf "$tarball" package/package.json | node -p 'JSON.parse(require("fs").readFileSync(0,"utf8")).version')
+          test "${GITHUB_REF_NAME#sdk-v}" = "$version" || { echo "::error::tag $GITHUB_REF_NAME does not match package version $version"; exit 1; }
+          if npm view "$name@$version" version >/dev/null 2>&1; then echo "::error::$name@$version is already on npm"; exit 1; fi
+          case "$version" in *-*) tag=next ;; *) tag=latest ;; esac
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "publishing $name@$version with dist-tag $tag"
+      - name: Publish
+        run: npm publish "${{ steps.meta.outputs.tarball }}" --access public --tag "${{ steps.meta.outputs.tag }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Provenance needs a public repository; set the repository variable NPM_PROVENANCE to true to turn it on.
+          NPM_CONFIG_PROVENANCE: ${{ vars.NPM_PROVENANCE == 'true' }}
+
+  publish-python:
+    name: Publish foundgine-sdk to PyPI
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/py-v')
+    needs: [python, python-lint, sdk, wasm, dotnet, java]   # a Python release must not ship against a wire contract the servers fail
+    runs-on: ubuntu-latest
+    environment: pypi             # add required reviewers to this environment for a manual gate
+    permissions:
+      contents: read
+      id-token: write             # PyPI trusted publishing (OIDC); no long-lived token
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Tagged commit is on main
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist
+      - name: Tag matches the built version and it is not on PyPI yet
+        run: |
+          set -euo pipefail
+          wheel=$(ls dist/*.whl)
+          version=$(unzip -p "$wheel" '*.dist-info/METADATA' | sed -n 's/^Version: //p' | head -1)
+          pip install --quiet packaging
+          # PEP 440 normalises 0.1.0-rc.1 to 0.1.0rc1, so compare normalised forms.
+          tag=$(python3 -c "import sys; from packaging.version import Version; print(Version(sys.argv[1]))" "${GITHUB_REF_NAME#py-v}")
+          test "$tag" = "$version" || { echo "::error::tag $GITHUB_REF_NAME does not match package version $version"; exit 1; }
+          if curl -fsS "https://pypi.org/pypi/foundgine-sdk/$version/json" >/dev/null 2>&1; then
+            echo "::error::foundgine-sdk $version is already on PyPI"; exit 1
+          fi
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist

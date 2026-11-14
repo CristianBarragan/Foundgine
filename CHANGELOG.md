@@ -1,5 +1,27 @@
 # Changelog
 
+## 3.3.4 — November 14, 2026
+
+### Fixed
+
+- Corrected Python SDK Ruff diagnostics: `TokenProvider` union ordering, module/class spacing, and constructor formatting.
+- Corrected the C# CI test-report assertion to aggregate executed tests across all TRX reports rather than searching for absent test class names.
+- Corrected the Java CI assertion to inspect the actual `FoundgineTemporalWorkflowTest` Surefire report and require a non-zero test count.
+
+### Changed
+
+- Aligned TypeScript, Python, Rust/WASM and their package metadata/client user-agent versions with the Foundgine `3.3.4` release line.
+- Added Rust/WASM `listCapabilities()` and `execute()` aliases and top-level notification support while preserving the existing `listTools()` and `callTool()` methods.
+- Aligned TypeScript and Rust/WASM URL joining and RFC 3986 path-segment encoding; added Rust/WASM notification replay and reconnect options.
+- Added `SDK-PARITY.md` to define platform-runtime versus transport-client contracts and record remaining parity gaps without overstating support.
+- Updated current documentation, MCP manifests, package examples and generated Maven flattened POM metadata to `3.3.4`.
+- Re-enabled the Java Maven Central publish job for `v*` release tags, gated on the Java build, security penetration and PostgreSQL E2E jobs.
+- Made npm and PyPI publication depend on the Rust/WASM SDK test job as well as the applicable SDK and server test jobs.
+
+### Verification
+
+- Python Ruff, mypy, Python test matrix, TypeScript tests, Rust/WASM tests, .NET tests, Java 27 tests, package builds and hosted release workflows must pass before publication. This source checkpoint has not itself been run through the hosted release workflows; see `RELEASE-NOTES-3.3.4.md` for the local verification status and remaining gates.
+
 ## 3.3.3 — November 12, 2026
 
 ### Fixed

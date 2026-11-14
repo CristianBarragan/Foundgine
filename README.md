@@ -230,11 +230,13 @@ Foundgine's architecture is specified independently of this implementation as th
 - [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, AOT, auditing and operations.
 - [Website](https://cristianbarragan.github.io/Foundgine/docs-site/) · [`CHANGELOG.md`](CHANGELOG.md)
 
-## Release 3.3.3
+## Release 3.3.4
 
-**Current release: 3.3.3 · .NET 10 and Java 27**
+**Current release: 3.3.4 · .NET 10, Java 27 and aligned client SDK packages**
 
-The .NET and Java implementations ship as aligned, same-numbered releases. 3.3.3 is a packaging and release-metadata patch on the 3.3.x line. The `Foundgine.Providers` NuGet package now carries the Foundgine-owned ORM and EF Core provider assemblies together with both source generators as compiler analyzers. EF Core 10 and its relational/DI dependencies are declared as NuGet dependencies; third-party DLLs are not bundled. CI checks the package contents and dependency manifest. This release also aligns the .NET, Maven, MCP, package-installation, documentation-site and AI-reference version labels on 3.3.3, and removes obsolete product-level “Foundgine v2” wording. Features introduced in 3.3.1 remain documented in [`RELEASE-NOTES-3.3.1.md`](RELEASE-NOTES-3.3.1.md). See [`RELEASE-NOTES-3.3.3.md`](RELEASE-NOTES-3.3.3.md) and [`CHANGELOG.md`](CHANGELOG.md) for release details and verification gates.
+Foundgine 3.3.4 is a cross-SDK maintenance release. It carries the TypeScript, Python and Rust/WASM transport-client parity improvements: canonical capability/tool aliases in the Rust facade, consistent URL path encoding and joining, and configurable notification replay/reconnect options. It also fixes Python Ruff lint and formatting failures, and corrects CI test-report checks so they verify executed .NET tests and the real Java Temporal workflow test report.
+
+The platform release version is aligned across .NET, Java, MCP manifests, package-install examples, documentation and the TypeScript/Python/Rust-WASM package metadata. The client SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface. Known parity gaps and release gates are documented in [`SDK-PARITY.md`](SDK-PARITY.md). See [`RELEASE-NOTES-3.3.4.md`](RELEASE-NOTES-3.3.4.md) and [`CHANGELOG.md`](CHANGELOG.md) for details.
 
 ## License
 

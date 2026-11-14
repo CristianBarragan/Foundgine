@@ -1,0 +1,654 @@
+{
+  "spec": "mcp-sse-replay-v1",
+  "scenarios": [
+    {
+      "name": "ids start at one and replay is exclusive",
+      "maxEvents": 10,
+      "maxBytes": 10000,
+      "steps": [
+        {
+          "op": "replay",
+          "expect": "OK",
+          "ids": []
+        },
+        {
+          "op": "append",
+          "data": "a",
+          "expect": "ok",
+          "id": "1",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "b",
+          "expect": "ok",
+          "id": "2",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "c",
+          "expect": "ok",
+          "id": "3",
+          "woke": false
+        },
+        {
+          "op": "replay",
+          "expect": "OK",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "0",
+          "expect": "OK",
+          "ids": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "op": "replay",
+          "lastEventId": "1",
+          "expect": "OK",
+          "ids": [
+            "2",
+            "3"
+          ]
+        },
+        {
+          "op": "replay",
+          "lastEventId": "2",
+          "expect": "OK",
+          "ids": [
+            "3"
+          ]
+        },
+        {
+          "op": "replay",
+          "lastEventId": "3",
+          "expect": "OK",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": " 2 ",
+          "expect": "OK",
+          "ids": [
+            "3"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "event count eviction reports lost events",
+      "maxEvents": 3,
+      "maxBytes": 10000,
+      "steps": [
+        {
+          "op": "append",
+          "data": "1",
+          "expect": "ok",
+          "id": "1",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "2",
+          "expect": "ok",
+          "id": "2",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "3",
+          "expect": "ok",
+          "id": "3",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "4",
+          "expect": "ok",
+          "id": "4",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "5",
+          "expect": "ok",
+          "id": "5",
+          "woke": false
+        },
+        {
+          "op": "replay",
+          "lastEventId": "0",
+          "expect": "EVICTED",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "1",
+          "expect": "EVICTED",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "2",
+          "expect": "OK",
+          "ids": [
+            "3",
+            "4",
+            "5"
+          ]
+        },
+        {
+          "op": "replay",
+          "lastEventId": "3",
+          "expect": "OK",
+          "ids": [
+            "4",
+            "5"
+          ]
+        },
+        {
+          "op": "replay",
+          "lastEventId": "5",
+          "expect": "OK",
+          "ids": []
+        }
+      ]
+    },
+    {
+      "name": "byte limit evicts oldest and refuses oversized events",
+      "maxEvents": 100,
+      "maxBytes": 10,
+      "steps": [
+        {
+          "op": "append",
+          "data": "aaaa",
+          "expect": "ok",
+          "id": "1",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "bbbb",
+          "expect": "ok",
+          "id": "2",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "cc",
+          "expect": "ok",
+          "id": "3",
+          "woke": false
+        },
+        {
+          "op": "replay",
+          "lastEventId": "0",
+          "expect": "OK",
+          "ids": [
+            "1",
+            "2",
+            "3"
+          ]
+        },
+        {
+          "op": "append",
+          "data": "dddd",
+          "expect": "ok",
+          "id": "4",
+          "woke": false
+        },
+        {
+          "op": "replay",
+          "lastEventId": "0",
+          "expect": "EVICTED",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "1",
+          "expect": "OK",
+          "ids": [
+            "2",
+            "3",
+            "4"
+          ]
+        },
+        {
+          "op": "replay",
+          "lastEventId": "2",
+          "expect": "OK",
+          "ids": [
+            "3",
+            "4"
+          ]
+        },
+        {
+          "op": "append",
+          "data": "xxxxxxxxxxx",
+          "expect": "rejected",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "ééééé",
+          "expect": "ok",
+          "id": "5",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "éééééé",
+          "expect": "rejected",
+          "woke": false
+        },
+        {
+          "op": "replay",
+          "lastEventId": "3",
+          "expect": "EVICTED",
+          "ids": []
+        }
+      ]
+    },
+    {
+      "name": "unparseable and future ids are invalid",
+      "maxEvents": 5,
+      "maxBytes": 1000,
+      "steps": [
+        {
+          "op": "append",
+          "data": "a",
+          "expect": "ok",
+          "id": "1",
+          "woke": false
+        },
+        {
+          "op": "replay",
+          "lastEventId": "abc",
+          "expect": "INVALID",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "-1",
+          "expect": "INVALID",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "1.5",
+          "expect": "INVALID",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "2",
+          "expect": "INVALID",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "99999999999999999999",
+          "expect": "INVALID",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "1e3",
+          "expect": "INVALID",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "١",
+          "expect": "INVALID",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": " 1",
+          "expect": "INVALID",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "\t1\t",
+          "expect": "OK",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "   ",
+          "expect": "OK",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "1",
+          "expect": "OK",
+          "ids": []
+        }
+      ]
+    },
+    {
+      "name": "sequence never rewinds after eviction",
+      "maxEvents": 1,
+      "maxBytes": 1000,
+      "steps": [
+        {
+          "op": "append",
+          "data": "a",
+          "expect": "ok",
+          "id": "1",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "b",
+          "expect": "ok",
+          "id": "2",
+          "woke": false
+        },
+        {
+          "op": "append",
+          "data": "c",
+          "expect": "ok",
+          "id": "3",
+          "woke": false
+        },
+        {
+          "op": "replay",
+          "lastEventId": "2",
+          "expect": "OK",
+          "ids": [
+            "3"
+          ]
+        },
+        {
+          "op": "replay",
+          "lastEventId": "1",
+          "expect": "EVICTED",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "3",
+          "expect": "OK",
+          "ids": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "4",
+          "expect": "INVALID",
+          "ids": []
+        }
+      ]
+    },
+    {
+      "name": "one live stream at a time and appends wake it",
+      "maxEvents": 5,
+      "maxBytes": 1000,
+      "steps": [
+        {
+          "op": "append",
+          "data": "before",
+          "expect": "ok",
+          "id": "1",
+          "woke": false
+        },
+        {
+          "op": "subscribe",
+          "as": "s1",
+          "expect": "ok"
+        },
+        {
+          "op": "subscribe",
+          "as": "s2",
+          "expect": "busy"
+        },
+        {
+          "op": "append",
+          "data": "x",
+          "expect": "ok",
+          "id": "2",
+          "woke": true
+        },
+        {
+          "op": "unsubscribe",
+          "as": "s2",
+          "expect": "done"
+        },
+        {
+          "op": "subscribe",
+          "as": "s3",
+          "expect": "busy"
+        },
+        {
+          "op": "append",
+          "data": "y",
+          "expect": "ok",
+          "id": "3",
+          "woke": true
+        },
+        {
+          "op": "append",
+          "data": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+          "expect": "rejected",
+          "woke": false
+        },
+        {
+          "op": "unsubscribe",
+          "as": "s1",
+          "expect": "done"
+        },
+        {
+          "op": "append",
+          "data": "quiet",
+          "expect": "ok",
+          "id": "4",
+          "woke": false
+        },
+        {
+          "op": "subscribe",
+          "as": "s3",
+          "expect": "ok"
+        },
+        {
+          "op": "append",
+          "data": "loud",
+          "expect": "ok",
+          "id": "5",
+          "woke": true
+        },
+        {
+          "op": "unsubscribe",
+          "as": "s1",
+          "expect": "done"
+        },
+        {
+          "op": "subscribe",
+          "as": "s4",
+          "expect": "busy"
+        },
+        {
+          "op": "unsubscribe",
+          "as": "s3",
+          "expect": "done"
+        },
+        {
+          "op": "subscribe",
+          "as": "s4",
+          "expect": "ok"
+        },
+        {
+          "op": "append",
+          "data": "again",
+          "expect": "ok",
+          "id": "6",
+          "woke": true
+        },
+        {
+          "op": "replay",
+          "lastEventId": "2",
+          "expect": "OK",
+          "ids": [
+            "3",
+            "4",
+            "5",
+            "6"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "an empty buffer can be retired and still takes events",
+      "maxEvents": 5,
+      "maxBytes": 1000,
+      "steps": [
+        {
+          "op": "retire",
+          "expect": "done",
+          "retired": []
+        },
+        {
+          "op": "append",
+          "data": "x",
+          "expect": "ok",
+          "id": "1",
+          "woke": false
+        },
+        {
+          "op": "replay",
+          "lastEventId": "0",
+          "expect": "OK",
+          "ids": [
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "retiring a buffer tells the holder once and refuses new streams",
+      "maxEvents": 5,
+      "maxBytes": 1000,
+      "steps": [
+        {
+          "op": "append",
+          "data": "a",
+          "expect": "ok",
+          "id": "1",
+          "woke": false
+        },
+        {
+          "op": "subscribe",
+          "as": "s1",
+          "expect": "ok"
+        },
+        {
+          "op": "subscribe",
+          "as": "s2",
+          "expect": "busy"
+        },
+        {
+          "op": "retire",
+          "expect": "done",
+          "retired": [
+            "s1"
+          ]
+        },
+        {
+          "op": "append",
+          "data": "b",
+          "expect": "ok",
+          "id": "2",
+          "woke": false
+        },
+        {
+          "op": "subscribe",
+          "as": "s3",
+          "expect": "busy"
+        },
+        {
+          "op": "unsubscribe",
+          "as": "s1",
+          "expect": "done"
+        },
+        {
+          "op": "retire",
+          "expect": "done",
+          "retired": []
+        },
+        {
+          "op": "replay",
+          "lastEventId": "0",
+          "expect": "OK",
+          "ids": [
+            "1",
+            "2"
+          ]
+        },
+        {
+          "op": "replay",
+          "lastEventId": "1",
+          "expect": "OK",
+          "ids": [
+            "2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "frame format keeps payload lines apart",
+      "maxEvents": 1,
+      "maxBytes": 1000,
+      "steps": [
+        {
+          "op": "format",
+          "sequence": "7",
+          "data": "hello",
+          "expect": "id: 7\ndata: hello\n\n"
+        },
+        {
+          "op": "format",
+          "sequence": "8",
+          "data": "",
+          "expect": "id: 8\ndata: \n\n"
+        },
+        {
+          "op": "format",
+          "sequence": "9",
+          "data": "one\ntwo",
+          "expect": "id: 9\ndata: one\ndata: two\n\n"
+        },
+        {
+          "op": "format",
+          "sequence": "10",
+          "data": "a\r\nb\rc",
+          "expect": "id: 10\ndata: a\ndata: b\ndata: c\n\n"
+        },
+        {
+          "op": "format",
+          "sequence": "11",
+          "data": "x\n\nid: 999\nevent: evil",
+          "expect": "id: 11\ndata: x\ndata: \ndata: id: 999\ndata: event: evil\n\n"
+        },
+        {
+          "op": "format",
+          "sequence": "12",
+          "data": "trailing\n",
+          "expect": "id: 12\ndata: trailing\ndata: \n\n"
+        },
+        {
+          "op": "format",
+          "sequence": "13",
+          "data": "unicode é ✓",
+          "expect": "id: 13\ndata: unicode é ✓\n\n"
+        }
+      ]
+    }
+  ]
+}

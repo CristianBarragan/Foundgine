@@ -9,9 +9,17 @@ public interface IFoundgineMcpApprovalTokenSigner
 {
     string KeyId { get; }
     byte[] Sign(ReadOnlySpan<byte> payload);
+
+    /// <summary>
+    /// Returns a signer pinned to one key for a single <see cref="FoundgineMcpApprovalToken.Encode"/> call. Encode reads
+    /// <see cref="KeyId"/> to build the payload and then calls <see cref="Sign"/>; a signer whose active key can change
+    /// (such as <see cref="FoundgineMcpApprovalKeyRing"/> during rotation) must return a snapshot so both steps use the same
+    /// key. Fixed-key signers keep this default.
+    /// </summary>
+    IFoundgineMcpApprovalTokenSigner Snapshot() => this;
 }
 
-/// <summary>Resolves a trusted public key by the token's key identifier.</summary>
+/// <summary>RSA PKCS#1 v1.5 / SHA-256 signer for a single fixed key.</summary>
 public sealed class FoundgineMcpRsaApprovalTokenSigner(string keyId, RSA privateKey) : IFoundgineMcpApprovalTokenSigner
 {
     public string KeyId { get; } = string.IsNullOrWhiteSpace(keyId)
@@ -21,6 +29,7 @@ public sealed class FoundgineMcpRsaApprovalTokenSigner(string keyId, RSA private
         _privateKey.SignData(payload, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 }
 
+/// <summary>Resolves a trusted public key by the token's key identifier.</summary>
 public interface IFoundgineMcpApprovalTokenKeyResolver
 {
     RSA? Resolve(string keyId);
@@ -53,6 +62,7 @@ public static class FoundgineMcpApprovalToken
         IFoundgineMcpApprovalTokenSigner signer)
     {
         ArgumentNullException.ThrowIfNull(signer);
+        signer = signer.Snapshot() ?? throw new ArgumentException("Signer snapshot is required.", nameof(signer));
         Require(approvalId, nameof(approvalId));
         Require(planFingerprint, nameof(planFingerprint));
         Require(approvedBy, nameof(approvedBy));

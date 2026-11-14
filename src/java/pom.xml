@@ -36,7 +36,7 @@
   </scm>
 
   <properties>
-    <revision>3.3.3</revision>
+    <revision>3.3.4</revision>
     <maven.compiler.release>27</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

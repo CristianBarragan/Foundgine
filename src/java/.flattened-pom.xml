@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-parent</artifactId>
-  <version>3.3.3</version>
+  <version>3.3.4</version>
   <packaging>pom</packaging>
   <name>Foundgine Java</name>
   <description>Java implementation of Foundgine, aligned with the current C# source packages.</description>

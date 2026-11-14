@@ -33,6 +33,18 @@ public final class FoundgineMcpApprovalTokenPolicy {
                 System::currentTimeMillis, replayStore);
     }
 
+    /** Maximum accepted token age. */
+    public Duration maximumAge() { return Duration.ofMillis(maximumAgeMillis); }
+
+    /** Tolerated future clock skew. */
+    public Duration allowedFutureSkew() { return Duration.ofMillis(allowedFutureSkewMillis); }
+
+    /**
+     * Shortest time a superseded signing key must stay verifiable so that every token it could still have signed
+     * (age plus skew) can be verified until the policy rejects it anyway. Use it as the retention for key rotation.
+     */
+    public Duration minimumKeyRetention() { return Duration.ofMillis(saturatingAdd(maximumAgeMillis, allowedFutureSkewMillis)); }
+
     /** Must be called only after signature verification and before provider execution. */
     public void validateAndConsume(FoundgineMcpApprovalToken.Claims claims) {
         Objects.requireNonNull(claims);

@@ -1,0 +1,461 @@
+{
+  "spec": "mcp-sse-transport-v1",
+  "scenarios": [
+    {
+      "name": "gate statuses",
+      "origins": [],
+      "maxTotal": 100,
+      "maxPerOwner": 100,
+      "maxEvents": 10,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 400,
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 404,
+          "session": "no-such-session",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 404,
+          "session": "s1",
+          "owner": "mallory"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 409,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "delete",
+          "expect": 400,
+          "owner": "alice"
+        },
+        {
+          "op": "delete",
+          "expect": 404,
+          "session": "s1",
+          "owner": "mallory"
+        },
+        {
+          "op": "delete",
+          "expect": 404,
+          "session": "no-such-session",
+          "owner": "alice"
+        }
+      ]
+    },
+    {
+      "name": "origin is checked before the session",
+      "origins": [
+        "https://a.example"
+      ],
+      "maxTotal": 100,
+      "maxPerOwner": 100,
+      "maxEvents": 10,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 403,
+          "session": "s1",
+          "owner": "alice",
+          "origin": "https://evil.example"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 403,
+          "owner": "alice",
+          "origin": "https://evil.example"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice",
+          "origin": "https://a.example"
+        },
+        {
+          "op": "delete",
+          "expect": 403,
+          "session": "s1",
+          "owner": "alice",
+          "origin": "https://evil.example"
+        },
+        {
+          "op": "delete",
+          "expect": 204,
+          "session": "s1",
+          "owner": "alice",
+          "origin": "https://a.example"
+        }
+      ]
+    },
+    {
+      "name": "no Origin header is accepted even when origins are configured",
+      "origins": [
+        "https://a.example"
+      ],
+      "maxTotal": 100,
+      "maxPerOwner": 100,
+      "maxEvents": 10,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice"
+        }
+      ]
+    },
+    {
+      "name": "replay after Last-Event-ID then live",
+      "origins": [],
+      "maxTotal": 100,
+      "maxPerOwner": 100,
+      "maxEvents": 10,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "m1"
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "m2"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 400,
+          "session": "s1",
+          "owner": "alice",
+          "lastEventId": "abc"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice",
+          "lastEventId": "1"
+        },
+        {
+          "op": "frames",
+          "stream": "g1",
+          "expect": [
+            "id: 2\ndata: m2\n\n"
+          ]
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "m3"
+        },
+        {
+          "op": "frames",
+          "stream": "g1",
+          "expect": [
+            "id: 3\ndata: m3\n\n"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "a fresh stream without Last-Event-ID gets only new events",
+      "origins": [],
+      "maxTotal": 100,
+      "maxPerOwner": 100,
+      "maxEvents": 10,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "old"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "frames",
+          "stream": "g1",
+          "expect": []
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "new"
+        },
+        {
+          "op": "frames",
+          "stream": "g1",
+          "expect": [
+            "id: 2\ndata: new\n\n"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "an id that fell out of the window is gone",
+      "origins": [],
+      "maxTotal": 100,
+      "maxPerOwner": 100,
+      "maxEvents": 2,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "a"
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "b"
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "c"
+        },
+        {
+          "op": "publish",
+          "session": "s1",
+          "data": "d"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 410,
+          "session": "s1",
+          "owner": "alice",
+          "lastEventId": "0"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice",
+          "lastEventId": "2"
+        },
+        {
+          "op": "frames",
+          "stream": "g1",
+          "expect": [
+            "id: 3\ndata: c\n\n",
+            "id: 4\ndata: d\n\n"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "limits answer 429 and are audited",
+      "origins": [],
+      "maxTotal": 2,
+      "maxPerOwner": 1,
+      "maxEvents": 10,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "session",
+          "as": "s2",
+          "owner": "alice"
+        },
+        {
+          "op": "session",
+          "as": "s3",
+          "owner": "bob"
+        },
+        {
+          "op": "session",
+          "as": "s4",
+          "owner": "carol"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 429,
+          "session": "s2",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "g3",
+          "expect": 200,
+          "session": "s3",
+          "owner": "bob"
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 429,
+          "session": "s4",
+          "owner": "carol"
+        },
+        {
+          "op": "audit",
+          "expect": [
+            "sseopened:alice",
+            "sserejected:alice",
+            "sseopened:bob",
+            "sserejected:carol"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "delete ends the session and closes its stream",
+      "origins": [],
+      "maxTotal": 100,
+      "maxPerOwner": 100,
+      "maxEvents": 10,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "closed",
+          "stream": "g1",
+          "expect": false
+        },
+        {
+          "op": "delete",
+          "expect": 204,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "closed",
+          "stream": "g1",
+          "expect": true
+        },
+        {
+          "op": "get",
+          "as": "x",
+          "expect": 404,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "delete",
+          "expect": 404,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "audit",
+          "expect": [
+            "sseopened:alice",
+            "sseclosed:alice"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "a heartbeat is a comment frame",
+      "origins": [],
+      "maxTotal": 100,
+      "maxPerOwner": 100,
+      "maxEvents": 10,
+      "steps": [
+        {
+          "op": "session",
+          "as": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "get",
+          "as": "g1",
+          "expect": 200,
+          "session": "s1",
+          "owner": "alice"
+        },
+        {
+          "op": "heartbeat",
+          "stream": "g1"
+        },
+        {
+          "op": "frames",
+          "stream": "g1",
+          "expect": [
+            ": keep-alive\n\n"
+          ]
+        }
+      ]
+    }
+  ]
+}

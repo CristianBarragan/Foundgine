@@ -20,6 +20,14 @@ public final class FoundgineMcpApprovalToken {
     public interface Signer {
         byte[] sign(byte[] payload) throws GeneralSecurityException;
         String keyId();
+
+        /**
+         * Returns a signer pinned to one key for a single {@link #encode} call. {@code encode} reads {@link #keyId()} to build
+         * the payload and then calls {@link #sign}; a signer whose active key can change (for example a
+         * {@link FoundgineMcpApprovalKeyRing} during rotation) must return a snapshot so both steps use the same key.
+         * Fixed-key signers can keep this default.
+         */
+        default Signer snapshot() { return this; }
     }
     @FunctionalInterface public interface KeyResolver { PublicKey resolve(String keyId); }
     public record Claims(String keyId, String approvalId, String planFingerprint, String approvedBy,
@@ -29,6 +37,7 @@ public final class FoundgineMcpApprovalToken {
                                  long approvedAtUnixMilliseconds, String requestJson, Signer signer)
             throws GeneralSecurityException {
         require(approvalId); require(fingerprint); require(approvedBy); require(requestJson);
+        signer = java.util.Objects.requireNonNull(signer, "signer").snapshot();
         require(signer.keyId());
         String payloadText = String.join("\n", "1", b64(signer.keyId()), b64(approvalId),
                 b64(fingerprint), b64(approvedBy), Long.toString(approvedAtUnixMilliseconds), b64(requestJson));

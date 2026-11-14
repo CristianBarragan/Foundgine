@@ -1,4 +1,4 @@
-# Foundgine 3.3.3 (.NET & Java)
+# Foundgine 3.3.4 (.NET & Java)
 
 Foundgine is a **semantic execution layer for .NET 10 and Java 27**. It resolves structured caller intent into authorized, deterministic execution plans within an application-controlled boundary. Both implementations share the same architecture and vocabulary, expressed through language-idiomatic mechanisms.
 
@@ -90,7 +90,7 @@ Java (Maven, groupId `io.github.cristianbarragan`):
 
 ## Current release
 
-**3.3.3 · .NET 10 and Java 27**
+**3.3.4 · .NET 10 and Java 27**
 
 New in 2.3.0: a fluent configuration API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
 

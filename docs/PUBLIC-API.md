@@ -191,7 +191,7 @@ The public API must not make it easier to accidentally replace trusted context w
 
 ## Versioning
 
-The repository is currently on the 3.3.3 release line.
+The repository is currently on the 3.3.4 release line.
 
 The most stable conceptual contracts are:
 

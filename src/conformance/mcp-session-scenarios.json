@@ -1,0 +1,474 @@
+{
+  "spec": "mcp-session-lifecycle-v1",
+  "scenarios": [
+    {
+      "name": "idle expiry slides on use",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "advance",
+          "ms": 540000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "VALID",
+          "expiresAt": 2140000
+        },
+        {
+          "op": "advance",
+          "ms": 540000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "VALID",
+          "expiresAt": 2500000
+        },
+        {
+          "op": "advance",
+          "ms": 600000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "EXPIRED"
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "name": "absolute lifetime never slides",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "advance",
+          "ms": 540000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "VALID",
+          "expiresAt": 2140000
+        },
+        {
+          "op": "advance",
+          "ms": 540000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "VALID",
+          "expiresAt": 2500000
+        },
+        {
+          "op": "advance",
+          "ms": 300000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "VALID",
+          "expiresAt": 2500000
+        },
+        {
+          "op": "advance",
+          "ms": 120000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "EXPIRED"
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "name": "owner binding",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "owner": "alice",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "owner": "alice",
+          "expect": "VALID",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "owner": "bob",
+          "expect": "OWNER_MISMATCH"
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "OWNER_MISMATCH"
+        },
+        {
+          "op": "terminate",
+          "session": "a",
+          "owner": "bob",
+          "expect": false
+        },
+        {
+          "op": "terminate",
+          "session": "a",
+          "expect": false
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "owner": "alice",
+          "expect": "VALID",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "terminate",
+          "session": "a",
+          "owner": "alice",
+          "expect": true
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "owner": "alice",
+          "expect": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "name": "unbound session ignores owner",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "owner": "anyone",
+          "expect": "VALID",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "terminate",
+          "session": "a",
+          "owner": "anyone",
+          "expect": true
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "name": "termination is final and idempotent",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "terminate",
+          "session": "a",
+          "expect": true
+        },
+        {
+          "op": "terminate",
+          "session": "a",
+          "expect": false
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "NOT_FOUND"
+        },
+        {
+          "op": "count",
+          "expect": 0
+        }
+      ]
+    },
+    {
+      "name": "terminating an expired session reports false",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "advance",
+          "ms": 600000
+        },
+        {
+          "op": "terminate",
+          "session": "a",
+          "expect": false
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "NOT_FOUND"
+        }
+      ]
+    },
+    {
+      "name": "bad ids are not found",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "validate",
+          "session": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "expect": "NOT_FOUND"
+        },
+        {
+          "op": "validate",
+          "session": "not a session id",
+          "expect": "NOT_FOUND"
+        },
+        {
+          "op": "validate",
+          "session": "",
+          "expect": "NOT_FOUND"
+        },
+        {
+          "op": "terminate",
+          "session": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "expect": false
+        },
+        {
+          "op": "terminate",
+          "session": "not a session id",
+          "expect": false
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "VALID",
+          "expiresAt": 1600000
+        }
+      ]
+    },
+    {
+      "name": "capacity, purge and reuse",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 2,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "create",
+          "as": "b",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "create",
+          "as": "c",
+          "expect": "full"
+        },
+        {
+          "op": "count",
+          "expect": 2
+        },
+        {
+          "op": "terminate",
+          "session": "a",
+          "expect": true
+        },
+        {
+          "op": "create",
+          "as": "c",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "advance",
+          "ms": 600000
+        },
+        {
+          "op": "count",
+          "expect": 2
+        },
+        {
+          "op": "create",
+          "as": "d",
+          "expect": "ok",
+          "expiresAt": 2200000
+        },
+        {
+          "op": "count",
+          "expect": 1
+        },
+        {
+          "op": "purge",
+          "expect": 0
+        },
+        {
+          "op": "count",
+          "expect": 1
+        }
+      ]
+    },
+    {
+      "name": "purge removes only expired",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "advance",
+          "ms": 360000
+        },
+        {
+          "op": "create",
+          "as": "b",
+          "expect": "ok",
+          "expiresAt": 1960000
+        },
+        {
+          "op": "advance",
+          "ms": 300000
+        },
+        {
+          "op": "purge",
+          "expect": 1
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "expect": "NOT_FOUND"
+        },
+        {
+          "op": "validate",
+          "session": "b",
+          "expect": "VALID",
+          "expiresAt": 2260000
+        },
+        {
+          "op": "count",
+          "expect": 1
+        }
+      ]
+    },
+    {
+      "name": "owner mismatch does not evict an expired session",
+      "startUnixMs": 1000000,
+      "idleTimeoutMs": 600000,
+      "maximumLifetimeMs": 1500000,
+      "maximumActiveSessions": 10,
+      "steps": [
+        {
+          "op": "create",
+          "as": "a",
+          "owner": "alice",
+          "expect": "ok",
+          "expiresAt": 1600000
+        },
+        {
+          "op": "advance",
+          "ms": 600000
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "owner": "bob",
+          "expect": "OWNER_MISMATCH"
+        },
+        {
+          "op": "count",
+          "expect": 1
+        },
+        {
+          "op": "validate",
+          "session": "a",
+          "owner": "alice",
+          "expect": "EXPIRED"
+        },
+        {
+          "op": "count",
+          "expect": 0
+        }
+      ]
+    }
+  ]
+}
