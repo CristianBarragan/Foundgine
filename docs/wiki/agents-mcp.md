@@ -33,6 +33,7 @@ Prompt injection, tool-output injection, confused deputy behavior, tenant confus
 
 ## Where to look in source
 
+- C# Microsoft Agent Framework: `Foundgine.Providers.AgentFramework` exposes the same read path as MAF tools; writes require MAF tool approval and the model has no `approve` tool.
 - C#: `Foundgine.Providers/Tools/MCP`, `Foundgine.Runtime/ControlPlane`, agent models, and security/warrant code.
 - Java: `foundgine-providers` MCP/tool integration, `foundgine-runtime` governance components, and the agent benchmark module.
 - Existing guide: [AI agent integration](../AI-AGENT).

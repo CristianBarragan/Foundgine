@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added `Foundgine.Providers.AgentFramework`: a Microsoft Agent Framework (MAF) adapter. It exposes capability discovery, semantic and open-intent reads, mutation dry-run and approval-gated mutation execution as MAF tools, with `AddFoundgineAgentFramework()` DI registration and a keyed scoped `AIAgent`. Mutations are off by default and execution is wrapped in `ApprovalRequiredAIFunction`; no model-callable approve tool exists, and `approvedBy` is the host-resolved subject.
+- Added `FoundgineProviderKind.Agent` (C#) / `AGENT` (Java), appended last so existing values are unchanged.
+
+### Verification status
+
+- The MAF adapter and its `Foundgine.AgentFramework.Tests` project were written without a .NET SDK or NuGet access and have **not been compiled or run**. Restore, build, run the tests and confirm the pinned `Microsoft.Agents.AI` version before release.
+
 ## 3.3.5 — November 15, 2026
 
 ### Added
