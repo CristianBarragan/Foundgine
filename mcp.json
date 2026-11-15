@@ -56,8 +56,7 @@
       "registry": "npm",
       "source": "src/typescript",
       "documentation": "src/typescript/README.md",
-      "runtime": "Node.js 20+ or any runtime with fetch",
-      "status": "development package, not release-ready"
+      "runtime": "Node.js 20+ or any runtime with fetch"
     },
     {
       "name": "foundgine-sdk",
@@ -65,8 +64,7 @@
       "registry": "PyPI",
       "source": "src/python",
       "documentation": "src/python/README.md",
-      "runtime": "Python 3.11+ (httpx)",
-      "status": "development package, not release-ready"
+      "runtime": "Python 3.11+ (httpx)"
     },
     {
       "name": "@foundgine/wasm",
@@ -74,8 +72,7 @@
       "registry": "npm",
       "source": "src/wasm",
       "documentation": "src/wasm/README.md",
-      "runtime": "Node.js 20+, browsers, Workers, Deno (host-supplied fetch)",
-      "status": "development package, not release-ready"
+      "runtime": "Node.js 20+, browsers, Workers, Deno (host-supplied fetch)"
     }
   ],
   "clientNotes": "Clients are thin transport libraries for this MCP endpoint and the Temporal workflow routes under /foundgine/workflows. They carry no authority; the server resolves and authorizes every call.",

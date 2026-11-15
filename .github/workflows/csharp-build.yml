@@ -1,3 +1,4 @@
+
 name: csharp Build, Test & Pack
 
 on:
@@ -149,7 +150,6 @@ jobs:
             echo "OK: ${expected}"
           done
 
-          # Reject any unexpected package IDs.
           for package in "${packages[@]}"; do
             filename="$(basename "$package")"
             valid=false
@@ -167,7 +167,6 @@ jobs:
             fi
           done
 
-          # Locate the Providers package.
           providers_packages=(artifacts/nuget/Foundgine.Providers.*.nupkg)
 
           if [[ "${#providers_packages[@]}" -ne 1 ]]; then
@@ -183,7 +182,6 @@ jobs:
 
           entries="$(unzip -Z1 "$package")"
 
-          # Required package assets.
           required=(
             "lib/net10.0/Foundgine.Providers.dll"
             "lib/net10.0/Foundgine.Providers.Orm.dll"
@@ -203,13 +201,11 @@ jobs:
             echo "OK: $file"
           done
 
-          # Generators must be packaged as analyzers, not runtime libraries.
           if grep -Eq '^lib/[^/]+/Foundgine\.Providers\.(Aot|Orm)\.Generator\.dll$' <<< "$entries"; then
             echo "ERROR: A Foundgine generator was incorrectly packaged as a runtime library."
             exit 1
           fi
 
-          # The only runtime DLLs bundled here must be Foundgine-owned components.
           runtime_dlls="$(grep -E '^lib/net10\.0/[^/]+\.dll$' <<< "$entries" | sed 's#^lib/net10.0/##' | sort)"
           expected_runtime_dlls="$(printf '%s\n' \
             'Foundgine.Providers.EntityFrameworkCore.dll' \
@@ -222,7 +218,6 @@ jobs:
             exit 1
           fi
 
-          # EF Core must be declared as a NuGet dependency, not copied into lib/.
           nuspec="$(unzip -p "$package" Foundgine.Providers.nuspec)"
           python3 - "$nuspec" <<'PY'
           import sys
@@ -250,7 +245,6 @@ jobs:
             exit 1
           fi
 
-          # Reject a separate AOT generator NuGet package.
           for candidate in "${packages[@]}"; do
             filename="$(basename "$candidate")"
 
@@ -260,7 +254,6 @@ jobs:
             fi
           done
 
-          # Reject the obsolete Experimental.Aot package.
           if compgen -G "artifacts/nuget/Foundgine.Experimental.Aot.*.nupkg" > /dev/null; then
             echo "ERROR: Obsolete Foundgine.Experimental.Aot package was produced."
             exit 1
@@ -315,6 +308,7 @@ jobs:
           exclude=(
             "src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj"
             "src/csharp/tests/Foundgine.EventStore.Tests/Foundgine.EventStore.Tests.csproj"
+            "src/csharp/tests/Foundgine.Redis.Tests/Foundgine.Redis.Tests.csproj"
             "src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/Tests/Foundgine.SupplyChain.PenTest.Tests.csproj"
             "src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.Layered/Tests/Foundgine.SupplyChain.Tests.csproj"
             "src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj"
@@ -422,8 +416,6 @@ jobs:
       - build-pack
     name: Integration Tests — PostgreSQL 17
     runs-on: ubuntu-latest
-    # Testcontainers must use the Docker daemon provided by the GitHub runner.
-    # Keep this scoped to the Docker-dependent integration job.
     env:
       DOCKER_HOST: unix:///var/run/docker.sock
 
@@ -460,7 +452,6 @@ jobs:
           POSTGRES_HOST_PORT: "55432"
         run: |
           docker compose -p foundgine-e2e -f docker-compose.postgres.yml down -v --remove-orphans || true
-
           docker compose -p foundgine-e2e -f docker-compose.postgres.yml \
             up -d --wait postgres
 
@@ -519,7 +510,6 @@ jobs:
       - build-pack
     name: Integration Tests — Redis 7
     runs-on: ubuntu-latest
-    # Use the GitHub runner's Docker daemon, matching the PostgreSQL E2E job.
     env:
       DOCKER_HOST: unix:///var/run/docker.sock
 
@@ -545,8 +535,16 @@ jobs:
           docker info
           docker compose version
 
-      - name: Restore
+      - name: Restore solution
         run: dotnet restore src/csharp/Foundgine.sln
+
+      # Explicitly restore the renamed test project.
+      - name: Restore Redis test project
+        working-directory: src/csharp
+        run: |
+          dotnet restore \
+            tests/Foundgine.Redis.Tests/Foundgine.Redis.Tests.csproj \
+            --force
 
       - name: Build
         run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
@@ -569,7 +567,7 @@ jobs:
         run: |
           dotnet test \
             tests/Foundgine.Redis.Tests/Foundgine.Redis.Tests.csproj \
-            --no-build \
+            --no-restore \
             --configuration Release \
             --logger "console;verbosity=normal"
 
@@ -806,6 +804,7 @@ jobs:
       - supplychain-sample-tests
       - supplychain-semantic-sample-tests
       - integration-tests
+      - redis-integration-tests
       - benchmark-build-hotchocolate
       - benchmark-build-foundgine
       - security-gate
@@ -843,7 +842,7 @@ jobs:
           )
 
           if [[ "${#packages[@]}" -ne "${#expected_packages[@]}" ]]; then
-            echo "ERROR: Expected exactly four NuGet packages, found ${#packages[@]}."
+            echo "ERROR: Expected exactly four packages, found ${#packages[@]}."
             exit 1
           fi
 
@@ -852,7 +851,6 @@ jobs:
             echo "Validated: $package"
           done
 
-          # Validate all four expected package IDs.
           for expected in "${expected_packages[@]}"; do
             matches=(artifacts/nuget/"${expected}".*.nupkg)
 
@@ -862,7 +860,6 @@ jobs:
             fi
           done
 
-          # Correctly expand the Providers package glob.
           providers_packages=(artifacts/nuget/Foundgine.Providers.*.nupkg)
 
           if [[ "${#providers_packages[@]}" -ne 1 ]]; then

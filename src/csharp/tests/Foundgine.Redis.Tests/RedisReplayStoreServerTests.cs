@@ -7,7 +7,7 @@ namespace Foundgine.Redis.Tests;
 /// <summary>Opt-in live-server tests for atomic replay protection across independent store instances.</summary>
 public sealed class RedisReplayStoreServerTests
 {
-    [Fact]
+    [RedisFact]
     public void First_consume_wins_across_store_instances_sharing_a_server()
     {
         var redis = RespRedis.FromEnvironment() ?? throw SkipException.ForSkip("Set FOUNDGINE_REDIS to run live Redis integration tests.");
@@ -18,7 +18,7 @@ public sealed class RedisReplayStoreServerTests
         Assert.False(second.TryConsume("warrant", "nonce"));
     }
 
-    [Fact]
+    [RedisFact]
     public void Ttl_is_set_on_the_server_and_the_entry_disappears_after_it()
     {
         var redis = RespRedis.FromEnvironment() ?? throw SkipException.ForSkip("Set FOUNDGINE_REDIS to run live Redis integration tests.");
@@ -31,7 +31,7 @@ public sealed class RedisReplayStoreServerTests
         Assert.InRange(redis.Pttl(scan[0]), 60_000, 63_000);
     }
 
-    [Fact]
+    [RedisFact]
     public void Exactly_one_of_many_concurrent_consumers_wins_on_a_real_server()
     {
         var redis = RespRedis.FromEnvironment() ?? throw SkipException.ForSkip("Set FOUNDGINE_REDIS to run live Redis integration tests.");
