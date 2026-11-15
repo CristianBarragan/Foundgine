@@ -16,6 +16,10 @@ Discovery describes what the application exposes. It does not grant permission. 
 
 Authentication, actor identity, tenant context, secrets and model orchestration remain host responsibilities.
 
+## Calling from TypeScript, Python or WebAssembly
+
+Thin client SDKs (`@foundgine/typescript`, `foundgine-sdk`, `@foundgine/wasm`) connect to a Foundgine server's MCP endpoint and Temporal workflow routes. They are transport only and grant no authority; see the [client SDK overview](https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/client-sdks.md).
+
 ## Go deeper
 
 Read the repository [AI agent guide](https://github.com/CristianBarragan/Foundgine/blob/main/docs/AI-AGENT.md).

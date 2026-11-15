@@ -153,3 +153,8 @@ Recommended:
 ## Important limitation
 
 This benchmark currently measures a real Foundgine graph/mutation path but uses the existing CoffeeBeanery benchmark domain. It is intentionally **not** presented as proof of tenant authorization or financial-transfer safety. A separate security scenario should be added before making those claims.
+
+
+## Public benchmark explorer
+
+Published Run 1–5b aggregates and the Supply Chain E2E evidence are presented in the [Foundgine benchmark explorer](https://cristianbarragan.github.io/Foundgine/agent-benchmark/). The methodology and evidence index are linked from the [performance page](https://cristianbarragan.github.io/Foundgine/performance/). Use `publish-all-reports.ps1` after completing runs to copy raw artifacts, rebuild aggregates and refresh the website matrix; run `validate-published-benchmarks.ps1` before committing.

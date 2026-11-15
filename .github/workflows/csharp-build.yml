@@ -512,6 +512,78 @@ jobs:
             --remove-orphans
 
   # ============================================================
+  # Redis provider integration tests
+  # ============================================================
+  redis-integration-tests:
+    needs:
+      - build-pack
+    name: Integration Tests — Redis 7
+    runs-on: ubuntu-latest
+    # Use the GitHub runner's Docker daemon, matching the PostgreSQL E2E job.
+    env:
+      DOCKER_HOST: unix:///var/run/docker.sock
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Verify Docker daemon
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "DOCKER_HOST=$DOCKER_HOST"
+          if [[ ! -S /var/run/docker.sock ]]; then
+            echo "ERROR: Docker socket /var/run/docker.sock is not available."
+            exit 1
+          fi
+          docker version
+          docker info
+          docker compose version
+
+      - name: Restore
+        run: dotnet restore src/csharp/Foundgine.sln
+
+      - name: Build
+        run: dotnet build src/csharp/Foundgine.sln --no-restore --configuration Release
+
+      - name: Start Redis 7
+        env:
+          REDIS_HOST_PORT: "56379"
+        run: |
+          docker compose -p foundgine-redis -f docker-compose.redis.yml down --remove-orphans || true
+          docker compose -p foundgine-redis -f docker-compose.redis.yml up -d --wait redis
+
+      - name: Verify Redis
+        run: |
+          docker compose -p foundgine-redis -f docker-compose.redis.yml exec -T redis redis-cli ping
+
+      - name: Run Redis provider tests
+        working-directory: src/csharp
+        env:
+          FOUNDGINE_REDIS: "127.0.0.1:56379"
+        run: |
+          dotnet test \
+            tests/Foundgine.Redis.Tests/Foundgine.Redis.Tests.csproj \
+            --no-build \
+            --configuration Release \
+            --logger "console;verbosity=normal"
+
+      - name: Redis diagnostics on failure
+        if: failure()
+        run: |
+          docker compose -p foundgine-redis -f docker-compose.redis.yml logs --no-color redis
+
+      - name: Stop Redis
+        if: always()
+        run: |
+          docker compose -p foundgine-redis -f docker-compose.redis.yml down --volumes --remove-orphans
+
+  # ============================================================
   # Performance smoke — Hot Chocolate + EF Core
   # ============================================================
   benchmark-build-hotchocolate:

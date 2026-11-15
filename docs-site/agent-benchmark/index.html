@@ -908,13 +908,13 @@
           }
           if (!summary.measured && (!summary.modeled || !summary.modeled.length)) {
             html =
-              "<p>No reduction-summary data has been published yet. Run <code>src/csharp/benchmarks/AgentEndToEnd/scripts/build-reduction-summary.py</code> after running the benchmarks.</p>";
+              "<p>No separate reduction summary is published for this snapshot. Use the run-level reports and aggregates below as the evidence source.</p>";
           }
           bodyEl.innerHTML = html;
         } catch (e) {
           statusEl.textContent = "Reduction summary not published yet.";
           bodyEl.innerHTML =
-            "<p>This section fills in once <code>docs-site/assets/agent-benchmark/reduction-summary.json</code> is published (see <code>src/csharp/benchmarks/AgentEndToEnd/scripts/build-reduction-summary.py</code>).</p>";
+            "<p>The separate reduction summary is unavailable. The run-level reports and aggregates remain available in the benchmark explorer.</p>";
         }
       }
       function openMenu() {

@@ -3,8 +3,8 @@
     <Authors>Foundgine</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageId>Foundgine.Providers</PackageId>
-    <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine 3.x, including storage providers and adapters, AI/model and MCP tooling integrations, EventStore, gateway integrations, Elasticsearch and vector-store support, and the Entity Framework Core execution provider. The package includes Foundgine-owned ORM and EF Core assemblies plus the AOT and ORM source generators as build-time analyzers. EF Core and other third-party libraries are restored as NuGet dependencies and are not bundled as DLLs. Secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers supply the semantic model and runtime configuration required by Foundgine.</Description>
-    <PackageTags>providers;storage;orm;entity-framework-core;aot;ai;mcp;dotnet</PackageTags>
+    <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine 3.x, including storage providers and adapters, AI/model and MCP tooling integrations, EventStore, gateway integrations, Elasticsearch and vector-store support, and the Entity Framework Core execution provider. The package includes Redis and Microsoft Agent Framework adapters, Foundgine-owned ORM and EF Core assemblies, and the AOT and ORM source generators as build-time analyzers. EF Core and other third-party libraries are restored as NuGet dependencies and are not bundled as DLLs. Secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers supply the semantic model and runtime configuration required by Foundgine.</Description>
+    <PackageTags>providers;storage;orm;entity-framework-core;redis;agent-framework;aot;ai;mcp;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Providers</RootNamespace>
     <AssemblyName>Foundgine.Providers</AssemblyName>
@@ -53,6 +53,8 @@
           Pack="true"
           PackagePath="README.md"
           Condition="Exists('README.md')" />
+    <None Include="Redis/README.md" Pack="true" PackagePath="Redis/README.md" />
+    <None Include="AgentFramework/README.md" Pack="true" PackagePath="AgentFramework/README.md" />
 
     <None Include="../../../LICENSE"
           Pack="true"
@@ -100,6 +102,11 @@
 
     <PackageReference Include="Pgvector"
                       Version="0.3.2" />
+
+    <!-- Optional-at-runtime integrations are compiled into this provider assembly and
+         their client libraries flow as normal NuGet dependencies. -->
+    <PackageReference Include="StackExchange.Redis" Version="2.8.37" />
+    <PackageReference Include="Microsoft.Agents.AI" Version="1.5.0" />
   </ItemGroup>
 
   <Target Name="PackProviderComponents" BeforeTargets="_GetPackageFiles">

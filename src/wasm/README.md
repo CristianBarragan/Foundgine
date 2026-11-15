@@ -2,6 +2,8 @@
 
 A thin WebAssembly client core for Foundgine MCP and Temporal workflow HTTP transports.
 
+> Part of the Foundgine repository. This client talks to a running Foundgine server (the .NET or Java implementation hosting the MCP and Temporal endpoints); it does not contain the semantic runtime. See the [client SDK overview](../../docs/wiki/client-sdks.md) and the [source layout](../README.md).
+
 Requires Rust (`wasm32-unknown-unknown` target), `wasm-bindgen-cli` (`=0.2.92`), and Node.js 20+.
 
 ## Install
@@ -29,7 +31,10 @@ const client = new FoundgineClient({
 
 try {
   const tools = await client.listCapabilities(); // canonical cross-SDK name; follows nextCursor
-  const result = await client.execute("query_semantic", { entity: "Customer", limit: 20 }); // result.isError is data, not a throw
+  // Query tools take one `intentJson` string; names come from foundgine_capabilities.
+  const result = await client.execute("foundgine_query_semantic", {
+    intentJson: JSON.stringify({ rootEntity: "Customer", selections: [{ field: "Name" }], limit: 20 }),
+  }); // result.isError is data, not a throw
   console.log(tools, result.content, result.isError);
 } finally {
   await client.close();

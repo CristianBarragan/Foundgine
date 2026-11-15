@@ -1,5 +1,7 @@
 # Why Foundgine
 
+For the buyer-facing product position, target audiences, business-value model and evidence plan, see [Product Positioning & Commercial Strategy](PRODUCT-POSITIONING-AND-COMMERCIAL-STRATEGY.md). This page remains the technical explanation of the execution boundary.
+
 Foundgine exists to provide a stable execution boundary between **application intent** and **physical execution**.
 
 The problem is not that applications lack APIs. The problem is that every new intent source can otherwise become responsible for understanding the application's model, relationships, authorization rules, and provider-specific execution details.

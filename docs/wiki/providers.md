@@ -26,9 +26,10 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | **Remember and deliver** | **Event store** (`PostgresEventStore`, `PostgresGatewayEventStore`) | A durable history of events | Yes | Yes |
 | | **Outbox** (`PostgresOutbox`, `FoundgineOutboxDispatcher`) | A to-do list of messages, sent after the data is saved | Yes | Yes |
 | **Front door** | **Gateway** (`FoundgineGateway`) with provider registry, approval stores, event stores and HTTP/SSE routes | One stable entrance for other products; tracks providers | Yes | Yes |
+| **Shared state** | **Redis-compatible stores** (`RedisSecurityWarrantReplayStore`, `RedisMcpSessionStore`) | Shared warrant replay protection and MCP sessions across hosts; Redis/Valkey/Garnet | Yes | Yes (warrant replay and MCP sessions) |
 | **AI** | **MCP tools and client** (`FoundgineMcpTools`, `FoundgineMcpMutationTools`, `FoundgineMcpAgentClient`) | Lets AI agents discover and call Foundgine safely | Yes | Yes |
-| | **Models**, Microsoft.Extensions.AI (`FoundgineAiToolset`, `FoundgineAiAgent`) | Describes Foundgine as tools for an AI function-calling loop | Yes | `models` contains descriptors; separate `foundgine-langchain4j` adapter is unverified |
-| | **Microsoft Agent Framework** (`FoundgineAgentTools`, `AddFoundgineAgentFramework`) | Gives a MAF agent governed Foundgine tools, with human approval before any write; present in the working tree but not yet build-verified or released | Yes (unverified) | n/a |
+| | **Models**, Microsoft.Extensions.AI (`FoundgineAiToolset`, `FoundgineAiAgent`) | Describes Foundgine as tools for an AI function-calling loop | Yes | `models` contains descriptors; LangChain4j adapter is included in `foundgine-providers` |
+| | **Microsoft Agent Framework** (`FoundgineAgentTools`, `AddFoundgineAgentFramework`) | Gives a MAF agent governed Foundgine tools, with human approval before any write; included in `Foundgine.Providers` | Yes | n/a |
 | **Build time** | **AOT metadata generator** (`Foundgine.Providers.Aot.Generator`) | Writes your model description as ordinary code during the build | Yes | `foundgine-aot-generator` |
 | | **ORM map generator** (`Foundgine.Providers.Orm.Generator`) | Writes the typed field maps EF Core needs | Yes | maps are provider-neutral today |
 | **Declarations** | **Graph retrieval capability** (`GraphRetrieval`) | A label saying a provider supports graph lookups | Yes | Yes |
@@ -64,7 +65,7 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | MCP tools and client | Expose Foundgine capabilities to MCP clients and consume remote MCP capabilities | `Tools/MCP` | `.../tools/mcp` |
 | AOT metadata | Compile-time declarations and generated semantic metadata | `Aot` + `Foundgine.Providers.Aot.Generator` | `.../aot` + `foundgine-aot-generator` |
 | AI agent/toolset descriptors | Describe agent/toolset integration surfaces | `Models` | `.../models` |
-| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools; implementation is present but not yet build-verified or released | `src/csharp/Foundgine.Providers.AgentFramework` | n/a |
+| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools; included in `Foundgine.Providers` | `src/csharp/Foundgine.Providers/AgentFramework` | n/a |
 | Graph retrieval capability | Declare graph-retrieval capability metadata for provider negotiation | `Hosting/Capabilities` | `.../capabilities` |
 
 > The table is a source map, not a promise of identical implementation maturity or runtime dependencies. Verify the concrete language module, tests and package release before relying on a feature.
@@ -156,9 +157,9 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 
 **.NET.** `FoundgineAiToolset` exposes Foundgine as AI tools (`foundgine_capabilities`, `foundgine_query`); `FoundgineAiAgent` runs a bounded function-calling loop over an existing Foundgine runtime. It does not hard-code OpenAI, Azure, Ollama or any model vendor. The model only supplies intent; the host supplies the security context and Foundgine still resolves, authorizes, plans and executes.
 
-**Java.** The `foundgine-providers` `models` package contains agent/tool descriptors. The separate `foundgine-langchain4j` module contains the LangChain4j integration source and tests, but its dependency pins and runtime verification remain pending.
+**Java.** The `foundgine-providers` `models` package contains agent/tool descriptors. The LangChain4j integration source and tests are included in `foundgine-providers`.
 
-**Source:** `src/csharp/Foundgine.Providers/Models`, `src/java/foundgine-providers/.../models` and `src/java/foundgine-langchain4j`.
+**Source:** `src/csharp/Foundgine.Providers/Models` and `src/java/foundgine-providers/.../models`, `.../langchain4j`.
 
 
 ## Event store

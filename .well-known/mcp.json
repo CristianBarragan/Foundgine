@@ -23,6 +23,10 @@
       "purpose": "Execute provider-neutral read intent through the Foundgine planning and execution pipeline."
     },
     {
+      "name": "foundgine_query_semantic",
+      "purpose": "Execute an already-structured, provider-neutral read intent (rootEntity, selections, optional filter/order/pagination) without lexical grounding."
+    },
+    {
       "name": "foundgine_mutation_dry_run",
       "purpose": "Validate and authorize a mutation without executing it."
     },
@@ -43,6 +47,54 @@
   },
   "source": {
     "repository": "https://github.com/CristianBarragan/Foundgine",
-    "mcpProject": "src/Foundgine.Providers/Tools/MCP"
-  }
+    "mcpProject": "src/csharp/Foundgine.Providers/Tools/MCP"
+  },
+  "clients": [
+    {
+      "name": "@foundgine/typescript",
+      "language": "TypeScript",
+      "registry": "npm",
+      "source": "src/typescript",
+      "documentation": "src/typescript/README.md",
+      "runtime": "Node.js 20+ or any runtime with fetch",
+      "status": "development package, not release-ready"
+    },
+    {
+      "name": "foundgine-sdk",
+      "language": "Python",
+      "registry": "PyPI",
+      "source": "src/python",
+      "documentation": "src/python/README.md",
+      "runtime": "Python 3.11+ (httpx)",
+      "status": "development package, not release-ready"
+    },
+    {
+      "name": "@foundgine/wasm",
+      "language": "Rust/WebAssembly",
+      "registry": "npm",
+      "source": "src/wasm",
+      "documentation": "src/wasm/README.md",
+      "runtime": "Node.js 20+, browsers, Workers, Deno (host-supplied fetch)",
+      "status": "development package, not release-ready"
+    }
+  ],
+  "clientNotes": "Clients are thin transport libraries for this MCP endpoint and the Temporal workflow routes under /foundgine/workflows. They carry no authority; the server resolves and authorizes every call.",
+  "integrations": [
+    {
+      "name": "Foundgine.Providers (Microsoft Agent Framework + Redis)",
+      "framework": "Microsoft Agent Framework / Redis protocol",
+      "language": "C#/.NET",
+      "source": "src/csharp/Foundgine.Providers",
+      "documentation": "src/csharp/Foundgine.Providers/README.md",
+      "status": "included in the Foundgine.Providers NuGet package; tests are in the solution"
+    },
+    {
+      "name": "foundgine-providers (LangChain4j + Spring Boot + Redis)",
+      "framework": "LangChain4j / Spring Boot / Redis protocol",
+      "language": "Java",
+      "source": "src/java/foundgine-providers",
+      "documentation": "src/java/foundgine-providers/README.md",
+      "status": "included in the foundgine-providers Maven artifact; framework dependencies are optional"
+    }
+  ]
 }

@@ -52,3 +52,9 @@ if (-not $?) {
 Write-Host ''
 Write-Host 'All benchmark reports and the interactive benchmark matrix are published.' `
     -ForegroundColor Green
+
+$coffeePublisher = Join-Path $repoRoot 'src/csharp/benchmarks/CoffeeBeanery.Performance/publish-site-reports.ps1'
+if (Test-Path -LiteralPath $coffeePublisher -PathType Leaf) {
+    & $coffeePublisher
+    if (-not $?) { throw 'Failed to publish CoffeeBeanery website reports.' }
+}

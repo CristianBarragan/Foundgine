@@ -6,6 +6,9 @@ Foundgine is a semantic execution boundary: it lets applications, APIs, automati
 
 ## Start here
 
+**Evaluating Foundgine?** Begin with [Why Foundgine?](why-foundgine.md) for the enterprise problem, where it fits alongside existing technology, the expected business value, and what should be measured in a pilot.
+
+
 > **New to this? In plain words.** Foundgine sits between your callers (apps, APIs, AI agents) and your data. **Providers** do the database and infrastructure work; **extensions** connect tools like GraphQL, Keycloak and Temporal. Foundgine decides what is allowed.
 
 **Concepts**
@@ -25,25 +28,27 @@ Foundgine is a semantic execution boundary: it lets applications, APIs, automati
 10. [Providers and storage](providers-storage) — conceptual provider contracts and safety boundaries.
 11. [Fluent semantic reads (`SemanticQuery`)](semantic-query-builder) — build a read with the same builder in C# and Java; generic CRUD next to it.
 
-**Extensions and AI**
+**Extensions, AI and client SDKs**
 
 12. [Extensions](extensions) — GraphQL, Keycloak and Temporal in one place (the old Integrations page now points here).
 13. [AI agents and MCP](agents-mcp) — safe tool discovery and invocation patterns.
+14. [Agent and framework integrations: MAF, LangChain4j, Spring Boot](agent-framework-integrations) — put Foundgine behind agent frameworks and host it in Spring.
+15. [Client SDKs: TypeScript, Python, WebAssembly](client-sdks) — thin clients for calling a running server's MCP and workflow endpoints.
 
 **Trust, proof and operations**
 
-14. [Insights, evidence and auditing](insights-evidence-auditing) — receipts, audit, diagnostics and live events.
-15. [Approvals, audit and governance](approvals-audit-governance) — who said yes, and can we prove it.
-16. [Conformance and hardening](conformance-hardening) — what is proven versus only implemented.
-17. [AOT and generated metadata](aot) — build-time metadata generation and trimming-friendly deployment.
-18. [Operations and extension points](operations) — configuration, diagnostics, testing, and adding capabilities.
+16. [Insights, evidence and auditing](insights-evidence-auditing) — receipts, audit, diagnostics and live events.
+17. [Approvals, audit and governance](approvals-audit-governance) — who said yes, and can we prove it.
+18. [Conformance and hardening](conformance-hardening) — what is proven versus only implemented.
+19. [AOT and generated metadata](aot) — build-time metadata generation and trimming-friendly deployment.
+20. [Operations and extension points](operations) — configuration, diagnostics, testing, and adding capabilities.
 
 **Reference**
 
-19. [Cross-language implementation map](implementation-map) — where capabilities live in C# and Java.
-20. [Glossary (plain words)](glossary) — short, friendly definitions.
+21. [Cross-language implementation map](implementation-map) — where capabilities live in C# and Java.
+22. [Glossary (plain words)](glossary) — short, friendly definitions.
 
-> Looking for **EF Core** or **JPA**? Go to [ORM providers](orm-providers). Looking for GraphQL, Keycloak or Temporal? Go to [Extensions](extensions).
+> Looking for **EF Core** or **JPA**? Go to [ORM providers](orm-providers). Looking for GraphQL, Keycloak or Temporal? Go to [Extensions](extensions). Using Microsoft Agent Framework, LangChain4j or Spring Boot? Go to [Agent and framework integrations](agent-framework-integrations). Calling a server from TypeScript, Python or WebAssembly? Go to [Client SDKs](client-sdks).
 
 ## Documentation principles
 

@@ -18,7 +18,7 @@ cd src/java
 mvn -U test
 ```
 
-The .NET solution does not include the separate `Foundgine.Providers.AgentFramework` project or its tests; that adapter remains uncompiled and unverified in this snapshot. The Java Spring Boot and LangChain4j modules have source and tests, but their dependency pins and runtime verification remain unverified. The latest reported Maven run had the Starter sample passing and the Advanced sample test phase failing; fixes are present but have not been rerun. The PostgreSQL 16 schema-parity test is also not executed by the current PostgreSQL 17 CI job. See [source coverage](SOURCE-COVERAGE.md) and the [Advanced schema audit](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/ADVANCED-SCHEMA-AUDIT.md). These commands describe how to run the suites; they are not evidence that a run passed.
+The .NET Redis and Microsoft Agent Framework adapter tests are part of the solution and reference the consolidated `Foundgine.Providers` project. The Java Spring Boot and LangChain4j adapter sources and tests are compiled as part of `foundgine-providers`; framework dependencies are optional. The latest reported Maven run had the Starter sample passing and the Advanced sample test phase failing; fixes are present but have not been rerun. The PostgreSQL 16 schema-parity test is also not executed by the current PostgreSQL 17 CI job. See [source coverage](SOURCE-COVERAGE.md) and the [Advanced schema audit](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/ADVANCED-SCHEMA-AUDIT.md). These commands describe how to run the suites; they are not evidence that a run passed.
 
 ## Test layers
 

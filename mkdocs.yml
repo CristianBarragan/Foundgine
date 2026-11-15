@@ -1,5 +1,5 @@
 site_name: Foundgine
-site_description: "Semantic execution layer for .NET and Java"
+site_description: "Semantic execution layer for .NET and Java, with TypeScript, Python and WebAssembly client SDKs"
 repo_url: https://github.com/CristianBarragan/Foundgine
 repo_name: CristianBarragan/Foundgine
 
@@ -29,6 +29,7 @@ nav:
   - Conformance and shared test data: STANDARDS.md
   - Getting started: GETTING-STARTED.md
   - Why Foundgine: WHY-FOUNDGINE.md
+  - Product positioning and commercial strategy: PRODUCT-POSITIONING-AND-COMMERCIAL-STRATEGY.md
   - What Foundgine is designed for: APPLICATION-CATEGORIES.md
   - Architecture: ARCHITECTURE.md
   - Metadata → Semantics (layer setup): METADATA-TO-SEMANTICS.md
@@ -46,6 +47,7 @@ nav:
   - Testing: TESTING.md
   - Feature and capability wiki:
       - Overview: wiki/index.md
+      - Why Foundgine?: wiki/why-foundgine.md
       - Core concepts: wiki/core-concepts.md
       - Semantic model and metadata: wiki/semantic-model.md
       - Intent, grounding and retrieval: wiki/intent-grounding.md
@@ -60,6 +62,8 @@ nav:
           - Providers and storage: wiki/providers-storage.md
       - Extensions (GraphQL, Keycloak, Temporal): wiki/extensions.md
       - AI agents and MCP: wiki/agents-mcp.md
+      - Agent and framework integrations (MAF, LangChain4j, Spring Boot): wiki/agent-framework-integrations.md
+      - Client SDKs (TypeScript, Python, WebAssembly): wiki/client-sdks.md
       - MCP protocol, sessions and approval tokens: wiki/mcp-protocol-and-tokens.md
       - AOT and generated metadata: wiki/aot.md
       - Trust and proof:

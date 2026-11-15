@@ -5,4 +5,3 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Foundgine.Postgres.Vector.Tests")]
 [assembly: InternalsVisibleTo("Foundgine.Gateway.Tests")]
 [assembly: InternalsVisibleTo("Foundgine.EventStore.Tests")]
-[assembly: InternalsVisibleTo("Foundgine.Providers.AgentFramework")]

@@ -1,0 +1,36 @@
+operation,target,concurrency,batch_size,requests_per_second,logical_requests_per_second,p50_ms,p95_ms,p99_ms,cpu_avg_percent,cpu_max_percent,memory_avg_mb,memory_max_mb,memory_end_mb,errors,successful
+"Query top 50 graph","Hot Chocolate + EF Core",1,1,33.80,33.80,28.43,53.95,118.81,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Hot Chocolate + EF Core",8,1,152.60,152.60,44.06,88.68,234.32,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Hot Chocolate + EF Core",16,1,71.40,71.40,121.71,599.97,982.08,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Hot Chocolate + EF Core",32,1,189.70,189.70,155.86,222.51,526.31,0.00,0.00,0.00,0.00,0.00,0,True
+"Query top 50 graph","Hot Chocolate + EF Core",64,1,152.20,152.20,389.66,594.80,667.88,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",1,1,211.00,211.00,4.08,5.58,6.80,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",8,1,256.80,256.80,17.03,83.59,191.39,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",16,1,319.60,319.60,25.07,175.64,323.63,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",32,1,641.70,641.70,30.61,153.74,239.34,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",64,1,455.60,455.60,81.17,449.52,785.43,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",1,10,40.70,407.00,22.83,29.33,36.24,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",8,10,220.60,2206.00,34.08,43.54,51.35,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",16,10,148.30,1483.00,88.78,224.38,484.41,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",32,10,348.00,3480.00,86.59,121.09,142.62,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",64,10,354.70,3547.00,168.06,277.06,351.40,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",1,50,8.40,420.00,114.20,134.09,186.63,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",8,50,45.70,2285.00,168.96,205.25,244.48,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",16,50,71.60,3580.00,209.35,297.66,356.40,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",32,50,56.40,2820.00,373.88,1553.53,1777.75,0.00,0.00,0.00,0.00,0.00,0,True
+"Mutation whole graph","Hot Chocolate + EF Core",64,50,63.80,3190.00,701.45,3211.90,3425.43,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",1,1,32.00,32.00,23.44,64.94,129.59,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",8,1,144.40,144.40,50.90,82.18,102.84,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",16,1,174.70,174.70,86.85,127.36,149.74,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",32,1,122.90,122.90,206.40,515.17,1156.21,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",64,1,172.80,172.80,360.86,498.37,562.48,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",1,10,23.30,233.00,41.22,47.91,55.48,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",8,10,92.00,920.00,82.95,104.04,124.16,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",16,10,119.50,1195.00,128.10,165.00,191.12,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",32,10,136.10,1361.00,228.90,288.20,317.95,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",64,10,138.30,1383.00,456.15,587.27,652.43,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",1,50,5.60,280.00,175.11,187.66,224.13,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",8,50,32.10,1605.00,242.96,278.20,300.49,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",16,50,49.90,2495.00,312.24,365.84,393.13,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",32,50,68.20,3410.00,465.67,533.47,577.04,0.00,0.00,0.00,0.00,0.00,0,True
+"Upsert + select (upsert then query top 50 full graph)","Hot Chocolate + EF Core",64,50,75.00,3750.00,856.86,1030.52,1088.87,0.00,0.00,0.00,0.00,0.00,0,True

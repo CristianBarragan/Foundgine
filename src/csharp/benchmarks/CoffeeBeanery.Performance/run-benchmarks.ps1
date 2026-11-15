@@ -1,4 +1,4 @@
-﻿$ErrorActionPreference = "Stop"
+﻿﻿﻿$ErrorActionPreference = "Stop"
 
 $PipelineRoot = $PSScriptRoot
 
@@ -48,6 +48,10 @@ try {
     Write-Host "============================================"
     Write-Host " All benchmark suites completed"
     Write-Host "============================================"
+
+    $publishScript = Join-Path $PipelineRoot "publish-site-reports.ps1"
+    & $publishScript
+    if (-not $?) { throw 'CoffeeBeanery website report publishing failed.' }
 }
 finally {
     Write-Host ""

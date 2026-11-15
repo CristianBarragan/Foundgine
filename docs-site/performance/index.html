@@ -228,6 +228,28 @@
           </p>
           <p><a href="../agent-benchmark/supply-chain/index.html">Open Supply Chain E2E →</a></p>
         </section>
+        <section id="coffeebeanery-performance">
+          <h2>CoffeeBeanery API and database performance</h2>
+          <p>
+            This separate benchmark compares Hot Chocolate + EF Core with Foundgine against the
+            same PostgreSQL-backed CoffeeBeanery graph fixture. The checked-in report set dated
+            15 August 2026 includes query, whole-graph mutation and upsert + select measurements.
+            Separate update-suite artifacts are not present in this snapshot. These are historical,
+            workload-specific measurements, not a live performance feed. The report JSON records
+            zero for Docker CPU and memory, so it does not support comparative resource-usage claims.
+          </p>
+          <p>
+            <a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/csharp/benchmarks/CoffeeBeanery.Performance">Benchmark source and run instructions →</a> ·
+            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/benchmarks/CoffeeBeanery.Performance/README.md">Methodology and findings →</a>
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Report</th><th>Recorded</th><th>Artifacts</th></tr></thead>
+              <tbody id="coffee-beanery-reports"><tr><td colspan="3">Loading published report index…</td></tr></tbody>
+            </table>
+          </div>
+          <p class="caption" id="coffee-beanery-report-status">Report links are loaded from the checked-in report index.</p>
+        </section>
         <section>
           <h2 id="do-not-over-generalize">Do not over-generalize</h2>
           <p>
@@ -253,6 +275,7 @@
           <li class="">
             <a href="#high-assurance-mutation-evidence">High-assurance mutation evidence</a>
           </li>
+          <li class=""><a href="#coffeebeanery-performance">CoffeeBeanery API and database performance</a></li>
           <li class=""><a href="#supply-chain-e2e">Supply Chain E2E</a></li>
           <li class=""><a href="#do-not-over-generalize">Do not over-generalize</a></li>
         </ol>
@@ -263,6 +286,33 @@
       Foundgine 3.3.5 · .NET 10 & Java 27 ·
       <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
     </footer>
+    <script>
+      (async function () {
+        const body = document.getElementById("coffee-beanery-reports");
+        const status = document.getElementById("coffee-beanery-report-status");
+        if (!body) return;
+        try {
+          const response = await fetch("../assets/coffee-beanery-benchmark/reports-index.json", { cache: "no-store" });
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          const index = await response.json();
+          const jsonReports = (index.reports || []).filter(x => x.format === "json");
+          if (!jsonReports.length) { body.innerHTML = '<tr><td colspan="3">No published report artifacts yet.</td></tr>'; return; }
+          body.innerHTML = jsonReports.map(report => {
+            const base = report.path.replace(/\.json$/i, "");
+            const label = report.target && report.target.length ? report.target.join(" / ") : report.name.replace(/^benchmark-/, "").replace(/-20\d{6}-\d{6}/, "");
+            const links = ["json", "csv", "md"].map(ext => {
+              const match = (index.reports || []).find(x => x.path === base + "." + ext);
+              return match ? '<a href="../assets/coffee-beanery-benchmark/' + match.path + '">' + ext.toUpperCase() + '</a>' : "";
+            }).filter(Boolean).join(" · ");
+            return '<tr><td>' + label + '</td><td>' + (report.generatedAt || "Not recorded") + '</td><td>' + links + '</td></tr>';
+          }).join("");
+          status.textContent = "Published " + jsonReports.length + " query report snapshots. See each JSON, CSV or Markdown artifact for full measurements.";
+        } catch (error) {
+          body.innerHTML = '<tr><td colspan="3">Report index unavailable. Check the benchmark source repository.</td></tr>';
+          status.textContent = "Could not load the report index: " + error.message;
+        }
+      })();
+    </script>
     <script src="../assets/site-nav.js"></script>
     <script src="../assets/toc.js"></script>
   </body>

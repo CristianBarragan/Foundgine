@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "source": "src/csharp/benchmarks/CoffeeBeanery.Performance/reports",
+  "note": "Checked-in benchmark report artifacts. These are historical measurements, not a live feed.",
+  "reports": [
+    {
+      "path": "reports/query/foundgine-cold/benchmark-Foundgine---no-cache-20260815-053513.csv",
+      "name": "benchmark-Foundgine---no-cache-20260815-053513.csv",
+      "format": "csv",
+      "suite": "query",
+      "variant": "foundgine-cold",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/foundgine-cold/benchmark-Foundgine---no-cache-20260815-053513.json",
+      "name": "benchmark-Foundgine---no-cache-20260815-053513.json",
+      "format": "json",
+      "suite": "query",
+      "variant": "foundgine-cold",
+      "generatedAt": "2026-08-15T05:35:13.1597543+00:00",
+      "target": [
+        "Foundgine - no cache"
+      ]
+    },
+    {
+      "path": "reports/query/foundgine-cold/benchmark-Foundgine---no-cache-20260815-053513.md",
+      "name": "benchmark-Foundgine---no-cache-20260815-053513.md",
+      "format": "md",
+      "suite": "query",
+      "variant": "foundgine-cold",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/foundgine-cold/benchmark-Foundgine---no-cache-20260815-112437.csv",
+      "name": "benchmark-Foundgine---no-cache-20260815-112437.csv",
+      "format": "csv",
+      "suite": "query",
+      "variant": "foundgine-cold",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/foundgine-cold/benchmark-Foundgine---no-cache-20260815-112437.json",
+      "name": "benchmark-Foundgine---no-cache-20260815-112437.json",
+      "format": "json",
+      "suite": "query",
+      "variant": "foundgine-cold",
+      "generatedAt": "2026-08-15T11:24:37.4866941+00:00",
+      "target": [
+        "Foundgine - no cache"
+      ]
+    },
+    {
+      "path": "reports/query/foundgine-cold/benchmark-Foundgine---no-cache-20260815-112437.md",
+      "name": "benchmark-Foundgine---no-cache-20260815-112437.md",
+      "format": "md",
+      "suite": "query",
+      "variant": "foundgine-cold",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/foundgine-warm/benchmark-Foundgine---provider-plan-cache-20260815-054407.csv",
+      "name": "benchmark-Foundgine---provider-plan-cache-20260815-054407.csv",
+      "format": "csv",
+      "suite": "query",
+      "variant": "foundgine-warm",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/foundgine-warm/benchmark-Foundgine---provider-plan-cache-20260815-054407.json",
+      "name": "benchmark-Foundgine---provider-plan-cache-20260815-054407.json",
+      "format": "json",
+      "suite": "query",
+      "variant": "foundgine-warm",
+      "generatedAt": "2026-08-15T05:44:07.9761752+00:00",
+      "target": [
+        "Foundgine - provider-plan cache"
+      ]
+    },
+    {
+      "path": "reports/query/foundgine-warm/benchmark-Foundgine---provider-plan-cache-20260815-054407.md",
+      "name": "benchmark-Foundgine---provider-plan-cache-20260815-054407.md",
+      "format": "md",
+      "suite": "query",
+      "variant": "foundgine-warm",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/foundgine-warm/benchmark-Foundgine---provider-plan-cache-20260815-113309.csv",
+      "name": "benchmark-Foundgine---provider-plan-cache-20260815-113309.csv",
+      "format": "csv",
+      "suite": "query",
+      "variant": "foundgine-warm",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/foundgine-warm/benchmark-Foundgine---provider-plan-cache-20260815-113309.json",
+      "name": "benchmark-Foundgine---provider-plan-cache-20260815-113309.json",
+      "format": "json",
+      "suite": "query",
+      "variant": "foundgine-warm",
+      "generatedAt": "2026-08-15T11:33:09.50039+00:00",
+      "target": [
+        "Foundgine - provider-plan cache"
+      ]
+    },
+    {
+      "path": "reports/query/foundgine-warm/benchmark-Foundgine---provider-plan-cache-20260815-113309.md",
+      "name": "benchmark-Foundgine---provider-plan-cache-20260815-113309.md",
+      "format": "md",
+      "suite": "query",
+      "variant": "foundgine-warm",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/hotchocolate/benchmark-Hot-Chocolate---EF-Core-20260815-052223.csv",
+      "name": "benchmark-Hot-Chocolate---EF-Core-20260815-052223.csv",
+      "format": "csv",
+      "suite": "query",
+      "variant": "hotchocolate",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/hotchocolate/benchmark-Hot-Chocolate---EF-Core-20260815-052223.json",
+      "name": "benchmark-Hot-Chocolate---EF-Core-20260815-052223.json",
+      "format": "json",
+      "suite": "query",
+      "variant": "hotchocolate",
+      "generatedAt": "2026-08-15T05:22:23.1018393+00:00",
+      "target": [
+        "Hot Chocolate + EF Core"
+      ]
+    },
+    {
+      "path": "reports/query/hotchocolate/benchmark-Hot-Chocolate---EF-Core-20260815-052223.md",
+      "name": "benchmark-Hot-Chocolate---EF-Core-20260815-052223.md",
+      "format": "md",
+      "suite": "query",
+      "variant": "hotchocolate",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/hotchocolate/benchmark-Hot-Chocolate---EF-Core-20260815-111601.csv",
+      "name": "benchmark-Hot-Chocolate---EF-Core-20260815-111601.csv",
+      "format": "csv",
+      "suite": "query",
+      "variant": "hotchocolate",
+      "generatedAt": null
+    },
+    {
+      "path": "reports/query/hotchocolate/benchmark-Hot-Chocolate---EF-Core-20260815-111601.json",
+      "name": "benchmark-Hot-Chocolate---EF-Core-20260815-111601.json",
+      "format": "json",
+      "suite": "query",
+      "variant": "hotchocolate",
+      "generatedAt": "2026-08-15T11:16:01.4067677+00:00",
+      "target": [
+        "Hot Chocolate + EF Core"
+      ]
+    },
+    {
+      "path": "reports/query/hotchocolate/benchmark-Hot-Chocolate---EF-Core-20260815-111601.md",
+      "name": "benchmark-Hot-Chocolate---EF-Core-20260815-111601.md",
+      "format": "md",
+      "suite": "query",
+      "variant": "hotchocolate",
+      "generatedAt": null
+    }
+  ]
+}

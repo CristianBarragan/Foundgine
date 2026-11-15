@@ -74,4 +74,13 @@ $matrixText = Get-Content -LiteralPath (Join-Path $RepoRoot 'docs-site/assets/ag
 if ($matrixText -notmatch '"run"\s*:\s*"Run4"') { throw 'Benchmark matrix does not contain Run 4 rows.' }
 if ($matrixText -notmatch '"run"\s*:\s*"Run5SameClient"') { throw 'Benchmark matrix does not contain Run 5b rows.' }
 
+
+$siteMap = Get-Content -LiteralPath (Join-Path $RepoRoot 'docs-site/sitemap.xml') -Raw
+if ($siteMap -notmatch 'agent-benchmark/run-4/') { throw 'Sitemap does not include the published Run 4 page.' }
+$performancePage = Get-Content -LiteralPath (Join-Path $RepoRoot 'docs-site/performance/index.html') -Raw
+if ($performancePage -notmatch 'agent-benchmark/index\.html') { throw 'Performance page does not link to the AgentEndToEnd explorer.' }
+if ($performancePage -notmatch 'coffee-beanery-benchmark/reports-index\.json') { throw 'Performance page does not load the CoffeeBeanery report index.' }
+$reductionSummary = Join-Path $RepoRoot 'docs-site/assets/agent-benchmark/reduction-summary.json'
+if (-not (Test-Path -LiteralPath $reductionSummary -PathType Leaf)) { throw 'Agent benchmark explorer references a missing reduction-summary.json asset.' }
+
 Write-Host 'Published benchmark validation: PASS' -ForegroundColor Green
