@@ -4,6 +4,8 @@
 registry, compares it with a committed JSON snapshot, and writes versioned Flyway migrations,
 rollback SQL and migration history.
 
+**Verification status:** module source and tests are present. Full Java 27 Maven verification for this checkpoint remains pending; do not treat the generated SQL path as runtime-verified until that run passes.
+
 ## CLI
 
 The CLI is `com.foundgine.migrations.MigrationsCli`. Configure a public no-argument

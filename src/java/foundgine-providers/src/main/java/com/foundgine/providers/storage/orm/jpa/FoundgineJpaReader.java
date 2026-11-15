@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * {@link FoundgineOrm#reader(EntityManagerFactory)} (one EntityManager per read, closed afterwards).
  * Not thread-safe when wrapping a single EntityManager.
  *
- * <p>UNVERIFIED: not compiled against the real Jakarta Persistence jars. See ORM-JPA-PARITY-PLAN.md Step 72.
+ * <p>UNVERIFIED: not compiled against the real Jakarta Persistence jars. See the ORM/JPA capability record in src/java/conformance/orm-jpa-parity-plan.json.
  */
 public final class FoundgineJpaReader<C> {
     /** Rows of a semantic read plus the fingerprint of the semantic plan that produced them (C# {@code FoundgineReadResult}). */

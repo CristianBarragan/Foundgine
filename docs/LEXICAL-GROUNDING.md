@@ -4,6 +4,14 @@ Foundgine can resolve free-form language without requiring complete sentences or
 predefined query templates. The semantic contract remains authoritative; an
 approximate retrieval provider only proposes candidates.
 
+The examples in this page use .NET/C# API names. Java implements the same core
+resolution outcomes in `com.foundgine.core.semantic.resolution`: call
+`SemanticLexicalResolver.ground(...)` and inspect `GroundingDecision` and
+`GroundingOutcome` (`COMMITTED`, `REQUIRES_CLARIFICATION`, `UNRESOLVED`,
+`BUDGET_EXCEEDED`). Java also includes `AliasWeightEvidenceGate` and the
+`@FoundgineAlias` annotation. The Java API uses Java naming conventions; it is
+not a source-compatible copy of the C# API.
+
 ## Canonical flow
 
 <p align="center"><img src="assets/lexical-grounding-flow.svg" alt="Foundgine lexical grounding flow: tokenization, candidate retrieval, graph-constrained resolution with backtracking, then authorization and execution." width="100%"></p>
@@ -134,7 +142,6 @@ capability and never replaces the authorization boundary.
 
 ![Weighted alias evidence gate](assets/lexical-grounding-alias-weight.svg)
 
-PlantUML source: [`lexical-grounding-alias-weight.puml`](assets/lexical-grounding-alias-weight.puml)
 
 The advanced Supply Chain sample exercises entity, field, and relationship
 alias weights, including scope boundaries and the distinction between lexical
@@ -281,8 +288,7 @@ than silently resolving the entity/product/relationship portion and
 dropping the time constraint. That is the correct failure mode — an
 unbounded date range executed silently would be a worse outcome than a
 visible refusal — but it is a real, currently-unimplemented gap, not a
-solved one. See [Roadmap](ROADMAP.md) for temporal grounding as future
-work.
+solved one. Temporal grounding is not implemented in this snapshot.
 
 **`active customers`.** Both an enabled account and a customer with a
 recent order are legal, and neither field is more "correct" than the

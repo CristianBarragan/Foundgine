@@ -2,18 +2,23 @@
 
 Foundgine uses tests to protect architectural boundaries as well as individual APIs.
 
-## Run everything
+## Run the test suites
+
+Run the .NET solution from the repository root:
 
 ```bash
-dotnet test
+dotnet build src/csharp/Foundgine.sln
+dotnet test src/csharp/Foundgine.sln
 ```
 
-Build first when diagnosing compilation failures:
+Run the Java Maven reactor from `src/java/`:
 
 ```bash
-dotnet build
-dotnet test
+cd src/java
+mvn -U test
 ```
+
+The .NET solution does not include the separate `Foundgine.Providers.AgentFramework` project or its tests; that adapter remains uncompiled and unverified in this snapshot. The Java Spring Boot and LangChain4j modules have source and tests, but their dependency pins and runtime verification remain unverified. The latest reported Maven run had the Starter sample passing and the Advanced sample test phase failing; fixes are present but have not been rerun. The PostgreSQL 16 schema-parity test is also not executed by the current PostgreSQL 17 CI job. See [source coverage](SOURCE-COVERAGE.md) and the [Advanced schema audit](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/ADVANCED-SCHEMA-AUDIT.md). These commands describe how to run the suites; they are not evidence that a run passed.
 
 ## Test layers
 
@@ -35,7 +40,7 @@ Security.Authority
 E2E
 ```
 
-Exact test project names are visible under `src/csharp/tests/`.
+Exact .NET test project names are visible under `src/csharp/tests/`. Java tests follow Maven convention under each module's `src/test/java/`; see [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md) for module-specific commands.
 
 ## What the tests should prove
 
@@ -139,4 +144,4 @@ Do not fix a semantic bug inside a transport adapter merely because that is wher
 
 ---
 
-Next: [Current status](CURRENT-STATUS.md)
+Next: [Source coverage](SOURCE-COVERAGE.md)

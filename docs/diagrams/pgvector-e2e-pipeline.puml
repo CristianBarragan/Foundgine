@@ -11,7 +11,7 @@ skinparam participant {
 }
 skinparam sequenceGroupBackgroundColor #FFF5E8
 
-title Foundgine.Providers.Storage.PostgresVector — PostgresVectorE2ETests\nReal PostgreSQL 17 + pgvector physical proof of the lexical grounding pipeline
+title Foundgine.Postgres.Vector — PostgresVectorE2ETests\nReal PostgreSQL 17 + pgvector physical proof of the lexical grounding pipeline
 
 actor "Test" as T
 participant "SemanticModelBuilder" as B

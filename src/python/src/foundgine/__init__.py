@@ -1,4 +1,4 @@
-"""Python SDK for Foundgine (transport only). Mirrors @foundgine/sdk."""
+"""Python SDK for Foundgine (transport only). API aligned with @foundgine/typescript."""
 
 from .client import DEFAULT_TIMEOUT, FoundgineClient, Tool, ToolResult
 from .errors import (

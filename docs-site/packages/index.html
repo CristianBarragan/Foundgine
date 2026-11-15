@@ -153,8 +153,7 @@
         <span class="eyebrow">Packages · choose by boundary</span>
         <h1>Four packages, clear responsibilities.</h1>
         <p class="subtitle">
-          The current package surface is consolidated around four architectural boundaries. Start
-          with the runtime and providers for a normal application.
+          The core package family is organized around four architectural boundaries. Optional integrations and tooling are packaged separately. Start with the runtime and providers for a normal application.
         </p>
         <section>
           <h2 id="the-package-shape">The package shape</h2>
@@ -172,7 +171,7 @@ Foundgine.Providers
 Foundgine.Extensions  (optional framework integrations)</pre>
         </section>
         <section>
-          <h2 id="current-publishable-packages">Current publishable packages</h2>
+          <h2 id="current-publishable-packages">Core packages and optional projects</h2>
           <div class="table-wrap">
             <table>
               <thead>
@@ -201,7 +200,7 @@ Foundgine.Extensions  (optional framework integrations)</pre>
                 </tr>
                 <tr>
                   <td><strong>Foundgine.Providers</strong></td>
-                  <td>Concrete storage (SQL, EF Core, JPA, in-memory, search), events, gateway, AI/model, MCP and AOT provider integrations.</td>
+                  <td>Concrete .NET storage (SQL, EF Core, in-memory, search), events, gateway, AI/model, MCP and AOT provider integrations.</td>
                   <td>You need physical infrastructure or agent/tool integrations.</td>
                 </tr>
                 <tr>
@@ -211,6 +210,11 @@ Foundgine.Extensions  (optional framework integrations)</pre>
                     Temporal durable workflows.
                   </td>
                   <td>You need GraphQL, Keycloak or Temporal integration.</td>
+                </tr>
+                <tr>
+                  <td><strong>Foundgine.Providers.AgentFramework</strong></td>
+                  <td>Optional .NET Microsoft Agent Framework adapter. The packable project is present in the working tree but is not yet build-verified or released.</td>
+                  <td>You use Microsoft Agent Framework and want governed Foundgine tools.</td>
                 </tr>
               </tbody>
             </table>
@@ -238,8 +242,10 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
         <section>
           <h2 id="java-maven">Java / Maven</h2>
           <p>
-            A Java port of the same four packages is published to Maven Central under the
-            <code>io.github.cristianbarragan</code> namespace.
+            The Java artifacts use the <code>io.github.cristianbarragan</code> groupId and the
+            repository has a Maven Central publishing configuration. The source POM version is
+            3.3.5; verify that the exact artifact/version is available in Central before pinning it,
+            because the publishing configuration alone is not publication evidence.
           </p>
           <pre>
 &lt;dependency&gt;
@@ -251,6 +257,16 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
   &lt;groupId&gt;io.github.cristianbarragan&lt;/groupId&gt;
   &lt;artifactId&gt;foundgine-providers&lt;/artifactId&gt;
   &lt;version&gt;3.3.5&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.github.cristianbarragan&lt;/groupId&gt;
+  &lt;artifactId&gt;foundgine-extensions&lt;/artifactId&gt;
+  &lt;version&gt;3.3.5&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.github.cristianbarragan&lt;/groupId&gt;
+  &lt;artifactId&gt;foundgine-migrations&lt;/artifactId&gt;
+  &lt;version&gt;3.3.5&lt;/version&gt;
 &lt;/dependency&gt;</pre>
           <p>
             <code>foundgine-core</code> is the provider-independent foundation and is brought in
@@ -258,13 +274,25 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
             targets its contracts. <code>foundgine-extensions</code> is available the same way for
             optional framework integrations.
           </p>
+          <ul>
+            <li><code>foundgine-core</code>, <code>foundgine-runtime</code>, <code>foundgine-providers</code> and <code>foundgine-extensions</code>: main server implementation; source and tests are present, but the full Maven verification for this checkpoint remains pending.</li>
+            <li><code>foundgine-migrations</code>: PostgreSQL schema diff and Flyway migration generation; source and tests are present, Maven/runtime verification is pending. See the <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/foundgine-migrations/README.md">module README</a>.</li>
+            <li><code>foundgine-spring</code> and <code>foundgine-langchain4j</code>: optional integrations with source and tests; dependency pins and runtime verification are pending.</li>
+            <li><code>foundgine-aot-generator</code>: build-time annotation processor module, not a standalone runtime artifact.</li>
+          </ul>
+          <p>
+            The Central publishing configuration includes the Java artifacts above except the
+            build-time-only <code>foundgine-aot-generator</code>.
+          </p>
         </section>
         <section>
           <h2 id="optional-integrations">Optional integrations</h2>
           <p>
-            Add <code>Foundgine.Extensions</code> when you expose Foundgine through Hot Chocolate
-            GraphQL. Choose the relevant capabilities inside <code>Foundgine.Providers</code> for
-            SQL/PostgreSQL, InMemory, AI/model tooling, MCP or retrieval integrations.
+            Add <code>Foundgine.Extensions</code> for optional GraphQL, Keycloak and Temporal
+            integrations. Choose the relevant capabilities inside <code>Foundgine.Providers</code>
+            for SQL/PostgreSQL, InMemory, MCP or retrieval. The separate
+            <code>Foundgine.Providers.AgentFramework</code> project adapts Foundgine to Microsoft
+            Agent Framework; the project is not yet build-verified or released.
           </p>
         </section>
         <section>
@@ -296,7 +324,7 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
         <div class="toc-label">On this page</div>
         <ol>
           <li class=""><a href="#the-package-shape">The package shape</a></li>
-          <li class=""><a href="#current-publishable-packages">Current publishable packages</a></li>
+          <li class=""><a href="#current-publishable-packages">Core packages and optional projects</a></li>
           <li class="">
             <a href="#install-the-normal-application-stack">Install the normal application stack</a>
           </li>

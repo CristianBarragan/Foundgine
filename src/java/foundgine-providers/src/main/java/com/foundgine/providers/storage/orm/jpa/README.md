@@ -43,4 +43,4 @@ relationship names. The semantic model validates them during planning.
 `@FoundgineOrmEntity` types. `OrmRegistry.create(...)` binds semantic metadata to
 persistent Java classes and JPA attribute names. Hibernate Native Image
 reachability metadata and native executable test evidence are not yet certified;
-see `ORM-JPA-PARITY-PLAN.md` for the explicit remaining gates.
+see `src/java/conformance/orm-jpa-parity-plan.json` and its validator for the explicit remaining gates.

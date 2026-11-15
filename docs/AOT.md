@@ -1,6 +1,8 @@
-# AOT metadata and connections
+# .NET AOT metadata and connections
 
-Foundgine's AOT path moves stable domain knowledge out of the request path.
+This page describes the .NET attribute/source-generator path with EF Core. The Java annotation-processor and JPA path is documented in the [cross-language AOT overview](wiki/aot.md).
+
+The .NET AOT path moves stable domain metadata out of the request path.
 
 ![PlantUML diagram: AOT, diagram 1](assets/aot-plantuml-01.svg)
 
@@ -8,7 +10,7 @@ Foundgine's AOT path moves stable domain knowledge out of the request path.
 
 Foundgine does **not** generate or populate entity/model objects.
 
-- EF remains the authority for entity schema, keys, foreign keys, and database relationships.
+- EF Core remains the authority for entity schema, keys, foreign keys, and database relationships.
 - A Foundgine model describes application-facing data semantics.
 - A connection describes that a model can **visit** a known target entity.
 - The runtime follows the generated connection; it does not discover the relationship.
@@ -36,11 +38,9 @@ The generator emits:
 
 Relational key details remain on the storage side. This is intentional: a connection says **what may be visited**, while EF/entity metadata says **how the storage relationship exists**.
 
-## Mapping direction
+## Mapping boundary
 
-Field correspondence should remain convention-first. When a model and entity need explicit semantic correspondence, the intended next layer is ordinary C#/LINQ expression analysis at build time. Those expressions describe a plan; they are not runtime mappers.
-
-Special conversions such as `ProductType → ContractType` should therefore be represented as compile-time transformations in the mapping IR, rather than requiring generated entity/model population.
+The current metadata describes entity fields, storage mappings, and explicit semantic connections. It does not make Foundgine an object mapper: it does not generate or populate entity/model objects, and this page does not claim arbitrary C#/LINQ conversion expressions as a supported mapping feature. Keep entity persistence and relationship mechanics in EF Core; use Foundgine metadata to describe the semantic surface exposed to callers.
 
 ## Runtime goal
 

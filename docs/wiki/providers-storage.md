@@ -18,6 +18,10 @@ Run the same validated plans through the ORM an application already uses: **EF C
 
 Provide candidate discovery for grounding. PostgreSQL pgvector, PostgreSQL trigram/full-text and Elasticsearch integrations can index lexical/embedding projections and return candidate references. They are not authoritative semantic contracts and do not grant access.
 
+![Retrieval strategy boundary](../assets/retrieval-strategy-boundary.svg)
+
+The SQL `RetrievalStrategy` boundary and the separate semantic lexical-candidate sources are not the same API. In particular, pgvector lexical retrieval is implemented through the lexical-candidate source; it is not a `Vector` strategy in the SQL retrieval enum.
+
 ### Event and outbox providers
 
 Persist event envelopes and reliably dispatch notifications. Durable stores should define schema migration, retention, idempotency, and failure recovery.

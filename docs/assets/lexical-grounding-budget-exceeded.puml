@@ -1,0 +1,23 @@
+@startuml lexical-grounding-budget-exceeded
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam ArrowColor #55506A
+skinparam activity {
+  FontSize 15
+  FontColor #17132B
+  BorderThickness 1.5
+  BackgroundColor #FFEAEA
+  BorderColor #55506A
+}
+skinparam titleFontSize 18
+skinparam titleFontColor #17132B
+
+title Foundgine — Grounding fails closed on any resource limit\n(MaxTokens, MaxPathsExplored, Timeout, RetrievalTimeout, or Cancelled)
+
+start
+:GroundingOutcome.BudgetExceeded;
+:Committed = null;
+:no execution;
+stop
+@enduml

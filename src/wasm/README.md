@@ -1,4 +1,4 @@
-# foundgine (Rust, WebAssembly)
+# @foundgine/wasm (Rust, WebAssembly)
 
 A thin WebAssembly client core for Foundgine MCP and Temporal workflow HTTP transports.
 
@@ -80,7 +80,7 @@ Also available: `processes`, `describe`, `start`, `status`, `decide`, `cancel`, 
 ## Architecture and parity map
 
 - **Sans-IO core.** Request building, response interpretation, SSE parsing, error mapping, and the workflow state machine are pure Rust (`src/`). The same code runs natively in unit tests and compiles to `wasm32`.
-- **Host-injected I/O.** Like `@foundgine/wasm`'s `fetch` option, the JS host passes its own `fetch` (browser, Worker, Deno, or Node 20+). The crate never opens sockets, so there is no WASI networking dependency.
+- **Host-injected I/O.** Like `@foundgine/typescript`'s `fetch` option, the JS host passes its own `fetch` (browser, Worker, Deno, or Node 20+). The crate never opens sockets, so there is no WASI networking dependency.
 - **Layered boundary.** Pure Rust modules (no I/O) $\rightarrow$ `src/bindings.rs` (`wasm-bindgen`; JSON strings in and out, errors thrown as JSON `{name, message, status?, ...}`) $\rightarrow$ `js/` wrapper (everything requiring `fetch`, a clock, or an `AbortSignal`). `pkg/` is build output and is not committed.
 - **Wire JSON stays camelCase**; the Rust API is `snake_case`, as in Python.
 
@@ -103,9 +103,9 @@ Also available: `processes`, `describe`, `start`, `status`, `decide`, `cancel`, 
 - `mcp.request()` on abort sends a best-effort `notifications/cancelled` and throws `FoundgineAbortError`.
 - The handshake resolves the token separately for `initialize` and `notifications/initialized` (per HTTP request).
 - Status objects gain an `isFinished` field; `describe()` steps use `null` (not `undefined`) for a missing `approvalTimeoutSeconds`.
-- Non-JSON error bodies are truncated at 200 Unicode scalar values (`@foundgine/sdk` uses 200 UTF-16 code units).
-- Watch de-duplication compares the raw status object ignoring key order (`@foundgine/sdk` compares `JSON.stringify`, which is key-order sensitive).
-- `retry:` values too large for `u64` are ignored (`@foundgine/wasm` keeps a float).
+- Non-JSON error bodies are truncated at 200 Unicode scalar values (`@foundgine/typescript` uses 200 UTF-16 code units).
+- Watch de-duplication compares the raw status object ignoring key order (`@foundgine/typescript` compares `JSON.stringify`, which is key-order sensitive).
+- `retry:` values too large for `u64` are ignored; `@foundgine/typescript` retains the value as a JavaScript number.
 
 ## Status and known limits
 

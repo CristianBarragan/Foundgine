@@ -173,7 +173,7 @@ Execution</pre>
           <p>
             A successful retrieval, a valid capability description or an “allow” policy result is
             not enough on its own. The final executable artifact must still satisfy the security
-            provenance established upstream.
+            provenance established upstream. The repository <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/SECURITY.md">security guide</a> records the default request limits and the runtime-specific adapter boundaries.
           </p>
         </section>
         <section>
@@ -209,7 +209,7 @@ Execution</pre>
                 </tr>
                 <tr>
                   <td>Authority recovery</td>
-                  <td>Optional control-plane infrastructure</td>
+                  <td>Full authority-recovery module in .NET; Java has a narrower tool-governance, approval/audit and key-rotation package</td>
                 </tr>
               </tbody>
             </table>
@@ -264,9 +264,12 @@ Execution</pre>
         <section>
           <h2 id="security-testing">Security testing</h2>
           <p>
-            The <a href="../samples/pentest/index.html">PenTest sample</a> exercises the boundary
-            through MCP and GraphQL. The advanced semantic sample covers tenant predicates, field
-            and relationship restrictions, and adversarial caller claims.
+            The <a href="../samples/pentest/index.html">PenTest sample</a> contains GraphQL and MCP
+            cases (Hot Chocolate for .NET and GraphQL Java for Java). Its current CI jobs invoke the
+            test classes but skip them because <code>FOUNDGINE_SUPPLYCHAIN_PENTEST=1</code> is not
+            set; the source README documents the local opt-in command. The advanced semantic sample
+            covers tenant predicates, field and relationship restrictions, and adversarial caller
+            claims.
           </p>
         </section>
         <nav aria-label="Documentation navigation" class="page-nav">

@@ -1,0 +1,49 @@
+@startuml pgvector-e2e-pipeline
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam ArrowColor #55506A
+skinparam sequenceMessageAlign center
+skinparam participant {
+  BackgroundColor #FFFFFF
+  BorderColor #55506A
+  FontSize 14
+}
+skinparam sequenceGroupBackgroundColor #FFF5E8
+
+title Foundgine.Postgres.Vector — PostgresVectorE2ETests\nReal PostgreSQL 17 + pgvector physical proof of the lexical grounding pipeline
+
+actor "Test" as T
+participant "SemanticModelBuilder" as B
+participant "SemanticLexiconProjection" as P
+participant "ISemanticEmbeddingGenerator\n(HashedBagOfWords, test-only)" as E
+participant "PgVectorSemanticLexicon\nIndexClient" as IX
+database "PostgreSQL 17\n+ pgvector extension" as DB
+participant "PgVectorSemanticLexical\nCandidateSource" as CS
+participant "SemanticLexicalResolver" as R
+
+T -> B : build Customer/Order contract\n(+ Orders relationship)
+B -> T : SemanticContractSnapshot
+
+T -> IX : IndexContractAsync(contract)
+IX -> P : Build(contract)
+P -> IX : lexicon entries\n(Entity, Node, Field, Relationship, ...)
+IX -> E : EmbedManyAsync(searchText[])
+E -> IX : float[][] embeddings
+IX -> DB : EnsureSchemaAsync()\nCREATE EXTENSION vector;\nCREATE TABLE ... vector(N);\nCREATE INDEX ... USING hnsw
+IX -> DB : TRUNCATE + INSERT each entry\n(canonical_name, kind, embedding, ...)
+
+T -> CS : RetrieveAsync("Orders")
+CS -> E : EmbedAsync("Orders")
+CS -> DB : SELECT ... ORDER BY\nembedding <=> $query LIMIT n
+DB -> CS : ranked rows + distance
+CS -> T : SemanticLexicalCandidate[]\n(top match: Orders, VectorSimilarity evidence)
+
+T -> R : Resolve("Customer Orders")
+R -> CS : RetrieveAsync(token) x2
+CS -> R : ranked candidates per token
+R -> R : graph-constrained walk\n(SemanticContractSnapshot authoritative)
+R -> T : Resolved: Customer -> Orders
+
+T -> DB : DROP TABLE (finally)
+@enduml

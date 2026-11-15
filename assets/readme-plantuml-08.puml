@@ -1,9 +1,0 @@
-@startuml
-start
-:AOT declarations;
-:Roslyn generator;
-:generated metadata;
-:semantic model;
-:runtime;
-stop
-@enduml

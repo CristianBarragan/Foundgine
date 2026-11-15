@@ -1,4 +1,4 @@
-//! Foundgine WebAssembly SDK core. Mirrors `@foundgine/sdk` (TypeScript) and `foundgine-sdk` (Python)
+//! Foundgine WebAssembly SDK core. API aligned with `@foundgine/typescript` (TypeScript) and `foundgine-sdk` (Python)
 //! module for module: `errors`, `sse`, `http`, `mcp`, `client`, `workflows`.
 //!
 //! This crate is transport only: it hosts no MCP server and has no business logic. Every module is pure (no I/O, no JS), so `cargo test` runs them natively and the same code runs

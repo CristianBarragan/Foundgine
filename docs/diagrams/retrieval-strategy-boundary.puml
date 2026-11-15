@@ -15,7 +15,7 @@ skinparam titleFontColor #17132B
 skinparam noteBackgroundColor #FFF9EE
 skinparam noteBorderColor #D78A18
 
-title Foundgine.Providers.Storage.Sql — RetrievalStrategy boundary\n(PostgresRetrievalCandidateSource, part of the canonical Retrieval stage)
+title Foundgine.Sql — RetrievalStrategy boundary\n(PostgresRetrievalCandidateSource, part of the canonical Retrieval stage)
 
 start
 :Semantic candidate request;
@@ -46,11 +46,11 @@ stop
 legend right
   Two separate retrieval boundaries
   ==
-  This diagram: Foundgine.Providers.Storage.Sql.Retrieval.PostgresRetrievalCandidateSource
+  This diagram: Foundgine.Sql.Retrieval.PostgresRetrievalCandidateSource
   (RetrievalStrategy enum). Vector is reserved/unimplemented here.
   ..
   Lexical grounding: ISemanticLexicalCandidateSource — implemented by
-  Foundgine.Providers.Storage.Elasticsearch (BM25/fuzzy) and Foundgine.Providers.Storage.PostgresVector
+  Foundgine.Elasticsearch (BM25/fuzzy) and Foundgine.Postgres.Vector
   (pgvector cosine/L2/inner-product). See lexical-grounding-flow.svg
   and pgvector-e2e-pipeline.svg.
 endlegend

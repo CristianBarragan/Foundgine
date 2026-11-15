@@ -6,7 +6,7 @@
   <artifactId>foundgine-spring</artifactId>
   <version>3.3.5</version>
   <name>Foundgine Spring</name>
-  <description>Optional Spring Boot auto-configuration for FoundgineOrm. UNVERIFIED.</description>
+  <description>Optional Spring Boot auto-configuration for Foundgine JPA and MCP. Source and tests are included in the Maven reactor; dependency version pins and runtime verification remain unverified.</description>
   <url>https://github.com/CristianBarragan/Foundgine/foundgine-spring</url>
   <licenses>
     <license>

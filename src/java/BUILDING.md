@@ -18,11 +18,16 @@ Run all Maven commands from this directory (the directory containing this
 mvn -U clean verify -Dgpg.skip=true
 ```
 
-The root reactor includes `foundgine-providers` and the sample applications.
-That is intentional: the generator is a build-time annotation processor and is
-not expected to be downloaded from Maven Central as a separate published
-library. The supply-chain sample consumes it through the reactor using the
-coordinate `io.github.cristianbarragan:foundgine-providers:${revision}`.
+The root reactor includes the core libraries, providers, migrations, optional
+Spring Boot and LangChain4j integrations, the build-time generator, security
+tests and sample applications. The AOT generator is excluded from standalone
+publication; the Supply Chain sample resolves its annotation processor through
+`foundgine-providers` in the reactor using the coordinate
+`io.github.cristianbarragan:foundgine-providers:${revision}`.
+
+The Spring Boot and LangChain4j modules have source and test definitions, but
+their dependency pins and runtime verification remain unverified in this
+snapshot. Do not describe those integrations as runtime-certified.
 
 To build only the supply-chain sample and all of its reactor prerequisites:
 
@@ -42,7 +47,7 @@ credentials configured.
 
 The current Java JPA adapter is a partial implementation baseline. Its staged
 parity programme, exact feature gaps, database targets, and release gates are
-maintained in [`ORM-JPA-PARITY-PLAN.md`](ORM-JPA-PARITY-PLAN.md). Validate the
+maintained in [`conformance/orm-jpa-parity-plan.json`](conformance/orm-jpa-parity-plan.json), with validation in [`conformance/validate-orm-jpa-parity-plan.py`](conformance/validate-orm-jpa-parity-plan.py). Validate the
 machine-readable plan with:
 
 ```bash

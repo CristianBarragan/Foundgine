@@ -39,6 +39,6 @@ Build and test the C# and Java implementations independently. Verify NuGet and M
 
 - C# tests: `src/csharp/tests`, `src/csharp/security`, `src/csharp/benchmarks`.
 - Java tests and samples: modules under `src/java`, `src/java/samples`, and `src/java/security`.
-- Existing guides: [Testing](../TESTING), [Current status](../CURRENT-STATUS), [Roadmap](../ROADMAP).
+- Existing guides: [Testing](../TESTING.md), [Source coverage](../SOURCE-COVERAGE.md), and the automated workflows in [`.github/workflows/`](https://github.com/CristianBarragan/Foundgine/blob/main/.github/workflows).
 
 See also: [Insights, evidence and auditing](insights-evidence-auditing), [ORM providers](orm-providers), [Extensions](extensions).

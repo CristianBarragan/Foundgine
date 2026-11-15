@@ -52,7 +52,7 @@ import java.util.stream.StreamSupport;
  * (JVM-only); attribute names are validated at build time.
  *
  * <p>UNVERIFIED: not compiled against the real Jakarta Persistence jars where it was written. See
- * ORM-JPA-PARITY-PLAN.md Step 72.
+ * src/java/conformance/orm-jpa-parity-plan.json.
  */
 public final class FoundgineOrm<C> {
     /** Binds a caller to authorization policy and execution context. Foundgine, not JPA, owns both. */

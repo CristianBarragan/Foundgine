@@ -273,8 +273,11 @@
             <div class="run-intro-card">
               <strong>Release principle</strong
               ><span
-                >The CI release path requires the core verification gates before package
-                publication; the Supply Chain E2E adds the application-level proof story.</span
+                >The NuGet publication job depends on named build, test, benchmark and security jobs.
+                The Supply Chain E2E benchmark is a separate evidence workload, not a release job;
+                there is no current <code>agent-benchmark-smoke</code> job. Some database-backed
+                PostgreSQL E2E and Supply Chain PenTest cases are also skipped until their opt-in
+                environment variables are set. See the <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/POSTGRES-E2E.md">PostgreSQL test note</a> and <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/README.md">PenTest fixture note</a>.</span
               >
             </div>
           </div>
@@ -905,13 +908,13 @@
           }
           if (!summary.measured && (!summary.modeled || !summary.modeled.length)) {
             html =
-              "<p>No reduction-summary data has been published yet. Run <code>scripts/build-reduction-summary.py</code> after running the benchmarks.</p>";
+              "<p>No reduction-summary data has been published yet. Run <code>src/csharp/benchmarks/AgentEndToEnd/scripts/build-reduction-summary.py</code> after running the benchmarks.</p>";
           }
           bodyEl.innerHTML = html;
         } catch (e) {
           statusEl.textContent = "Reduction summary not published yet.";
           bodyEl.innerHTML =
-            "<p>This section fills in once <code>docs-site/assets/agent-benchmark/reduction-summary.json</code> is published (see <code>benchmarks/AgentEndToEnd/scripts/build-reduction-summary.py</code>).</p>";
+            "<p>This section fills in once <code>docs-site/assets/agent-benchmark/reduction-summary.json</code> is published (see <code>src/csharp/benchmarks/AgentEndToEnd/scripts/build-reduction-summary.py</code>).</p>";
         }
       }
       function openMenu() {

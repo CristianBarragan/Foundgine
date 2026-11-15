@@ -13,7 +13,9 @@ Run the canonical Supply Chain sample first, in .NET or Java. The website stays 
 - [Starter sample](https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain)
 - [Starter step-by-step tutorial](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/SupplyChain-Starter-Tutorial.md)
 - [Starter explained](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/Foundgine-SupplyChain-Explained.md)
-- [Advanced sample (MCP + PostgreSQL already wired up)](https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain-advanced) and its [step-by-step tutorial](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md)
+- [Advanced sample (MCP + PostgreSQL source path)](https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain-advanced) and its [step-by-step tutorial](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md)
+
+  **Verification note:** the latest reported Maven run failed in the Advanced sample test phase. Fixes are present but have not yet been rerun; see the sample README before treating the Java Advanced path as verified.
 
 ## Describe your model in code
 

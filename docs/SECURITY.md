@@ -82,6 +82,7 @@ The default bounds include:
 | Operation-graph nodes  |             256 |
 | Operation-graph depth  |              32 |
 | Operation-graph fields |             512 |
+| Operation-graph edges  |             255 |
 | Filter depth           |              32 |
 | Filter nodes           |             256 |
 | Order terms            |              64 |
@@ -89,11 +90,16 @@ The default bounds include:
 | Page size              |           1,000 |
 | Offset                 |       1,000,000 |
 | Cursor length          |           4,096 |
+| Mutation operations    |             128 |
+| Mutation fields/op     |              64 |
+| Mutation return fields/op |           64 |
+| Mutation dependencies |             256 |
+| Mutation effects       |             256 |
 
-Mutation requests also have independent bounds for operations, fields, return
-fields, dependencies, and effects. Applications can tighten the defaults for
-their threat model; the important invariant is that untrusted request complexity
-is bounded before it can consume unbounded planner/provider resources.
+Applications can tighten the defaults for their threat model; the important
+invariant is that untrusted request complexity is bounded before it can consume
+unbounded planner/provider resources. The .NET and Java `SecurityResourceLimits`
+records currently define the same defaults.
 
 ## Plan-cache boundary
 
@@ -150,19 +156,27 @@ Foundgine therefore carries required security invariants into execution and chec
 
 ## GraphQL
 
-GraphQL input is untrusted.
+GraphQL input is untrusted. Do not accept identity, tenant, audience, warrant, or
+provider-control information from GraphQL variables or arguments as trusted authority.
 
-Do not accept identity, tenant, audience, warrant, or provider control information from GraphQL variables/arguments as trusted authority.
+### .NET Hot Chocolate adapter
 
-Use:
+Use `FoundgineHotChocolateQueryExecutor` and
+`FoundgineHotChocolateMutationExecutor` in the
+`Foundgine.Extensions.GraphQL.HotChocolate` namespace as the secure query and
+mutation entry points. They require a host-supplied
+`ISecurityExecutionContextProvider`; GraphQL text, variables and arguments do
+not supply identity or tenant authority. The `FoundgineGraphQLQueryExecutor`
+and `FoundgineGraphQLMutationExecutor` classes provide the corresponding
+execution APIs with the same host-owned context boundary.
 
-`Foundgine.Extensions.GraphQL.HotChocolate.HotChocolate.Execution`
+### Java GraphQL Java adapter
 
-for the secure query execution path.
-
-For mutations use:
-
-`Foundgine.Extensions.GraphQL.HotChocolate.HotChocolate.Mutations`.
+The Java adapter is implemented in `src/java/foundgine-extensions` under
+`com.foundgine.extensions.graphql`. Its API is not the same as the .NET
+Hot Chocolate adapter. Keep identity and tenant authority in the authenticated
+host/request context; GraphQL variables remain untrusted input. See the
+[extension catalogue](wiki/extensions.md) for the Java module boundary.
 
 ## MCP
 
@@ -214,11 +228,15 @@ The safe conceptual model is:
 
 ## Authority recovery
 
-`Foundgine.Runtime.ControlPlane` is optional.
+The .NET `Foundgine.Runtime.ControlPlane` module is optional. It provides
+recovery primitives such as witness quorum, credential lifecycle, journal
+reconciliation, promotion/failover and recovery evidence. It is not required
+for normal semantic authorization and remains outside the core execution path.
 
-It provides authority/control-plane recovery primitives such as witness quorum, credential lifecycle, journal reconciliation, promotion/failover, and recovery evidence.
-
-It is not required for normal semantic authorization and remains outside the core execution path.
+Java has a separate `com.foundgine.runtime.controlplane` package for tool
+governance, approval/audit and authorization-key rotation. Do not assume that
+this package has the same witness, credential-lifecycle or failover feature set
+as the .NET recovery module.
 
 ## Application responsibilities
 
@@ -249,7 +267,9 @@ Every new transport/provider should have adversarial tests proving that it canno
 4. drop a required security predicate;
 5. execute a plan without required provider security conformance.
 
-## Red-team pentest results (Advanced Supply Chain sample)
+## Historical red-team run (Advanced Supply Chain .NET sample)
+
+Recorded on 7 September 2026. This is evidence for that .NET sample run only; it is not a current release certification, does not establish Java parity, and does not prove that the current CI PenTest jobs executed. The current CI opt-in gaps are documented in [PostgreSQL E2E](POSTGRES-E2E.md) and the [Supply Chain PenTest fixture README](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/README.md).
 
 This section records the outcome of a live adversarial run of `Foundgine.RedTeam`
 against the running `Foundgine.SupplyChain.Advanced` sample, exercising both the
@@ -332,7 +352,7 @@ error would allow.
 ### Implemented: server-side classification with a correlation id
 
 The execution API's `Execute` helper in
-[`Semantic/Api/Mcp/Program.cs`](../src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs)
+[`Semantic/Api/Mcp/Program.cs`](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs)
 now:
 
 1. Generates a short opaque correlation id for every call before it runs.
@@ -363,7 +383,7 @@ applies to the execution API applied to it too: is that detail something a
 live caller should see, or does it belong in server-side logging only?
 
 This is now made explicit rather than left open. `SupplyChainMcpTools` (in
-[`Semantic/Api/Mcp/Program.cs`](../src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs))
+[`Semantic/Api/Mcp/Program.cs`](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs))
 gates the verbose decision detail on `IHostEnvironment.IsDevelopment()`:
 
 - **Development/lab** (`ASPNETCORE_ENVIRONMENT=Development`): `policy_probe`

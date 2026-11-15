@@ -1,6 +1,6 @@
 # Extensions (GraphQL, Keycloak, Temporal)
 
-> **In plain words.** An **extension** plugs a popular tool into Foundgine so you do not have to write the glue yourself. Foundgine has three: **GraphQL** (so a GraphQL API can talk to Foundgine), **Keycloak** (so people who log in with Keycloak get the right permissions) and **Temporal** (so long-running business processes, like "onboard a customer", can run reliably over days). Extensions are **optional** and only *translate*. They never make permission decisions on their own: every request still goes through Foundgine's normal checks.
+> **In plain words.** An **extension** plugs a framework or service into Foundgine so you do not have to write the glue yourself. The core extension catalogue has three: **GraphQL**, **Keycloak** and **Temporal**. Additional Java modules provide Spring Boot and LangChain4j integrations, but their dependency pins and runtime behavior are not yet verified. Extensions are **optional** and only *translate*. They never make permission decisions on their own: every request still goes through Foundgine's normal checks.
 >
 > *Extension or provider?* A **provider** does the real work against storage or infrastructure (SQL, EF Core, JPA, Elasticsearch...), see the [Provider catalogue](providers). An **extension** connects an outside *framework or service* to Foundgine. Some extensions also register themselves as providers so Foundgine can see them (Keycloak as an `Identity` provider, Temporal as a `Workflow` provider).
 
@@ -20,6 +20,15 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 
 > Both language modules contain GraphQL, Keycloak and Temporal source trees in this repository snapshot. That does not establish exact API, feature or maturity parity. Check each language's implementation and tests before assuming equivalent behaviour.
 
+## Additional Java integration modules
+
+These are separate Maven modules, not part of the `foundgine-extensions` catalogue:
+
+- `foundgine-spring`: Spring Boot auto-configuration for Foundgine integration. Source and tests are present; dependency pins and runtime verification are pending.
+- `foundgine-langchain4j`: LangChain4j model/tool integration. Source and tests are present; dependency pins and runtime verification are pending.
+
+Do not describe either module as a verified or released integration until its Maven dependency graph and runtime tests pass.
+
 **Install what you use.** In .NET the umbrella package is `Foundgine.Extensions`. It does **not** include the Foundgine runtime, any storage provider, an MCP server or an LLM client.
 
 ## Which extension do I need?
@@ -30,7 +39,7 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 | Log users in with Keycloak and want them to get Foundgine permissions | Keycloak |
 | Need a process that waits, retries, asks for approval or can be undone | Temporal (with Keycloak so workers get proper permissions) |
 | Need a database or search backend | Not an extension: pick a [provider](providers) |
-| Want AI agents to call Foundgine | Not an extension: see [AI agents and MCP](agents-mcp) |
+| Want AI agents to call Foundgine | See [AI agents and MCP](agents-mcp); Java's optional LangChain4j module is not yet runtime-verified |
 
 ## 1 and 2. GraphQL integration
 
@@ -43,7 +52,7 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 - `GraphQLDirectiveEvaluator`: evaluates supported directives.
 - `GraphQLResultShape`: describes result shaping.
 - Mutation adapter/converter/result shaper: adapts GraphQL mutation input and Foundgine mutation results.
-- Query/mutation executors: invoke the secure Foundgine execution boundary.
+- `FoundgineHotChocolateQueryExecutor` / `FoundgineHotChocolateMutationExecutor` and the corresponding `FoundgineGraphQL*Executor` classes: invoke the secure Foundgine execution boundary with host-supplied security context.
 
 The C# source is under `GraphQL/HotChocolate`; query/mutation execution has a dedicated `Execution` folder. Some APIs are split into package-level adapters and execution adapters, so inspect the package README and project/package references before installing only part of the integration.
 
@@ -150,7 +159,7 @@ The Java extension module includes `FoundgineExtension`, `TransportExtension` an
 - `Foundgine.Providers` supplies physical providers, gateway and MCP infrastructure.
 - `Foundgine.Extensions` supplies optional framework/identity/workflow adapters.
 
-C# package references should be selected according to the integration required; the main `Foundgine.Extensions` project references Core, Runtime and Providers. Java's `foundgine-extensions` module depends on `foundgine-core`, `foundgine-runtime` and `foundgine-providers`. These module-level dependencies do not mean every integration is mandatory at runtime; configure and use only the relevant extension.
+C# package references should be selected according to the integration required; the main `Foundgine.Extensions` project references Core, Runtime and Providers. Java's `foundgine-extensions` module depends on `foundgine-core`, `foundgine-runtime` and `foundgine-providers`. The separate `foundgine-spring` and `foundgine-langchain4j` modules are optional and remain unverified. These module-level dependencies do not mean every integration is mandatory at runtime; configure and use only the relevant extension.
 
 ## Hosting and dependency injection
 

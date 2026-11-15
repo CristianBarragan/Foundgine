@@ -1,10 +1,10 @@
 # Foundgine Supply Chain — Advanced Sample: Concept Docs
 
-This `docs/` folder is a companion to the sample's own top-level
-`README.md` and `Fundgine - SupplyChain-E2E-Step-by-Step-Guide.md`. Those
-two tell you **how to run it**; these five tell you **why it's built this
-way**, one concern at a time, cross-referenced to the exact test files that
-prove each claim.
+This `docs/` folder is a companion to the sample's top-level `README.md` and
+[`VERIFY-GATES.md`](../VERIFY-GATES.md). The README covers setup and the end-to-end
+run; VERIFY-GATES records the current CI jobs and local verification commands.
+These five concept docs explain **why the sample is built this way**, one concern
+at a time, and point to the tests that exercise each claim.
 
 Read them in order — each one assumes the previous one's vocabulary:
 
@@ -92,5 +92,5 @@ the Postgres environment variables above will report as skipped, not
 failed, if those variables aren't set.
 
 For the full end-to-end run (PostgreSQL + MCP service + stochastic agent
-workload + merged pentest report), see the top-level `README.md` in this
-sample's root directory and `Fundgine - SupplyChain-E2E-Step-by-Step-Guide.md`.
+workload + merged pentest report), see the top-level `README.md` and
+[`VERIFY-GATES.md`](../VERIFY-GATES.md) in this sample's root directory.

@@ -26,9 +26,8 @@ $manifest = [ordered]@{
     customers = $report.customers
     success = $report.summary.success
     failures = $report.summary.failures
-    # See the matching comment in merge-supply-chain-pentest-report.ps1: the
-    # Agent writes this field as "unexpectedUnauthorizedSuccesses", not
-    # "unexpectedSuccesses".
+    # The Agent writes `unexpectedUnauthorizedSuccesses`; keep this field
+    # name aligned with the source report schema.
     unexpectedUnauthorizedSuccesses = $report.summary.unexpectedUnauthorizedSuccesses
     averageLatencyMs = $report.summary.avgLatencyMs
     securityPenTest = if ($report.securityPenTest) {

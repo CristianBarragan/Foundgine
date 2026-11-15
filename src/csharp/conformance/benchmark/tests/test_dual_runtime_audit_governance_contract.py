@@ -22,6 +22,6 @@ def test_governors_audit_before_returning_an_allow_result():
 
 
 def test_approval_audit_atomicity_gap_is_explicitly_documented():
-    plan = (ROOT / "src/DUAL-RUNTIME-HARDENING-PLAN.md").read_text()
+    plan = (ROOT / "docs/wiki/conformance-hardening.md").read_text()
     assert "Approval creation precedes the `ApprovalRequested` audit" in plan
     assert "transactional approval+audit/outbox transitions" in plan

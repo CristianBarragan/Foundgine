@@ -209,8 +209,8 @@
                 <tr>
                   <td><strong>foundgine-supply-chain-advanced</strong> (Java)</td>
                   <td>
-                    Claims/authorization, high-assurance mutation, MCP transport and PostgreSQL, and
-                    adversarial security scenarios.
+                    Claims/authorization, high-assurance mutation, MCP transport and PostgreSQL source paths, plus
+                    adversarial security scenarios. Latest Maven test fixes are present but not yet rerun.
                   </td>
                   <td>
                     <a
@@ -232,10 +232,15 @@
           <h2 id="why-separate-samples">Why separate samples?</h2>
           <p>
             The starter teaches the basic application shape without requiring the reader to absorb
-            every semantic feature at once. The advanced sample then adds ambiguity, retrieval,
-            authorization depth and adversarial behavior. Benchmark-only fixtures stay under
-            <code>benchmarks/</code> so experimental evidence does not become confused with
-            reference architecture.
+            every semantic feature at once. The .NET advanced sample adds ambiguity resolution,
+            retrieval, deeper authorization and adversarial behavior. The Java Advanced sample
+            covers its MCP/PostgreSQL mutation path and selected adversarial scenarios. Its direct
+            PostgreSQL candidate-search demo tool is not wired through the Java core
+            <code>SemanticLexicalResolver</code>; the Java core itself does implement semantic
+            ambiguity outcomes, including <code>REQUIRES_CLARIFICATION</code>. The
+            AgentEndToEnd/PenTest benchmark harness is not yet ported to Java.
+            Benchmark-only fixtures stay under <code>benchmarks/</code> so experimental evidence
+            does not become confused with reference architecture.
           </p>
         </section>
         <section>

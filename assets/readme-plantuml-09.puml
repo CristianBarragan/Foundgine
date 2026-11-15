@@ -1,9 +1,0 @@
-@startuml
-start
-:Semantic mutation graph;
-:Mutation plan;
-:Dependency levels;
-:Security/conformance;
-:Provider execution;
-stop
-@enduml

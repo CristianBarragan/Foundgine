@@ -1,12 +1,12 @@
 # Source coverage and implementation inventory
 
-This page is generated/checked against the supplied `src-fixed.zip` source tree. It is an inventory of implementation surfaces, not a claim that every feature is production-certified. For runtime and security guarantees, consult the feature page and its tests/conformance evidence.
+This page is an implementation inventory checked against the supplied `Foundgine.zip` repository snapshot. It is an inventory of implementation surfaces, not a claim that every feature is production-certified. For runtime and security guarantees, consult the feature page and its tests/conformance evidence.
 
 ## Build targets and version evidence
 
 | Runtime | Value found in source | Evidence |
 |---|---|---|
-| Foundgine release line | `2.3.1` | `src/java/pom.xml` `<revision>` |
+| Foundgine release line | `3.3.5` | `Directory.Build.props` `VersionPrefix` and `src/java/pom.xml` `<revision>` |
 | .NET | `net10.0` | C# project files, including `Foundgine.Core.csproj` |
 | Java | `27` | `src/java/pom.xml` `maven.compiler.release` |
 
@@ -36,13 +36,26 @@ Additional code-bearing areas include `tests`, `samples`, `benchmarks`, `securit
 | `foundgine-runtime` | Runtime orchestration, APIs, authorization, mutation lifecycle and control-plane facilities |
 | `foundgine-providers` | SQL/JDBC, InMemory, ORM/JPA, Elasticsearch, PostgreSQL vector retrieval, MCP, model tools, gateway, event store, outbox and AOT support |
 | `foundgine-extensions` | GraphQL Java, Keycloak and Temporal integrations |
-| `foundgine-aot-generator` | Separate annotation-processor module directory; **not listed in the root Maven reactor** in this source snapshot |
+| `foundgine-migrations` | Java fluent-model schema projection, schema differ and PostgreSQL migration generation |
+| `foundgine-spring` | Optional Spring Boot JPA/MCP auto-configuration; source and tests are present, but dependency pins and runtime verification remain unverified |
+| `foundgine-langchain4j` | Optional LangChain4j tool adapter; source and tests are present, but the dependency pin and runtime verification remain unverified |
+| `foundgine-aot-generator` | Compile-time metadata generator; included in the root Maven reactor and excluded from standalone publication |
 | `security/foundgine-redteam` | Security/red-team module, included in the Maven reactor but excluded from public artifact publishing |
 | `samples/*` | Starter and advanced Supply Chain sample applications |
 
-The Maven parent declares the four public libraries separately from internal sample and security artifacts. Do not describe every reactor module as a published library.
+The Maven publishing configuration excludes the parent, AOT generator, red-team module and sample artifacts. It includes the implemented base libraries, migration module and optional Spring Boot/LangChain4j integrations. The latter have source and test definitions, but their dependency pins and runtime verification remain unverified in this snapshot. This table describes build configuration, not proof that a release has been published.
 
-## Provider and integration coverage verified in source
+## Client SDK packages
+
+| SDK | Package metadata in source | Documented boundary |
+|---|---|---|
+| TypeScript | `src/typescript/package.json` — `@foundgine/typescript`, `3.3.5` | HTTP/MCP and Temporal workflow transport client; not the C#/Java semantic runtime. |
+| Python | `src/python/pyproject.toml` — `foundgine-sdk`, `3.3.5` | Async and synchronous HTTP/MCP and Temporal workflow transport client; not the C#/Java semantic runtime. |
+| Rust / WebAssembly | `src/wasm/package.json` — `@foundgine/wasm`, `3.3.5`; Rust crate under `src/wasm/Cargo.toml` | Sans-I/O transport core with host-injected fetch; not the C#/Java semantic runtime. |
+
+The SDK READMEs record their own test coverage and remaining limitations. The current README status sections identify remaining gaps, including live-server integration and runtime-specific coverage. Package metadata and a passing unit suite do not establish compatibility with every browser/runtime or a successful live-server integration.
+
+## Provider and integration coverage present in source
 
 | Capability | .NET source | Java source |
 |---|---|---|
@@ -71,9 +84,9 @@ Presence in both source trees does not prove identical behavior, supported featu
 
 ## Tests, samples and verification surfaces
 
-The source tree contains dedicated .NET test projects for semantic behavior, planning, SQL, InMemory, ORM, MCP, GraphQL, AOT, event store, gateway, security/authority, high assurance and end-to-end behavior. It also contains security harnesses, conformance data and runnable Supply Chain / Temporal samples.
+The source tree contains dedicated .NET test projects for semantic behavior, planning, SQL, InMemory, ORM, MCP, GraphQL, AOT, event store, gateway, security/authority, high assurance, Microsoft Agent Framework, and end-to-end behavior. It also contains security harnesses, conformance data and runnable Supply Chain / Temporal samples.
 
-Java verification is distributed across module tests, the `foundgine-redteam` module, ORM/JPA parity plan and the starter/advanced Supply Chain samples. The separate `foundgine-aot-generator` directory is not a root reactor module in the supplied parent POM; processor sources also exist in `foundgine-providers`. A source file or test class is not evidence that a test has passed. Record executed build/test commands and environment in the relevant conformance page.
+Java verification is distributed across module tests, the `foundgine-redteam` module, ORM/JPA parity plan and the starter/advanced Supply Chain samples. The `foundgine-aot-generator` module is part of the root reactor and is excluded from standalone publication; processor-related sources also exist in `foundgine-providers`. At the 3.3.5 checkpoint, the latest reported Maven run had the Starter sample passing and the Advanced sample test phase failing; fixes are present but have not been rerun. The `foundgine-migrations` module has source and tests, but full Maven/runtime verification remains pending. The PostgreSQL 16 schema-parity test is defined but has not been executed. The C# Agent Framework adapter and its test project exist in the tree but are not included in `Foundgine.sln`; the changelog records that they have not yet been compiled or run. A source file or test class is not evidence that a test has passed. Record executed build/test commands and environment in the relevant conformance page.
 
 ## Completeness rule for future changes
 
@@ -81,9 +94,8 @@ When a project, public namespace, provider family, extension, generator, sample 
 
 1. This inventory and the cross-language implementation map.
 2. The relevant feature page and package README.
-3. `CURRENT-STATUS.md` if capability or verification status changes.
-4. `mkdocs.yml`, `llms.txt`, and `llms-full.txt` when the public documentation surface changes.
-5. Examples and diagrams whose call paths or boundaries changed.
+3. `mkdocs.yml`, `llms.txt` and `llms-full.md` when the public documentation surface changes.
+4. Examples and diagrams whose call paths or boundaries changed.
 
 ## Complete project-file inventory (source snapshot)
 
@@ -95,11 +107,14 @@ The lists below were enumerated from the supplied source archive. They make it p
 - `csharp/Foundgine.Extensions/Foundgine.Extensions.csproj`
 - `csharp/Foundgine.Extensions/Samples/Temporal.Api/Temporal.Api.csproj`
 - `csharp/Foundgine.Extensions/Samples/Temporal.Worker/Temporal.Worker.csproj`
+- `csharp/Foundgine.Providers.AgentFramework/Foundgine.Providers.AgentFramework.csproj`
 - `csharp/Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj`
 - `csharp/Foundgine.Providers.Orm.Generator/Foundgine.Providers.Orm.Generator.csproj`
 - `csharp/Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj`
 - `csharp/Foundgine.Providers/EventStore/Foundgine.Providers.EventStore.csproj`
 - `csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj`
+- `csharp/Foundgine.Providers/Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj`
+- `csharp/Foundgine.Providers/Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj`
 - `csharp/Foundgine.Providers/Foundgine.Providers.csproj`
 - `csharp/Foundgine.Providers/Samples/Gateway.MinimalApi/Gateway.MinimalApi.csproj`
 - `csharp/Foundgine.Runtime/Foundgine.Runtime.csproj`
@@ -145,6 +160,7 @@ The lists below were enumerated from the supplied source archive. They make it p
 - `csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Foundgine.SupplyChain.Advanced.Tests.csproj`
 - `csharp/samples/Foundgine.SupplyChain/Foundgine.SupplyChain.csproj`
 - `csharp/security/Foundgine.RedTeam/Foundgine.RedTeam.Security.csproj`
+- `csharp/tests/Foundgine.AgentFramework.Tests/Foundgine.AgentFramework.Tests.csproj`
 - `csharp/tests/Foundgine.Aot.Tests/Foundgine.Aot.Tests.csproj`
 - `csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj`
 - `csharp/tests/Foundgine.EventStore.Tests/Foundgine.EventStore.Tests.csproj`
@@ -168,8 +184,11 @@ The lists below were enumerated from the supplied source archive. They make it p
 - `java/foundgine-aot-generator/pom.xml`
 - `java/foundgine-core/pom.xml`
 - `java/foundgine-extensions/pom.xml`
+- `java/foundgine-langchain4j/pom.xml`
+- `java/foundgine-migrations/pom.xml`
 - `java/foundgine-providers/pom.xml`
 - `java/foundgine-runtime/pom.xml`
+- `java/foundgine-spring/pom.xml`
 - `java/pom.xml`
 - `java/samples/foundgine-supply-chain-advanced/pom.xml`
 - `java/samples/foundgine-supply-chain/pom.xml`
@@ -177,7 +196,5 @@ The lists below were enumerated from the supplied source archive. They make it p
 
 ### Inventory totals
 
-- .NET project files: **70**.
-- Java Maven project files: **10** (including the standalone `foundgine-aot-generator` POM).
-- C# production source files in the six principal library projects: **449**.
-- Java production source files in the four principal library modules: **788**.
+- .NET project files: **74**.
+- Java Maven project files: **13** (including the root reactor, integrations, migrations, samples and security module).

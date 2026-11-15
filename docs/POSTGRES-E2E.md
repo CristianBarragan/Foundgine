@@ -2,9 +2,9 @@
 
 The repository has a real PostgreSQL 17 integration path.
 
-The normal test suite does not require a database. The PostgreSQL tests run when `FOUNDGINE_POSTGRES_CONNECTION_STRING` is set.
+The normal test suite does not require a database. The E2E project's `PostgreSqlFact` / `PostgreSqlTheory` attributes require `FOUNDGINE_POSTGRES_CONNECTION_STRING`. The separate authority-test project's `PostgresFact` attribute accepts either `FOUNDGINE_POSTGRES_CONNECTION` or `FOUNDGINE_POSTGRES_CONNECTION_STRING`.
 
-CI always supplies that connection string.
+**CI gap:** the `csharp-build.yml` integration job starts PostgreSQL 17 and invokes the E2E and EventStore projects, but it does not export `FOUNDGINE_POSTGRES_CONNECTION_STRING`. As a result, E2E tests guarded by `PostgreSqlFact` / `PostgreSqlTheory` are skipped even though the database container is running. The separate `security.yml` workflow sets `FOUNDGINE_POSTGRES_CONNECTION` for `Foundgine.Security.Authority.Tests`, but its current filter runs only `TransferFundsPenetrationTests`, not the entire authority test project. Do not treat the current PostgreSQL job as proof that all PostgreSQL-gated tests ran.
 
 ## PostgreSQL retrieval in the canonical lifecycle
 
@@ -45,7 +45,7 @@ password: foundgine
 
 `pgvector/pgvector:pg17` is a drop-in-compatible build of the official `postgres:17` image with the `pgvector` extension preinstalled. It is required by `Foundgine.Providers.Storage.PostgresVector`'s E2E tests (`PostgresVectorE2ETests`), which call `CREATE EXTENSION vector` — something a vanilla `postgres:17` image cannot satisfy.
 
-The database uses a temporary filesystem, so it is safe to throw away after the test.
+The compose file uses a named Docker volume (`foundgine-postgres-data`), so data survives container restarts. Use the cleanup command below with `--volumes` to remove it when the test database is disposable.
 
 ## Run the tests
 
@@ -63,21 +63,9 @@ export FOUNDGINE_POSTGRES_CONNECTION_STRING='Host=localhost;Port=55432;Database=
 dotnet test src/csharp/tests/Foundgine.E2E.Tests/Foundgine.E2E.Tests.csproj --configuration Release --filter "FullyQualifiedName~Postgres"
 ```
 
-One command:
-
-```bash
-bash ./scripts/run-postgres-e2e.sh
-```
-
-PowerShell:
-
-```powershell
-.\scripts\run-postgres-e2e.ps1
-```
-
 ## What the PostgreSQL tests prove
 
-The PostgreSQL tests are the physical database proof for:
+When these PostgreSQL tests execute and pass, they provide physical database evidence for:
 
 - generated identity correlation;
 - dependency levels;
@@ -86,9 +74,7 @@ The PostgreSQL tests are the physical database proof for:
 - real PostgreSQL execution;
 - the pgvector-backed lexical grounding pipeline — semantic contract → lexicon projection → embedding → pgvector index → nearest-neighbor retrieval → graph-constrained resolution (`PostgresVectorE2ETests`).
 
-The tests that need a database are deliberately skipped when no connection string exists. This keeps ordinary local tests easy to run.
-
-The dedicated PR job does not skip them.
+<p align="center"><img src="assets/pgvector-e2e-pipeline.svg" alt="pgvector E2E pipeline: semantic model, lexicon projection, embedding, pgvector index, nearest-neighbour retrieval and graph-constrained resolution"></p>
 
 ## Clean up
 
