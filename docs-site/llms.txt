@@ -37,7 +37,11 @@ Caller → Intent → Semantic Model → Semantic Operation Graph
 
 ## AI and MCP
 
-AI agents are untrusted callers. MCP and AI integrations expose capabilities but do not grant authority. Identity, tenant context, secrets and application policy remain host-owned. MCP adapters exist in both .NET and Java; GraphQL and `Microsoft.Extensions.AI` adapters are currently .NET-only.
+AI agents are untrusted callers. MCP and AI integrations expose capabilities but do not grant authority. Identity, tenant context, secrets and application policy remain host-owned. MCP adapters exist in both .NET and Java; GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter exists in the post-3.3.5 working tree, but it has not yet been compiled or tested and is not a released capability.
+
+## Language-specific implementation status
+
+Both .NET and Java core implementations include semantic lexical grounding and clarification outcomes. The Java Advanced sample's direct PostgreSQL candidate-search MCP tool is separate from, and is not wired through, the Java core `SemanticLexicalResolver`. Java's optional `foundgine-spring` and `foundgine-langchain4j` modules have source and tests, but dependency pins and runtime verification remain pending. The Java `controlplane` package provides tool governance, approvals, audit, risk scoring and authorization-key rotation; it is not feature-equivalent to the wider .NET authority-recovery module. The `foundgine-migrations` module generates PostgreSQL/Flyway schema migrations from metadata; its Maven/runtime verification is pending. The latest reported Maven run failed in the Java Advanced sample test phase; fixes are present but have not yet been rerun. `foundgine-aot-generator` is build-time tooling, not a standalone runtime artifact.
 
 ## Security
 
@@ -72,6 +76,6 @@ execution
 
 **3.3.5 · .NET 10 and Java 27**
 
-New in 2.3.0: a fluent configuration API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
+The fluent configuration API was introduced in 2.3.0 and remains part of the current model API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
 
 For implementation truth, use the active source tree, tests and package READMEs under `src/csharp/` and `src/java/`.

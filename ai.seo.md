@@ -27,10 +27,10 @@ Do not reduce Foundgine to GraphQL, SQL, an ORM, an AI framework, an MCP impleme
 - Security-preserving plan rewrites and authorization binding.
 - ExecutionIR, provider conformance checks, execution-time authorization revalidation, evidence/receipts and plan fingerprints.
 - SQL/PostgreSQL and deliberately limited InMemory providers, in both implementations.
-- Fluent model configuration (new in 2.3.0): `FoundgineModel` plus per-concern configuration classes in .NET and Java, compiled to the same metadata registry as the declarations below.
+- Fluent model configuration (introduced in 2.3.0): `FoundgineModel` plus per-concern configuration classes in .NET and Java, compiled to the same metadata registry as the declarations below.
 - Compile-time metadata declarations and code generation: Roslyn source generation and attributes in .NET; annotation processing (`@FoundgineEntity`/`@FoundgineRelationship`/`@FoundgineAlias`) in Java.
-- JSON intent and MCP adapters in both implementations. GraphQL and `Microsoft.Extensions.AI` adapters are currently .NET-only.
-- Optional control-plane infrastructure (authority/recovery, tool registry, approvals, audit log, risk scoring) in both implementations (`Foundgine.Runtime.ControlPlane` in .NET, `com.foundgine.runtime.controlplane` in Java).
+- JSON intent and MCP adapters in both implementations. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter exists in the post-3.3.5 working tree, but it has not yet been compiled or tested and is not a released capability.
+- The .NET `Foundgine.Runtime.ControlPlane` module provides the optional authority-recovery surface (witness quorum, credential lifecycle, journal reconciliation and promotion/failover). Java has a separate `com.foundgine.runtime.controlplane` package for tool registry/governance, approvals, audit, risk scoring and authorization-key rotation; it is not feature-equivalent to the .NET recovery module.
 
 ## AI and agent boundary
 
@@ -46,7 +46,7 @@ The repository contains a canonical `Foundgine.SupplyChain` (.NET) application a
 
 The benchmark is accompanied by deterministic Supply Chain PenTest coverage: **7 MCP cases + 7 GraphQL cases = 14 security cases**. Published benchmark pages distinguish measured results from modeled efficiency estimates. Do not turn modeled reductions into measured claims.
 
-The Java implementation carries the same shape under `src/java/samples`: `foundgine-supply-chain` is the domain/authorization starter, and `foundgine-supply-chain-advanced` wires the same claims-based authorization, high-assurance `place_order`/`cancel_order` mutation, a JSON-RPC MCP server, and a PostgreSQL-backed store end to end, plus deterministic adversarial scenarios (recursive supplier-risk/BOM traversal with cycle detection, tenant isolation). The ambiguity-resolution capability (`find_top_supplier_overdue_orders`) and the AgentEndToEnd/PenTest benchmark harness are not yet ported to Java.
+The Java source tree under `src/java/samples` contains a domain/authorization starter and an Advanced sample with claims-based authorization, high-assurance `place_order`/`cancel_order` mutation, a JSON-RPC MCP server, a PostgreSQL-backed store and adversarial scenarios (recursive supplier-risk/BOM traversal with cycle detection, tenant isolation). The latest reported Maven run failed in the Advanced sample test phase; fixes are present but have not yet been rerun, so this is implemented-unverified rather than a verified end-to-end result. The Java core implements `SemanticLexicalResolver.ground(...)`, alias-weight evidence and the `REQUIRES_CLARIFICATION` outcome. The Advanced sample also has a direct PostgreSQL candidate-search MCP tool named `find_top_supplier_overdue_orders`, but that tool is not wired through the core resolver. The AgentEndToEnd/PenTest benchmark harness is not yet ported to Java.
 
 ## Current release / runtime
 
@@ -54,9 +54,9 @@ The Java implementation carries the same shape under `src/java/samples`: `foundg
 - Target runtime: **.NET 10**, or **Java 27** via Maven (`io.github.cristianbarragan` artifacts)
 - Primary physical provider: **PostgreSQL / SQL**, in both implementations
 - InMemory provider: limited provider-independence proof/test implementation, in both implementations
-- Vector retrieval: **not currently implemented** in either implementation; `pgvector` is not part of the current provider claim.
+- PostgreSQL pgvector retrieval components are present in both implementations; their presence does not by itself establish production certification.
 - `pg_search` and Apache AGE are **optional**, not always-on dependencies.
-- GraphQL and `Microsoft.Extensions.AI` adapters are **.NET-only** at this time; Java exposes JSON intent and MCP adapters.
+- GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter exists in the post-3.3.5 working tree, but it has not yet been compiled or tested and is not a released capability.
 
 ## What Foundgine is not
 
@@ -64,6 +64,6 @@ Do not describe Foundgine as a complete autonomous-agent platform, ORM replaceme
 
 ## Documentation / source of truth
 
-The active source code and tests are authoritative. Human documentation is under `docs/`; website documentation is under `docs-site/`. The canonical current-status reference is `docs/CURRENT-STATUS.md`. Package-specific READMEs live under `src/csharp/` and `src/java/`; sample tutorials live alongside each sample (`src/csharp/samples/*` and `src/java/samples/*`).
+The active source code and tests are authoritative. Human documentation is under `docs/`; website documentation is under `docs-site/`. Package-specific READMEs live under `src/csharp/` and `src/java/`; sample tutorials live alongside each sample (`src/csharp/samples/*` and `src/java/samples/*`).
 
 Historical milestone language should not be presented as current product capability. `Graphgine` and `CoffeeBeanery` are historical/prototype names and are not the current product identity.

@@ -242,13 +242,18 @@ Enable it with:
 export FOUNDGINE_POSTGRES16_JDBC_URL='jdbc:postgresql://localhost:5432/foundgine_test'
 export FOUNDGINE_POSTGRES16_USER='postgres'
 export FOUNDGINE_POSTGRES16_PASSWORD='...'
-./mvnw -pl samples/foundgine-supply-chain-advanced -am -Dtest=AdvancedPostgres16SchemaIntegrationTest -Dsurefire.failIfNoSpecifiedTests=false test
+mvn -pl samples/foundgine-supply-chain-advanced -am -Dtest=AdvancedPostgres16SchemaIntegrationTest -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
 The test skips when `FOUNDGINE_POSTGRES16_JDBC_URL` is absent and fails fast if the
 connected server is not PostgreSQL 16. Use a disposable database: the test creates and
 drops a uniquely named schema, while a newly installed `pg_trgm` extension remains
 installed at database scope.
+
+**CI note:** the current `java-postgres-e2e` job in `.github/workflows/java-build.yml`
+pulls PostgreSQL 17 and does not set `FOUNDGINE_POSTGRES16_JDBC_URL`. It therefore does
+not execute this PostgreSQL 16 parity test. A passing PostgreSQL 17 job is not evidence
+that the PostgreSQL 16 catalog comparison has passed.
 
 ## Generated Flyway migration (review-only until PostgreSQL parity is proven)
 

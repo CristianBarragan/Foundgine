@@ -1,7 +1,7 @@
 {
   "name": "@foundgine/wasm",
   "version": "3.3.5",
-  "description": "WebAssembly build of the Foundgine MCP and workflow client (Rust core, ES-module wrapper mirroring @foundgine/sdk).",
+  "description": "WebAssembly build of the Foundgine MCP and workflow client (Rust core, ES-module wrapper aligned with @foundgine/typescript).",
   "license": "Apache-2.0",
   "type": "module",
   "main": "js/index.js",

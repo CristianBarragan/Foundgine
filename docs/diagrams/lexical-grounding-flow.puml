@@ -22,13 +22,6 @@ partition "Free-form language" #F3EFFF {
 }
 partition "Retrieval (advisory)" #FFF5E8 {
   :Candidate retrieval\n(every token x semantic kind\nvia ISemanticLexicalCandidateSource);
-  note right
-    Matched by alias:
-    "purchase orders" / "buys" -> PurchaseOrder
-    (declared [FoundgineAlias(["Buy","Buys"])])
-    "supplier" / "seller" -> Supplier
-    (declared [FoundgineAlias("Seller")])
-  end note
   :Ranked lexical candidates;
 }
 partition "Graph-constrained resolution" #EEF9EF {
@@ -38,13 +31,6 @@ partition "Graph-constrained resolution" #EEF9EF {
     :Neighbour-constrained graph walk;
   repeat while (Candidate cannot form\na valid path?) is (yes: backtrack to\nnext candidate) not (no)
   :Canonical semantic interpretation;
-  note right
-    "show me overdue purchase orders
-    from our top supplier in Texas" and
-    "show me overdue buys from our
-    top seller in Texas" commit to the
-    identical interpretation here.
-  end note
 }
 partition "Same boundary as every other caller" #F0F5FF {
   :Authorization;

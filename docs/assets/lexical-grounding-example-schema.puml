@@ -1,0 +1,22 @@
+@startmindmap lexical-grounding-example-schema
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam ArrowColor #55506A
+skinparam titleFontSize 18
+skinparam titleFontColor #17132B
+skinparam node {
+  FontColor #17132B
+  BorderColor #55506A
+  BorderThickness 1.5
+  BackgroundColor #F3EFFF
+}
+
+title Foundgine — Example semantic schema\nused by the "bought nike shoes" walkthrough
+
+* Customer
+** Orders → SalesOrder
+*** Lines → SalesOrderLine
+**** Product → CatalogProduct
+***** Category → Category
+@endmindmap

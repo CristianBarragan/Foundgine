@@ -1,0 +1,25 @@
+@startuml lexical-grounding-example-path
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam ArrowColor #55506A
+skinparam activity {
+  FontSize 15
+  FontColor #17132B
+  BorderThickness 1.5
+  BackgroundColor #EEF9EF
+  BorderColor #55506A
+}
+skinparam titleFontSize 18
+skinparam titleFontColor #17132B
+
+title Foundgine — Validated semantic path\nfor "bought nike shoes" (graph-constrained, not just retrieval-ranked)
+
+start
+:Customer;
+:Orders → SalesOrder;
+:Lines → SalesOrderLine;
+:Product → CatalogProduct;
+:Category → Category.Name;
+stop
+@enduml

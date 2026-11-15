@@ -26,7 +26,7 @@ plugins:
 
 nav:
   - Home: README.md
-  - Standard (SES): STANDARDS.md
+  - Conformance and shared test data: STANDARDS.md
   - Getting started: GETTING-STARTED.md
   - Why Foundgine: WHY-FOUNDGINE.md
   - What Foundgine is designed for: APPLICATION-CATEGORIES.md
@@ -44,8 +44,6 @@ nav:
   - Authorization: AUTHORIZATION.md
   - PostgreSQL E2E: POSTGRES-E2E.md
   - Testing: TESTING.md
-  - Current status: CURRENT-STATUS.md
-  - Roadmap: ROADMAP.md
   - Feature and capability wiki:
       - Overview: wiki/index.md
       - Core concepts: wiki/core-concepts.md
@@ -62,6 +60,7 @@ nav:
           - Providers and storage: wiki/providers-storage.md
       - Extensions (GraphQL, Keycloak, Temporal): wiki/extensions.md
       - AI agents and MCP: wiki/agents-mcp.md
+      - MCP protocol, sessions and approval tokens: wiki/mcp-protocol-and-tokens.md
       - AOT and generated metadata: wiki/aot.md
       - Trust and proof:
           - Insights, evidence and auditing: wiki/insights-evidence-auditing.md
@@ -70,4 +69,4 @@ nav:
       - Operations and testing: wiki/operations.md
       - Cross-language implementation map: wiki/implementation-map.md
       - Glossary (plain words): wiki/glossary.md
-  - History: history/README.md
+  - Verification report: VERIFICATION-REPORT.md

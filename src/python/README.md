@@ -1,15 +1,19 @@
-# foundgine (Python)
+# foundgine-sdk (Python)
 
 A thin Python client for Foundgine MCP and Temporal workflow HTTP transports.
 
 Requires Python 3.11+ and `httpx`.
 
-## Install
+## Local install and checks
+
+Run from `src/python/`:
 
 ```sh
 pip install -e ".[dev]"
 ruff check . && mypy && pytest
 ```
+
+The project metadata names the distribution `foundgine-sdk`. This repository snapshot documents the editable source install; it does not claim that a PyPI release is available.
 
 ## MCP client
 
@@ -80,7 +84,7 @@ print([(step.name, step.requires_approval) for step in definition.steps])
 
 Also available: `processes`, `describe`, `start`, `status`, `decide`, `cancel`, `wait_for_completion`, and `watch`. Catalog descriptions expose safe step metadata only; internal operation identifiers are not returned by the server. `watch()` returns immediately and must be called inside a running event loop. `updates()` replays distinct observed states to late consumers. `stop()` aborts polling (`done` and `updates()` then raise `FoundgineAbortError`); `async with watch:` stops it on exit. `on_update` and `on_error` may be plain functions or coroutine functions, and their failures never kill the poll loop. Process and business-key path segments are percent-encoded. `decide` has no caller-identity argument: the server stamps the decision subject from its trusted security context.
 
-## Deliberate differences from `@foundgine/sdks`
+## Deliberate differences from `@foundgine/typescript`
 
 | TypeScript | Python | Why |
 |---|---|---|
@@ -95,6 +99,6 @@ Also available: `processes`, `describe`, `start`, `status`, `decide`, `cancel`, 
 
 ## Status and known limits
 
-Implemented and tested: typed errors, SSE parser (including shared conformance vectors), MCP session initialization (once, even under concurrency), JSON-RPC requests, paged `list_capabilities`, `execute`, cancellation, resumable notification streaming, Temporal start/status/decision/cancel routes, `wait_for_completion`, `watch`, `start_and_watch`, and the workflow catalog (`processes()`, `describe()`). As in `@foundgine/sdk`, `watch` retries other polling errors up to `max_consecutive_errors`, but a 401 is fatal at once.
+Implemented and tested: typed errors, SSE parser (including shared conformance vectors), MCP session initialization (once, even under concurrency), JSON-RPC requests, paged `list_capabilities`, `execute`, cancellation, resumable notification streaming, Temporal start/status/decision/cancel routes, `wait_for_completion`, `watch`, `start_and_watch`, and the workflow catalog (`processes()`, `describe()`). As in `@foundgine/typescript`, `watch` retries other polling errors up to `max_consecutive_errors`, but a 401 is fatal at once.
 
 Not yet done or verified: an integration test against a real Foundgine server. Developed and tested on Python 3.12; CI covers 3.11–3.14. `tests/test_conformance.py` runs the shared vectors in `src/conformance`; they skip locally when absent and fail when `CI` is set. This is a development package, not a release-ready SDK.

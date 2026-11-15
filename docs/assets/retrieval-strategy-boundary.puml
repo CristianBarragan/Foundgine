@@ -1,0 +1,57 @@
+@startuml retrieval-strategy-boundary
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam ArrowColor #55506A
+skinparam activity {
+  FontSize 15
+  FontColor #17132B
+  BorderThickness 1.5
+  BackgroundColor #FFFFFF
+  BorderColor #55506A
+}
+skinparam titleFontSize 18
+skinparam titleFontColor #17132B
+skinparam noteBackgroundColor #FFF9EE
+skinparam noteBorderColor #D78A18
+
+title Foundgine.Sql — RetrievalStrategy boundary\n(PostgresRetrievalCandidateSource, part of the canonical Retrieval stage)
+
+start
+:Semantic candidate request;
+:RetrievalStrategy;
+fork
+  :Relational;
+  note right: always available
+fork again
+  :Fuzzy\n(pg_trgm);
+  note right: opt-in flag
+fork again
+  :FullText\n(tsvector);
+  note right: opt-in flag
+fork again
+  :Search / BM25\n(pg_search, optional);
+  note right: opt-in flag,\nrequires extension
+fork again
+  :GraphSimilarity\n(Apache AGE, Cypher, optional);
+  note right: opt-in flag,\nrequires extension
+fork again
+  :Vector;
+  note right #FFEAEA: reserved — always throws\nNotSupportedException on\n**this** boundary
+end fork
+:Ranked candidates + provenance;
+:Semantic resolution / authorization\n(unchanged);
+stop
+
+legend right
+  Two separate retrieval boundaries
+  ==
+  This diagram: Foundgine.Sql.Retrieval.PostgresRetrievalCandidateSource
+  (RetrievalStrategy enum). Vector is reserved/unimplemented here.
+  ..
+  Lexical grounding: ISemanticLexicalCandidateSource — implemented by
+  Foundgine.Elasticsearch (BM25/fuzzy) and Foundgine.Postgres.Vector
+  (pgvector cosine/L2/inner-product). See lexical-grounding-flow.svg
+  and pgvector-e2e-pipeline.svg.
+endlegend
+@enduml

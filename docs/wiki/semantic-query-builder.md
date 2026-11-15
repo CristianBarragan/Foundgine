@@ -188,9 +188,14 @@ error with the expected message. Example:
 #1 Warehouse(Id) where Region eq "NZ" [#2 InventoryLot(Sku, OnHand) via Lots where OnHand neq 0 order Sku asc limit 50]
 ```
 
-Run them with `dotnet test --filter SemanticQueryConformance` and
-`mvn -pl foundgine-core test -Dtest=SemanticQueryConformanceTest`. Never edit the JSON by hand; change
-`src/conformance/tools/generate_semantic_query_vectors.py` and regenerate.
+Run them from the repository root with the language-specific project paths:
+
+```bash
+dotnet test src/csharp/tests/Foundgine.Semantics.Tests/Foundgine.Semantics.Tests.csproj --filter FullyQualifiedName~SemanticQueryConformance
+(cd src/java && mvn -pl foundgine-core test -Dtest=SemanticQueryConformanceTest)
+```
+
+Never edit the JSON by hand; change `src/conformance/tools/generate_semantic_query_vectors.py` and regenerate.
 
 ## Honest status
 
@@ -207,6 +212,6 @@ field handles and the `Eq/Neq/In` operators, as above.
 ## Related pages
 
 - [ORM providers (EF Core and JPA)](orm-providers)
-- [Semantic model and metadata](semantic-model)
-- [Planning and execution](planning-execution)
-- [Conformance and hardening](conformance-hardening)
+- [Semantic model and metadata](semantic-model.md)
+- [Planning and execution](planning-execution.md)
+- [Conformance and hardening](conformance-hardening.md)

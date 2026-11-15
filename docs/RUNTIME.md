@@ -2,6 +2,8 @@
 
 The Foundgine runtime coordinates semantic requests, planning, provider execution, and results.
 
+The type names in this page are primarily the .NET API names. Java exposes the corresponding application boundary through `com.foundgine.runtime.IFoundgine` / `IFoundgineExecutor` (`executeAsync`) and the execution contracts under `com.foundgine.core.execution`. Capability parity is tracked separately; matching names do not imply every provider feature has been verified in both runtimes.
+
 ## Canonical execution lifecycle
 
 Runtime implements the latter half of the canonical lifecycle:
@@ -16,7 +18,7 @@ A normal read follows:
 
 ![PlantUML diagram: RUNTIME, diagram 2](assets/runtime-plantuml-02.svg)
 
-`IFoundgine.ExecuteAsync(...)` is the application-facing boundary.
+`Foundgine.Runtime.IFoundgineExecutor.ExecuteAsync(...)` is the .NET application-facing boundary. Java exposes `com.foundgine.runtime.IFoundgineExecutor.executeAsync(...)`.
 
 ## Execution context
 
@@ -89,7 +91,7 @@ Adapters such as GraphQL can then shape the result for their own transport.
 
 ## Evidence
 
-Execution evidence/receipts can record the execution outcome and relevant src/csharp/security/plan context.
+Execution evidence/receipts can record the execution outcome and relevant semantic-contract, authorization-decision, execution-IR, and provider-plan context.
 
 Evidence is diagnostic/audit information. It is not an authorization grant.
 
@@ -114,7 +116,7 @@ Application-level rate limits, quotas, and timeouts remain necessary around Foun
 The runtime does not own:
 
 - authentication;
-- user sessions;
+- application/user sessions (separate from MCP transport-session lifecycle);
 - database migrations;
 - ORM change tracking;
 - LLM orchestration;
@@ -134,7 +136,7 @@ A provider implementation should prove:
 - pagination semantics;
 - mutation dependencies if mutations are supported.
 
-See `Foundgine.Core.Execution/README.md` and `Foundgine.Providers.Storage.Sql/README.md` for the provider boundary.
+For .NET, see the [execution source](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/Foundgine.Core/Execution) and [SQL provider source](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/Foundgine.Providers/Storage/Sql). For Java module and provider boundaries, see [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md) and the [ORM provider matrix](wiki/orm-providers.md).
 
 ---
 

@@ -14,6 +14,11 @@ wrong interpretation instead of failing loudly.
 `SemanticLexicalResolver.Ground` exists to make that distinction explicit
 instead of silently collapsing it.
 
+The code examples below use .NET/C# names. Java has the corresponding
+`com.foundgine.core.semantic.resolution.SemanticLexicalResolver.ground(...)`,
+`GroundingDecision` and `GroundingOutcome` types, including clarification and
+budget-exceeded outcomes. The Java API uses Java naming conventions.
+
 ## The problem in one example
 
 Given a schema where a `Customer` has both an account status and an order
@@ -214,9 +219,8 @@ context, user history, or an LLM's judgment about which interpretation
 "looks right"; doing so would just move the uncertainty around instead of
 surfacing it. Building a mechanism that also incorporates contextual
 evidence, calibrated confidence, and a measurable clarification/false-
-commitment rate — the fuller "Grounding Decision" object described in the
-project's design discussions — remains future work; see
-[Roadmap](ROADMAP.md).
+commitment rate remains future work and is not an implemented capability
+in this snapshot.
 
 Two further gaps are worth stating explicitly rather than leaving implicit:
 there is currently no candidate kind for a domain-specific value threshold
@@ -227,8 +231,7 @@ being silently dropped from the interpretation). Both are real,
 currently-unimplemented gaps, not edge cases this mechanism quietly
 handles — see
 [Lexical grounding § Adversarial examples](LEXICAL-GROUNDING.md#adversarial-examples-where-this-gets-hard)
-for the worked-through failure behavior and [Roadmap](ROADMAP.md) for the
-tracked future work.
+for the worked-through failure behavior. These gaps are not implemented in this snapshot.
 
 ---
 

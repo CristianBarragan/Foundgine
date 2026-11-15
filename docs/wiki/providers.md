@@ -16,19 +16,19 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 |---|---|---|---|---|
 | **Run queries** | **SQL** (`SqlCompiler`, `SqlExecutionProvider`) | Writes safe, parameterised SQL itself | Yes | Yes |
 | | **SQL mutations**, incl. PostgreSQL batched (`SqlMutationExecutionProvider`, `PostgresBatchedMutationExecutionProvider`) | Safe writes, many at once on PostgreSQL | Yes | Yes |
-| | **In-memory** (`InMemoryProvider`) | Runs on plain objects in memory; for tests and demos | Yes | Yes |
+| | **In-memory** (`InMemoryExecutionProvider`) | Runs on plain objects in memory; for tests and demos | Yes | Yes |
 | | **EF Core** (`Foundgine.Providers.EntityFrameworkCore`) | Lets your existing **Entity Framework Core** run the queries and writes | Yes | n/a |
 | | **JPA** (`JpaOrmProvider`, `JpaOrmQuerySource`, `JpaOrmMutationSource`) | Lets your existing **Jakarta Persistence (JPA)** run the queries and writes | n/a | Yes (partial) |
 | | **ORM core** (`Foundgine.Providers.Orm` / `storage/orm`) | The shared, ORM-neutral engine that EF Core and JPA plug into | Yes | Yes |
 | **Find candidates** (grounding) | **Elasticsearch** (`ElasticsearchSemanticLexicalCandidateSource`) | Text search for "what did the caller mean?" | Yes | Yes |
 | | **PostgreSQL + pgvector** (`PgVectorSemanticLexicalCandidateSource`) | Meaning-based (vector) search inside PostgreSQL | Yes | Yes |
-| | **PostgreSQL retrieval** (`PostgresRetrievalCandidateSource`, `PostgresRetrievalOptions`) | Fuzzy and full-text matching with built-in PostgreSQL features | Yes | check module |
+| | **PostgreSQL retrieval** (`PostgresRetrievalCandidateSource`, `PostgresRetrievalOptions`) | Fuzzy and full-text matching with built-in PostgreSQL features | Yes | Yes (source/tests; database runtime unverified) |
 | **Remember and deliver** | **Event store** (`PostgresEventStore`, `PostgresGatewayEventStore`) | A durable history of events | Yes | Yes |
 | | **Outbox** (`PostgresOutbox`, `FoundgineOutboxDispatcher`) | A to-do list of messages, sent after the data is saved | Yes | Yes |
 | **Front door** | **Gateway** (`FoundgineGateway`) with provider registry, approval stores, event stores and HTTP/SSE routes | One stable entrance for other products; tracks providers | Yes | Yes |
 | **AI** | **MCP tools and client** (`FoundgineMcpTools`, `FoundgineMcpMutationTools`, `FoundgineMcpAgentClient`) | Lets AI agents discover and call Foundgine safely | Yes | Yes |
-| | **Models**, Microsoft.Extensions.AI (`FoundgineAiToolset`, `FoundgineAiAgent`) | Describes Foundgine as tools for an AI function-calling loop | Yes | `models` package |
-| | **Microsoft Agent Framework** (`FoundgineAgentTools`, `AddFoundgineAgentFramework`) | Gives a MAF agent governed Foundgine tools, with human approval before any write | Yes | n/a |
+| | **Models**, Microsoft.Extensions.AI (`FoundgineAiToolset`, `FoundgineAiAgent`) | Describes Foundgine as tools for an AI function-calling loop | Yes | `models` contains descriptors; separate `foundgine-langchain4j` adapter is unverified |
+| | **Microsoft Agent Framework** (`FoundgineAgentTools`, `AddFoundgineAgentFramework`) | Gives a MAF agent governed Foundgine tools, with human approval before any write; present in the working tree but not yet build-verified or released | Yes (unverified) | n/a |
 | **Build time** | **AOT metadata generator** (`Foundgine.Providers.Aot.Generator`) | Writes your model description as ordinary code during the build | Yes | `foundgine-aot-generator` |
 | | **ORM map generator** (`Foundgine.Providers.Orm.Generator`) | Writes the typed field maps EF Core needs | Yes | maps are provider-neutral today |
 | **Declarations** | **Graph retrieval capability** (`GraphRetrieval`) | A label saying a provider supports graph lookups | Yes | Yes |
@@ -55,7 +55,7 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | EF Core provider | Executes plans and mutations through Entity Framework Core | `src/csharp/Foundgine.Providers.EntityFrameworkCore` | n/a |
 | JPA provider | Executes plans and mutations through Jakarta Persistence | n/a | `.../storage/orm/jpa` |
 | ORM map generator | Roslyn generator for typed entity maps | `Foundgine.Providers.Orm.Generator` | n/a |
-| PostgreSQL retrieval | pg_trgm / full-text (optional pg_search, Apache AGE) candidate retrieval | `Storage/Sql/Retrieval` | check module |
+| PostgreSQL retrieval | pg_trgm / full-text (optional pg_search, Apache AGE) candidate retrieval | `Storage/Sql/Retrieval` | `.../storage/sql/retrieval` (source and parity tests; database runtime unverified) |
 | Elasticsearch retrieval | Lexical candidate retrieval backed by an Elasticsearch index | `Storage/Elasticsearch` | `.../storage/elasticsearch` |
 | PostgreSQL + pgvector retrieval | Vector/semantic lexicon indexing and candidate retrieval using pgvector | `Storage/PostgresVector` | `.../storage/postgresvector` |
 | PostgreSQL event store | Persist and read event envelopes | `EventStore` | `.../eventstore` |
@@ -64,7 +64,7 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | MCP tools and client | Expose Foundgine capabilities to MCP clients and consume remote MCP capabilities | `Tools/MCP` | `.../tools/mcp` |
 | AOT metadata | Compile-time declarations and generated semantic metadata | `Aot` + `Foundgine.Providers.Aot.Generator` | `.../aot` + `foundgine-aot-generator` |
 | AI agent/toolset descriptors | Describe agent/toolset integration surfaces | `Models` | `.../models` |
-| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools | `src/csharp/Foundgine.Providers.AgentFramework` | n/a |
+| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools; implementation is present but not yet build-verified or released | `src/csharp/Foundgine.Providers.AgentFramework` | n/a |
 | Graph retrieval capability | Declare graph-retrieval capability metadata for provider negotiation | `Hosting/Capabilities` | `.../capabilities` |
 
 > The table is a source map, not a promise of identical implementation maturity or runtime dependencies. Verify the concrete language module, tests and package release before relying on a feature.
@@ -147,15 +147,19 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 
 ## PostgreSQL retrieval provider
 
-**What it does.** `PostgresRetrievalCandidateSource` finds *possible matches* for a caller's words using PostgreSQL features: trigram similarity (`pg_trgm`, on by default), full-text search (on by default, English unless changed), and optionally `pg_search` and an Apache AGE graph (both off by default). Everything is switched with `PostgresRetrievalOptions`. Like the other retrieval sources it only produces candidates and evidence; authorization and the final query still belong to Foundgine.
+**What it does.** `PostgresRetrievalCandidateSource` finds *possible matches* for a caller's words using PostgreSQL features: trigram similarity (`pg_trgm`, on by default), full-text search (on by default, English unless changed), and optionally `pg_search` and an Apache AGE graph (both off by default). Everything is switched with `PostgresRetrievalOptions`. Like the other retrieval sources it only produces candidates and evidence; authorization and the final query still belong to Foundgine. Java source and option-parity tests are present, but database runtime verification remains pending.
 
-**Source:** `Storage/Sql/Retrieval` (C#).
+**Source:** `src/csharp/Foundgine.Providers/Storage/Sql/Retrieval` and `src/java/foundgine-providers/.../storage/sql/retrieval`.
 
-## Models: Microsoft.Extensions.AI
 
-**What it does.** `FoundgineAiToolset` exposes Foundgine as AI tools (`foundgine_capabilities`, `foundgine_query`); `FoundgineAiAgent` runs a bounded function-calling loop over an existing Foundgine runtime. It does not hard-code OpenAI, Azure, Ollama or any model vendor. The model only supplies intent; the host supplies the security context and Foundgine still resolves, authorizes, plans and executes.
+## Models: Microsoft.Extensions.AI and LangChain4j
 
-**Source:** `Models` (C#).
+**.NET.** `FoundgineAiToolset` exposes Foundgine as AI tools (`foundgine_capabilities`, `foundgine_query`); `FoundgineAiAgent` runs a bounded function-calling loop over an existing Foundgine runtime. It does not hard-code OpenAI, Azure, Ollama or any model vendor. The model only supplies intent; the host supplies the security context and Foundgine still resolves, authorizes, plans and executes.
+
+**Java.** The `foundgine-providers` `models` package contains agent/tool descriptors. The separate `foundgine-langchain4j` module contains the LangChain4j integration source and tests, but its dependency pins and runtime verification remain pending.
+
+**Source:** `src/csharp/Foundgine.Providers/Models`, `src/java/foundgine-providers/.../models` and `src/java/foundgine-langchain4j`.
+
 
 ## Event store
 

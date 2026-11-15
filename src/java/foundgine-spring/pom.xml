@@ -9,7 +9,7 @@
   </parent>
   <artifactId>foundgine-spring</artifactId>
   <name>Foundgine Spring</name>
-  <description>Optional Spring Boot auto-configuration for FoundgineOrm. UNVERIFIED.</description>
+  <description>Optional Spring Boot auto-configuration for Foundgine JPA and MCP. Source and tests are included in the Maven reactor; dependency version pins and runtime verification remain unverified.</description>
 
   <properties>
     <!-- UNVERIFIED pin: confirm against the Spring Boot line your Java 27 build targets. -->

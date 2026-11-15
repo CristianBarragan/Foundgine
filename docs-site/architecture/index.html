@@ -172,18 +172,21 @@
         <section>
           <h2 id="semantic-model">Semantic model</h2>
           <p>
-            <code>Foundgine.Core</code> owns the provider-independent semantic contracts: entities,
-            fields, relationships, intent, resolution, validation, capabilities and authorization
-            structures. The semantic model describes application meaning, not storage
-            implementation.
+            The .NET <code>Foundgine.Core</code> package and Java <code>foundgine-core</code> module
+            own the provider-independent semantic contracts: entities, fields, relationships,
+            intent, resolution, validation, capabilities and authorization structures. The semantic
+            model describes application meaning, not storage implementation. The package and Java
+            package names differ, but the architectural boundary is shared.
           </p>
         </section>
         <section>
           <h2 id="metadata">Metadata</h2>
           <p>
-            Structural metadata describes what exists in the underlying model. AOT generation can
-            produce that information at compile time. Metadata helps build the semantic model; it
-            does not replace semantic design.
+            Structural metadata describes what exists in the underlying model. .NET uses a source
+            generator; Java uses an annotation processor. Both can produce runtime metadata at
+            compile time, but the generated type names and build integration differ. Java also has a
+            fluent <code>FoundgineModelConfiguration&lt;T&gt;</code> API. Metadata helps build the
+            semantic model; it does not replace semantic design.
           </p>
           <p>
             Read
@@ -192,7 +195,7 @@
               >Metadata → Semantics</a
             >
             and
-            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/AOT.md">AOT</a>
+            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/aot.md">AOT</a>
             for the implementation details.
           </p>
         </section>
@@ -238,11 +241,17 @@
         <section>
           <h2 id="execution-and-providers">Execution and providers</h2>
           <p>
-            <code>Foundgine.Runtime</code> orchestrates execution.
-            <code>Foundgine.Providers</code> supplies concrete infrastructure such as
-            SQL/PostgreSQL, InMemory, MCP and AI/model integrations.
-            <code>Foundgine.Extensions</code> contains optional framework integrations such as Hot
-            Chocolate GraphQL.
+            The .NET <code>Foundgine.Runtime</code> package and Java
+            <code>foundgine-runtime</code> module orchestrate execution. The .NET
+            <code>Foundgine.Providers</code> package and Java <code>foundgine-providers</code>
+            module supply SQL/JDBC, InMemory and retrieval providers. ORM adapters are EF Core for
+            .NET and JPA/Hibernate for Java; their capability status is tracked separately. The
+            extension surfaces include Hot Chocolate GraphQL for .NET and GraphQL Java for Java.
+            Optional Spring Boot and LangChain4j modules have source and tests, but their dependency
+            pins and runtime verification remain pending. Java's separate
+            <code>foundgine-migrations</code> source module generates PostgreSQL/Flyway schema
+            migrations from metadata; it is developer tooling, not a runtime provider, and its
+            Maven/runtime verification remains pending.
           </p>
           <p>
             Provider code owns physical concerns. It does not redefine the application's semantic
@@ -252,9 +261,10 @@
         <section>
           <h2 id="adapters">Adapters</h2>
           <p>
-            GraphQL, JSON, MCP and AI integrations are callers/adapters around the same boundary.
-            They translate their native request shape into Foundgine intent and receive the
-            resulting application-controlled execution.
+            GraphQL, JSON and MCP integrations are callers/adapters around the same boundary. .NET
+            also has Microsoft.Extensions.AI integration; Java has a LangChain4j module whose
+            source is present but not yet runtime-verified. Adapters translate their native request
+            shape into Foundgine intent and receive the resulting application-controlled execution.
           </p>
         </section>
         <section>

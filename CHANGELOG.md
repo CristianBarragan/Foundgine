@@ -6,38 +6,39 @@
 
 - Added `Foundgine.Providers.AgentFramework`: a Microsoft Agent Framework (MAF) adapter. It exposes capability discovery, semantic and open-intent reads, mutation dry-run and approval-gated mutation execution as MAF tools, with `AddFoundgineAgentFramework()` DI registration and a keyed scoped `AIAgent`. Mutations are off by default and execution is wrapped in `ApprovalRequiredAIFunction`; no model-callable approve tool exists, and `approvedBy` is the host-resolved subject.
 - Added `FoundgineProviderKind.Agent` (C#) / `AGENT` (Java), appended last so existing values are unchanged.
+- Added Java PostgreSQL migration support: fluent-model schema projection, schema differ and PostgreSQL SQL generation, rollback ordering, migration snapshots/history, Flyway integration and a migration CLI.
+- Added Java migration schema metadata for defaults, identity generation, named foreign keys and referential actions, CHECK constraints, index access methods/operator classes and required PostgreSQL extensions.
+- Expanded the .NET Supply Chain starter with typed semantic query helpers, ownership-scoped relationship filtering, CRUD endpoints, EF Core migrations and database initialization/demo data.
 
 ### Verification status
 
-- The MAF adapter and its `Foundgine.AgentFramework.Tests` project were written without a .NET SDK or NuGet access and have **not been compiled or run**. Restore, build, run the tests and confirm the pinned `Microsoft.Agents.AI` version before release.
+- The MAF adapter and its `Foundgine.AgentFramework.Tests` project were added, but the supplied checkpoint does not establish a successful build or test run. Verify the pinned `Microsoft.Agents.AI` version, restore, build and tests before release.
+- The Java migration generator includes PostgreSQL 16 catalog-parity tests, but the supplied checkpoint does not establish that Flyway itself or the full Java 27 test suite passed. Keep the handwritten Advanced V1 migration as the baseline until schema parity and migration execution are verified.
+- The latest reported Java Advanced sample test phase was failing before the final fixes in this checkpoint; those fixes have not been re-run. Do not describe the full Java suite as passing.
 
 ## 3.3.5 — November 15, 2026
 
 ### Added
 
-- Added Java PostgreSQL migration schema support for column defaults, identity generation, named single/composite foreign keys and referential actions, CHECK constraints, index access methods/operator classes, and required extensions.
-- Added metadata-to-schema projection, PostgreSQL schema differ/SQL generation (including rollback ordering), migration snapshots/history, and migration CLI integration.
-- Added physical-schema projections for the Java Starter sample (three persisted tables) and Advanced sample (the eleven-table V1 contract), reusing the same fluent persistence declarations rather than duplicating DDL.
-- Added Java schema parity tests, including a PostgreSQL 16 catalog comparison for columns, constraints, indexes, unique indexes and the GIN `pg_trgm` operator class.
-- Expanded the .NET Supply Chain starter with typed semantic query helpers, ownership-scoped relationship filtering, CRUD endpoints, EF Core migrations and database initialization/demo-data support.
+- Added the Python SDK as a source-layout package with a Python 3.11–3.14 test matrix, lint/type-check jobs, package build checks and a PyPI trusted-publishing workflow.
+- Added dedicated TypeScript and Rust/WebAssembly SDK workflows for tests, package creation and release publishing. The TypeScript workflow tests Node.js 20 and 22; the WASM workflow runs Rust, wasm-bindgen and JavaScript checks.
+- Added shared conformance-vector checks to the SDK CI workflows.
 
 ### Changed
 
-- Extended Java fluent persistence configuration and compiled metadata to retain physical PostgreSQL schema declarations end to end.
-- Updated the Java Starter and Advanced Supply Chain samples to use the fluent model/JPA path, model-derived migration workflows, and current setup/tutorial documentation.
-- Aligned canonical .NET, Maven, MCP, TypeScript, Python and Rust/WASM package/user-agent versions to `3.3.5`, including Maven flattened POM metadata and documentation-site install examples.
+- Moved the Python, TypeScript and Rust/WebAssembly SDK package contents to the top level of their respective SDK directories and updated package metadata, lockfiles, build paths and install documentation.
+- Updated the .NET and Java canonical versions and SDK package metadata to `3.3.5`.
+- Replaced the previous combined CI workflow with dedicated C#, Java, Python, TypeScript and WebAssembly workflows, and updated the npm publishing workflow.
+- Updated MCP manifests, README installation instructions, package pages and generated documentation-site metadata for the `3.3.5` release.
 
 ### Fixed
 
-- Kept storage-only persistence row types in the structural metadata catalog without trying to discover them as semantic entities; semantic discovery continues to require valid primary-key field mappings for entities with semantic fields.
-- Corrected Advanced relationship parity expectations to compare physical column names (including explicitly renamed primary-key and foreign-key columns), not Java member names.
-- Corrected the Advanced structural catalog test to distinguish all 25 metadata entities from the 17 semantic entities.
+- Hardened Java MCP approval-token verification against RSA signature tampering and updated the interoperability test.
 
 ### Verification status
 
-- The latest reported Maven run had the Java Starter sample passing but the Advanced sample test phase failing. This checkpoint includes fixes for the identified semantic-discovery cascade, physical-column expectations and catalog-count assertion; those fixes have **not yet been re-run**.
-- The PostgreSQL 16 catalog-parity test is present but has not been executed. Full Java 27 Maven verification, PostgreSQL 16 parity, .NET tests/package checks, and the TypeScript/Python/Rust-WASM CI gates remain required before tagging or publishing.
-- The handwritten Advanced V1 migration remains the authoritative baseline until the generated schema passes the PostgreSQL 16 comparison. Do not replace it or apply generated production migrations before that gate passes.
+- The `v3.3.5` tag points to commit `505240dd` (`update npm builds`). The Java migrations and Microsoft Agent Framework adapter were merged after that tag and are therefore listed under **Unreleased**, not as `3.3.5` release contents.
+- The tag and source history establish the changes listed above; they do not by themselves prove that every hosted workflow or package publication completed successfully.
 
 ## 3.3.4 — November 14, 2026
 
@@ -78,6 +79,19 @@
 ### Verification
 
 - Static repository and package-workflow checks only. .NET build/pack, Java 27 tests, PostgreSQL integration tests and hosted CI release evidence must pass before publication; see `RELEASE-NOTES-3.3.3.md`.
+
+## 3.3.2 — November 12, 2026
+
+### Added
+
+- Added the Java JPA persistence path: an ORM-neutral execution layer, JPA reader and repository APIs, entity-model registration, and Spring Boot JPA auto-configuration.
+- Added Java AOT/JPA metadata support, including generated direct-access entity models and a native-image JPA sample with reachability metadata.
+- Expanded the Java starter and Advanced Supply Chain samples with JPA-backed persistence examples and integration tests.
+- Added the Java ORM/JPA parity plan and package-content checks for the published provider artifacts.
+
+### Verification status
+
+- The release commit records implementation and test additions; source presence and test definitions alone do not establish that every JPA, database, or Native Image gate passed. Consult the Java build and conformance evidence for the status of each capability.
 
 ## 3.3.1 — November 11, 2026
 
@@ -143,8 +157,7 @@
   tests pass.
 - **Conformance evidence.** The .NET matrix
   (`src/csharp/conformance/orm/provider-conformance-matrix.json`) and the Java
-  plan (`src/java/ORM-JPA-PARITY-PLAN.md` and
-  `conformance/orm-jpa-parity-plan.json`) record translation, runtime and
+  plan (`src/java/conformance/orm-jpa-parity-plan.json`) record translation, runtime and
   Native AOT status per capability. Source presence or a configured CI job is
   not counted as passing evidence.
 
@@ -203,7 +216,7 @@
 ### Release
 
 - Version: `3.3.0`
-- Target framework: `.NET 10` / Java 21
+- Target framework: `.NET 10` / Java 27
 - License: Apache License, Version 2.0
 
 ## 2.3.1 — November 9, 2026
@@ -227,6 +240,16 @@
 - Version: `2.3.1`
 - Target framework: `.NET 10` / Java 21
 - License: Apache License, Version 2.0
+
+### Git tag follow-up — `v3.2.2` (November 10, 2026)
+
+The `v3.2.2` Git tag points to source whose .NET and Maven package versions are still `2.3.1`; it is not a separate `3.2.2` package release. That tagged source moved the Java build to Java 27 and added:
+
+- the Java AOT annotation processor in `foundgine-providers`, its service registration and a processor parity test;
+- the Java build guide and Java 27 CI toolchain updates;
+- the corresponding Supply Chain sample and annotation-processor wiring updates.
+
+The package version remained `2.3.1`, so these changes are recorded here as a tag follow-up rather than an invented `3.2.2` release section.
 
 ## 2.3.0 — November 8, 2026
 

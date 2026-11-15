@@ -11,12 +11,15 @@ This page maps capabilities to the repository's current module layout. It is an 
 | Runtime orchestration and APIs | `src/csharp/Foundgine.Runtime` | `src/java/foundgine-runtime` |
 | ORM providers (EF Core / JPA) | `src/csharp/Foundgine.Providers.Orm`, `Foundgine.Providers.EntityFrameworkCore`, `Foundgine.Providers.Orm.Generator` | `foundgine-providers/.../storage/orm` and `.../orm/jpa` |
 | SQL, in-memory and retrieval providers | `src/csharp/Foundgine.Providers/Storage` | `src/java/foundgine-providers` |
+| Schema migrations | EF Core migration tooling; no matching Foundgine migration module | `src/java/foundgine-migrations` (PostgreSQL schema diff and Flyway SQL; source/tests present, Maven/runtime verification pending) |
 | Gateway, event and outbox | `Foundgine.Providers/Gateway`, `EventStore`, `Outbox` | `foundgine-providers` gateway/event/outbox packages |
 | MCP and agent tooling | `Foundgine.Providers/Tools/MCP`, runtime control plane | `foundgine-providers` tool/MCP packages and `foundgine-runtime` governance |
+| AI model adapters | `Foundgine.Providers.Models` (Microsoft.Extensions.AI); separate `Foundgine.Providers.AgentFramework` project is not build-verified | `foundgine-langchain4j` (source/tests present; dependency/runtime verification pending) |
+| Spring Boot integration | N/A | `foundgine-spring` (source/tests present; dependency/runtime verification pending) |
 | AOT metadata | `Foundgine.Providers/Aot`, `Foundgine.Providers.Aot.Generator` | `foundgine-aot-generator` and provider annotations/metadata |
 | Keycloak | `src/csharp/Foundgine.Extensions/Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
 | Temporal | `src/csharp/Foundgine.Extensions/Temporal` | `src/java/foundgine-extensions/.../temporal` |
-| GraphQL adapter | `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` | Check `foundgine-extensions` for implemented adapter modules; do not assume Hot Chocolate parity |
+| GraphQL adapter | `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` | `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql` (GraphQL Java; different API, no Hot Chocolate parity claim) |
 | Samples and tests | `src/csharp/samples`, `tests`, `security` | `src/java/samples`, module tests, `security` |
 
 ## Module responsibilities
@@ -35,7 +38,11 @@ Implements physical execution and infrastructure adapters, including the SQL, **
 
 ### Extensions
 
-See [Extensions](extensions) for the single catalogue. Adapts third-party frameworks and services. Extensions should translate to/from Foundgine contracts and delegate the actual semantic and security decisions to the appropriate core/runtime services.
+See [Extensions](extensions) for the single catalogue. Adapts third-party frameworks and services. Extensions should translate to/from Foundgine contracts and delegate the actual semantic and security decisions to the appropriate core/runtime services. Optional Spring Boot and LangChain4j Java modules have source and test definitions, but dependency pins and runtime verification remain pending. The separate C# Microsoft Agent Framework adapter is not included in the main solution and has not been build-verified.
+
+### Migrations
+
+Java's `foundgine-migrations` module is developer tooling, not a runtime provider. It derives a PostgreSQL schema from Foundgine metadata, diffs it against a committed JSON snapshot and generates Flyway SQL plus rollback/history files. Its source and tests are present, but full Maven/runtime verification remains pending. It does not infer renames, partial/expression indexes, triggers, views, generated columns or data backfills. Review generated SQL before applying it; see the [module README](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/foundgine-migrations/README.md). .NET applications continue to use EF Core's migration tooling.
 
 ## How to verify a component
 

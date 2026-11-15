@@ -4,18 +4,17 @@
 </picture>
 
 [![NuGet Version](https://img.shields.io/nuget/v/Foundgine.Core?label=NuGet%20Version)](https://www.nuget.org/packages/Foundgine.Core/)
-[![Unit Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/build.yml?branch=main&job=unit-tests&label=Unit%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/build.yml)
-[![Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/build.yml?branch=main&job=integration-tests&label=Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/build.yml)
-[![Performance (Hot Chocolate)](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/build.yml?branch=main&job=benchmark-build-hotchocolate&label=Performance%20%28Hot%20Chocolate%29)](https://github.com/CristianBarragan/Foundgine/actions/workflows/build.yml)
-[![Performance (Foundgine)](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/build.yml?branch=main&job=benchmark-build-foundgine&label=Performance%20%28Foundgine%29)](https://github.com/CristianBarragan/Foundgine/actions/workflows/build.yml)
-[![Security Audit](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/security.yml?branch=main&job=security-penetration&label=Security%20Audit)](https://github.com/CristianBarragan/Foundgine/actions/workflows/security.yml)
+[![Unit Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/csharp-build.yml?branch=main&job=unit-tests&label=Unit%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/csharp-build.yml)
+[![Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/csharp-build.yml?branch=main&job=integration-tests&label=Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/csharp-build.yml)
+[![Performance (Hot Chocolate)](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/csharp-build.yml?branch=main&job=benchmark-build-hotchocolate&label=Performance%20%28Hot%20Chocolate%29)](https://github.com/CristianBarragan/Foundgine/actions/workflows/csharp-build.yml)
+[![Performance (Foundgine)](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/csharp-build.yml?branch=main&job=benchmark-build-foundgine&label=Performance%20%28Foundgine%29)](https://github.com/CristianBarragan/Foundgine/actions/workflows/csharp-build.yml)
+[![Authority PenTest](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/security.yml?branch=main&job=security-penetration&label=Authority%20PenTest)](https://github.com/CristianBarragan/Foundgine/actions/workflows/security.yml)
 
 [![Maven Central Version](https://img.shields.io/maven-central/v/io.github.cristianbarragan/foundgine-core?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.cristianbarragan/foundgine-core)
 [![Java Unit Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-build&label=Java%20Unit%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 [![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
-[![Java Security Audit](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Audit)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
+[![Java Security Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 
-[![Python Version](https://img.shields.io/pypi/v/foundgine-sdk?label=PyPI%20Version)](https://pypi.org/project/foundgine-sdk/)
 [![Python Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/python-build.yml)
 
 [![TypeScript Version](https://img.shields.io/npm/v/@foundgine/typescript?label=npm%20%40foundgine%2Ftypescript)](https://www.npmjs.com/package/@foundgine/typescript)
@@ -35,7 +34,7 @@ Foundgine gives AI agents and other callers a way to express what they want, whi
 
 This boundary ensures that agents can propose actions, but only your application decides **what is allowed, what is safe, and what is actually executed.**
 
-[**Go to website →**](https://cristianbarragan.github.io/Foundgine/docs-site/)
+[**Go to website →**](https://cristianbarragan.github.io/Foundgine/)
 
 **Where to read next**
 
@@ -46,7 +45,7 @@ This boundary ensures that agents can propose actions, but only your application
 | Browse every feature in plain language | [Feature and capability wiki](docs/wiki/index.md) |
 | Pick a database, ORM (**EF Core** / **JPA**) or search provider | [Provider catalogue](docs/wiki/providers.md) · [ORM providers](docs/wiki/orm-providers.md) |
 | Add GraphQL, Keycloak or Temporal | [Extensions](docs/wiki/extensions.md) |
-| See what is proven versus only implemented | [Current status](docs/CURRENT-STATUS.md) · [Conformance and hardening](docs/wiki/conformance-hardening.md) |
+| Check implementation and test coverage | [Source coverage](docs/SOURCE-COVERAGE.md) · [Conformance and hardening](docs/wiki/conformance-hardening.md) |
 
 # The problem
 
@@ -88,10 +87,10 @@ The fastest path is the Supply Chain sample pair:
   - .NET — [`src/csharp/samples/Foundgine.SupplyChain.Advanced`](src/csharp/samples/Foundgine.SupplyChain.Advanced): start at [`docs/00-Overview-And-Setup.md`](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) and follow 01–05.
   - Java — [`src/java/samples/foundgine-supply-chain-advanced`](src/java/samples/foundgine-supply-chain-advanced): [`SupplyChain-Advanced-Tutorial.md`](src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md).
  
-- **Complete Polyglot Enterprise Example with all Foundgine features and capabilities:**
-  - .NET/Java — [`https://github.com/CristianBarragan/Foundgine-e2e-example`](https://github.com/CristianBarragan/Foundgine-e2e-example): [`Tutorial`](https://github.com/CristianBarragan/Foundgine-e2e-example/blob/main/docs/tutorial.md)
+- **Enterprise integration example (separate work-in-progress repository):**
+  - .NET/Java CRM, ERP, Temporal and Keycloak example — [`Foundgine-e2e-example`](https://github.com/CristianBarragan/Foundgine-e2e-example): [`Tutorial`](https://github.com/CristianBarragan/Foundgine-e2e-example/blob/main/docs/tutorial.md). Check that repository's README for its current build and verification status; it is not a certified Foundgine sample.
 
-For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://cristianbarragan.github.io/Foundgine/docs-site/).
+For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://cristianbarragan.github.io/Foundgine/).
 
 # A concrete example
 
@@ -172,16 +171,17 @@ For the deeper rationale, read:
 
 ## Package shape
 
-The source layout is consolidated into four publishable packages (the .NET names are shown; Java uses `foundgine-*` artifacts under `io.github.cristianbarragan`):
+The core package family has four architectural packages (the .NET names are shown; Java uses `foundgine-*` artifacts under `io.github.cristianbarragan`). Optional integrations and tooling are packaged separately:
 
 | Package                | Responsibility                                                                                           |
 | ---------------------- | -------------------------------------------------------------------------------------------------------- |
 | `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts                            |
 | `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                                            |
 | `Foundgine.Providers`  | Concrete storage (SQL, **EF Core**, **JPA**, in-memory, search), events, gateway, AI/model, MCP and AOT |
-| `Foundgine.Extensions` | Optional GraphQL (Hot Chocolate), Keycloak identity and Temporal workflow integrations                   |
+| `Foundgine.Extensions` | Optional GraphQL, Keycloak identity and Temporal workflow integrations |
+| `Foundgine.Providers.AgentFramework` | Optional .NET Microsoft Agent Framework adapter; packable source project, not yet build-verified or released |
 
-The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. See the [package guide](docs-site/packages/) for the current boundary map.
+The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. The Java Maven reactor contains the implemented `foundgine-migrations` module and optional Spring Boot and LangChain4j integrations. The latter have source and test definitions, but their dependency pins and runtime verification remain unverified in this snapshot. The Central publishing configuration includes these modules and excludes the build-time `foundgine-aot-generator`. See the [package guide](docs-site/packages/) for the current boundary map.
 
 ## Providers and extensions at a glance
 
@@ -195,8 +195,8 @@ A **provider** does the real work against infrastructure; an **extension** conne
 | Understanding free-form wording | **Elasticsearch**, **PostgreSQL + pgvector**, **PostgreSQL trigram/full-text** retrieval | Candidates and evidence only, never authority |
 | Durable events and reliable delivery | **Event store** and **outbox** | At-least-once delivery |
 | One front door for other products | **Gateway** (approvals, events, status, diagnostics) | Opaque one-time approval handles |
-| AI agents and tools | **MCP tools**, **Microsoft.Extensions.AI** models | Model supplies intent, host supplies authority |
-| GraphQL API | **GraphQL extension** (Hot Chocolate) | Translates only |
+| AI agents and tools | **MCP tools**, **Microsoft.Extensions.AI** models and the optional **Microsoft Agent Framework** adapter (source present, unverified) | Model supplies intent, host supplies authority |
+| GraphQL API | **GraphQL extension** (Hot Chocolate for .NET; GraphQL Java for Java) | Translates only |
 | Keycloak logins | **Keycloak extension** | Short-lived signed warrants |
 | Long-running processes | **Temporal extension** | Retries, timers, approvals, compensation |
 
@@ -206,42 +206,42 @@ The full inventory with source paths is the [Provider catalogue](docs/wiki/provi
 
 The repository contains controlled benchmarks and deterministic security tests. The public evidence distinguishes **measured** tool calls, latency, RPS and success/failure counts from **estimated** context metrics.
 
-- [Agent benchmark explorer](https://cristianbarragan.github.io/Foundgine/docs-site/agent-benchmark/)
-- [Supply Chain E2E](https://cristianbarragan.github.io/Foundgine/docs-site/agent-benchmark/supply-chain/)
-- [Security PenTest](https://cristianbarragan.github.io/Foundgine/docs-site/samples/pentest/)
+- [Agent benchmark explorer](https://cristianbarragan.github.io/Foundgine/agent-benchmark/)
+- [Supply Chain E2E](https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/)
+- [Security PenTest](https://cristianbarragan.github.io/Foundgine/samples/pentest/)
 - [`src/csharp/benchmarks/AgentEndToEnd/README.md`](src/csharp/benchmarks/AgentEndToEnd/README.md)
 
 Benchmark results are workload-specific and should not be generalized beyond the published experiment.
 
-### Latest red-team pentest result
+### Historical red-team run (7 September 2026)
 
-A live adversarial run of `Foundgine.RedTeam` against the Advanced Supply Chain sample sent 18 attack attempts — cross-tenant probes, role/identity claim spoofing, claim-scope widening, write/capability escalation, and unauthenticated-actor calls — across both the semantic authorization API and the execution/tool-calling API. Every adversarial attempt was denied or blocked; only the two intentionally-legitimate baseline calls succeeded. Full attack-by-attack results, why the two APIs' error shapes intentionally differ, and the server-side classification/correlation-id logging now implemented for the execution API: [`docs/SECURITY.md#red-team-pentest-results-advanced-supply-chain-sample`](docs/SECURITY.md#red-team-pentest-results-advanced-supply-chain-sample).
+A recorded manual run of `Foundgine.RedTeam` against the Advanced Supply Chain .NET sample sent 18 attack attempts — cross-tenant probes, role/identity claim spoofing, claim-scope widening, write/capability escalation, and unauthenticated-actor calls — across the semantic authorization API and execution/tool-calling API. Every adversarial attempt was denied or blocked; only the two intentionally legitimate baseline calls succeeded. This is evidence for that sample run, not a current release certification or proof of Java parity. See [`docs/SECURITY.md`](docs/SECURITY.md) for the run details. The current CI opt-in gaps are documented in [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md) and the [Supply Chain PenTest fixture README](src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/README.md).
 
 ## Development
 
 ```bash
-# .NET (.NET 10)
-dotnet restore
-dotnet build
-dotnet test
+# .NET 10
+cd src/csharp
+dotnet restore Foundgine.sln
+dotnet build Foundgine.sln
+dotnet test Foundgine.sln
 
-# Java (Java 27, from src/java)
-mvn -f pom.xml clean package
+# Java 27
+cd ../java
+mvn -U clean verify -Dgpg.skip=true
 ```
 
-PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). CI and release validation: [`docs/CI.md`](docs/CI.md).
-
-Foundgine's architecture is specified independently of this implementation as the **Semantic Execution (SES) standard**: [`standards/semantic-execution/`](standards/semantic-execution/README.md). The standard is the authority; see [`SES-104`](standards/semantic-execution/SES-104-foundgine-test-mapping.md) for the implementation gap matrix and [`conformance/known-gaps.json`](standards/semantic-execution/conformance/known-gaps.json) for the machine-readable status of every tracked item.
+PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). Shared cross-language test vectors and scenarios: [`src/conformance/README.md`](src/conformance/README.md). See [`docs/TESTING.md`](docs/TESTING.md) for solution exclusions and test commands. The repository workflows under [`.github/workflows/`](.github/workflows/) define the automated build and release gates; a workflow definition is not proof that a particular run passed or that an opt-in test actually executed.
 
 ## Documentation
 
 - [Documentation index](docs/README.md) — the reading path.
 - [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, AOT, auditing and operations.
-- [Website](https://cristianbarragan.github.io/Foundgine/docs-site/) · [`CHANGELOG.md`](CHANGELOG.md)
+- [Website](https://cristianbarragan.github.io/Foundgine/) · [`CHANGELOG.md`](CHANGELOG.md)
 
 ## Release 3.3.5
 
-**Current release: 3.3.5 · .NET 10, Java 27 and aligned client SDK packages**
+**Current server release: 3.3.5 · .NET 10 and Java 27; client SDK publication and verification status is tracked separately**
 
 Foundgine 3.3.5 advances the Supply Chain persistence path across the .NET and Java samples and adds Java model-derived PostgreSQL migrations. The Java fluent persistence metadata now carries defaults, identity generation, named/composite foreign keys and referential actions, CHECK constraints, index access methods/operator classes, and required PostgreSQL extensions into the migration schema, differ and SQL generator. The starter and Advanced samples now include physical-schema projections, migration snapshots/history, rollback generation and schema-parity tests.
 

@@ -1,6 +1,6 @@
 # ORM providers (EF Core and JPA)
 
-> **In plain words.** Many teams already have an ORM. Instead of making them hand-write SQL, Foundgine can hand its plans to **EF Core** (.NET) or **JPA** (Java). The ORM turns the plan into database queries. The security rules stay the same: permission filters are always added, they can never be removed by the caller, and only the fields asked for are fetched. This family is the **newest** and the wiki is deliberately cautious: much of it is *implemented* but not yet *proven by a real database run*.
+> **In plain words.** Many teams already have an ORM. Instead of making them hand-write SQL, Foundgine can hand its plans to **EF Core** (.NET) or **JPA** (Java). The ORM turns the plan into database queries. The security rules stay the same: permission filters are always added, they can never be removed by the caller, and only the fields asked for are fetched. Implementation, translation and database-runtime evidence are tracked separately; neither provider should be described as certified from source presence alone.
 
 ## Which provider is which?
 
@@ -8,9 +8,9 @@
 |---|---|---|
 | Language | .NET (C#) | Java |
 | Your existing tool | Entity Framework Core (`DbContext`) | Jakarta Persistence (`EntityManager`) |
-| Main classes | `EfCoreProvider`, `EfCoreQuerySource`, `EfCoreMutationSource` | `JpaOrmProvider`, `JpaOrmQuerySource`, `JpaOrmMutationSource`, `JpaPredicates`, `JpaOrmSnapshotPageSession` |
+| Main classes | `EfCoreExecutionProvider`, `EfCoreQuerySource`, `EfCoreMutationSource` | `JpaOrmProvider`, `JpaOrmQuerySource`, `JpaOrmMutationSource`, `JpaPredicates`, `JpaOrmSnapshotPageSession` |
 | Shared engine underneath | `Foundgine.Providers.Orm` | `storage/orm` |
-| Maturity | Most complete; real SQLite integration tests exist | Partial; see the status table |
+| Maturity | Most complete; SQLite tests are defined, but translation/runtime evidence is still `test-defined-not-run` | Partial; implemented capabilities remain unverified; see the status table |
 
 **Which should I use instead of the SQL provider?** Choose the ORM provider when your application already owns its entities and database access through EF Core or JPA and you want one data-access stack, your existing connection and transaction handling, and your ORM's database support. Choose the [SQL provider](providers) when you want Foundgine to write the SQL itself, with its cost estimator and PostgreSQL batching. Both keep the same permission rules.
 
@@ -32,12 +32,11 @@ Say a caller asks: *"show me customers whose orders include SKU A."*
 2. Build the registry once from your model metadata, the generated maps and the relationship metadata: `OrmRegistry.Create(entities, maps, relationships)`.
 3. Register the EF Core provider with your `DbContext` and that registry, then run your normal Foundgine configuration for the model and authorization. The ORM provider never decides permissions itself.
 
-Java uses the JPA provider with `jakarta.persistence` as an optional dependency; see `src/java/foundgine-providers/.../storage/orm/jpa` and `src/java/ORM-JPA-PARITY-PLAN` for current wiring. Check exact registration method names in the source for your version.
+Java uses the JPA provider with `jakarta.persistence` as an optional dependency; see `src/java/foundgine-providers/.../storage/orm/jpa` and [`src/java/conformance/orm-jpa-parity-plan.json`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/conformance/orm-jpa-parity-plan.json) for current wiring and evidence status. Check exact registration method names in the source for your version.
 
 ## Reading and writing from your code
 
-Both ORM providers give you the same three things, with the same shape in both languages. Details and a member table are on
-[Fluent semantic reads](semantic-query-builder).
+Both ORM providers expose semantic reads and generic repository/entity operations, with language-specific execution entry points. Details and a member table are on [Fluent semantic reads](semantic-query-builder).
 
 | Need | C# (EF Core) | Java (JPA) |
 |---|---|---|
@@ -71,7 +70,7 @@ Semantic operation
 | Layer | C# | Java |
 |---|---|---|
 | Provider-neutral ORM core | `Foundgine.Providers.Orm` (`OrmPlanCompiler`, `OrmExecutionProvider`, `OrmMutationExecutionProvider`, `OrmRegistry`, `OrmEntityMap`, `OrmFieldBinding`, `OrmRelationshipBinding`, `OrmCursor`, `OrmProviderCapabilities`) | `foundgine-providers/.../storage/orm` (`OrmPlanCompiler`, `OrmExecutionProvider`, `OrmMutationExecutionProvider`, `OrmRegistry`, `OrmEntityMapping`, `OrmPredicate`, `OrmCursor`, `OrmAggregateCursor*`) |
-| Concrete adapter | `Foundgine.Providers.EntityFrameworkCore` (`EfCoreProvider`, `EfCoreQuerySource`, `EfCoreMutationSource`; application surface `FoundgineEfReader`, `IFoundgineRepository<T>`, `AddFoundgineEf`) | `storage/orm/jpa` (`JpaOrmProvider`, `JpaOrmQuerySource`, `JpaPredicates`, `JpaOrmMutationSource`, `JpaOrmSnapshotPageSession`) |
+| Concrete adapter | `Foundgine.Providers.EntityFrameworkCore` (`EfCoreExecutionProvider`, `EfCoreQuerySource`, `EfCoreMutationSource`; application surface `FoundgineEfReader`, `IFoundgineRepository<T>`, `AddFoundgineEf`) | `storage/orm/jpa` (`JpaOrmProvider`, `JpaOrmQuerySource`, `JpaPredicates`, `JpaOrmMutationSource`, `JpaOrmSnapshotPageSession`) |
 | Test doubles | n/a | `InMemoryOrmQuerySource`, `InMemoryOrmMutationSource` |
 | Build-time maps | `Foundgine.Providers.Orm.Generator` (`OrmMapGenerator`, Roslyn) | provider-neutral maps today; see [AOT](aot) |
 
@@ -92,17 +91,17 @@ The neutral core references **no** ORM package. The .NET ORM track contains EF C
 
 | Capability | .NET (EF Core) | Java (JPA) |
 |---|---|---|
-| Scalar filters, projection, root authorization | implemented; translation and runtime evidence *test-defined, not run* in the matrix | partial Criteria translation; previously type-checked against API stubs, not a database |
-| Relationship traversal (batched child keys) | implemented | existing child-fetch architecture |
-| Relationship filters (some/none/all) | implemented; translation and runtime evidence *test-defined, not run* | predicate-level translation (`SOME`/`NONE`/`ALL` as correlated `EXISTS` subqueries) implemented-unverified; semantic filter lowering is not wired, so the shape still fails closed end to end |
-| Aggregate filters (count/min/max) | implemented; translation and runtime evidence *test-defined, not run* | predicate-level translation implemented-unverified; semantic filter lowering is not wired, so the shape still fails closed end to end |
-| Aggregate ordering | implemented, opt-in (count only); translation and runtime evidence *test-defined, not run* | implemented-unverified (count, min, max) for non-paged one-hop orders |
-| Aggregate cursor pagination | groundwork-only, **disabled** until a database test proves mixed keyset boundaries | typed decode and branch foundation; execution continues to be unverified |
-| Snapshot reads across pages | not claimed | opt-in `JpaOrmSnapshotPageSession`: one `EntityManager` and transaction for a whole multi-page read; caller must acknowledge `REPEATABLE_READ_OR_STRONGER`. JPA cannot set or inspect isolation portably, so this is an assertion. H2 and PostgreSQL tests are defined; **not yet run** |
-| Atomic mutation batches | one transaction, rollback | basic resource-local adapter |
-| Native AOT / Native Image | CI scoped to `linux-x64` and `linux-arm64`; not yet certified by a run | not established |
+| Scalar filters, projection, root authorization | implemented; translation and runtime are `test-defined-not-run` in the matrix | `implemented-unverified`; Hibernate/H2 and PostgreSQL test layers are defined, but execution evidence is pending |
+| Relationship traversal | implemented; translation/runtime evidence remains `test-defined-not-run` | bounded-depth correlated traversal is present in source; source/runtime evidence remains unverified |
+| Relationship filters (some/none/all) | implemented; translation/runtime evidence remains `test-defined-not-run` | bounded-depth correlated `SOME`/`NONE`/`ALL` source is present; unverified |
+| Aggregate filters (count/min/max) | implemented; translation/runtime evidence remains `test-defined-not-run` | `implemented-unverified` |
+| Aggregate ordering | opt-in count implementation; translation/runtime evidence remains `test-defined-not-run` | `implemented-unverified` for non-paged, one-hop count/min/max ordering |
+| Aggregate cursor pagination | groundwork only; gate disabled and not certified | CI execution-evidence gate added; still unverified |
+| Snapshot reads across pages | not claimed | `JpaOrmSnapshotPageSession` and H2/PostgreSQL concurrency tests are implemented; runtime execution remains unverified |
+| Atomic mutation batches | transaction/rollback implementation; not separately tracked in the current provider matrix | resource-local mutation implementation is present; runtime evidence remains unverified |
+| Native AOT / Native Image | publish-warning gate configured but not run; native execution not certified | not assessed |
 
-The machine-readable source of truth for .NET is `src/csharp/conformance/orm/provider-conformance-matrix.json`. It separates implementation, translation, runtime, Native AOT publish and native execution, and states the policy: *a capability is certified only by executed, provider-specific evidence; source presence, expression construction and a configured CI job are not passing evidence.* For Java, see `src/java/ORM-JPA-PARITY-PLAN` (workstreams JPA-0 to JPA-9).
+The machine-readable source of truth for .NET is [`src/csharp/conformance/orm/provider-conformance-matrix.json`](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/conformance/orm/provider-conformance-matrix.json). It separates implementation, translation, runtime, Native AOT publish and native execution, and states the policy: *a capability is certified only by executed, provider-specific evidence; source presence, expression construction and a configured CI job are not passing evidence.* The Java JSON plan applies the same evidence rule. For Java, see [`src/java/conformance/orm-jpa-parity-plan.json`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/conformance/orm-jpa-parity-plan.json) (workstreams JPA-0 to JPA-9).
 
 Two consistency notes the docs repeat on purpose: the default per-fetch path is live, read-committed-style data (not a snapshot), and a cursor fingerprint alone is not a snapshot guarantee.
 

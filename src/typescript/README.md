@@ -1,4 +1,4 @@
-# @foundgine (TypeScript)
+# @foundgine/typescript
 
 A thin TypeScript client for Foundgine MCP and Temporal workflow HTTP transports
 

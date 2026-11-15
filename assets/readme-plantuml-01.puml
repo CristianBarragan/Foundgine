@@ -1,7 +1,0 @@
-@startmindmap
-* Agent
-** Tool A → its own auth / filtering / query logic
-** Tool B → its own auth / filtering / query logic
-** Tool C → its own auth / filtering / query logic
-** Tool D → its own auth / filtering / query logic
-@endmindmap

@@ -1,8 +1,0 @@
-@startuml
-start
-:Agent;
-:Capability (structured intent);
-:Foundgine — one semantic + authorization boundary;
-:Execution plan → provider;
-stop
-@enduml
