@@ -9,12 +9,6 @@
 - Added a commercial positioning and strategy document covering the target audiences, differentiation from adjacent technology categories, the value proposition, ROI model, evidence requirements and claim boundaries.
 - Added a **Why Foundgine matters** summary near the beginning of the root README so visitors encounter the business proposition before the detailed technical documentation.
 
-### Changed
-
-- Updated the wiki overview and MkDocs navigation to make the new **Why Foundgine?** page a prominent starting point for evaluators.
-- Updated the website homepage with an enterprise-value section explaining the problem Foundgine solves and highlighting less duplication, more control and lower complexity. Added links to the detailed wiki and commercial strategy.
-- Kept commercial claims evidence-led: the documentation describes potential benefits and recommends measuring them in a representative pilot rather than asserting unverified savings percentages or guaranteed risk reductions.
-
 ### Verification status
 
 - Static checks confirm the consolidated project references, Maven reactor module paths, optional Java framework dependencies, Spring auto-configuration metadata, and integration test source locations. Full .NET/Maven builds and Docker-backed Redis tests were not run in this environment because the .NET SDK, Maven and Docker CLI are unavailable.
@@ -33,6 +27,9 @@
 
 ### Changed
 
+- Updated the wiki overview and MkDocs navigation to make the new **Why Foundgine?** page a prominent starting point for evaluators.
+- Updated the website homepage with an enterprise-value section explaining the problem Foundgine solves and highlighting less duplication, more control and lower complexity. Added links to the detailed wiki and commercial strategy.
+- Kept commercial claims evidence-led: the documentation describes potential benefits and recommends measuring them in a representative pilot rather than asserting unverified savings percentages or guaranteed risk reductions.
 - Warrant replay stores are now bounded. `ISecurityWarrantReplayStore` gains `TryConsume(warrantId, nonce, expiresAt)` / `tryConsume(warrantId, nonce, expiresAt)` as a default interface method (existing custom stores keep working), and `SecurityWarrantReplayGuard` passes the warrant's expiry. `MemorySecurityWarrantReplayStore` previously grew forever and now evicts entries after expiry plus a one-minute skew grace. `FileSecurityWarrantReplayStore` previously re-read an ever-growing file on every consume and now compacts expired lines (new lines are `HEX<TAB>retainUntilMillis`; legacy bare-hash lines are still read and kept). The Java file store now fsyncs appends like the C# one. Shared stores (Redis, SQL) should override the new overload to set a TTL.
 
 ### Removed

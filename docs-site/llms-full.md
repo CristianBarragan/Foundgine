@@ -73,6 +73,36 @@ Three thin **transport clients** for a running Foundgine server live in this rep
 - **Docs:** `src/README.md` (layout), `src/typescript/README.md`, `src/python/README.md`, `src/wasm/README.md`, and `docs/wiki/client-sdks.md` (comparison, quick start, verification status).
 - **Do not describe the SDKs as:** a semantic runtime, a Foundgine server, an authorization layer, or an ORM/database client.
 
+## Agent framework and Spring integrations (MAF, LangChain4j, Spring Boot)
+
+Optional adapters that put Foundgine behind agent frameworks or host it in Spring. The framework handles conversation or hosting; Foundgine still resolves, authorizes and executes, and the host supplies identity (`ISecurityExecutionContextProvider`), never the model.
+
+| Integration | Language | Module / path | Provides |
+|---|---|---|---|
+| Microsoft Agent Framework (MAF) | .NET | `Foundgine.Providers.AgentFramework` (`src/csharp/Foundgine.Providers.AgentFramework/`) | `AddFoundgineAgentFramework()`, `FoundgineAgentTools` (Microsoft.Extensions.AI `AITool`s), `FoundgineAgentFactory`; writes off by default and human-approved via MAF |
+| LangChain4j | Java | `foundgine-langchain4j` (`src/java/foundgine-langchain4j/`) | `FoundgineLangChain4jTools.toolMap(FoundgineMcpServer)` returning LangChain4j `ToolSpecification`/`ToolExecutor` pairs for `AiServices` |
+| Spring Boot | Java | `foundgine-spring` (`src/java/foundgine-spring/`) | Auto-configuration for the MCP server and `POST /mcp` controller (sessions, SSE; property prefix `foundgine.mcp.*`, off by default) and for the JPA `FoundgineOrm` provider |
+
+- **Status:** source and tests present for all three; **not yet build- or runtime-verified** in this snapshot. The MAF adapter is a separate packable project outside `Foundgine.sln` and is unreleased (post-3.3.5). `foundgine-langchain4j` and `foundgine-spring` are in the Maven reactor with dependency pins (LangChain4j 1.0.0, Spring Boot 4.0.0) pending verification. Do not describe them as released or verified.
+- **Docs:** `docs/wiki/agent-framework-integrations.md`, plus each module's `README.md`.
+
+## Client SDKs (TypeScript, Python, WebAssembly)
+
+Three thin **transport clients** for a running Foundgine server live in this repository. They are not ports of the semantic runtime and they hold no authority: identity, tenant, authorization, planning and providers stay on the .NET or Java server.
+
+| SDK | Directory | Package | Import | Runtime |
+|---|---|---|---|---|
+| TypeScript | `src/typescript/` | `@foundgine/typescript` (npm) | `import { FoundgineClient } from "@foundgine/typescript"` | Node.js 20+ or any runtime with `fetch` |
+| Python | `src/python/` | `foundgine-sdk` (PyPI name) | `from foundgine import FoundgineClient` (also `FoundgineSyncClient`) | Python 3.11+, `httpx` |
+| Rust / WebAssembly | `src/wasm/` | `@foundgine/wasm` (npm); crate `foundgine-sdk-wasm` is `publish = false` | `import { FoundgineClient, init } from "@foundgine/wasm"` | Node.js 20+, browsers, Workers, Deno; host supplies `fetch` |
+
+- **Protocols:** MCP over Streamable HTTP (default path `/mcp`, default protocol version `2025-06-18`) and the Temporal workflow HTTP routes under `/foundgine/workflows` (`processes`, `describe`, `start`, `status`, `decide`, `cancel`, plus `waitForCompletion`, `watch`, `startAndWatch`).
+- **Main calls:** `listCapabilities()` / `list_capabilities()`, `execute(toolName, args)`, `notifications()`, `close()`, and the `workflows` client.
+- **Server MCP tools they call:** `foundgine_capabilities`, `foundgine_query` (open intent), `foundgine_query_semantic` (structured JSON intent), `foundgine_mutation_dry_run`, `foundgine_mutation_approve`, `foundgine_mutation_execute_approved`. Query tools take one `intentJson` string (`rootEntity`, `selections`, optional `filter`/`order`/`limit`/`offset`/`after`). Discovery via `foundgine_capabilities` is advisory and is not authorization.
+- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.3.5. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
+- **Docs:** `src/README.md` (layout), `src/typescript/README.md`, `src/python/README.md`, `src/wasm/README.md`, and `docs/wiki/client-sdks.md` (comparison, quick start, verification status).
+- **Do not describe the SDKs as:** a semantic runtime, a Foundgine server, an authorization layer, or an ORM/database client.
+
 ## Security
 
 ```text
