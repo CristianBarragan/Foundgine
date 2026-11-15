@@ -4,6 +4,8 @@
 
 ### Added
 
+- Documentation: added [Client SDKs](docs/wiki/client-sdks.md) (TypeScript, Python, WebAssembly) and [Agent and framework integrations](docs/wiki/agent-framework-integrations.md) (Microsoft Agent Framework, LangChain4j, Spring Boot) pages, module READMEs for `foundgine-spring` and `foundgine-langchain4j`, an SDK/integration section in `src/README.md`, the root README, the website package and AI-agent pages, and `llms*.txt`/`llms-full.md`/`ai.seo.md`, so people and AI agents can discover them.
+- Documentation fix: SDK README examples called a non-existent `query_semantic` tool; they now call `foundgine_query_semantic` with an `intentJson` argument. `mcp.json` and `.well-known/mcp.json` now list `foundgine_query_semantic`, the client SDKs and the framework integrations, and the root `mcp.json` `mcpProject` path is corrected.
 - Added `Foundgine.Providers.AgentFramework`: a Microsoft Agent Framework (MAF) adapter. It exposes capability discovery, semantic and open-intent reads, mutation dry-run and approval-gated mutation execution as MAF tools, with `AddFoundgineAgentFramework()` DI registration and a keyed scoped `AIAgent`. Mutations are off by default and execution is wrapped in `ApprovalRequiredAIFunction`; no model-callable approve tool exists, and `approvedBy` is the host-resolved subject.
 - Added `FoundgineProviderKind.Agent` (C#) / `AGENT` (Java), appended last so existing values are unchanged.
 - Added Java PostgreSQL migration support: fluent-model schema projection, schema differ and PostgreSQL SQL generation, rollback ordering, migration snapshots/history, Flyway integration and a migration CLI.

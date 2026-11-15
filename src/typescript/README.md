@@ -1,6 +1,8 @@
 # @foundgine/typescript
 
-A thin TypeScript client for Foundgine MCP and Temporal workflow HTTP transports
+A thin TypeScript client for Foundgine MCP and Temporal workflow HTTP transports.
+
+> Part of the Foundgine repository. This client talks to a running Foundgine server (the .NET or Java implementation hosting the MCP and Temporal endpoints); it does not contain the semantic runtime. See the [client SDK overview](../../docs/wiki/client-sdks.md) and the [source layout](../README.md).
 
 ## Install
 
@@ -20,7 +22,10 @@ const client = new FoundgineClient({
 
 try {
   const tools = await client.listCapabilities();
-  const result = await client.execute("query_semantic", { entity: "Customer", limit: 20 });
+  // Query tools take one `intentJson` string; names come from foundgine_capabilities.
+  const result = await client.execute("foundgine_query_semantic", {
+    intentJson: JSON.stringify({ rootEntity: "Customer", selections: [{ field: "Name" }], limit: 20 }),
+  });
   console.log(tools, result.content, result.isError);
 } finally {
   await client.close();

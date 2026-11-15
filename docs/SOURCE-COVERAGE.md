@@ -53,7 +53,7 @@ The Maven publishing configuration excludes the parent, AOT generator, red-team 
 | Python | `src/python/pyproject.toml` — `foundgine-sdk`, `3.3.5` | Async and synchronous HTTP/MCP and Temporal workflow transport client; not the C#/Java semantic runtime. |
 | Rust / WebAssembly | `src/wasm/package.json` — `@foundgine/wasm`, `3.3.5`; Rust crate under `src/wasm/Cargo.toml` | Sans-I/O transport core with host-injected fetch; not the C#/Java semantic runtime. |
 
-The SDK READMEs record their own test coverage and remaining limitations. The current README status sections identify remaining gaps, including live-server integration and runtime-specific coverage. Package metadata and a passing unit suite do not establish compatibility with every browser/runtime or a successful live-server integration.
+See [Client SDKs](wiki/client-sdks.md) for the combined overview. The SDK READMEs record their own test coverage and remaining limitations. The current README status sections identify remaining gaps, including live-server integration and runtime-specific coverage. Package metadata and a passing unit suite do not establish compatibility with every browser/runtime or a successful live-server integration.
 
 ## Provider and integration coverage present in source
 

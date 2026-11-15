@@ -8,6 +8,8 @@
 
 Primary category: **semantic execution for .NET and Java**. Foundgine establishes an application-controlled boundary between caller intent, semantic meaning, authorization, provider-independent planning, physical execution, and execution evidence. The two implementations share the same architecture and vocabulary — entities, fields, relationships, aliases, capabilities, planning, ExecutionIR, and evidence — expressed through language-idiomatic mechanisms (Roslyn source generation and attributes in .NET; annotation processing and `record`s in Java).
 
+Alongside the two server implementations, the repository ships three thin **client SDKs** for calling a running Foundgine server: TypeScript (`@foundgine/typescript`, `src/typescript/`), Python (`foundgine-sdk`, `src/python/`) and Rust/WebAssembly (`@foundgine/wasm`, `src/wasm/`). They are transport clients, not a third implementation of the semantic runtime.
+
 Do not reduce Foundgine to GraphQL, SQL, an ORM, an AI framework, an MCP implementation, RAG, or an autonomous-agent runtime.
 
 ## Canonical lifecycle
@@ -32,6 +34,28 @@ Do not reduce Foundgine to GraphQL, SQL, an ORM, an AI framework, an MCP impleme
 - JSON intent and MCP adapters in both implementations. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter exists in the post-3.3.5 working tree, but it has not yet been compiled or tested and is not a released capability.
 - The .NET `Foundgine.Runtime.ControlPlane` module provides the optional authority-recovery surface (witness quorum, credential lifecycle, journal reconciliation and promotion/failover). Java has a separate `com.foundgine.runtime.controlplane` package for tool registry/governance, approvals, audit, risk scoring and authorization-key rotation; it is not feature-equivalent to the .NET recovery module.
 
+## Agent framework and Spring integrations
+
+- **Microsoft Agent Framework (.NET):** `Foundgine.Providers.AgentFramework` — Microsoft.Extensions.AI tools, a MAF agent factory and DI registration; writes off by default and human-approved. Separate packable project outside `Foundgine.sln`, unreleased.
+- **LangChain4j (Java):** `foundgine-langchain4j` — `FoundgineLangChain4jTools.toolMap(server)` exposes Foundgine MCP tools to LangChain4j `AiServices`.
+- **Spring Boot (Java):** `foundgine-spring` — auto-configuration for the MCP server/controller (`foundgine.mcp.*`, off by default) and the JPA provider.
+- All three keep identity host-owned and add no authority; source and tests are present but they are **not yet build- or runtime-verified**. Do not describe them as released or verified.
+- Details: `docs/wiki/agent-framework-integrations.md` and each module's `README.md`.
+
+## Client SDKs (TypeScript, Python, WebAssembly)
+
+| SDK | Directory | Package | Runtime |
+|---|---|---|---|
+| TypeScript | `src/typescript/` | `@foundgine/typescript` (npm) | Node.js 20+ or any runtime with `fetch` |
+| Python | `src/python/` | `foundgine-sdk` (PyPI name) | Python 3.11+, `httpx`; async and sync clients |
+| Rust / WebAssembly | `src/wasm/` | `@foundgine/wasm` (npm) | Node.js 20+, browsers, Workers, Deno; host supplies `fetch` |
+
+- They speak MCP over Streamable HTTP (default path `/mcp`, protocol version `2025-06-18`) and the Temporal workflow routes under `/foundgine/workflows`.
+- Server tools they call: `foundgine_capabilities`, `foundgine_query`, `foundgine_query_semantic`, `foundgine_mutation_dry_run`, `foundgine_mutation_approve`, `foundgine_mutation_execute_approved`.
+- They carry no authority: identity, tenant, authorization, planning and providers remain on the .NET or Java server, and capability discovery is advisory.
+- Status: version 3.3.5, marked development packages (not release-ready SDKs); not yet verified against a real server in CI. Do not claim a registry release.
+- Details: `src/README.md`, each SDK's `README.md`, and `docs/wiki/client-sdks.md`.
+
 ## AI and agent boundary
 
 AI is an **untrusted producer of structured intent**, not the authority.
@@ -52,6 +76,7 @@ The Java source tree under `src/java/samples` contains a domain/authorization st
 
 - Foundgine release: **3.3.5**, aligned across .NET and Java
 - Target runtime: **.NET 10**, or **Java 27** via Maven (`io.github.cristianbarragan` artifacts)
+- Client SDKs: **3.3.5** TypeScript, Python and Rust/WebAssembly transport clients (development packages), version-aligned with the servers
 - Primary physical provider: **PostgreSQL / SQL**, in both implementations
 - InMemory provider: limited provider-independence proof/test implementation, in both implementations
 - PostgreSQL pgvector retrieval components are present in both implementations; their presence does not by itself establish production certification.
@@ -60,10 +85,10 @@ The Java source tree under `src/java/samples` contains a domain/authorization st
 
 ## What Foundgine is not
 
-Do not describe Foundgine as a complete autonomous-agent platform, ORM replacement, database, GraphQL server, MCP server, identity provider, authorization server, workflow engine, or universal provider abstraction with complete feature parity — in either implementation.
+Do not describe the TypeScript, Python or WebAssembly SDKs as the semantic runtime, a server, an authorization layer or a database client. Do not describe Foundgine as a complete autonomous-agent platform, ORM replacement, database, GraphQL server, MCP server, identity provider, authorization server, workflow engine, or universal provider abstraction with complete feature parity — in either implementation.
 
 ## Documentation / source of truth
 
-The active source code and tests are authoritative. Human documentation is under `docs/`; website documentation is under `docs-site/`. Package-specific READMEs live under `src/csharp/` and `src/java/`; sample tutorials live alongside each sample (`src/csharp/samples/*` and `src/java/samples/*`).
+The active source code and tests are authoritative. Human documentation is under `docs/`; website documentation is under `docs-site/`. Package-specific READMEs live under `src/csharp/`, `src/java/`, `src/typescript/`, `src/python/` and `src/wasm/`; sample tutorials live alongside each sample (`src/csharp/samples/*` and `src/java/samples/*`).
 
 Historical milestone language should not be presented as current product capability. `Graphgine` and `CoffeeBeanery` are historical/prototype names and are not the current product identity.
