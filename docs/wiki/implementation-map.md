@@ -21,6 +21,9 @@ This page maps capabilities to the repository's current module layout. It is an 
 | Temporal | `src/csharp/Foundgine.Extensions/Temporal` | `src/java/foundgine-extensions/.../temporal` |
 | GraphQL adapter | `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` | `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql` (GraphQL Java; different API, no Hot Chocolate parity claim) |
 | Samples and tests | `src/csharp/samples`, `tests`, `security` | `src/java/samples`, module tests, `security` |
+| Client SDK for a running server (TypeScript) | N/A (server) | N/A (server); client lives in `src/typescript` (`@foundgine/typescript`) |
+| Client SDK (Python) | N/A (server) | N/A (server); client lives in `src/python` (`foundgine-sdk`) |
+| Client SDK (Rust / WebAssembly) | N/A (server) | N/A (server); client lives in `src/wasm` (`@foundgine/wasm`) |
 
 ## Module responsibilities
 
@@ -39,6 +42,14 @@ Implements physical execution and infrastructure adapters, including the SQL, **
 ### Extensions
 
 See [Extensions](extensions) for the single catalogue. Adapts third-party frameworks and services. Extensions should translate to/from Foundgine contracts and delegate the actual semantic and security decisions to the appropriate core/runtime services. Optional Spring Boot and LangChain4j Java modules have source and test definitions, but dependency pins and runtime verification remain pending. The separate C# Microsoft Agent Framework adapter is not included in the main solution and has not been build-verified.
+
+### Framework integrations
+
+`Foundgine.Providers.AgentFramework` (Microsoft Agent Framework, C#), `foundgine-langchain4j` and `foundgine-spring` (Java) are optional adapters; see [Agent and framework integrations](agent-framework-integrations) for scope and verification status.
+
+### Client SDKs
+
+`src/typescript/`, `src/python/` and `src/wasm/` are not implementations of the semantic runtime and have no C#/Java feature parity to track. They are transport clients for the MCP endpoint and the Temporal workflow routes that the C# and Java servers expose. See [Client SDKs](client-sdks).
 
 ### Migrations
 

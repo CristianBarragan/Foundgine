@@ -26,8 +26,10 @@ This is a suggested reading path. Start at [Getting started](GETTING-STARTED.md)
 16. [PostgreSQL E2E](POSTGRES-E2E.md) — the real database integration path.
 17. [Testing](TESTING.md) — how the boundaries above are proven, not just asserted.
 18. [Source coverage](SOURCE-COVERAGE.md) — where implementation and test evidence live.
+19. [Agent and framework integrations](wiki/agent-framework-integrations.md) — Microsoft Agent Framework, LangChain4j and Spring Boot.
+20. [Client SDKs](wiki/client-sdks.md) — the TypeScript, Python and WebAssembly clients for a running server.
 
-Package-specific architecture and usage guidance lives beside each implementation under `src/csharp/`, `src/java/`, `src/typescript/`, `src/python/` and `src/wasm/`. Sample tutorials live alongside their sample projects.
+Package-specific architecture and usage guidance lives beside each implementation under `src/csharp/`, `src/java/`, `src/typescript/` (README), `src/python/` (README) and `src/wasm/` (README); [`src/README.md`](../src/README.md) maps them all. Sample tutorials live alongside their sample projects.
 
 ## Documentation rules
 
@@ -46,5 +48,7 @@ The [Foundgine feature and capability wiki](wiki/index.md) explains Foundgine by
 - [ORM providers (EF Core and JPA)](wiki/orm-providers.md): run Foundgine plans through the ORM you already use, with an honest maturity table.
 - [Fluent semantic reads (`SemanticQuery`)](wiki/semantic-query-builder.md): one read builder with the same members in C# and Java, with snippets for both.
 - [Extensions](wiki/extensions.md): GraphQL, Keycloak and Temporal in one place.
+- [Agent and framework integrations](wiki/agent-framework-integrations.md): Microsoft Agent Framework (.NET), LangChain4j and Spring Boot (Java).
+- [Client SDKs](wiki/client-sdks.md): TypeScript (`@foundgine/typescript`), Python (`foundgine-sdk`) and WebAssembly (`@foundgine/wasm`) transport clients.
 - [Insights, evidence and auditing](wiki/insights-evidence-auditing.md): receipts, audit, diagnostics and live events.
 - [Glossary](wiki/glossary.md): short, friendly definitions.

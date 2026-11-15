@@ -14,6 +14,14 @@ The MCP adapter exposes Foundgine-backed tools through the Model Context Protoco
 
 Read and mutation tools should be distinct. Mutations should use the controlled lifecycle: propose, dry-run, approve, execute. A caller must not be able to approve its own high-risk mutation merely because it can invoke the tool; approval policy belongs to the host's trusted governance boundary.
 
+## Agent frameworks
+
+Microsoft Agent Framework (C#), LangChain4j and Spring Boot (Java) integrations are documented in [Agent and framework integrations](agent-framework-integrations.md).
+
+## Calling these tools from your own code
+
+The repository includes thin MCP clients for [TypeScript, Python and WebAssembly](client-sdks.md) (`src/typescript/`, `src/python/`, `src/wasm/`). They discover capabilities and execute tools over Streamable HTTP, and they can drive the Temporal workflow routes. They are transport only: the server still resolves, authorizes and executes every call, and an agent built on an SDK gets no authority from it.
+
 ## Tool governance
 
 The runtime control plane includes concepts such as tool descriptors/registry, policy gateway, risk rules, approval store, audit log, and a tool-call governor. These components help bound which tools may run, under which policy, at what risk level, and with what evidence.
@@ -37,5 +45,7 @@ Prompt injection, tool-output injection, confused deputy behavior, tenant confus
 - C#: `Foundgine.Providers/Tools/MCP`, `Foundgine.Runtime/ControlPlane`, agent models, and security/warrant code.
 - Java: `foundgine-providers` MCP/tool integration, `foundgine-runtime` governance components, and the agent benchmark module. The optional `foundgine-langchain4j` integration has source and tests, but dependency pins and runtime verification are pending.
 - Existing guide: [AI agent integration](../AI-AGENT).
+
+- TypeScript, Python and WebAssembly clients: `src/typescript/`, `src/python/`, `src/wasm/`; overview in [Client SDKs](client-sdks.md).
 
 See also: [MCP protocol versions, sessions and approval tokens](mcp-protocol-and-tokens.md).

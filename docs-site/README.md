@@ -14,7 +14,7 @@ The site is a guided product story rather than a dump of repository internals:
 6. **Security** — inspect authorization and fail-closed invariants.
 7. **Samples** — choose starter, advanced semantic and PenTest material.
 8. **Evidence** — inspect benchmark methodology and results.
-9. **Packages** — choose packages by architectural responsibility.
+9. **Packages** — choose packages by architectural responsibility, including the TypeScript, Python and WebAssembly client SDKs.
 
 The main concept pages include an in-page table of contents and previous/home/next navigation. Benchmark and run-result pages use a separate evidence layout. Deeper implementation detail belongs in the linked repository Markdown files, including the Java 27 build guide at `src/java/BUILDING.md` and the shared technical reference under `docs/`.
 

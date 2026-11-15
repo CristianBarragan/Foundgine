@@ -2,6 +2,8 @@
 
 Microsoft Agent Framework (MAF) adapter for Foundgine. It gives a MAF agent the Foundgine semantic execution boundary as its **only** data access: the agent proposes intent, Foundgine decides what is allowed and executes it.
 
+> Status: separate packable project, not in `Foundgine.sln`, not build-verified or released. Overview with the Java LangChain4j and Spring Boot integrations: [Agent and framework integrations](../../../docs/wiki/agent-framework-integrations.md).
+
 ## What is in this package
 
 - `FoundgineAgentTools` (`Tools`) — the model-facing tools, as Microsoft.Extensions.AI `AITool`s.

@@ -45,6 +45,8 @@ This boundary ensures that agents can propose actions, but only your application
 | Browse every feature in plain language | [Feature and capability wiki](docs/wiki/index.md) |
 | Pick a database, ORM (**EF Core** / **JPA**) or search provider | [Provider catalogue](docs/wiki/providers.md) · [ORM providers](docs/wiki/orm-providers.md) |
 | Add GraphQL, Keycloak or Temporal | [Extensions](docs/wiki/extensions.md) |
+| Use **Microsoft Agent Framework**, **LangChain4j** or **Spring Boot** | [Agent and framework integrations](docs/wiki/agent-framework-integrations.md) |
+| Call a Foundgine server from **TypeScript**, **Python** or **WebAssembly** | [Client SDKs](docs/wiki/client-sdks.md) · [`src/typescript`](src/typescript/README.md) · [`src/python`](src/python/README.md) · [`src/wasm`](src/wasm/README.md) |
 | Check implementation and test coverage | [Source coverage](docs/SOURCE-COVERAGE.md) · [Conformance and hardening](docs/wiki/conformance-hardening.md) |
 
 # The problem
@@ -199,8 +201,34 @@ A **provider** does the real work against infrastructure; an **extension** conne
 | GraphQL API | **GraphQL extension** (Hot Chocolate for .NET; GraphQL Java for Java) | Translates only |
 | Keycloak logins | **Keycloak extension** | Short-lived signed warrants |
 | Long-running processes | **Temporal extension** | Retries, timers, approvals, compensation |
+| Agent frameworks and hosting | **Microsoft Agent Framework** (.NET), **LangChain4j** and **Spring Boot** (Java) | Tools and hosting only; host owns identity, writes are gated. Not yet build/runtime-verified. See [integrations](docs/wiki/agent-framework-integrations.md) |
+| Calling a server from TypeScript, Python or browsers/Workers | **Client SDKs** (`@foundgine/typescript`, `foundgine-sdk`, `@foundgine/wasm`) | Thin MCP and Temporal-route clients; no semantic runtime, no authority. See [Client SDKs](docs/wiki/client-sdks.md) |
 
 The full inventory with source paths is the [Provider catalogue](docs/wiki/providers.md) and the [Extensions page](docs/wiki/extensions.md). Receipts, audit and diagnostics are explained in [Insights, evidence and auditing](docs/wiki/insights-evidence-auditing.md).
+
+## Agent framework and Spring integrations
+
+Three optional integrations put Foundgine behind the frameworks teams already use. The framework handles the conversation or hosting; Foundgine still resolves, authorizes and executes, and the host supplies identity.
+
+| Integration | Module | Docs |
+| --- | --- | --- |
+| Microsoft Agent Framework (.NET) | `Foundgine.Providers.AgentFramework` | [README](src/csharp/Foundgine.Providers.AgentFramework/README.md) |
+| LangChain4j (Java) | `foundgine-langchain4j` | [README](src/java/foundgine-langchain4j/README.md) |
+| Spring Boot (Java) | `foundgine-spring` | [README](src/java/foundgine-spring/README.md) |
+
+All three have source and tests but are not yet build/runtime-verified in this snapshot (the MAF adapter is also outside `Foundgine.sln` and unreleased). Overview, security model and status: [Agent and framework integrations](docs/wiki/agent-framework-integrations.md).
+
+## Client SDKs (TypeScript, Python, WebAssembly)
+
+Besides the .NET and Java server implementations, the repository contains three thin client SDKs for talking to a running Foundgine server over MCP (Streamable HTTP) and the Temporal workflow routes. They are transport clients only: identity, tenant and authorization stay on the server.
+
+| SDK | Package | Install / build | Docs |
+| --- | ------- | --------------- | ---- |
+| TypeScript | `@foundgine/typescript` (npm) | `npm install @foundgine/typescript` (or `cd src/typescript && npm ci && npm test` from source) | [`src/typescript/README.md`](src/typescript/README.md) |
+| Python | `foundgine-sdk` (PyPI name; 3.11+) | `cd src/python && pip install -e ".[dev]"` | [`src/python/README.md`](src/python/README.md) |
+| Rust / WebAssembly | `@foundgine/wasm` (npm) | `cd src/wasm && cargo test && npm run build && npm test` | [`src/wasm/README.md`](src/wasm/README.md) |
+
+The SDK READMEs mark all three as development packages, not release-ready SDKs, so verify that a registry release exists before depending on one. Overview, comparison and verification status: [Client SDKs](docs/wiki/client-sdks.md).
 
 ## Evidence
 
@@ -231,12 +259,14 @@ cd ../java
 mvn -U clean verify -Dgpg.skip=true
 ```
 
-PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). Shared cross-language test vectors and scenarios: [`src/conformance/README.md`](src/conformance/README.md). See [`docs/TESTING.md`](docs/TESTING.md) for solution exclusions and test commands. The repository workflows under [`.github/workflows/`](.github/workflows/) define the automated build and release gates; a workflow definition is not proof that a particular run passed or that an opt-in test actually executed.
+PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). Shared cross-language test vectors and scenarios: [`src/conformance/README.md`](src/conformance/README.md). Client SDK checks are run from each SDK directory; see [`src/README.md`](src/README.md#client-sdks-typescript-python-and-webassembly). See [`docs/TESTING.md`](docs/TESTING.md) for solution exclusions and test commands. The repository workflows under [`.github/workflows/`](.github/workflows/) define the automated build and release gates; a workflow definition is not proof that a particular run passed or that an opt-in test actually executed.
 
 ## Documentation
 
 - [Documentation index](docs/README.md) — the reading path.
-- [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, AOT, auditing and operations.
+- [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, client SDKs, AOT, auditing and operations.
+- [Agent and framework integrations](docs/wiki/agent-framework-integrations.md) — Microsoft Agent Framework, LangChain4j and Spring Boot.
+- [Client SDKs](docs/wiki/client-sdks.md) — TypeScript, Python and WebAssembly clients.
 - [Website](https://cristianbarragan.github.io/Foundgine/) · [`CHANGELOG.md`](CHANGELOG.md)
 
 ## Release 3.3.5

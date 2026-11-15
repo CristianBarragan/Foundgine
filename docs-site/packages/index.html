@@ -286,6 +286,58 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
           </p>
         </section>
         <section>
+          <h2 id="framework-integrations">Agent framework and Spring integrations</h2>
+          <p>
+            Optional adapters: Microsoft Agent Framework (<code>Foundgine.Providers.AgentFramework</code>, .NET),
+            LangChain4j (<code>foundgine-langchain4j</code>, Java) and Spring Boot
+            (<code>foundgine-spring</code>, Java). Source and tests are present, but none is
+            build- or runtime-verified in this snapshot, and the MAF adapter is outside the main
+            solution and unreleased. See
+            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md">Agent and framework integrations</a>.
+          </p>
+        </section>
+        <section>
+          <h2 id="client-sdks">Client SDKs: TypeScript, Python and WebAssembly</h2>
+          <p>
+            Three thin transport clients talk to a running Foundgine server over MCP (Streamable
+            HTTP, default path <code>/mcp</code>) and the Temporal workflow routes under
+            <code>/foundgine/workflows</code>. They are not ports of the semantic runtime: identity,
+            tenant, authorization, planning and providers stay on the .NET or Java server.
+          </p>
+          <table>
+            <thead>
+              <tr><th>SDK</th><th>Package</th><th>Runtime</th><th>Source</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TypeScript</td>
+                <td><code>@foundgine/typescript</code> (npm)</td>
+                <td>Node.js 20+ or any runtime with <code>fetch</code></td>
+                <td><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/typescript">src/typescript</a></td>
+              </tr>
+              <tr>
+                <td>Python</td>
+                <td><code>foundgine-sdk</code> (PyPI name)</td>
+                <td>Python 3.11+, <code>httpx</code>; async and sync clients</td>
+                <td><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/python">src/python</a></td>
+              </tr>
+              <tr>
+                <td>Rust / WebAssembly</td>
+                <td><code>@foundgine/wasm</code> (npm)</td>
+                <td>Node.js 20+, browsers, Workers, Deno; host supplies <code>fetch</code></td>
+                <td><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/wasm">src/wasm</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            All three are development packages, not release-ready SDKs; the repository does not
+            claim a registry release, so verify that a version exists on npm or PyPI before pinning
+            it. See the
+            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/client-sdks.md">client SDK overview</a>
+            for a comparison, a quick start and the verification status.
+          </p>
+        </section>
+        <section>
           <h2 id="optional-integrations">Optional integrations</h2>
           <p>
             Add <code>Foundgine.Extensions</code> for optional GraphQL, Keycloak and Temporal
@@ -329,6 +381,8 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
             <a href="#install-the-normal-application-stack">Install the normal application stack</a>
           </li>
           <li class=""><a href="#java-maven">Java / Maven</a></li>
+          <li class=""><a href="#framework-integrations">Framework integrations</a></li>
+          <li class=""><a href="#client-sdks">Client SDKs</a></li>
           <li class=""><a href="#optional-integrations">Optional integrations</a></li>
           <li class=""><a href="#package-boundary-rule">Package boundary rule</a></li>
           <li class=""><a href="#go-deeper">Go deeper</a></li>

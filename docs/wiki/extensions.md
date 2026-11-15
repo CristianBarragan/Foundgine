@@ -24,8 +24,8 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 
 These are separate Maven modules, not part of the `foundgine-extensions` catalogue:
 
-- `foundgine-spring`: Spring Boot auto-configuration for Foundgine integration. Source and tests are present; dependency pins and runtime verification are pending.
-- `foundgine-langchain4j`: LangChain4j model/tool integration. Source and tests are present; dependency pins and runtime verification are pending.
+- `foundgine-spring`: Spring Boot auto-configuration for Foundgine integration ([README](../../src/java/foundgine-spring/README.md)). Source and tests are present; dependency pins and runtime verification are pending.
+- `foundgine-langchain4j`: LangChain4j model/tool integration ([README](../../src/java/foundgine-langchain4j/README.md); see also [Agent and framework integrations](agent-framework-integrations.md)). Source and tests are present; dependency pins and runtime verification are pending.
 
 Do not describe either module as a verified or released integration until its Maven dependency graph and runtime tests pass.
 

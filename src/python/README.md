@@ -2,6 +2,8 @@
 
 A thin Python client for Foundgine MCP and Temporal workflow HTTP transports.
 
+> Part of the Foundgine repository. This client talks to a running Foundgine server (the .NET or Java implementation hosting the MCP and Temporal endpoints); it does not contain the semantic runtime. See the [client SDK overview](../../docs/wiki/client-sdks.md) and the [source layout](../README.md).
+
 Requires Python 3.11+ and `httpx`.
 
 ## Local install and checks
@@ -19,13 +21,16 @@ The project metadata names the distribution `foundgine-sdk`. This repository sna
 
 ```python
 import asyncio
+import json
 from foundgine import FoundgineClient
 
 
 async def main() -> None:
     async with FoundgineClient("https://example.invalid", token=lambda: "tok") as client:
         tools = await client.list_capabilities()
-        result = await client.execute("query_semantic", {"entity": "Customer", "limit": 20})
+        # Query tools take one `intentJson` string; names come from foundgine_capabilities.
+        intent = {"rootEntity": "Customer", "selections": [{"field": "Name"}], "limit": 20}
+        result = await client.execute("foundgine_query_semantic", {"intentJson": json.dumps(intent)})
         print([t.name for t in tools], result.content, result.is_error)
 
 

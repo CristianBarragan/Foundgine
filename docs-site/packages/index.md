@@ -1,6 +1,6 @@
 # Foundgine packages
 
-The .NET package family is organized around four architectural packages. Optional integrations and tooling are separate artifacts:
+The .NET package family is organized around four architectural packages (client SDKs for TypeScript, Python and WebAssembly are listed [below](#client-sdks-typescript-python-and-webassembly)). Optional integrations and tooling are separate artifacts:
 
 | Package                | Responsibility                                                                |
 | ---------------------- | ----------------------------------------------------------------------------- |
@@ -51,6 +51,22 @@ The Central publishing configuration includes the Maven artifacts above except t
 The .NET `Foundgine.Providers.AgentFramework` adapter is a separate packable project in the current working tree. It is not part of the four-package base stack and has not yet been build-verified or released; do not depend on a published version yet.
 
 For installation and package-level details, see the project READMEs under [`src/`](https://github.com/CristianBarragan/Foundgine/tree/main/src).
+
+## Agent framework and Spring integrations
+
+Optional adapters: Microsoft Agent Framework (`Foundgine.Providers.AgentFramework`, .NET), LangChain4j (`foundgine-langchain4j`, Java) and Spring Boot (`foundgine-spring`, Java). Source and tests are present; none is build/runtime-verified in this snapshot, and the MAF adapter is outside the main solution and unreleased. See [Agent and framework integrations](https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md).
+
+## Client SDKs: TypeScript, Python and WebAssembly
+
+Three thin transport clients talk to a running Foundgine server over MCP (Streamable HTTP, default path `/mcp`) and the Temporal workflow routes under `/foundgine/workflows`. They are not ports of the semantic runtime: identity, tenant, authorization, planning and providers stay on the .NET or Java server.
+
+| SDK | Package | Runtime | Source |
+| --- | --- | --- | --- |
+| TypeScript | `@foundgine/typescript` (npm) | Node.js 20+ or any runtime with `fetch` | [`src/typescript`](https://github.com/CristianBarragan/Foundgine/tree/main/src/typescript) |
+| Python | `foundgine-sdk` (PyPI name) | Python 3.11+, `httpx`; async and sync clients | [`src/python`](https://github.com/CristianBarragan/Foundgine/tree/main/src/python) |
+| Rust / WebAssembly | `@foundgine/wasm` (npm) | Node.js 20+, browsers, Workers, Deno; host supplies `fetch` | [`src/wasm`](https://github.com/CristianBarragan/Foundgine/tree/main/src/wasm) |
+
+All three are development packages, not release-ready SDKs; the repository does not claim a registry release, so verify that a version exists on npm or PyPI before pinning it. See the [client SDK overview](https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/client-sdks.md) for a comparison, a quick start and the verification status.
 
 ## Continue
 
