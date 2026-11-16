@@ -72,12 +72,19 @@ public sealed class PostgresAuthorizationContextIntegritySecurityTests
         }
 
         await RestoreAsync(ds, actor, tenant, true, 1, "auth-v1");
-        await TamperAsync(ds, actor, tenant, "integrity_algorithm = 'HMAC-SHA512/v1'");
-        await using (var c = await ds.OpenConnectionAsync())
-        await using (var tx = await c.BeginTransactionAsync(IsolationLevel.ReadCommitted))
+        try
         {
-            await Assert.ThrowsAsync<InvalidOperationException>(() => store.LoadForUpdateAsync(c, tx, actor, tenant));
-            await tx.RollbackAsync();
+            await TamperAlgorithmAsync(ds, actor, tenant, "HMAC-SHA512/v1");
+            await using (var c = await ds.OpenConnectionAsync())
+            await using (var tx = await c.BeginTransactionAsync(IsolationLevel.ReadCommitted))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(() => store.LoadForUpdateAsync(c, tx, actor, tenant));
+                await tx.RollbackAsync();
+            }
+        }
+        finally
+        {
+            await RepairAlgorithmConstraintAsync(ds, actor, tenant);
         }
     }
 
@@ -201,6 +208,40 @@ public sealed class PostgresAuthorizationContextIntegritySecurityTests
     private static async Task RestoreAsync(NpgsqlDataSource ds, Guid actor, int tenant, bool allowed, long version,
         string fingerprint) =>
         await SeedAsync(ds, actor, tenant, allowed, version, fingerprint);
+
+    // schema.sql guards integrity_algorithm with a CHECK constraint (defense in depth), so a plain
+    // UPDATE to an unknown algorithm is rejected by PostgreSQL (23514) before the store can see it.
+    // Lift the constraint for this one step, re-add it NOT VALID so the tampered row can exist,
+    // then validate it again in RepairAlgorithmConstraintAsync.
+    private static async Task TamperAlgorithmAsync(NpgsqlDataSource ds, Guid actor, int tenant, string algorithm)
+    {
+        await using var c = await ds.OpenConnectionAsync();
+        await using var tx = await c.BeginTransactionAsync();
+        await using var cmd = new NpgsqlCommand("""
+            ALTER TABLE banking.authorization_context DROP CONSTRAINT ck_authorization_context_integrity_algorithm;
+            UPDATE banking.authorization_context SET integrity_algorithm = @algorithm
+              WHERE actor_id = @actor AND tenant_id = @tenant;
+            ALTER TABLE banking.authorization_context ADD CONSTRAINT ck_authorization_context_integrity_algorithm
+              CHECK (integrity_algorithm = 'HMAC-SHA256/v1') NOT VALID;
+            """, c, tx);
+        cmd.Parameters.AddWithValue("algorithm", algorithm);
+        cmd.Parameters.AddWithValue("actor", actor);
+        cmd.Parameters.AddWithValue("tenant", tenant);
+        await cmd.ExecuteNonQueryAsync();
+        await tx.CommitAsync();
+    }
+
+    private static async Task RepairAlgorithmConstraintAsync(NpgsqlDataSource ds, Guid actor, int tenant)
+    {
+        await using var c = await ds.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("""
+            DELETE FROM banking.authorization_context WHERE actor_id = @actor AND tenant_id = @tenant;
+            ALTER TABLE banking.authorization_context VALIDATE CONSTRAINT ck_authorization_context_integrity_algorithm;
+            """, c);
+        cmd.Parameters.AddWithValue("actor", actor);
+        cmd.Parameters.AddWithValue("tenant", tenant);
+        await cmd.ExecuteNonQueryAsync();
+    }
 
     private static async Task TamperAsync(NpgsqlDataSource ds, Guid actor, int tenant, string assignment)
     {

@@ -1,3 +1,4 @@
+using Foundgine.Core.Semantic.Authorization;
 using Foundgine.Runtime.ControlPlane;
 using Foundgine.HighAssurance.Banking;
 using Foundgine.HighAssurance.Postgres;
@@ -37,7 +38,10 @@ public sealed class PostgresTransferFundsAuthorizationAtomicityTests
                 authorizationContextStore: new PostgresAuthorizationContextStore(TestAuthorizationIntegrity
                     .CreateKeyRing())));
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        // The committed v2 context is allowed=false, so the executor rejects with
+        // SemanticAuthorizationException (a sealed subclass of InvalidOperationException).
+        // Assert.ThrowsAsync<T> requires the exact type, so name it explicitly.
+        await Assert.ThrowsAsync<SemanticAuthorizationException>(() =>
             service.ExecuteAsync(
                 actor,
                 tenant,
