@@ -35,6 +35,7 @@ public sealed class PostgresGatewayApprovalStoreIntegrationTests : IAsyncLifetim
     {
         await _postgres.StartAsync();
         _dataSource = NpgsqlDataSource.Create(_postgres.GetConnectionString());
+        await PostgresReady.WaitAsync(_dataSource);
         await EventStoreMigrator.ApplyAsync(_dataSource);
         _codec = new TestCodec();
         _store = new PostgresFoundgineGatewayApprovalStore(_dataSource, _codec, enforceDatabaseClock: false);

@@ -23,6 +23,7 @@ public sealed class PostgresGatewayEventStoreIntegrationTests : IAsyncLifetime
     {
         await _postgres.StartAsync();
         _dataSource = NpgsqlDataSource.Create(_postgres.GetConnectionString());
+        await PostgresReady.WaitAsync(_dataSource);
         await EventStoreMigrator.ApplyAsync(_dataSource);
         // Small page sizes force the adapter's paging path.
         _events = new PostgresEventStore(_dataSource,

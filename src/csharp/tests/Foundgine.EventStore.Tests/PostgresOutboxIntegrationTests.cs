@@ -22,6 +22,7 @@ public sealed class PostgresOutboxIntegrationTests : IAsyncLifetime
     {
         await _postgres.StartAsync();
         _dataSource = NpgsqlDataSource.Create(_postgres.GetConnectionString());
+        await PostgresReady.WaitAsync(_dataSource);
         await EventStoreMigrator.ApplyAsync(_dataSource);
         _outbox = new PostgresOutbox(_dataSource);
     }
