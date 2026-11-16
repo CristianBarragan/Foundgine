@@ -1,0 +1,74 @@
+# Performance CI for Foundgine. Place under the repo's .github/workflows (paths below assume this suite lives at tools/foundgine-perf).
+name: performance
+on:
+  pull_request:
+    paths: ["tools/foundgine-perf/**", "src/csharp/benchmarks/**"]
+  schedule: [{ cron: "0 3 * * *" }]          # nightly full run on the dedicated runner
+  workflow_dispatch:
+    inputs:
+      sessions: { description: "independent sessions", default: "5" }
+
+jobs:
+  harness-tests:                              # cheap, runs everywhere: proves the harness itself
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: tools/foundgine-perf } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python -W error::ResourceWarning -m unittest discover -s tests -v
+      - run: bash selftest/run_selftest.sh
+      - run: bash selftest/run_selftest_journeys.sh
+      - name: Scaffolding footprint (no build needed)
+        run: |
+          B=../../src/csharp/benchmarks/CoffeeBeanery.Performance
+          for d in Foundgine.CoffeeBeanery.BenchmarkApi HotChocolate.CoffeeBeanery.BenchmarkApi; do
+            python3 convention/footprint.py --src "$B/$d" --json "footprint-$d.json"
+          done
+      - uses: actions/upload-artifact@v4
+        with: { name: footprint, path: "tools/foundgine-perf/footprint-*.json" }
+
+  library-benchmark:                          # needs a quiet, dedicated host: never on shared runners
+    if: github.event_name != 'pull_request'
+    runs-on: [self-hosted, perf, linux, x64]  # label the machine; record its specs in the report
+    timeout-minutes: 360
+    defaults: { run: { working-directory: tools/foundgine-perf } }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start stack with limits and published ports
+        working-directory: src/csharp/benchmarks/CoffeeBeanery.Performance/compose
+        run: docker compose -f query.yml -f ../../../../../tools/foundgine-perf/compose/perf.override.yml up -d --build postgres database hotchocolate foundgine-cold foundgine-warm
+      - name: Run sessions (loader pinned away from the containers)
+        run: taskset -c 6,7 python3 -m fpbench run configs/coffeebeanery.json --out results/lib --sessions "${{ inputs.sessions || 5 }}"
+      - run: python3 -m fpbench report results/lib --baseline hotchocolate --subject foundgine
+      - name: Regression gate against committed baseline
+        run: python3 -m fpbench gate results/lib/report.json baselines/coffeebeanery.report.json --require-claim-grade
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: library-results, path: tools/foundgine-perf/results/lib }
+
+  e2e-journeys:
+    if: github.event_name != 'pull_request'
+    runs-on: [self-hosted, perf, linux, x64]
+    timeout-minutes: 360
+    defaults: { run: { working-directory: tools/foundgine-perf } }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start the e2e example (never built before; a red build here is a finding, not a perf result)
+        run: bash ../../Foundgine-e2e-example/scripts/demo.sh
+      - run: python3 -m fpbench journeys configs/e2e-journeys.json --out results/e2e --sessions "${{ inputs.sessions || 5 }}"
+      - run: python3 -m fpbench journey-report results/e2e --slo-p99-s 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: e2e-results, path: tools/foundgine-perf/results/e2e }
+
+  aot-startup:                                # convention track: JIT vs Native AOT, needs the .NET SDK + native toolchain
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: "10.0.x" }
+      - run: ./src/csharp/aot/validate-aot.sh linux-x64     # existing gate: native run + warning baseline
+      - name: Startup and RSS, JIT vs AOT of the convention API (arm C)
+        run: echo "TODO once the generator-based API project exists; see docs/CONVENTION-TRACK.md"

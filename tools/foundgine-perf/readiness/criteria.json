@@ -1,0 +1,322 @@
+{
+ "version": 1,
+ "plan": "docs/PRODUCTION-READINESS-PLAN.md",
+ "entry_gate": [
+  {
+   "id": "EG1",
+   "title": "Foundgine .NET solution builds; all tests pass; zero skipped",
+   "how": "bash readiness/run.sh --stage entry   (dotnet build + dotnet test, TRX parsed, skipped tests rejected)"
+  },
+  {
+   "id": "EG2",
+   "title": "Foundgine Java reactor builds; all tests pass (incl. Advanced sample)",
+   "how": "bash readiness/run.sh --stage entry   (mvn -B verify, Surefire counts parsed)"
+  },
+  {
+   "id": "EG3",
+   "title": "Newer adapters (MAF, Redis, Java migrations) compile and their tests ran against real services",
+   "how": "bash readiness/run.sh --stage entry   (Redis from docker-compose.redis.yml, PostgreSQL from docker-compose.postgres.yml)"
+  },
+  {
+   "id": "EG4",
+   "title": "e2e example builds and e2e/run.sh prints E2E_OK from a clean docker compose up",
+   "how": "bash readiness/run.sh --stage entry   (scripts/demo.sh --keep)"
+  },
+  {
+   "id": "EG5",
+   "title": "Harness samplers (docker, cgroup), compose override and perf workflow each ran once for real",
+   "how": "bash readiness/run.sh --stage lib-aa   (first real docker-mode run; evidence written on success)"
+  },
+  {
+   "id": "EG6",
+   "title": "PostgreSQL version in CI equals the version the schema-parity test expects",
+   "how": "compare src/java CI job image tag with the PG version in the parity test; then: python3 -m fpbench evidence EG6 pass --dir <ev> --detail '<versions>'"
+  }
+ ],
+ "rows": [
+  {
+   "id": "R1",
+   "area": "Harness validity",
+   "title": "A/A run, same system as baseline and subject, 5+ sessions",
+   "threshold": "CI contains 1 in >= 90% of cells and |ratio-1| <= 10%",
+   "tier": "required",
+   "automation": {
+    "stage": "harness",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage lib-aa"
+  },
+  {
+   "id": "R2",
+   "area": "Harness validity",
+   "title": "Injected known regression is caught by the gate",
+   "threshold": "fpbench gate exits non-zero",
+   "tier": "required",
+   "automation": {
+    "stage": "harness",
+    "level": "verified_on_mock"
+   },
+   "how": "bash readiness/run.sh --stage selftest"
+  },
+  {
+   "id": "R3",
+   "area": "Harness validity",
+   "title": "Loader calibration against a null stack at the highest planned rate",
+   "threshold": "loader <= 70% of one core, >= 98% completion",
+   "tier": "required",
+   "automation": {
+    "stage": "harness",
+    "level": "verified_on_mock"
+   },
+   "how": "bash readiness/run.sh --stage calibrate   (run on the benchmark host, loader pinned)"
+  },
+  {
+   "id": "R4",
+   "area": "Performance",
+   "title": "Target workload sustained within the SLO (open loop)",
+   "threshold": "highest sustainable customer-to-cash rate >= target rate with p99 <= SLO, claim-grade journey report",
+   "tier": "required",
+   "automation": {
+    "stage": "perf",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage e2e-perf   (needs SLO_P99_S and TARGET_RATE)"
+  },
+  {
+   "id": "R5",
+   "area": "Performance",
+   "title": "Claim-grade engine comparison vs Hot Chocolate + EF",
+   "threshold": "claim grade YES, 5+ sessions, equivalent responses, telemetry, disclosed environment; equal-work controls added",
+   "tier": "required",
+   "automation": {
+    "stage": "perf",
+    "level": "partial"
+   },
+   "how": "bash readiness/run.sh --stage lib   (equal-work controls: tuned EF, raw SQL floor, EF batch tool are NOT built yet)"
+  },
+  {
+   "id": "R6",
+   "area": "Performance",
+   "title": "Knee search and overload behaviour",
+   "threshold": "graceful degradation; recovery within the agreed time",
+   "tier": "required",
+   "automation": {
+    "stage": "perf",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage e2e-perf --overload   (needs SLO_P99_S; MAX_RECOVERY_S default 120). Staged cell: normal -> 2x top rate -> normal; recovery time measured per 10 s window (verified on mock)"
+  },
+  {
+   "id": "R7",
+   "area": "Correctness",
+   "title": "Fault matrix: hard-kill each service singly and in pairs",
+   "threshold": "zero invariant violations in every cell",
+   "tier": "critical",
+   "automation": {
+    "stage": "faults",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage faults"
+  },
+  {
+   "id": "R8",
+   "area": "Correctness",
+   "title": "Network latency and partition between services",
+   "threshold": "zero invariant violations in every cell",
+   "tier": "critical",
+   "automation": {
+    "stage": "faults",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage faults   (docker network disconnect/connect --alias for partitions, tc netem via nicolaka/netshoot for latency; no Toxiproxy needed)"
+  },
+  {
+   "id": "R9",
+   "area": "Correctness",
+   "title": "Crash mid-transaction and mid-workflow",
+   "threshold": "zero invariant violations in every cell",
+   "tier": "critical",
+   "automation": {
+    "stage": "faults",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage faults"
+  },
+  {
+   "id": "R10",
+   "area": "Recovery",
+   "title": "Outbox drain time after outage",
+   "threshold": "within the agreed time at 5 journeys/s",
+   "tier": "required",
+   "automation": {
+    "stage": "faults",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage faults   (MAX_DRAIN_S)"
+  },
+  {
+   "id": "R11",
+   "area": "Endurance",
+   "title": "Soak at 60% of capacity, 24 h minimum",
+   "threshold": "RSS growth <= 5%, p99 drift <= 10%, failures <= 1%",
+   "tier": "required",
+   "automation": {
+    "stage": "soak",
+    "level": "written_unrun"
+   },
+   "how": "SOAK_RATE=<60% of sustainable> bash readiness/run.sh --stage soak"
+  },
+  {
+   "id": "R12",
+   "area": "Security",
+   "title": "Tenant isolation under concurrent multi-tenant load",
+   "threshold": "0 leaks over >= 1000 journeys with positive controls",
+   "tier": "critical",
+   "automation": {
+    "stage": "security",
+    "level": "verified_on_mock"
+   },
+   "how": "bash readiness/run.sh --stage tenant"
+  },
+  {
+   "id": "R13",
+   "area": "Security",
+   "title": "Authorization parity across GraphQL, MCP and REST with a real policy",
+   "threshold": "identical decisions on the shared vector set",
+   "tier": "critical",
+   "automation": {
+    "stage": "security",
+    "level": "partial"
+   },
+   "how": "bash readiness/run.sh --stage existing-suites   (runs the existing security/gateway/MCP suites; a cross-surface parity test against the e2e stack is NOT written yet)"
+  },
+  {
+   "id": "R14",
+   "area": "Security",
+   "title": "Approval tokens and warrants: replay, tamper, expiry, Redis down",
+   "threshold": "all rejected; fail closed",
+   "tier": "critical",
+   "automation": {
+    "stage": "security",
+    "level": "partial"
+   },
+   "how": "bash readiness/run.sh --stage existing-suites   (existing replay/warrant tests; Redis-down against the live stack not scripted)"
+  },
+  {
+   "id": "R15",
+   "area": "Security",
+   "title": "Agent path with a real model: prompt injection, forged approvals",
+   "threshold": "no mutation without host-resolved approval",
+   "tier": "critical",
+   "automation": {
+    "stage": "security",
+    "level": "manual"
+   },
+   "how": "needs a model key and an attack corpus: run, then python3 -m fpbench evidence R15 pass|fail --dir <ev> --detail <summary> --artifact <report>"
+  },
+  {
+   "id": "R22",
+   "area": "Security",
+   "title": "Bearer-token hardening: missing, garbage, bad-signature, alg=none and edited-payload tokens rejected",
+   "threshold": "401/403 on every attempt, valid token accepted (positive control), on the protected CRM and ERP endpoints",
+   "tier": "critical",
+   "automation": {
+    "stage": "security",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage auth-attack   (AUTH_ENDPOINTS = space-separated protected GET URLs)"
+  },
+  {
+   "id": "R16",
+   "area": "Security",
+   "title": "Dependency, SBOM and secret scans; independent review",
+   "threshold": "no unresolved high/critical findings",
+   "tier": "must",
+   "automation": {
+    "stage": "security",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage scans   (third-party review is recorded manually as IND2)"
+  },
+  {
+   "id": "R17",
+   "area": "Operability",
+   "title": "Graceful restart under load",
+   "threshold": "error rate < 0.1% during the restart (single instance: measures the outage window; true rolling deploy needs 2+ replicas)",
+   "tier": "required",
+   "automation": {
+    "stage": "ops",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage ops"
+  },
+  {
+   "id": "R18",
+   "area": "Operability",
+   "title": "Migrations on a populated database",
+   "threshold": "no data loss on re-run/restart; rollback tested",
+   "tier": "required",
+   "automation": {
+    "stage": "ops",
+    "level": "partial"
+   },
+   "how": "bash readiness/run.sh --stage ops   (restart-with-data automated; rollback is manual)"
+  },
+  {
+   "id": "R19",
+   "area": "Operability",
+   "title": "Backup and restore drill",
+   "threshold": "restore time and data loss within RTO/RPO",
+   "tier": "required",
+   "automation": {
+    "stage": "ops",
+    "level": "written_unrun"
+   },
+   "how": "bash readiness/run.sh --stage ops   (RTO_S, RPO_S)"
+  },
+  {
+   "id": "R20",
+   "area": "Operability",
+   "title": "Version upgrade with compatibility tests",
+   "threshold": "no breaking API change without a documented policy",
+   "tier": "required",
+   "automation": {
+    "stage": "ops",
+    "level": "manual"
+   },
+   "how": "run the readiness suite at FOUNDGINE_REF=<old> and <new>, compare verdicts; then record"
+  },
+  {
+   "id": "R21",
+   "area": "Operability",
+   "title": "Telemetry usable in an incident",
+   "threshold": "on-call finds an injected fault within the agreed time",
+   "tier": "required",
+   "automation": {
+    "stage": "ops",
+    "level": "manual"
+   },
+   "how": "inject a fault from configs/e2e-fault-matrix.json blind; time the diagnosis; record"
+  }
+ ],
+ "independence": [
+  {
+   "id": "IND1",
+   "title": "Second party reruns the suite on different hardware and publishes raw results",
+   "required": true,
+   "how": "hand over this repo + results/; record with fpbench evidence IND1 ..."
+  },
+  {
+   "id": "IND2",
+   "title": "Security rows reviewed by someone who did not write the code or the tests",
+   "required": true,
+   "how": "record reviewer, date and findings link with fpbench evidence IND2 ..."
+  },
+  {
+   "id": "IND3",
+   "title": "Pilot on a real workload, 30+ days, agreed incident log",
+   "required": false,
+   "how": "optional but recommended"
+  }
+ ]
+}

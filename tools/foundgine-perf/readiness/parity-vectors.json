@@ -1,0 +1,8 @@
+{"_comment": "Template. Replace every placeholder, remove \"todo\", and add >= 10 vectors across REST, GraphQL and MCP (surface names are free labels; `base` picks cfg crm_url, erp_url or a cfg.surfaces entry). Needs actors from different tenants/roles in Keycloak.",
+ "vectors": [
+  {"todo": true, "name": "alice reads own-tenant customer", "user": "alice", "expect": "allow",
+   "surfaces": {"rest": {"path": "/api/v1/customers/1"},
+                "graphql": {"path": "/graphql", "method": "POST", "body": {"query": "{ customer(id: 1) { id } }"}},
+                "mcp": {"path": "/mcp", "method": "POST", "body": {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "get_customer", "arguments": {"id": 1}}}}}},
+  {"todo": true, "name": "carol (other tenant) reads that customer", "user": "carol", "expect": "deny", "surfaces": {}}
+ ]}

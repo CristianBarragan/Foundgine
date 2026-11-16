@@ -1,0 +1,18 @@
+{
+  "_comment": "Run on a host with Docker. Start the stack with compose/perf.override.yml (publishes ports, applies limits). Loader runs on the host, pinned away from the containers: taskset -c 6,7 python3 -m fpbench run ...",
+  "scenarios": ["../scenarios/cb-query-top50.json", "../scenarios/cb-mutation-b1.json",
+                "../scenarios/cb-mutation-b10.json", "../scenarios/cb-mutation-b50.json"],
+  "closed_concurrency": [1, 8, 16, 32, 64, 128, 256],
+  "open_loop_fractions": [0.25, 0.5, 0.75, 0.9],
+  "sessions": 5, "measure_s": 20, "max_error_rate": 0.01, "seed": 20261116,
+  "warmup": {"min_s": 5, "max_s": 60, "cv": 0.05},
+  "environment": {"note": "fill in host details if not auto-detected (WSL: record .wslconfig)"},
+  "targets": {
+    "hotchocolate": {"url": "http://127.0.0.1:4300/graphql",
+      "reset_cmd": "docker compose -f compose/query.yml -f compose/perf.override.yml restart hotchocolate >/dev/null && sleep 5",
+      "resources": {"kind": "docker", "containers": ["coffeebeanery-query-hotchocolate-1"]}},
+    "foundgine": {"url": "http://127.0.0.1:4302/graphql/warm",
+      "reset_cmd": "docker compose -f compose/query.yml -f compose/perf.override.yml restart foundgine-warm >/dev/null && sleep 5",
+      "resources": {"kind": "docker", "containers": ["coffeebeanery-query-foundgine-warm-1"]}}
+  }
+}
