@@ -32,7 +32,7 @@ cd src/java
 mvn -U clean verify -Dgpg.skip=true
 ```
 
-The reactor includes the runtime modules, migration tooling, optional Spring Boot and LangChain4j integrations, security module and Supply Chain samples. The Spring Boot and LangChain4j modules have source and test definitions, but their dependency pins and runtime verification remain unverified in this snapshot; do not treat their presence as a passing build. See [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md) for module-specific commands and the Java ORM/JPA verification plan.
+The reactor includes the runtime modules, migration tooling, the Redis/Spring Boot/LangChain4j provider implementations, security module and Supply Chain samples. Spring Boot and LangChain4j adapters are compiled into `foundgine-providers`; their framework dependencies are optional. The consolidated Maven build has not been verified in this snapshot. See [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md) for module-specific commands and the Java ORM/JPA verification plan.
 
 ## Run a sample
 
@@ -168,7 +168,7 @@ Do not allow MCP arguments to choose tenant, identity, warrant, or provider cred
 
 ## AI (.NET Microsoft.Extensions.AI)
 
-`Foundgine.Providers.Models` integrates with `Microsoft.Extensions.AI`. Java has a separate optional `foundgine-langchain4j` module; source and tests are present, but dependency pins and runtime verification remain pending.
+`Foundgine.Providers.Models` integrates with `Microsoft.Extensions.AI`; the Microsoft Agent Framework adapter is also included in `Foundgine.Providers`. Java includes LangChain4j and Spring Boot adapters in `foundgine-providers`, with framework dependencies marked optional.
 
 The model can call semantic tools:
 

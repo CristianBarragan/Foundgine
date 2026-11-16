@@ -36,9 +36,9 @@ Do not reduce Foundgine to GraphQL, SQL, an ORM, an AI framework, an MCP impleme
 
 ## Agent framework and Spring integrations
 
-- **Microsoft Agent Framework (.NET):** `Foundgine.Providers.AgentFramework` — Microsoft.Extensions.AI tools, a MAF agent factory and DI registration; writes off by default and human-approved. Separate packable project outside `Foundgine.sln`, unreleased.
-- **LangChain4j (Java):** `foundgine-langchain4j` — `FoundgineLangChain4jTools.toolMap(server)` exposes Foundgine MCP tools to LangChain4j `AiServices`.
-- **Spring Boot (Java):** `foundgine-spring` — auto-configuration for the MCP server/controller (`foundgine.mcp.*`, off by default) and the JPA provider.
+- **Microsoft Agent Framework (.NET):** `Foundgine.Providers` — Microsoft.Extensions.AI tools, a MAF agent factory and DI registration; writes off by default and human-approved.
+- **LangChain4j (Java):** `foundgine-providers` (LangChain4j adapter) — `FoundgineLangChain4jTools.toolMap(server)` exposes Foundgine MCP tools to LangChain4j `AiServices`.
+- **Spring Boot (Java):** `foundgine-providers` (Spring Boot adapter) — auto-configuration for the MCP server/controller (`foundgine.mcp.*`, off by default) and the JPA provider.
 - All three keep identity host-owned and add no authority; source and tests are present but they are **not yet build- or runtime-verified**. Do not describe them as released or verified.
 - Details: `docs/wiki/agent-framework-integrations.md` and each module's `README.md`.
 

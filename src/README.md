@@ -8,18 +8,15 @@ src/
 ├── csharp/                         # .NET 10 implementation
 │   ├── Foundgine.Core/
 │   ├── Foundgine.Runtime/
-│   ├── Foundgine.Providers/
-│   ├── Foundgine.Providers.AgentFramework/  # separate packable project; not in the solution yet
+│   ├── Foundgine.Providers/             # includes Redis and Microsoft Agent Framework adapters
 │   └── Foundgine.Extensions/
 ├── java/                           # Java 27 Maven reactor
 │   ├── pom.xml
 │   ├── foundgine-core/
 │   ├── foundgine-runtime/
-│   ├── foundgine-providers/
+│   ├── foundgine-providers/             # includes Redis, Spring Boot and LangChain4j adapters
 │   ├── foundgine-extensions/
 │   ├── foundgine-migrations/
-│   ├── foundgine-spring/            # optional integration; dependency/runtime verification pending
-│   ├── foundgine-langchain4j/       # optional integration; dependency/runtime verification pending
 │   ├── foundgine-aot-generator/     # build-time module; not published separately
 │   ├── security/foundgine-redteam/
 │   └── samples/
@@ -33,9 +30,9 @@ src/
 
 | Integration | Path | README | Status |
 |---|---|---|---|
-| Microsoft Agent Framework | `src/csharp/Foundgine.Providers.AgentFramework/` | [README](csharp/Foundgine.Providers.AgentFramework/README.md) | Separate packable project, not in `Foundgine.sln`; not build-verified or released |
-| LangChain4j | `src/java/foundgine-langchain4j/` | [README](java/foundgine-langchain4j/README.md) | In the Maven reactor; dependency/runtime verification pending |
-| Spring Boot | `src/java/foundgine-spring/` | [README](java/foundgine-spring/README.md) | In the Maven reactor; dependency/runtime verification pending |
+| Microsoft Agent Framework | `src/csharp/Foundgine.Providers/AgentFramework/` | [README](csharp/Foundgine.Providers/AgentFramework/README.md) | Included in `Foundgine.Providers` |
+| LangChain4j | `src/java/foundgine-providers` | [README](java/foundgine-providers/LANGCHAIN4J.md) | Included in `foundgine-providers` |
+| Spring Boot | `src/java/foundgine-providers` | [README](java/foundgine-providers/SPRING-BOOT.md) | Included in `foundgine-providers` |
 
 They adapt Foundgine's governed tools and hosting to each framework; identity stays host-owned and writes stay gated. Overview: [`docs/wiki/agent-framework-integrations.md`](../docs/wiki/agent-framework-integrations.md).
 
@@ -90,13 +87,13 @@ without mixing Java and C# projects in the same directory.
 - `src/csharp/` contains the existing .NET solution projects.
 - `src/java/` contains the Maven reactor, server modules, optional integrations, migration tooling, security module and samples.
 - `src/conformance/` contains shared cross-language fixtures and their generators; see its [README](conformance/README.md).
-- `Foundgine.Providers.AgentFramework` is a separate packable C# project and is not yet included in `Foundgine.sln`; its source and tests have not been build-verified.
+- Redis and Microsoft Agent Framework adapters compile into the C# `Foundgine.Providers` package. Java Redis, Spring Boot and LangChain4j adapters compile into the Maven `foundgine-providers` artifact.
 - C# tests remain under `src/csharp/tests/`.
 - Java tests follow Maven convention inside each Java module under
   `src/test/java/`.
 
 - `src/typescript/`, `src/python/` and `src/wasm/` contain the **client SDKs** described below.
-- The optional framework integrations are `src/csharp/Foundgine.Providers.AgentFramework` (Microsoft Agent Framework), `src/java/foundgine-langchain4j` (LangChain4j) and `src/java/foundgine-spring` (Spring Boot); see below.
+- The optional framework integrations are `src/csharp/Foundgine.Providers/AgentFramework` (Microsoft Agent Framework), `src/java/foundgine-providers` (LangChain4j and Spring Boot); see below.
 
 The two implementations can therefore evolve side-by-side while preserving
 the same conceptual Foundgine module boundaries.

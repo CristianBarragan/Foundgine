@@ -13,7 +13,7 @@ public final class SecurityWarrantReplayGuard {
         Objects.requireNonNull(now);
         if (!warrant.isTimeValid(now))
             throw new IllegalStateException("Security warrant is expired or not yet valid.");
-        if (!store.tryConsume(warrant.id(), warrant.nonce()))
+        if (!store.tryConsume(warrant.id(), warrant.nonce(), warrant.expiresAt()))
             throw new IllegalStateException("Security warrant nonce has already been consumed.");
     }
 }

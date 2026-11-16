@@ -44,12 +44,17 @@
     <junit.version>5.11.4</junit.version>
 	<assertj.version>3.27.6</assertj.version>
     <postgresql.version>42.7.12</postgresql.version>
+    <!-- Optional Redis/Valkey/Garnet client for the shared warrant replay store. Pinned deliberately; confirm it resolves from your repository. -->
+    <lettuce.version>6.5.5.RELEASE</lettuce.version>
     <!-- Flyway: the 11.8.2 release tag exists upstream; not resolved from Maven Central where this was written. -->
     <flyway.version>11.8.2</flyway.version>
     <graphql-java.version>22.3</graphql-java.version>
     <jakarta-persistence.version>3.2.0</jakarta-persistence.version>
     <!-- JPA implementation used by the sample applications (the provider itself only needs the JPA API). -->
     <hibernate.version>7.4.15.Final</hibernate.version>
+    <spring-boot.version>4.0.0</spring-boot.version>
+    <spring-framework.version>7.0.0</spring-framework.version>
+    <langchain4j.version>1.0.0</langchain4j.version>
 
     <maven.compiler.plugin.version>3.16.0</maven.compiler.plugin.version>
     <maven.surefire.plugin.version>3.6.1</maven.surefire.plugin.version>
@@ -66,9 +71,7 @@
     <module>foundgine-providers</module>
     <!-- EF-style migrations generator and CLI (Flyway). -->
     <module>foundgine-migrations</module>
-    <!-- Optional integrations are part of the reactor so their dependencies and tests resolve consistently. -->
-    <module>foundgine-spring</module>
-    <module>foundgine-langchain4j</module>
+    <!-- Spring Boot and LangChain4j adapters are compiled into foundgine-providers. -->
     <!-- Compile-time metadata generator (Java counterpart of Foundgine.Providers.Aot.Generator). -->
     <module>foundgine-aot-generator</module>
     <module>foundgine-extensions</module>
@@ -81,6 +84,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>io.lettuce</groupId>
+        <artifactId>lettuce-core</artifactId>
+        <version>${lettuce.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>

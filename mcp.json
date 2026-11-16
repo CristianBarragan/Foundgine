@@ -56,8 +56,7 @@
       "registry": "npm",
       "source": "src/typescript",
       "documentation": "src/typescript/README.md",
-      "runtime": "Node.js 20+ or any runtime with fetch",
-      "status": "development package, not release-ready"
+      "runtime": "Node.js 20+ or any runtime with fetch"
     },
     {
       "name": "foundgine-sdk",
@@ -65,8 +64,7 @@
       "registry": "PyPI",
       "source": "src/python",
       "documentation": "src/python/README.md",
-      "runtime": "Python 3.11+ (httpx)",
-      "status": "development package, not release-ready"
+      "runtime": "Python 3.11+ (httpx)"
     },
     {
       "name": "@foundgine/wasm",
@@ -74,35 +72,26 @@
       "registry": "npm",
       "source": "src/wasm",
       "documentation": "src/wasm/README.md",
-      "runtime": "Node.js 20+, browsers, Workers, Deno (host-supplied fetch)",
-      "status": "development package, not release-ready"
+      "runtime": "Node.js 20+, browsers, Workers, Deno (host-supplied fetch)"
     }
   ],
   "clientNotes": "Clients are thin transport libraries for this MCP endpoint and the Temporal workflow routes under /foundgine/workflows. They carry no authority; the server resolves and authorizes every call.",
   "integrations": [
     {
-      "name": "Foundgine.Providers.AgentFramework",
-      "framework": "Microsoft Agent Framework",
+      "name": "Foundgine.Providers (Microsoft Agent Framework + Redis)",
+      "framework": "Microsoft Agent Framework / Redis protocol",
       "language": "C#/.NET",
-      "source": "src/csharp/Foundgine.Providers.AgentFramework",
-      "documentation": "src/csharp/Foundgine.Providers.AgentFramework/README.md",
-      "status": "source present; not build-verified or released; outside Foundgine.sln"
+      "source": "src/csharp/Foundgine.Providers",
+      "documentation": "src/csharp/Foundgine.Providers/README.md",
+      "status": "included in the Foundgine.Providers NuGet package; tests are in the solution"
     },
     {
-      "name": "foundgine-langchain4j",
-      "framework": "LangChain4j",
+      "name": "foundgine-providers (LangChain4j + Spring Boot + Redis)",
+      "framework": "LangChain4j / Spring Boot / Redis protocol",
       "language": "Java",
-      "source": "src/java/foundgine-langchain4j",
-      "documentation": "src/java/foundgine-langchain4j/README.md",
-      "status": "source and tests present; dependency/runtime verification pending"
-    },
-    {
-      "name": "foundgine-spring",
-      "framework": "Spring Boot",
-      "language": "Java",
-      "source": "src/java/foundgine-spring",
-      "documentation": "src/java/foundgine-spring/README.md",
-      "status": "source and tests present; dependency/runtime verification pending"
+      "source": "src/java/foundgine-providers",
+      "documentation": "src/java/foundgine-providers/README.md",
+      "status": "included in the foundgine-providers Maven artifact; framework dependencies are optional"
     }
   ]
 }

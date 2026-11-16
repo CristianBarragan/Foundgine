@@ -8,3 +8,5 @@ The .NET ORM integration currently targets **EF Core**. The provider-neutral sem
 4. **Evidence aggregation and attestation** — verifies run/commit/workflow provenance, lane completeness, content hashes, and the aggregate release gate; non-PR runs attest the exact aggregate report.
 
 A passing source-level test or configured workflow is not evidence that a workflow has executed. The matrix must remain `test-defined-not-run` until CI artifacts prove otherwise. Aggregate cursor pagination remains disabled until translation and runtime tests pass.
+
+`verify-no-stale-nested-projects.sh` fails when a copy of a top-level project is nested inside another project directory (the usual result of extracting a zip over an older tree). Run it before packing or releasing.

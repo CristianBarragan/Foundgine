@@ -41,7 +41,37 @@ AI agents are untrusted callers. MCP and AI integrations expose capabilities but
 
 ## Language-specific implementation status
 
-Both .NET and Java core implementations include semantic lexical grounding and clarification outcomes. The Java Advanced sample's direct PostgreSQL candidate-search MCP tool is separate from, and is not wired through, the Java core `SemanticLexicalResolver`. Java's optional `foundgine-spring` and `foundgine-langchain4j` modules have source and tests, but dependency pins and runtime verification remain pending. The Java `controlplane` package provides tool governance, approvals, audit, risk scoring and authorization-key rotation; it is not feature-equivalent to the wider .NET authority-recovery module. The `foundgine-migrations` module generates PostgreSQL/Flyway schema migrations from metadata; its Maven/runtime verification is pending. The latest reported Maven run failed in the Java Advanced sample test phase; fixes are present but have not yet been rerun. `foundgine-aot-generator` is build-time tooling, not a standalone runtime artifact.
+Both .NET and Java core implementations include semantic lexical grounding and clarification outcomes. The Java Advanced sample's direct PostgreSQL candidate-search MCP tool is separate from, and is not wired through, the Java core `SemanticLexicalResolver`. Java's `foundgine-providers` artifact includes Spring Boot and LangChain4j adapters; their framework dependencies are optional. The Java `controlplane` package provides tool governance, approvals, audit, risk scoring and authorization-key rotation; it is not feature-equivalent to the wider .NET authority-recovery module. The `foundgine-migrations` module generates PostgreSQL/Flyway schema migrations from metadata; its Maven/runtime verification is pending. The latest reported Maven run failed in the Java Advanced sample test phase; fixes are present but have not yet been rerun. `foundgine-aot-generator` is build-time tooling, not a standalone runtime artifact.
+
+## Agent framework and Spring integrations (MAF, LangChain4j, Spring Boot)
+
+Optional adapters that put Foundgine behind agent frameworks or host it in Spring. The framework handles conversation or hosting; Foundgine still resolves, authorizes and executes, and the host supplies identity (`ISecurityExecutionContextProvider`), never the model.
+
+| Integration | Language | Module / path | Provides |
+|---|---|---|---|
+| Microsoft Agent Framework (MAF) | .NET | `Foundgine.Providers` (`src/csharp/Foundgine.Providers/AgentFramework/`) | `AddFoundgineAgentFramework()`, `FoundgineAgentTools` (Microsoft.Extensions.AI `AITool`s), `FoundgineAgentFactory`; writes off by default and human-approved via MAF |
+| LangChain4j | Java | `foundgine-providers` (`src/java/foundgine-providers/.../langchain4j/`) | `FoundgineLangChain4jTools.toolMap(FoundgineMcpServer)` returning LangChain4j `ToolSpecification`/`ToolExecutor` pairs for `AiServices` |
+| Spring Boot | Java | `foundgine-providers` (`src/java/foundgine-providers/.../spring/`) | Auto-configuration for the MCP server and `POST /mcp` controller (sessions, SSE; property prefix `foundgine.mcp.*`, off by default) and for the JPA `FoundgineOrm` provider |
+
+- **Package layout:** adapters are compiled into the normal provider package for their language; Java framework dependencies remain optional.
+- **Docs:** `docs/wiki/agent-framework-integrations.md`, plus each module's `README.md`.
+
+## Client SDKs (TypeScript, Python, WebAssembly)
+
+Three thin **transport clients** for a running Foundgine server live in this repository. They are not ports of the semantic runtime and they hold no authority: identity, tenant, authorization, planning and providers stay on the .NET or Java server.
+
+| SDK | Directory | Package | Import | Runtime |
+|---|---|---|---|---|
+| TypeScript | `src/typescript/` | `@foundgine/typescript` (npm) | `import { FoundgineClient } from "@foundgine/typescript"` | Node.js 20+ or any runtime with `fetch` |
+| Python | `src/python/` | `foundgine-sdk` (PyPI name) | `from foundgine import FoundgineClient` (also `FoundgineSyncClient`) | Python 3.11+, `httpx` |
+| Rust / WebAssembly | `src/wasm/` | `@foundgine/wasm` (npm); crate `foundgine-sdk-wasm` is `publish = false` | `import { FoundgineClient, init } from "@foundgine/wasm"` | Node.js 20+, browsers, Workers, Deno; host supplies `fetch` |
+
+- **Protocols:** MCP over Streamable HTTP (default path `/mcp`, default protocol version `2025-06-18`) and the Temporal workflow HTTP routes under `/foundgine/workflows` (`processes`, `describe`, `start`, `status`, `decide`, `cancel`, plus `waitForCompletion`, `watch`, `startAndWatch`).
+- **Main calls:** `listCapabilities()` / `list_capabilities()`, `execute(toolName, args)`, `notifications()`, `close()`, and the `workflows` client.
+- **Server MCP tools they call:** `foundgine_capabilities`, `foundgine_query` (open intent), `foundgine_query_semantic` (structured JSON intent), `foundgine_mutation_dry_run`, `foundgine_mutation_approve`, `foundgine_mutation_execute_approved`. Query tools take one `intentJson` string (`rootEntity`, `selections`, optional `filter`/`order`/`limit`/`offset`/`after`). Discovery via `foundgine_capabilities` is advisory and is not authorization.
+- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.3.5. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
+- **Docs:** `src/README.md` (layout), `src/typescript/README.md`, `src/python/README.md`, `src/wasm/README.md`, and `docs/wiki/client-sdks.md` (comparison, quick start, verification status).
+- **Do not describe the SDKs as:** a semantic runtime, a Foundgine server, an authorization layer, or an ORM/database client.
 
 ## Agent framework and Spring integrations (MAF, LangChain4j, Spring Boot)
 

@@ -6,6 +6,9 @@ Foundgine is a semantic execution boundary: it lets applications, APIs, automati
 
 ## Start here
 
+**Evaluating Foundgine?** Begin with [Why Foundgine?](why-foundgine.md) for the enterprise problem, where it fits alongside existing technology, the expected business value, and what should be measured in a pilot.
+
+
 > **New to this? In plain words.** Foundgine sits between your callers (apps, APIs, AI agents) and your data. **Providers** do the database and infrastructure work; **extensions** connect tools like GraphQL, Keycloak and Temporal. Foundgine decides what is allowed.
 
 **Concepts**

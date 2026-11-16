@@ -189,3 +189,9 @@ src/csharp/benchmarks/**/reports/
 # Local/editor temporary files
 *.tmp
 **/*.tmp
+
+# Leftovers from migrations and merges
+*.migration-backup
+*.bak
+*.orig
+*.rej

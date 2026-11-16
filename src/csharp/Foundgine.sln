@@ -280,12 +280,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Providers.EntityF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Aot.EfCore", "aot\Foundgine.Aot.EfCore\Foundgine.Aot.EfCore.csproj", "{B5965518-ED63-5F19-867F-21CB04AF0D8C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.AgentFramework.Tests", "tests\Foundgine.AgentFramework.Tests\Foundgine.AgentFramework.Tests.csproj", "{889060CB-E4B1-4350-B65F-C929C81AFA4B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Foundgine.AgentFramework.Tests", "Foundgine.AgentFramework.Tests", "{1EB55F55-C0BD-49CB-B394-B4A6C7722DC3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Foundgine.Redis.Tests", "Foundgine.Redis.Tests", "{72505041-FCC4-4FFD-A3AB-B5F9DF3007A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Redis.Tests", "tests\Foundgine.Redis.Tests\Foundgine.Redis.Tests.csproj", "{1FE878D3-1ABA-402F-AADE-C52C8A16F394}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{889060CB-E4B1-4350-B65F-C929C81AFA4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{889060CB-E4B1-4350-B65F-C929C81AFA4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{889060CB-E4B1-4350-B65F-C929C81AFA4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{889060CB-E4B1-4350-B65F-C929C81AFA4B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ECEDAACE-1F8F-5B08-8A2A-70792B125130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ECEDAACE-1F8F-5B08-8A2A-70792B125130}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECEDAACE-1F8F-5B08-8A2A-70792B125130}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -546,6 +558,10 @@ Global
 		{B5965518-ED63-5F19-867F-21CB04AF0D8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5965518-ED63-5F19-867F-21CB04AF0D8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5965518-ED63-5F19-867F-21CB04AF0D8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FE878D3-1ABA-402F-AADE-C52C8A16F394}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FE878D3-1ABA-402F-AADE-C52C8A16F394}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FE878D3-1ABA-402F-AADE-C52C8A16F394}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FE878D3-1ABA-402F-AADE-C52C8A16F394}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0632B953-266D-5603-925B-586D3556DAE4} = {AA23A18E-EAB6-5A02-8809-526627983EC7}
@@ -680,6 +696,10 @@ Global
 		{AE78963D-85A3-5C3C-9CEC-5AF4AE204851} = {133A04CC-5D91-5D72-84B7-76D59253671E}
 		{A3739B38-FB64-5302-8C8F-274E50AB727B} = {133A04CC-5D91-5D72-84B7-76D59253671E}
 		{B5965518-ED63-5F19-867F-21CB04AF0D8C} = {133A04CC-5D91-5D72-84B7-76D59253671E}
+		{1EB55F55-C0BD-49CB-B394-B4A6C7722DC3} = {B6BAC99F-AFD8-5128-80D4-ED81DE28CC9B}
+		{889060CB-E4B1-4350-B65F-C929C81AFA4B} = {1EB55F55-C0BD-49CB-B394-B4A6C7722DC3}
+		{72505041-FCC4-4FFD-A3AB-B5F9DF3007A4} = {B6BAC99F-AFD8-5128-80D4-ED81DE28CC9B}
+		{1FE878D3-1ABA-402F-AADE-C52C8A16F394} = {72505041-FCC4-4FFD-A3AB-B5F9DF3007A4}
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

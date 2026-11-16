@@ -41,3 +41,8 @@ The served HTML is the public rendering source. The smaller Markdown files besid
 3. link to the next conceptual page and the relevant source Markdown;
 4. add public/indexable pages to `sitemap.xml` and `llms.txt`;
 5. verify relative links before committing.
+
+
+## Benchmark evidence publication
+
+The public `/performance/` page links to two distinct evidence streams: the AgentEndToEnd explorer and the CoffeeBeanery API/database reports. AgentEndToEnd reports are copied and aggregated by `src/csharp/benchmarks/AgentEndToEnd/publish-all-reports.ps1`. CoffeeBeanery report artifacts are copied and indexed by `src/csharp/benchmarks/CoffeeBeanery.Performance/publish-site-reports.ps1`. Do not hand-edit generated files under `docs-site/assets/coffee-beanery-benchmark/`; rerun the publisher after report changes. The CoffeeBeanery report index describes checked-in historical artifacts, not a live feed.

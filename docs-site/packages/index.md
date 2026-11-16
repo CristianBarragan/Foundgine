@@ -1,24 +1,22 @@
 # Foundgine packages
 
-The .NET package family is organized around four architectural packages (client SDKs for TypeScript, Python and WebAssembly are listed [below](#client-sdks-typescript-python-and-webassembly)). Optional integrations and tooling are separate artifacts:
+The .NET package family is organized around four architectural packages (client SDKs for TypeScript, Python and WebAssembly are listed [below](#client-sdks-typescript-python-and-webassembly)). The provider packages contain the concrete infrastructure and framework adapters; larger GraphQL, Keycloak and Temporal integrations remain in Extensions:
 
 | Package                | Responsibility                                                                |
 | ---------------------- | ----------------------------------------------------------------------------- |
 | `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts |
 | `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                 |
-| `Foundgine.Providers`  | Concrete .NET storage (SQL, EF Core, in-memory, search), events, gateway, AI/model, MCP and AOT |
+| `Foundgine.Providers`  | Concrete .NET storage (SQL, EF Core, in-memory, search), Redis shared state, Microsoft Agent Framework, events, gateway, AI/model, MCP and AOT |
 | `Foundgine.Extensions` | Optional GraphQL (Hot Chocolate), Keycloak identity and Temporal workflow integrations |
 
-The .NET `Foundgine.Providers` package includes the Foundgine-owned ORM and EF Core provider assemblies and both source generators. EF Core 10 and its relational / DI dependencies are restored through NuGet dependency declarations; third-party DLLs are not bundled in the Foundgine package.
+The .NET `Foundgine.Providers` package includes the Foundgine-owned ORM and EF Core provider assemblies, Redis and Microsoft Agent Framework adapters, and both source generators. EF Core 10 and its relational / DI dependencies are restored through NuGet dependency declarations; third-party DLLs are not bundled in the Foundgine package.
 
 The Java artifacts use the `io.github.cristianbarragan` groupId and the repository has a Maven Central publishing configuration. The source POM version is 3.3.5; verify the exact artifact/version is available in Central before pinning it, because the publishing configuration alone is not publication evidence.
 
 | Java module | Purpose | Audit status |
 | --- | --- | --- |
-| `foundgine-core`, `foundgine-runtime`, `foundgine-providers`, `foundgine-extensions` | Main server implementation | Source and tests present; full Maven verification for this checkpoint remains pending |
+| `foundgine-core`, `foundgine-runtime`, `foundgine-providers`, `foundgine-extensions` | Main server implementation; `foundgine-providers` also contains Redis, Spring Boot and LangChain4j adapters | Source and tests present; full Maven verification for this checkpoint remains pending |
 | `foundgine-migrations` | PostgreSQL schema diff and Flyway migration generation | Source and tests present; Maven/runtime verification pending; see [module README](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/foundgine-migrations/README.md) |
-| `foundgine-spring` | Spring Boot integration | Source and tests present; dependency pins/runtime verification pending |
-| `foundgine-langchain4j` | LangChain4j integration | Source and tests present; dependency pins/runtime verification pending |
 | `foundgine-aot-generator` | Build-time annotation processor module | Not published as a standalone runtime artifact |
 
 The Central publishing configuration includes the Maven artifacts above except the build-time-only `foundgine-aot-generator`:
@@ -48,13 +46,13 @@ The Central publishing configuration includes the Maven artifacts above except t
 
 `foundgine-core` is brought in transitively by the higher-level artifacts; add it directly when your code targets its contracts. `foundgine-extensions` is available the same way for optional framework integrations.
 
-The .NET `Foundgine.Providers.AgentFramework` adapter is a separate packable project in the current working tree. It is not part of the four-package base stack and has not yet been build-verified or released; do not depend on a published version yet.
+The .NET `Foundgine.Providers` package includes Redis and Microsoft Agent Framework adapters. Java `foundgine-providers` includes Redis, Spring Boot and LangChain4j adapters; Spring Boot and LangChain4j dependencies are optional.
 
 For installation and package-level details, see the project READMEs under [`src/`](https://github.com/CristianBarragan/Foundgine/tree/main/src).
 
 ## Agent framework and Spring integrations
 
-Optional adapters: Microsoft Agent Framework (`Foundgine.Providers.AgentFramework`, .NET), LangChain4j (`foundgine-langchain4j`, Java) and Spring Boot (`foundgine-spring`, Java). Source and tests are present; none is build/runtime-verified in this snapshot, and the MAF adapter is outside the main solution and unreleased. See [Agent and framework integrations](https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md).
+Optional integrations are included in the provider packages: Microsoft Agent Framework and Redis in .NET `Foundgine.Providers`; LangChain4j, Spring Boot and Redis in Java `foundgine-providers`. See [Agent and framework integrations](https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md).
 
 ## Client SDKs: TypeScript, Python and WebAssembly
 

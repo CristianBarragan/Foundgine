@@ -14,8 +14,9 @@ This page maps capabilities to the repository's current module layout. It is an 
 | Schema migrations | EF Core migration tooling; no matching Foundgine migration module | `src/java/foundgine-migrations` (PostgreSQL schema diff and Flyway SQL; source/tests present, Maven/runtime verification pending) |
 | Gateway, event and outbox | `Foundgine.Providers/Gateway`, `EventStore`, `Outbox` | `foundgine-providers` gateway/event/outbox packages |
 | MCP and agent tooling | `Foundgine.Providers/Tools/MCP`, runtime control plane | `foundgine-providers` tool/MCP packages and `foundgine-runtime` governance |
-| AI model adapters | `Foundgine.Providers.Models` (Microsoft.Extensions.AI); separate `Foundgine.Providers.AgentFramework` project is not build-verified | `foundgine-langchain4j` (source/tests present; dependency/runtime verification pending) |
-| Spring Boot integration | N/A | `foundgine-spring` (source/tests present; dependency/runtime verification pending) |
+| AI model and agent adapters | `Foundgine.Providers.Models` (Microsoft.Extensions.AI) and Microsoft Agent Framework, both in `Foundgine.Providers` | `foundgine-providers` (LangChain4j adapter included) |
+| Redis shared state | `Foundgine.Providers/Redis` (warrant replay and MCP sessions) | `foundgine-providers/.../security/redis` (warrant replay) |
+| Spring Boot integration | N/A | `foundgine-providers` (Spring Boot adapter included) |
 | AOT metadata | `Foundgine.Providers/Aot`, `Foundgine.Providers.Aot.Generator` | `foundgine-aot-generator` and provider annotations/metadata |
 | Keycloak | `src/csharp/Foundgine.Extensions/Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
 | Temporal | `src/csharp/Foundgine.Extensions/Temporal` | `src/java/foundgine-extensions/.../temporal` |
@@ -45,7 +46,7 @@ See [Extensions](extensions) for the single catalogue. Adapts third-party framew
 
 ### Framework integrations
 
-`Foundgine.Providers.AgentFramework` (Microsoft Agent Framework, C#), `foundgine-langchain4j` and `foundgine-spring` (Java) are optional adapters; see [Agent and framework integrations](agent-framework-integrations) for scope and verification status.
+Microsoft Agent Framework (C#), LangChain4j and Spring Boot (Java) are optional adapters included in their respective provider packages; see [Agent and framework integrations](agent-framework-integrations) for scope and verification status.
 
 ### Client SDKs
 

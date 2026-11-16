@@ -14,7 +14,7 @@
   <artifactId>foundgine-providers</artifactId>
   <packaging>jar</packaging>
   <name>Foundgine Providers</name>
-  <description>Port of Foundgine.Providers: concrete provider and integration implementations for Foundgine, including storage providers/adapters and AI/model tooling integrations. Depends only on foundgine-core and foundgine-runtime. Consumers choose and configure the provider(s) matching their application.</description>
+  <description>Concrete Foundgine provider implementations, including Redis-backed shared state, Spring Boot auto-configuration, LangChain4j tools, storage providers and AI/MCP integrations. Spring Boot and LangChain4j APIs are optional dependencies; all integration classes ship in this single artifact.</description>
   <dependencies>
     <dependency>
       <groupId>io.github.cristianbarragan</groupId>
@@ -33,6 +33,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+    <dependency>
+      <!-- Optional: only LettuceReplayBackend needs it (shared warrant replay store over Redis, Valkey or Garnet). -->
+      <groupId>io.lettuce</groupId>
+      <artifactId>lettuce-core</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -55,6 +61,49 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>2.5.252</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Spring integration is included in this jar; framework dependencies stay optional. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <version>${spring-boot.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${spring-framework.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <!-- LangChain4j adapter is included in this jar; consumers opt in to the framework. -->
+    <dependency>
+      <groupId>dev.langchain4j</groupId>
+      <artifactId>langchain4j-core</artifactId>
+      <version>${langchain4j.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>dev.langchain4j</groupId>
+      <artifactId>langchain4j</artifactId>
+      <version>${langchain4j.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-test</artifactId>
+      <version>${spring-boot.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-test-autoconfigure</artifactId>
+      <version>${spring-boot.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

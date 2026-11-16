@@ -17,7 +17,7 @@ Scope: docs vs source for C#, Java, TypeScript, Python and WASM. Version audited
 - `policy_probe` behaviour in `SECURITY.md` matches the sample: verbose detail only when `IsDevelopment()`, otherwise logs server-side and returns `{ allowed: false, reference }`. MCP tool names in docs exist in source.
 - README badge jobs (8) all exist in the referenced workflows.
 - `docs-site` relative links resolve; no stale versions, `TODO`/`TBD` markers or old `foundgine-sdk/` SDK paths in prose.
-- CHANGELOG and `docs-site/packages` claims about `Foundgine.Providers.AgentFramework` (`AddFoundgineAgentFramework`, `ApprovalRequiredAIFunction`, `FoundgineProviderKind.Agent`/`AGENT`) match source and are consistently flagged as unreleased.
+- The Microsoft Agent Framework adapter (`AddFoundgineAgentFramework`, `ApprovalRequiredAIFunction`, `FoundgineProviderKind.Agent`/`AGENT`) is now compiled into `Foundgine.Providers`; the supplied archive has not been built in this environment, so package/runtime verification is still pending.
 
 ## Added in checkpoint 4
 - `wiki/mcp-protocol-and-tokens.md`: protocol versions, sessions/SSE and `fgmcp1` approval tokens, written from source.

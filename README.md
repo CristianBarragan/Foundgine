@@ -36,6 +36,24 @@ This boundary ensures that agents can propose actions, but only your application
 
 [**Go to website →**](https://cristianbarragan.github.io/Foundgine/)
 
+## Why Foundgine matters
+
+**Foundgine is the semantic execution layer for enterprise applications and AI.**
+
+Enterprises already have CRMs, ERPs, databases, APIs and workflow systems. The problem is that every new access path—an application, REST or GraphQL endpoint, MCP tool or AI agent—can end up reimplementing business meaning, validation, authorization and query or mutation logic.
+
+Foundgine is designed to provide one **application-controlled semantic execution boundary** between caller intent and physical operations. The application defines what its business entities mean and who may use them; Foundgine resolves and plans supported operations, applies the configured authorization boundary, and passes an authorized execution artifact to the relevant provider.
+
+**Why it matters**
+- **Less duplication:** Reuse semantic definitions and execution infrastructure across supported interfaces.
+- **More control:** Keep identity, business policy and authorization under application control; AI-generated intent does not become authority.
+- **Lower architectural friction:** Keep existing applications, databases and persistence technologies where supported instead of replacing them to adopt Foundgine.
+
+Foundgine complements rather than replaces ORMs, GraphQL, API gateways, integration platforms, workflow engines or agent frameworks. Its value is the integrated execution boundary between them. Actual savings and security improvements must be demonstrated against equivalent workloads; they are not assumed or guaranteed.
+
+**Read the [Product Positioning & Commercial Strategy](docs/PRODUCT-POSITIONING-AND-COMMERCIAL-STRATEGY.md)** for the enterprise problem, target buyers, competitive positioning, ROI model, proof requirements and website messaging.
+
+
 **Where to read next**
 
 | I want to... | Go to |
@@ -173,17 +191,16 @@ For the deeper rationale, read:
 
 ## Package shape
 
-The core package family has four architectural packages (the .NET names are shown; Java uses `foundgine-*` artifacts under `io.github.cristianbarragan`). Optional integrations and tooling are packaged separately:
+The core package family has four architectural packages (the .NET names are shown; Java uses `foundgine-*` artifacts under `io.github.cristianbarragan`). Some framework adapters are included in the provider distribution; larger optional framework/service integrations remain in Extensions:
 
 | Package                | Responsibility                                                                                           |
 | ---------------------- | -------------------------------------------------------------------------------------------------------- |
 | `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts                            |
 | `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                                            |
-| `Foundgine.Providers`  | Concrete storage (SQL, **EF Core**, **JPA**, in-memory, search), events, gateway, AI/model, MCP and AOT |
+| `Foundgine.Providers`  | Concrete storage (SQL, **EF Core**, in-memory, search), Redis, Microsoft Agent Framework, events, gateway, AI/model, MCP and AOT |
 | `Foundgine.Extensions` | Optional GraphQL, Keycloak identity and Temporal workflow integrations |
-| `Foundgine.Providers.AgentFramework` | Optional .NET Microsoft Agent Framework adapter; packable source project, not yet build-verified or released |
 
-The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. The Java Maven reactor contains the implemented `foundgine-migrations` module and optional Spring Boot and LangChain4j integrations. The latter have source and test definitions, but their dependency pins and runtime verification remain unverified in this snapshot. The Central publishing configuration includes these modules and excludes the build-time `foundgine-aot-generator`. See the [package guide](docs-site/packages/) for the current boundary map.
+The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. Redis and Microsoft Agent Framework integrations ship in the .NET `Foundgine.Providers` package. Java Redis, Spring Boot and LangChain4j integrations ship in the `foundgine-providers` Maven artifact; Spring Boot and LangChain4j framework dependencies are optional. See the [package guide](docs-site/packages/) for the current boundary map.
 
 ## Providers and extensions at a glance
 
@@ -197,11 +214,11 @@ A **provider** does the real work against infrastructure; an **extension** conne
 | Understanding free-form wording | **Elasticsearch**, **PostgreSQL + pgvector**, **PostgreSQL trigram/full-text** retrieval | Candidates and evidence only, never authority |
 | Durable events and reliable delivery | **Event store** and **outbox** | At-least-once delivery |
 | One front door for other products | **Gateway** (approvals, events, status, diagnostics) | Opaque one-time approval handles |
-| AI agents and tools | **MCP tools**, **Microsoft.Extensions.AI** models and the optional **Microsoft Agent Framework** adapter (source present, unverified) | Model supplies intent, host supplies authority |
+| AI agents and tools | **MCP tools**, **Microsoft.Extensions.AI** models and the optional **Microsoft Agent Framework** adapter | Model supplies intent, host supplies authority |
 | GraphQL API | **GraphQL extension** (Hot Chocolate for .NET; GraphQL Java for Java) | Translates only |
 | Keycloak logins | **Keycloak extension** | Short-lived signed warrants |
 | Long-running processes | **Temporal extension** | Retries, timers, approvals, compensation |
-| Agent frameworks and hosting | **Microsoft Agent Framework** (.NET), **LangChain4j** and **Spring Boot** (Java) | Tools and hosting only; host owns identity, writes are gated. Not yet build/runtime-verified. See [integrations](docs/wiki/agent-framework-integrations.md) |
+| Agent frameworks and hosting | **Microsoft Agent Framework** (.NET), **LangChain4j** and **Spring Boot** (Java) | Tools and hosting only; host owns identity, writes are gated. See [integrations](docs/wiki/agent-framework-integrations.md) |
 | Calling a server from TypeScript, Python or browsers/Workers | **Client SDKs** (`@foundgine/typescript`, `foundgine-sdk`, `@foundgine/wasm`) | Thin MCP and Temporal-route clients; no semantic runtime, no authority. See [Client SDKs](docs/wiki/client-sdks.md) |
 
 The full inventory with source paths is the [Provider catalogue](docs/wiki/providers.md) and the [Extensions page](docs/wiki/extensions.md). Receipts, audit and diagnostics are explained in [Insights, evidence and auditing](docs/wiki/insights-evidence-auditing.md).
@@ -212,11 +229,11 @@ Three optional integrations put Foundgine behind the frameworks teams already us
 
 | Integration | Module | Docs |
 | --- | --- | --- |
-| Microsoft Agent Framework (.NET) | `Foundgine.Providers.AgentFramework` | [README](src/csharp/Foundgine.Providers.AgentFramework/README.md) |
-| LangChain4j (Java) | `foundgine-langchain4j` | [README](src/java/foundgine-langchain4j/README.md) |
-| Spring Boot (Java) | `foundgine-spring` | [README](src/java/foundgine-spring/README.md) |
+| Microsoft Agent Framework (.NET) | `Foundgine.Providers` | [README](src/csharp/Foundgine.Providers/AgentFramework/README.md) |
+| LangChain4j (Java) | `foundgine-providers` | [README](src/java/foundgine-providers/LANGCHAIN4J.md) |
+| Spring Boot (Java) | `foundgine-providers` | [README](src/java/foundgine-providers/SPRING-BOOT.md) |
 
-All three have source and tests but are not yet build/runtime-verified in this snapshot (the MAF adapter is also outside `Foundgine.sln` and unreleased). Overview, security model and status: [Agent and framework integrations](docs/wiki/agent-framework-integrations.md).
+All three adapters are part of their language provider artifact; verify them with the included provider test suites before release. Overview, security model and status: [Agent and framework integrations](docs/wiki/agent-framework-integrations.md).
 
 ## Client SDKs (TypeScript, Python, WebAssembly)
 
@@ -235,9 +252,11 @@ The SDK READMEs mark all three as development packages, not release-ready SDKs, 
 The repository contains controlled benchmarks and deterministic security tests. The public evidence distinguishes **measured** tool calls, latency, RPS and success/failure counts from **estimated** context metrics.
 
 - [Agent benchmark explorer](https://cristianbarragan.github.io/Foundgine/agent-benchmark/)
+- [CoffeeBeanery API/database performance and downloadable reports](https://cristianbarragan.github.io/Foundgine/performance/#coffeebeanery-performance)
 - [Supply Chain E2E](https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/)
 - [Security PenTest](https://cristianbarragan.github.io/Foundgine/samples/pentest/)
 - [`src/csharp/benchmarks/AgentEndToEnd/README.md`](src/csharp/benchmarks/AgentEndToEnd/README.md)
+- [`src/csharp/benchmarks/CoffeeBeanery.Performance/README.md`](src/csharp/benchmarks/CoffeeBeanery.Performance/README.md)
 
 Benchmark results are workload-specific and should not be generalized beyond the published experiment.
 

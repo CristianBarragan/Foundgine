@@ -200,7 +200,7 @@ Foundgine.Extensions  (optional framework integrations)</pre>
                 </tr>
                 <tr>
                   <td><strong>Foundgine.Providers</strong></td>
-                  <td>Concrete .NET storage (SQL, EF Core, in-memory, search), events, gateway, AI/model, MCP and AOT provider integrations.</td>
+                  <td>Concrete .NET storage (SQL, EF Core, in-memory, search), Redis shared state, Microsoft Agent Framework, events, gateway, AI/model, MCP and AOT provider integrations.</td>
                   <td>You need physical infrastructure or agent/tool integrations.</td>
                 </tr>
                 <tr>
@@ -211,11 +211,6 @@ Foundgine.Extensions  (optional framework integrations)</pre>
                   </td>
                   <td>You need GraphQL, Keycloak or Temporal integration.</td>
                 </tr>
-                <tr>
-                  <td><strong>Foundgine.Providers.AgentFramework</strong></td>
-                  <td>Optional .NET Microsoft Agent Framework adapter. The packable project is present in the working tree but is not yet build-verified or released.</td>
-                  <td>You use Microsoft Agent Framework and want governed Foundgine tools.</td>
-                </tr>
               </tbody>
             </table>
           </div>
@@ -223,8 +218,8 @@ Foundgine.Extensions  (optional framework integrations)</pre>
         <section>
           <p>
             The .NET <code>Foundgine.Providers</code> package includes the Foundgine-owned ORM and
-            Entity Framework Core provider assemblies and both source generators. EF Core 10 and its
-            relational / dependency-injection dependencies are restored through NuGet declarations;
+            Entity Framework Core provider assemblies, Redis and Microsoft Agent Framework adapters,
+            and both source generators. Third-party dependencies are restored through NuGet declarations;
             third-party DLLs are not bundled in the Foundgine package.
           </p>
         </section>
@@ -277,7 +272,6 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
           <ul>
             <li><code>foundgine-core</code>, <code>foundgine-runtime</code>, <code>foundgine-providers</code> and <code>foundgine-extensions</code>: main server implementation; source and tests are present, but the full Maven verification for this checkpoint remains pending.</li>
             <li><code>foundgine-migrations</code>: PostgreSQL schema diff and Flyway migration generation; source and tests are present, Maven/runtime verification is pending. See the <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/foundgine-migrations/README.md">module README</a>.</li>
-            <li><code>foundgine-spring</code> and <code>foundgine-langchain4j</code>: optional integrations with source and tests; dependency pins and runtime verification are pending.</li>
             <li><code>foundgine-aot-generator</code>: build-time annotation processor module, not a standalone runtime artifact.</li>
           </ul>
           <p>
@@ -288,11 +282,9 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
         <section>
           <h2 id="framework-integrations">Agent framework and Spring integrations</h2>
           <p>
-            Optional adapters: Microsoft Agent Framework (<code>Foundgine.Providers.AgentFramework</code>, .NET),
-            LangChain4j (<code>foundgine-langchain4j</code>, Java) and Spring Boot
-            (<code>foundgine-spring</code>, Java). Source and tests are present, but none is
-            build- or runtime-verified in this snapshot, and the MAF adapter is outside the main
-            solution and unreleased. See
+            Optional adapters are included in the provider packages: Microsoft Agent Framework and Redis in .NET
+            <code>Foundgine.Providers</code>; LangChain4j, Spring Boot and Redis in Java
+            <code>foundgine-providers</code>. See
             <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md">Agent and framework integrations</a>.
           </p>
         </section>
@@ -342,9 +334,7 @@ dotnet add package Foundgine.Providers --version 3.3.5</pre>
           <p>
             Add <code>Foundgine.Extensions</code> for optional GraphQL, Keycloak and Temporal
             integrations. Choose the relevant capabilities inside <code>Foundgine.Providers</code>
-            for SQL/PostgreSQL, InMemory, MCP or retrieval. The separate
-            <code>Foundgine.Providers.AgentFramework</code> project adapts Foundgine to Microsoft
-            Agent Framework; the project is not yet build-verified or released.
+            for SQL/PostgreSQL, InMemory, MCP or retrieval. The same package also includes Redis shared-state support and the Microsoft Agent Framework adapter.
           </p>
         </section>
         <section>

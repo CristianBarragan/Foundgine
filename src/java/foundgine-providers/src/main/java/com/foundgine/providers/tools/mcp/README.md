@@ -71,17 +71,15 @@ Requires `jackson-databind` and `jackson-datatype-jsr310` (receipts carry timest
 
 ## Cancellation, Spring and LangChain4j
 
-Verification status: the MCP package, its 50 tests (including the real-engine approval round trip) and the LangChain4j adapter
-were compiled with javac 21 against the real core/runtime sources, Jackson 2.15.2 and LangChain4j 1.0.0 sources and run with a
-JUnit shim. Not verified: the Maven build (Jackson 2.18.9, JUnit 5) and the Spring module, which has never been compiled.
+Verification status: the Spring Boot and LangChain4j adapters and their tests now live inside the `foundgine-providers` Maven module. A full Maven build of the consolidated artifact has not been run in this environment; the available local JDK is Java 21 while the Maven reactor targets Java 27. Do not treat the package as build-verified until the Java CI workflow passes.
 
 - `FoundgineMcpServer` handles `notifications/cancelled` (the in-flight `tools/call` token is cancelled and, per the MCP spec,
   no response is sent) and `handleAsync(body, transportToken)` lets the host cancel on client disconnect.
-- `foundgine-spring`: `FoundgineMcpAutoConfiguration` (off unless `foundgine.mcp.enabled=true`; requires `IFoundgine` and an
+- Spring Boot (`com.foundgine.spring`, included in `foundgine-providers`): `FoundgineMcpAutoConfiguration` (off unless `foundgine.mcp.enabled=true`; requires `IFoundgine` and an
   `ISecurityExecutionContextProvider`; mutations also need `foundgine.mcp.mutations-enabled=true`) and an optional POST endpoint
   with an `Origin` allow-list (`foundgine.mcp.allowed-origins`).
-- `foundgine-langchain4j`: `FoundgineLangChain4jTools.toolMap(server)` for `AiServices.tools(...)`.
-- Both new modules are outside the root reactor, like `foundgine-spring` was; add them to `<modules>` once built.
+- LangChain4j (`com.foundgine.langchain4j`, included in `foundgine-providers`): `FoundgineLangChain4jTools.toolMap(server)` for `AiServices.tools(...)`.
+- Both adapters compile as part of the root `foundgine-providers` Maven module; framework dependencies are optional.
 
 ## Portable approval-token wire contract (v1)
 
@@ -204,4 +202,4 @@ result 400/409/410/429/404 or 200; DELETE 204) free of Spring, and `FoundgineMcp
 `FoundgineMcpSseTransport` is the same logic. Both runtimes run `src/conformance/mcp-sse-scenarios.json` (buffer) and
 `mcp-sse-transport-scenarios.json` (statuses). Single instance only: the registry, buffers, limits and sweep are in-process, so a
 cluster needs a shared event log and shared limits. The `foundgine.mcp.*` properties are described in
-`META-INF/additional-spring-configuration-metadata.json` of `foundgine-spring`.
+`META-INF/additional-spring-configuration-metadata.json` of `foundgine-providers`.

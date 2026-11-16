@@ -37,8 +37,8 @@ Additional code-bearing areas include `tests`, `samples`, `benchmarks`, `securit
 | `foundgine-providers` | SQL/JDBC, InMemory, ORM/JPA, Elasticsearch, PostgreSQL vector retrieval, MCP, model tools, gateway, event store, outbox and AOT support |
 | `foundgine-extensions` | GraphQL Java, Keycloak and Temporal integrations |
 | `foundgine-migrations` | Java fluent-model schema projection, schema differ and PostgreSQL migration generation |
-| `foundgine-spring` | Optional Spring Boot JPA/MCP auto-configuration; source and tests are present, but dependency pins and runtime verification remain unverified |
-| `foundgine-langchain4j` | Optional LangChain4j tool adapter; source and tests are present, but the dependency pin and runtime verification remain unverified |
+| Spring Boot adapter | Optional Spring Boot JPA/MCP auto-configuration compiled into `foundgine-providers` |
+| LangChain4j adapter | Optional LangChain4j tool adapter compiled into `foundgine-providers` |
 | `foundgine-aot-generator` | Compile-time metadata generator; included in the root Maven reactor and excluded from standalone publication |
 | `security/foundgine-redteam` | Security/red-team module, included in the Maven reactor but excluded from public artifact publishing |
 | `samples/*` | Starter and advanced Supply Chain sample applications |
@@ -107,14 +107,11 @@ The lists below were enumerated from the supplied source archive. They make it p
 - `csharp/Foundgine.Extensions/Foundgine.Extensions.csproj`
 - `csharp/Foundgine.Extensions/Samples/Temporal.Api/Temporal.Api.csproj`
 - `csharp/Foundgine.Extensions/Samples/Temporal.Worker/Temporal.Worker.csproj`
-- `csharp/Foundgine.Providers.AgentFramework/Foundgine.Providers.AgentFramework.csproj`
 - `csharp/Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj`
 - `csharp/Foundgine.Providers.Orm.Generator/Foundgine.Providers.Orm.Generator.csproj`
 - `csharp/Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj`
 - `csharp/Foundgine.Providers/EventStore/Foundgine.Providers.EventStore.csproj`
 - `csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj`
-- `csharp/Foundgine.Providers/Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj`
-- `csharp/Foundgine.Providers/Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj`
 - `csharp/Foundgine.Providers/Foundgine.Providers.csproj`
 - `csharp/Foundgine.Providers/Samples/Gateway.MinimalApi/Gateway.MinimalApi.csproj`
 - `csharp/Foundgine.Runtime/Foundgine.Runtime.csproj`
@@ -184,11 +181,9 @@ The lists below were enumerated from the supplied source archive. They make it p
 - `java/foundgine-aot-generator/pom.xml`
 - `java/foundgine-core/pom.xml`
 - `java/foundgine-extensions/pom.xml`
-- `java/foundgine-langchain4j/pom.xml`
 - `java/foundgine-migrations/pom.xml`
-- `java/foundgine-providers/pom.xml`
+- `java/foundgine-providers/pom.xml` (includes Redis, Spring Boot and LangChain4j adapter source and tests)
 - `java/foundgine-runtime/pom.xml`
-- `java/foundgine-spring/pom.xml`
 - `java/pom.xml`
 - `java/samples/foundgine-supply-chain-advanced/pom.xml`
 - `java/samples/foundgine-supply-chain/pom.xml`
@@ -196,5 +191,5 @@ The lists below were enumerated from the supplied source archive. They make it p
 
 ### Inventory totals
 
-- .NET project files: **74**.
-- Java Maven project files: **13** (including the root reactor, integrations, migrations, samples and security module).
+- .NET project files: **72**.
+- Java Maven project files: **11** (including the root reactor, provider integrations, migrations, samples and security module).

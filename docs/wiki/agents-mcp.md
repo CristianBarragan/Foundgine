@@ -41,9 +41,9 @@ Prompt injection, tool-output injection, confused deputy behavior, tenant confus
 
 ## Where to look in source
 
-- C# Microsoft Agent Framework: `Foundgine.Providers.AgentFramework` contains a MAF tool adapter; writes are approval-gated and the model has no `approve` tool. This project is present after the 3.3.5 tag but has not yet been compiled or tested in this snapshot; do not treat it as a released integration.
+- C# Microsoft Agent Framework: The MAF tool adapter is included in `Foundgine.Providers`; writes are approval-gated and the model has no `approve` tool.
 - C#: `Foundgine.Providers/Tools/MCP`, `Foundgine.Runtime/ControlPlane`, agent models, and security/warrant code.
-- Java: `foundgine-providers` MCP/tool integration, `foundgine-runtime` governance components, and the agent benchmark module. The optional `foundgine-langchain4j` integration has source and tests, but dependency pins and runtime verification are pending.
+- Java: `foundgine-providers` contains the MCP/tool integration and LangChain4j adapter; Spring Boot hosting is also included in this artifact.
 - Existing guide: [AI agent integration](../AI-AGENT).
 
 - TypeScript, Python and WebAssembly clients: `src/typescript/`, `src/python/`, `src/wasm/`; overview in [Client SDKs](client-sdks.md).

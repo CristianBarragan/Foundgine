@@ -37,7 +37,7 @@ Retrieval is candidate discovery, not authorization.
 
 ## Adapters and providers
 
-Intent can originate from application code, JSON, GraphQL, MCP or AI tools. These are adapters/consumers of the semantic boundary. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java). Microsoft.Extensions.AI is .NET-specific; a Microsoft Agent Framework adapter exists in the post-3.3.5 working tree but is not yet build-verified or released; JSON intent and MCP adapters exist in both .NET and Java.
+Intent can originate from application code, JSON, GraphQL, MCP or AI tools. These are adapters/consumers of the semantic boundary. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java). Microsoft.Extensions.AI and the Microsoft Agent Framework adapter are included in the .NET `Foundgine.Providers` package; the adapter was added after the 3.3.5 tag and has not yet been build-verified in this snapshot. JSON intent and MCP adapters exist in both .NET and Java.
 
 Current providers include `Foundgine.Providers.Storage.Sql` (`foundgine-providers` in Java) for SQL/PostgreSQL and a deliberately limited InMemory provider, in both implementations. ORM execution is available through the EF Core adapter (.NET, `Foundgine.Providers.EntityFrameworkCore`) and the JPA adapter (Java, `storage/orm/jpa`) over a shared ORM-neutral core; maturity is tracked per capability. PostgreSQL retrieval includes relational lookup, `pg_trgm`, native full text, optional `pg_search`/BM25 and optional Apache AGE graph similarity, also in both implementations. PostgreSQL pgvector retrieval components exist in both implementations; production certification is a separate question.
 
@@ -59,11 +59,11 @@ Optional adapters that put Foundgine behind agent frameworks or host it in Sprin
 
 | Integration | Language | Module / path | Provides |
 |---|---|---|---|
-| Microsoft Agent Framework (MAF) | .NET | `Foundgine.Providers.AgentFramework` (`src/csharp/Foundgine.Providers.AgentFramework/`) | `AddFoundgineAgentFramework()`, `FoundgineAgentTools` (Microsoft.Extensions.AI `AITool`s), `FoundgineAgentFactory`; writes off by default and human-approved via MAF |
-| LangChain4j | Java | `foundgine-langchain4j` (`src/java/foundgine-langchain4j/`) | `FoundgineLangChain4jTools.toolMap(FoundgineMcpServer)` returning LangChain4j `ToolSpecification`/`ToolExecutor` pairs for `AiServices` |
-| Spring Boot | Java | `foundgine-spring` (`src/java/foundgine-spring/`) | Auto-configuration for the MCP server and `POST /mcp` controller (sessions, SSE; property prefix `foundgine.mcp.*`, off by default) and for the JPA `FoundgineOrm` provider |
+| Microsoft Agent Framework (MAF) | .NET | `Foundgine.Providers` (`src/csharp/Foundgine.Providers/AgentFramework/`) | `AddFoundgineAgentFramework()`, `FoundgineAgentTools` (Microsoft.Extensions.AI `AITool`s), `FoundgineAgentFactory`; writes off by default and human-approved via MAF |
+| LangChain4j | Java | `foundgine-providers` (`src/java/foundgine-providers/.../langchain4j/`) | `FoundgineLangChain4jTools.toolMap(FoundgineMcpServer)` returning LangChain4j `ToolSpecification`/`ToolExecutor` pairs for `AiServices` |
+| Spring Boot | Java | `foundgine-providers` (`src/java/foundgine-providers/.../spring/`) | Auto-configuration for the MCP server and `POST /mcp` controller (sessions, SSE; property prefix `foundgine.mcp.*`, off by default) and for the JPA `FoundgineOrm` provider |
 
-- **Status:** source and tests present for all three; **not yet build- or runtime-verified** in this snapshot. The MAF adapter is a separate packable project outside `Foundgine.sln` and is unreleased (post-3.3.5). `foundgine-langchain4j` and `foundgine-spring` are in the Maven reactor with dependency pins (LangChain4j 1.0.0, Spring Boot 4.0.0) pending verification. Do not describe them as released or verified.
+- **Package layout:** all adapters are compiled into the normal provider package for their language. Framework dependencies remain optional on Java; see provider tests before release.
 - **Docs:** `docs/wiki/agent-framework-integrations.md`, plus each module's `README.md`.
 
 ## Client SDKs (TypeScript, Python, WebAssembly)
@@ -136,7 +136,7 @@ Java (Maven, groupId `io.github.cristianbarragan`):
 - `foundgine-providers` — SQL/PostgreSQL, InMemory, ORM/JPA, MCP, retrieval, gateway, event-store and outbox providers
 - `foundgine-extensions` — optional GraphQL, Keycloak and Temporal adapters
 - `foundgine-migrations` — Java schema/migration source module; Maven/runtime verification pending
-- `foundgine-spring` and `foundgine-langchain4j` — optional integrations with source and tests present; dependency pins and runtime verification remain unverified in this snapshot
+- Spring Boot and LangChain4j adapters — included in the Java `foundgine-providers` artifact
 - `foundgine-aot-generator` — build-time annotation processor; included in the reactor but excluded from standalone publication
 
 ## Standard

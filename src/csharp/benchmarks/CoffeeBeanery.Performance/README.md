@@ -4,13 +4,13 @@ This benchmark is the reproducible performance harness for the CoffeeBeanery gra
 
 ## Current findings
 
-The supplied 2026-08-13 baseline shows three important results:
+The latest checked-in report set was generated on **15 August 2026**. The query workload at concurrency 32 reported:
 
-1. **Foundgine's query path is currently very strong on the tested graph.** At concurrency 32, Foundgine reaches 2,781.6 RPS without the provider-plan cache and 3,012.6 RPS with it, versus 156.7 RPS for Hot Chocolate + EF Core. Foundgine also uses substantially less measured API-container memory and CPU in this workload.
-2. **Mutation is competitive, not universally faster.** At concurrency 32/batch 50, Hot Chocolate + EF Core reaches 86,955 logical mutations/s, Foundgine no-cache reaches 69,675, and Foundgine with the provider-plan cache reaches 81,910. Foundgine uses materially less measured API-container CPU and memory.
-3. **Upsert + select is the main next target.** The benchmark now performs a real `upsertCustomer` against deterministic existing rows and then executes the exact same top-50/full-graph query used by the standalone query workload. This corrected workload must be rerun before new upsert conclusions are published.
+1. **Query:** Hot Chocolate + EF Core reached 189.7 RPS; Foundgine without the provider-plan cache reached 2,427.1 RPS; Foundgine with the provider-plan cache reached 2,860.5 RPS. These values are specific to the published fixture and host.
+2. **Whole-graph mutation:** at concurrency 32 / batch 50, Hot Chocolate + EF Core reached 56.4 HTTP RPS (2,820 logical mutations/s), Foundgine without the provider-plan cache reached 155.7 RPS (7,785 logical mutations/s), and Foundgine with the provider-plan cache reached 264.4 RPS (13,220 logical mutations/s). Request RPS and logical throughput must be kept distinct.
+3. **Upsert + select:** the 15 August report set includes the corrected real upsert of existing deterministic customer rows followed by the same top-50/full-graph query. Treat the result as an initial measured snapshot, not a stable conclusion; repeat independent sessions before making broader claims.
 
-These are workload-specific observations, not universal performance claims. See the full [checked-in benchmark reports](reports/query/).
+The published JSON reports currently contain zero values for Docker CPU and memory measurements. They therefore do **not** support a comparative CPU or memory claim. These results are workload-specific and are not universal performance claims. See the full [checked-in benchmark reports](reports/query/) and the [public performance evidence page](https://cristianbarragan.github.io/Foundgine/performance/#coffeebeanery-performance).
 
 ## Benchmark matrix
 
@@ -101,11 +101,9 @@ For the full findings, limitations and proposed experiments, see [the checked-in
 
 ## Current benchmark status — 2026-08-15
 
-The latest confirmed benchmark baseline is documented in [`reports/query/`](reports/query/).
+The latest checked-in benchmark baseline is the report set generated on 15 August 2026 in [`reports/query/`](reports/query/). The query, whole-graph mutation and corrected upsert + select rows are all included. Docker CPU and memory fields are zero in this report set and must not be interpreted as measured resource comparisons. Performance and PostgreSQL E2E correctness results are tracked separately.
 
-The current evidence shows:
 
-- Hot Chocolate + EF Core remains substantially faster for the measured top-50 query workload.
-- Foundgine's whole-graph mutation path is substantially more competitive.
-- Provider-plan caching improves the available lower-concurrency mutation measurements, but it is not a universal end-to-end optimization.
-- Performance and PostgreSQL E2E correctness results are tracked separately.
+## Public website evidence
+
+The published benchmark evidence is linked from the [Foundgine performance page](https://cristianbarragan.github.io/Foundgine/performance/#coffeebeanery-performance). The site report index is generated from the checked-in files under `reports/` and serves each JSON, CSV and Markdown artifact. To refresh the website assets after producing new reports, run `./publish-site-reports.ps1` from this directory. `run-benchmarks.ps1` also invokes this publisher after all suites complete successfully.

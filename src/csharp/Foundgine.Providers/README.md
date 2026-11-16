@@ -9,7 +9,8 @@
 The current package consolidates the provider surface into one consumer-facing package, including the relevant implementations under areas such as:
 
 - Storage: SQL, in-memory, Elasticsearch and PostgreSQL/vector integrations.
-- Model/AI provider integrations.
+- Model/AI provider integrations, including the Microsoft Agent Framework adapter.
+- Redis-compatible shared state: atomic warrant replay protection and shared MCP sessions for Redis, Valkey and Garnet.
 - MCP/tool provider integrations.
 - ORM execution through the shared `Foundgine.Providers.Orm` layer and the Entity Framework Core adapter.
 - AOT-friendly metadata support.
@@ -17,7 +18,7 @@ The current package consolidates the provider surface into one consumer-facing p
 
 `Foundgine.Providers` brings in `Foundgine.Core` and `Foundgine.Runtime`, plus the NuGet dependencies required by the included provider integrations. In particular, EF Core 10 and its relational / dependency-injection abstractions are restored as NuGet dependencies; their third-party DLLs are not bundled in the package. Hot Chocolate GraphQL translation _and_ secure query/mutation execution both live in `Foundgine.Extensions`, not here — add that package separately if your application uses GraphQL.
 
-The exact provider implementation you use determines which external infrastructure and configuration your application needs. Since the provider implementations ship together in one package, installing it restores dependencies for the included integrations (including EF Core, Npgsql, Pgvector, Microsoft.Extensions.AI and ModelContextProtocol), even if your application uses only a subset.
+The exact provider implementation you use determines which external infrastructure and configuration your application needs. Since the provider implementations ship together in one package, installing it restores dependencies for the included integrations (including EF Core, Npgsql, Pgvector, Microsoft.Extensions.AI, ModelContextProtocol, StackExchange.Redis and Microsoft.Agents.AI), even if your application uses only a subset.
 
 ## AOT generator behavior
 
@@ -60,3 +61,12 @@ dotnet add package Foundgine.Providers --version 3.3.5
 ## Foundgine Gateway
 
 The optional ASP.NET Core gateway facade is included in this package under `Foundgine.Providers.Gateway`. It exposes capability/semantic discovery, protected semantic read and mutation workflows, opaque approval handles, execution status, replayable SSE notifications, provider lifecycle hooks, and diagnostics. Its default event and approval stores are process-local development implementations; production hosts must provide durable distributed adapters. See [`Gateway/README.md`](Gateway/README.md) for the HTTP contract, event-store requirements, AOT serialization limits, security requirements, sample host, and tests.
+
+
+## Redis provider
+
+The Redis implementation lives under [`Redis/`](Redis/README.md). It provides shared warrant replay protection and MCP session storage using atomic Redis operations. It supports Redis-compatible servers including Valkey and Garnet and fails closed when the server is unavailable.
+
+## Microsoft Agent Framework adapter
+
+The Microsoft Agent Framework implementation lives under [`AgentFramework/`](AgentFramework/README.md). It exposes Foundgine capabilities and governed operations as agent tools. Mutation execution is disabled by default and remains human-approval-gated when enabled. Both integrations are compiled into the `Foundgine.Providers.dll` distributed by this package.

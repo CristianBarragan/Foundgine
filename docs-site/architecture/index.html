@@ -262,9 +262,10 @@
           <h2 id="adapters">Adapters</h2>
           <p>
             GraphQL, JSON and MCP integrations are callers/adapters around the same boundary. .NET
-            also has Microsoft.Extensions.AI integration; Java has a LangChain4j module whose
-            source is present but not yet runtime-verified. Adapters translate their native request
-            shape into Foundgine intent and receive the resulting application-controlled execution.
+            includes Microsoft.Extensions.AI and Microsoft Agent Framework adapters in
+            <code>Foundgine.Providers</code>; Java includes LangChain4j in <code>foundgine-providers</code>.
+            Full build/runtime verification remains pending for this snapshot. Adapters translate their
+            native request shape into Foundgine intent and receive the resulting application-controlled execution.
           </p>
         </section>
         <section>

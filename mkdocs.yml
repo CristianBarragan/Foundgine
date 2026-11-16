@@ -29,6 +29,7 @@ nav:
   - Conformance and shared test data: STANDARDS.md
   - Getting started: GETTING-STARTED.md
   - Why Foundgine: WHY-FOUNDGINE.md
+  - Product positioning and commercial strategy: PRODUCT-POSITIONING-AND-COMMERCIAL-STRATEGY.md
   - What Foundgine is designed for: APPLICATION-CATEGORIES.md
   - Architecture: ARCHITECTURE.md
   - Metadata → Semantics (layer setup): METADATA-TO-SEMANTICS.md
@@ -46,6 +47,7 @@ nav:
   - Testing: TESTING.md
   - Feature and capability wiki:
       - Overview: wiki/index.md
+      - Why Foundgine?: wiki/why-foundgine.md
       - Core concepts: wiki/core-concepts.md
       - Semantic model and metadata: wiki/semantic-model.md
       - Intent, grounding and retrieval: wiki/intent-grounding.md

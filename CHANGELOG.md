@@ -4,6 +4,18 @@
 
 ### Added
 
+- Consolidated Redis and Microsoft Agent Framework adapters into the existing .NET `Foundgine.Providers` NuGet project; consolidated Java Spring Boot and LangChain4j adapters into the `foundgine-providers` Maven artifact. Kept the adapter namespaces and APIs, moved their tests into the main provider test/build boundaries, and retained optional framework dependencies on Java.
+- Added an enterprise-focused **Why Foundgine?** wiki page explaining the problems Foundgine addresses, its role alongside existing enterprise systems, the semantic execution model, target use cases and a practical business-value measurement approach.
+- Added a commercial positioning and strategy document covering the target audiences, differentiation from adjacent technology categories, the value proposition, ROI model, evidence requirements and claim boundaries.
+- Added a **Why Foundgine matters** summary near the beginning of the root README so visitors encounter the business proposition before the detailed technical documentation.
+
+### Verification status
+
+- Static checks confirm the consolidated project references, Maven reactor module paths, optional Java framework dependencies, Spring auto-configuration metadata, and integration test source locations. Full .NET/Maven builds and Docker-backed Redis tests were not run in this environment because the .NET SDK, Maven and Docker CLI are unavailable.
+- The updated repository archive passed ZIP integrity verification. The README, wiki page, wiki overview link, MkDocs navigation entry, commercial strategy document and website homepage edits were confirmed in the archive.
+- A full MkDocs build, website build, automated link check, application test suite and live website deployment were not performed as part of this documentation change.
+
+
 - Documentation: added [Client SDKs](docs/wiki/client-sdks.md) (TypeScript, Python, WebAssembly) and [Agent and framework integrations](docs/wiki/agent-framework-integrations.md) (Microsoft Agent Framework, LangChain4j, Spring Boot) pages, module READMEs for `foundgine-spring` and `foundgine-langchain4j`, an SDK/integration section in `src/README.md`, the root README, the website package and AI-agent pages, and `llms*.txt`/`llms-full.md`/`ai.seo.md`, so people and AI agents can discover them.
 - Documentation fix: SDK README examples called a non-existent `query_semantic` tool; they now call `foundgine_query_semantic` with an `intentJson` argument. `mcp.json` and `.well-known/mcp.json` now list `foundgine_query_semantic`, the client SDKs and the framework integrations, and the root `mcp.json` `mcpProject` path is corrected.
 - Added `Foundgine.Providers.AgentFramework`: a Microsoft Agent Framework (MAF) adapter. It exposes capability discovery, semantic and open-intent reads, mutation dry-run and approval-gated mutation execution as MAF tools, with `AddFoundgineAgentFramework()` DI registration and a keyed scoped `AIAgent`. Mutations are off by default and execution is wrapped in `ApprovalRequiredAIFunction`; no model-callable approve tool exists, and `approvedBy` is the host-resolved subject.
@@ -11,9 +23,23 @@
 - Added Java PostgreSQL migration support: fluent-model schema projection, schema differ and PostgreSQL SQL generation, rollback ordering, migration snapshots/history, Flyway integration and a migration CLI.
 - Added Java migration schema metadata for defaults, identity generation, named foreign keys and referential actions, CHECK constraints, index access methods/operator classes and required PostgreSQL extensions.
 - Expanded the .NET Supply Chain starter with typed semantic query helpers, ownership-scoped relationship filtering, CRUD endpoints, EF Core migrations and database initialization/demo data.
+- Added shared warrant replay stores over the Redis protocol (Redis, Valkey, Microsoft Garnet): C# `Foundgine.Providers.Redis` (`RedisSecurityWarrantReplayStore`, `StackExchangeReplayBackend`) and Java `com.foundgine.providers.security.redis` (`RedisSecurityWarrantReplayStore`, optional `LettuceReplayBackend`). Each consume is one atomic `SET key 1 NX PX ttl` with the TTL taken from the warrant expiry plus one minute of skew grace, keys are `prefix + SHA-256(warrantId 0x1F nonce)` (identical across C#, Java and the file store), and an unreachable server fails closed (the request is denied). Lettuce is an optional dependency in `foundgine-providers`.
+
+### Changed
+
+- Updated the wiki overview and MkDocs navigation to make the new **Why Foundgine?** page a prominent starting point for evaluators.
+- Updated the website homepage with an enterprise-value section explaining the problem Foundgine solves and highlighting less duplication, more control and lower complexity. Added links to the detailed wiki and commercial strategy.
+- Kept commercial claims evidence-led: the documentation describes potential benefits and recommends measuring them in a representative pilot rather than asserting unverified savings percentages or guaranteed risk reductions.
+- Warrant replay stores are now bounded. `ISecurityWarrantReplayStore` gains `TryConsume(warrantId, nonce, expiresAt)` / `tryConsume(warrantId, nonce, expiresAt)` as a default interface method (existing custom stores keep working), and `SecurityWarrantReplayGuard` passes the warrant's expiry. `MemorySecurityWarrantReplayStore` previously grew forever and now evicts entries after expiry plus a one-minute skew grace. `FileSecurityWarrantReplayStore` previously re-read an ever-growing file on every consume and now compacts expired lines (new lines are `HEX<TAB>retainUntilMillis`; legacy bare-hash lines are still read and kept). The Java file store now fsyncs appends like the C# one. Shared stores (Redis, SQL) should override the new overload to set a TTL.
+
+### Removed
+
+- Stale nested copies of `Foundgine.Providers.Orm`, `Foundgine.Providers.Orm.Generator` and `Foundgine.Providers.EntityFrameworkCore` under `src/csharp/Foundgine.Providers/` (they were excluded from the build and had diverged from the top-level projects), five `*.migration-backup` test files, one `*.java.bak`, and a stray `src/python/.pytest_cache`. Added `src/csharp/ci/verify-no-stale-nested-projects.sh` and ignore rules for `*.migration-backup`, `*.bak`, `*.orig`, `*.rej`.
 
 ### Verification status
 
+- The Java Redis replay store has 10 tests (`RedisSecurityWarrantReplayStoreTest`, fake backend with `SET NX PX` semantics) that passed in the same stubbed-JUnit harness. `LettuceReplayBackend` and the Lettuce pom entries were not compiled (no dependency jar offline), and no test ran against a real Redis/Valkey/Garnet server. The C# `Foundgine.Providers.Redis` project and its 11 xUnit tests were written without a .NET SDK and have not been compiled or run.
+- The replay-store retention change has 8 new Java tests (`WarrantReplayStoreRetentionTest`) that passed, together with the existing replay and trust-boundary penetration tests, in a stubbed-JUnit harness outside Maven. The C# change and its 7 new xUnit tests (`SecurityWarrantReplayStoreRetentionTests`) were written without a .NET SDK available and have not been compiled or run.
 - The MAF adapter and its `Foundgine.AgentFramework.Tests` project were added, but the supplied checkpoint does not establish a successful build or test run. Verify the pinned `Microsoft.Agents.AI` version, restore, build and tests before release.
 - The Java migration generator includes PostgreSQL 16 catalog-parity tests, but the supplied checkpoint does not establish that Flyway itself or the full Java 27 test suite passed. Keep the handwritten Advanced V1 migration as the baseline until schema parity and migration execution are verified.
 - The latest reported Java Advanced sample test phase was failing before the final fixes in this checkpoint; those fixes have not been re-run. Do not describe the full Java suite as passing.

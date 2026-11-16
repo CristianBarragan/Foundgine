@@ -237,11 +237,20 @@ provider</pre>
           <h2 id="what-the-ai-integration-provides">What the AI integration provides</h2>
           <p>
             The .NET <code>Foundgine.Providers</code> package integrates with
-            <code>Microsoft.Extensions.AI</code> and includes MCP tooling. Java provides MCP support
-            in <code>foundgine-providers</code> and an optional LangChain4j module. The LangChain4j
-            source and tests are present, but its dependency pins and runtime behavior are not yet
-            verified. These integrations expose capabilities; they do not become the source of
-            application authority.
+            <code>Microsoft.Extensions.AI</code>, Microsoft Agent Framework and MCP tooling. Java
+            includes MCP, LangChain4j and Spring Boot adapters in <code>foundgine-providers</code>.
+            Spring Boot and LangChain4j dependencies are optional; the consolidated build/runtime
+            verification remains pending. These integrations expose capabilities; they do not become
+            the source of application authority.
+          </p>
+        </section>
+        <section>
+          <h2 id="calling-from-typescript-python-or-webassembly">Calling from TypeScript, Python or WebAssembly</h2>
+          <p>
+            Thin client SDKs (<code>@foundgine/typescript</code>, <code>foundgine-sdk</code> and
+            <code>@foundgine/wasm</code>) connect to a Foundgine server's MCP endpoint and Temporal
+            workflow routes. They are transport only and grant no authority. See the
+            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/client-sdks.md">client SDK overview</a>.
           </p>
         </section>
         <section>
