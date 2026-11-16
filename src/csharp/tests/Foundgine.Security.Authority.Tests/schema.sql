@@ -97,6 +97,15 @@ CREATE TABLE IF NOT EXISTS banking.authorization_context_tombstone
     CONSTRAINT ck_authorization_context_tombstone_tag CHECK (length(btrim(integrity_tag)) = 64)
 );
 
+CREATE TABLE IF NOT EXISTS banking.authorization_security_recovery_checkpoint
+(
+    checkpoint_id bigint PRIMARY KEY CHECK (checkpoint_id = 1),
+    sequence      bigint NOT NULL CHECK (sequence > 0),
+    state_digest  text NOT NULL CHECK (length(state_digest) = 64),
+    status        text NOT NULL CHECK (status IN ('sealed', 'recovery-required')),
+    updated_at    timestamptz NOT NULL DEFAULT now()
+);
+
 -- M5.20 integrity metadata migration for databases created by earlier milestones.
 ALTER TABLE banking.authorization_context
     ADD COLUMN IF NOT EXISTS integrity_algorithm text NOT NULL DEFAULT 'HMAC-SHA256/v1';

@@ -258,6 +258,8 @@ public sealed class PostgresAuthorizationContextStore
         var databaseRole = reader.GetString(3);
         var credentialFingerprint = reader.GetString(4);
         var lastSequence = reader.GetInt64(5);
+		
+		await reader.DisposeAsync();
 
         if (!active || writerTenant != tenantId || writerActor != actorId)
             throw new UnauthorizedAccessException(
