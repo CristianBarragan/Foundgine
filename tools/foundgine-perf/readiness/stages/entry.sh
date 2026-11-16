@@ -20,7 +20,7 @@ SLN=${FG_SLN:-$(find "$FG/src/csharp" -maxdepth 2 -name "*.sln" | sort | sed -n 
 [ -n "$SLN" ] || SLN=$(find "$FG/src/csharp" -maxdepth 2 -name "*.slnx" | sort | sed -n 1p)
 [ -n "$SLN" ] || die "no .sln under $FG/src/csharp (set FG_SLN)"
 say "EG1: dotnet build + test ($SLN)"; echo "using solution: $SLN" >&2
-ok1=1; dotnet build "$SLN" -c Release >"$RES/dotnet-build.log" 2>&1 && dotnet test "$SLN" -c Release --no-build --logger "trx" --results-directory "$RES/trx" >"$RES/dotnet-test.log" 2>&1 || ok1=0
+ok1=1; dotnet build "$SLN" -c Release >"$RES/dotnet-build.log" 2>&1 && dotnet test "$SLN" -c Release --no-build --logger "trx" --results-directory "$RES/trx" -- xUnit.ParallelizeTestCollections=false --results-directory "$RES/trx" >"$RES/dotnet-test.log" 2>&1 || ok1=0
 T=$($PY "$SUITE/readiness/parse_results.py" trx "$RES/trx" 'redis|migrat|agentframework|maf|postgres' 2>/dev/null) || ok1=0
 [ -n "$T" ] && echo "$T" > "$RES/trx.json" || echo "{\"totals\":{}}" > "$RES/trx.json"
 [ "$ok1" = 1 ] && rec EG1 pass --measured "$($PY -c 'import json,sys;print(json.dumps(json.load(open(sys.argv[1]))["totals"]))' "$RES/trx.json")" --threshold "build ok, >0 passed, 0 failed, 0 skipped" --artifact "$RES/trx.json" \

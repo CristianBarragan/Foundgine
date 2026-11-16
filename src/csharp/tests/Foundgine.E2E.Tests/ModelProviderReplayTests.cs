@@ -169,7 +169,6 @@ public sealed class ModelProviderReplayTests
                            """;
         await using var command = new NpgsqlCommand(sql, connection, transaction);
         await command.ExecuteNonQueryAsync();
-        await transaction.RollbackAsync();
     }
 
     private sealed record ReplayCase(string Id, string Json, int TenantId, string Expected);

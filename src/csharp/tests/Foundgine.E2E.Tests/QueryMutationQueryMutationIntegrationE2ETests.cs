@@ -50,7 +50,7 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
         await SetSearchPathAsync(connection, "fg_stateful");
 
         var mutationMetadata = PostgresE2ETests.BuildMetadata();
-        var queryMetadata = PostgresE2ETests.BuildMetadata();
+        var queryMetadata = ComplexQueryPostgresE2ETests.BuildMetadata();
         var metadata = MergeMetadata(mutationMetadata, queryMetadata);
 
         await using var transaction = await connection.BeginTransactionAsync();
@@ -203,7 +203,7 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
         await SetSearchPathAsync(connection, "fg_stateful");
 
         var mutationMetadata = PostgresE2ETests.BuildMetadata();
-        var queryMetadata = PostgresE2ETests.BuildMetadata();
+        var queryMetadata = ComplexQueryPostgresE2ETests.BuildMetadata();
         var metadata = MergeMetadata(mutationMetadata, queryMetadata);
 
         await using var transaction = await connection.BeginTransactionAsync();
