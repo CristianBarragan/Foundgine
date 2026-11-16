@@ -12,11 +12,11 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 
 | # | Extension | What it is, in plain words | C# source | Java source |
 |---|---|---|---|---|
-| 1 | **GraphQL, Hot Chocolate adapter** | Reads a GraphQL query and turns it into a Foundgine request | `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` | `src/java/foundgine-extensions/.../graphql` |
+| 1 | **GraphQL, Hot Chocolate adapter** | Reads a GraphQL query and turns it into a Foundgine request | `src/csharp/Foundgine.Extensions.GraphQL/HotChocolate` | `src/java/foundgine-extensions/.../graphql` |
 | 2 | **GraphQL secure execution** (`...HotChocolate.Execution`) | Runs those requests through Foundgine's safe path (permissions, plan, provider) | `GraphQL/HotChocolate/Execution` | query and mutation executors in `...graphql` |
-| 3 | **Keycloak identity** | Turns a Keycloak login into trusted Foundgine identity and short-lived signed permission slips (warrants) | `src/csharp/Foundgine.Extensions/Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
-| 4 | **Temporal durable workflows** | Runs long, multi-step business processes with retries, timers, approvals and undo steps | `src/csharp/Foundgine.Extensions/Temporal` | `src/java/foundgine-extensions/.../temporal` |
-| 5 | **Extension registry** | A small list of which extensions are installed | `src/csharp/Foundgine.Extensions` | `com.foundgine.extensions` |
+| 3 | **Keycloak identity** | Turns a Keycloak login into trusted Foundgine identity and short-lived signed permission slips (warrants) | `src/csharp/Foundgine.Extensions.Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
+| 4 | **Temporal durable workflows** | Runs long, multi-step business processes with retries, timers, approvals and undo steps | `src/csharp/Foundgine.Extensions.Temporal` | `src/java/foundgine-extensions/.../temporal` |
+| 5 | **Extension registry** | A small list of which extensions are installed | n/a in .NET (each integration is its own project) | `com.foundgine.extensions` |
 
 > Both language modules contain GraphQL, Keycloak and Temporal source trees in this repository snapshot. That does not establish exact API, feature or maturity parity. Check each language's implementation and tests before assuming equivalent behaviour.
 
@@ -24,7 +24,7 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 
 Spring Boot and LangChain4j are included in the Java `foundgine-providers` artifact, not in `foundgine-extensions`. Their framework dependencies are optional. See [Agent and framework integrations](agent-framework-integrations.md), [Spring Boot guide](../../src/java/foundgine-providers/SPRING-BOOT.md) and [LangChain4j guide](../../src/java/foundgine-providers/LANGCHAIN4J.md).
 
-**Install what you use.** In .NET the umbrella package is `Foundgine.Extensions`. It does **not** include the Foundgine runtime, any storage provider, an MCP server or an LLM client.
+**Install what you use.** In .NET each integration is its own package: `Foundgine.Extensions.GraphQL`, `Foundgine.Extensions.Temporal` and `Foundgine.Extensions.Keycloak` (Keycloak depends on Temporal). None of them includes include the Foundgine runtime, any storage provider, an MCP server or an LLM client.
 
 ## Which extension do I need?
 
@@ -67,7 +67,7 @@ The C# source is under `GraphQL/HotChocolate`; query/mutation execution has a de
 - Apply request depth/complexity, pagination, timeout and cancellation limits at the GraphQL host as well as Foundgine's own execution budgets.
 - Mutation dry-run, approval and execution must preserve the runtime's fingerprint/authority checks.
 
-**Source:** `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql`.
+**Source:** `src/csharp/Foundgine.Extensions.GraphQL/HotChocolate` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql`.
 
 ## 3. Keycloak identity integration
 
@@ -100,7 +100,7 @@ The C# source is under `GraphQL/HotChocolate`; query/mutation execution has a de
 - Do not forward or persist raw access tokens in workflow payloads or event attributes.
 - Fail closed when validation, tenant mapping, signing-key resolution or warrant validation fails.
 
-**Source:** `src/csharp/Foundgine.Extensions/Keycloak` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/keycloak`.
+**Source:** `src/csharp/Foundgine.Extensions.Keycloak` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/keycloak`.
 
 ## 4. Temporal durable-workflow integration
 
@@ -141,7 +141,7 @@ The C# source is under `GraphQL/HotChocolate`; query/mutation execution has a de
 - Run API and worker processes with appropriately separated credentials and signing keys.
 - Treat outbox delivery as at-least-once, not exactly-once.
 
-**Source:** `src/csharp/Foundgine.Extensions/Temporal` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/temporal`.
+**Source:** `src/csharp/Foundgine.Extensions.Temporal` and `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/temporal`.
 
 ## 5. Extension registry and contracts
 
@@ -152,9 +152,9 @@ The Java extension module includes `FoundgineExtension`, `TransportExtension` an
 - `Foundgine.Core` owns provider-independent semantic and security contracts.
 - `Foundgine.Runtime` coordinates resolution, authorization, planning and execution.
 - `Foundgine.Providers` supplies physical providers, gateway and MCP infrastructure.
-- `Foundgine.Extensions` supplies optional framework/identity/workflow adapters.
+- `Foundgine.Extensions.*` supply optional framework/identity/workflow adapters.
 
-C# package references should be selected according to the integration required; the main `Foundgine.Extensions` project references Core, Runtime and Providers. Java's `foundgine-extensions` module depends on `foundgine-core`, `foundgine-runtime` and `foundgine-providers`. Spring Boot and LangChain4j adapter classes are in `foundgine-providers`; their framework dependencies are optional, so applications add only the frameworks they use.
+C# package references should be selected according to the integration required; `Foundgine.Extensions.GraphQL` references Core and Runtime; `Foundgine.Extensions.Temporal` and `.Keycloak` also reference Providers. Java's `foundgine-extensions` module depends on `foundgine-core`, `foundgine-runtime` and `foundgine-providers`. Spring Boot and LangChain4j adapter classes are in `foundgine-providers`; their framework dependencies are optional, so applications add only the frameworks they use.
 
 ## Hosting and dependency injection
 

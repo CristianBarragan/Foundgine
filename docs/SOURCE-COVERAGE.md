@@ -68,8 +68,8 @@ See [Client SDKs](wiki/client-sdks.md) for the combined overview. The SDK README
 | ORM map generation | `Foundgine.Providers.Orm.Generator` | No corresponding dedicated ORM map generator module identified in this source tree |
 | MCP | `Foundgine.Providers/Tools/MCP` | `providers/tools/mcp` |
 | Gateway / events / outbox | `Foundgine.Providers/Gateway`, `EventStore`, `Outbox` | `providers/gateway`, `eventstore`, `outbox` |
-| Keycloak | `Foundgine.Extensions/Keycloak` | `extensions/keycloak` |
-| Temporal | `Foundgine.Extensions/Temporal` | `extensions/temporal` |
+| Keycloak | `Foundgine.Extensions.Keycloak` | `extensions/keycloak` |
+| Temporal | `Foundgine.Extensions.Temporal` | `extensions/temporal` |
 | GraphQL | Hot Chocolate adapter | GraphQL Java adapter |
 
 Presence in both source trees does not prove identical behavior, supported feature sets, or production certification. Use the ORM conformance matrix and language-specific tests for those claims.
@@ -104,14 +104,16 @@ The lists below were enumerated from the supplied source archive. They make it p
 ### .NET project files (`.csproj`)
 
 - `csharp/Foundgine.Core/Foundgine.Core.csproj`
-- `csharp/Foundgine.Extensions/Foundgine.Extensions.csproj`
-- `csharp/Foundgine.Extensions/Samples/Temporal.Api/Temporal.Api.csproj`
-- `csharp/Foundgine.Extensions/Samples/Temporal.Worker/Temporal.Worker.csproj`
+- `csharp/Foundgine.Extensions.GraphQL/Foundgine.Extensions.GraphQL.csproj
+- `csharp/Foundgine.Extensions.Temporal/Foundgine.Extensions.Temporal.csproj`
+- `csharp/Foundgine.Extensions.Keycloak/Foundgine.Extensions.Keycloak.csproj`
+- `csharp/samples/Foundgine.Extensions.Temporal/Temporal.Api/Temporal.Api.csproj`
+- `csharp/samples/Foundgine.Extensions.Temporal/Temporal.Worker/Temporal.Worker.csproj`
 - `csharp/Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj`
 - `csharp/Foundgine.Providers.Orm.Generator/Foundgine.Providers.Orm.Generator.csproj`
 - `csharp/Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj`
 - `csharp/Foundgine.Providers/EventStore/Foundgine.Providers.EventStore.csproj`
-- `csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj`
+- `csharp/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj`
 - `csharp/Foundgine.Providers/Foundgine.Providers.csproj`
 - `csharp/Foundgine.Providers/Samples/Gateway.MinimalApi/Gateway.MinimalApi.csproj`
 - `csharp/Foundgine.Runtime/Foundgine.Runtime.csproj`

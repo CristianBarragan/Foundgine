@@ -9,8 +9,9 @@ namespace Foundgine.EventStore.Tests;
 
 public sealed class PostgresOutboxIntegrationTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:17-alpine")
+    private PostgreSqlContainer _postgres = CreateContainer();
+    private static PostgreSqlContainer CreateContainer() => new PostgreSqlBuilder()
+        .WithImage("postgres:17.11-alpine")
         .WithDatabase("foundgine").WithUsername("foundgine").WithPassword("foundgine")
         .Build();
 
@@ -20,8 +21,7 @@ public sealed class PostgresOutboxIntegrationTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _postgres.StartAsync();
-        _dataSource = NpgsqlDataSource.Create(_postgres.GetConnectionString());
+        (_postgres, _dataSource) = await PostgresReady.StartAsync(_postgres, CreateContainer);
         await EventStoreMigrator.ApplyAsync(_dataSource);
         _outbox = new PostgresOutbox(_dataSource);
     }

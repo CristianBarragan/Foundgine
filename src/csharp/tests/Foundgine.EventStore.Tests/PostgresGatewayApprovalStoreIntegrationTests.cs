@@ -22,8 +22,9 @@ namespace Foundgine.EventStore.Tests;
 public sealed class PostgresGatewayApprovalStoreIntegrationTests : IAsyncLifetime
 {
     private static readonly DateTimeOffset Now = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
-    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:17-alpine")
+    private PostgreSqlContainer _postgres = CreateContainer();
+    private static PostgreSqlContainer CreateContainer() => new PostgreSqlBuilder()
+        .WithImage("postgres:17.11-alpine")
         .WithDatabase("foundgine").WithUsername("foundgine").WithPassword("foundgine")
         .Build();
 
@@ -33,8 +34,7 @@ public sealed class PostgresGatewayApprovalStoreIntegrationTests : IAsyncLifetim
 
     public async Task InitializeAsync()
     {
-        await _postgres.StartAsync();
-        _dataSource = NpgsqlDataSource.Create(_postgres.GetConnectionString());
+        (_postgres, _dataSource) = await PostgresReady.StartAsync(_postgres, CreateContainer);
         await EventStoreMigrator.ApplyAsync(_dataSource);
         _codec = new TestCodec();
         _store = new PostgresFoundgineGatewayApprovalStore(_dataSource, _codec, enforceDatabaseClock: false);

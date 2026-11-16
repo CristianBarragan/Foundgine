@@ -1,0 +1,34 @@
+{
+  "_comment": [
+    "Run from a host with Docker after `scripts/demo.sh` has the stack up (infrastructure/docker-compose.demo.yml).",
+    "Set ERP_DB_CONTAINER (the postgres:17 container of the ERP) and container names below to match `docker ps`.",
+    "UNVERIFIED against a live stack: the e2e example was never built or run (INCREMENT-1.md). Build and run scripts/demo.sh first.",
+    "Poll interval is 100 ms, so each wait step has up to 100 ms quantisation; keep it in mind when reading small latencies.",
+    "Stock: each journey reserves QTY of a SKU from sku_pool. Seed enough stock for rate*duration*sessions or failures will be out-of-stock, not performance."
+  ],
+  "auth": {"keycloak_url": "http://127.0.0.1:8080", "realm": "enterprise", "client_id": "enterprise-web",
+           "users": ["alice", "dave"], "password": "dev-password"},
+  "crm_url": "http://127.0.0.1:5000", "erp_url": "http://127.0.0.1:8082",
+  "sku_pool": ["SKU-1", "SKU-2", "SKU-3"], "qty": 1, "unit_price": 100, "wait_timeout_s": 180,
+  "sessions": 5, "seed": 20261116, "duration_s": 60, "drain_timeout_s": 180,
+  "environment": {"note": "record docker/WSL limits; compose files set no CPU/memory limits (report section 5)"},
+  "resources": {
+    "crm-api": {"kind": "docker", "containers": ["foundgine-e2e-crm-api-1"]},
+    "erp": {"kind": "docker", "containers": ["foundgine-e2e-erp-1"]},
+    "temporal": {"kind": "docker", "containers": ["foundgine-e2e-temporal-1"]},
+    "orchestration": {"kind": "docker", "containers": ["foundgine-e2e-orchestration-1"]}
+  },
+  "probes": {
+    "erp_outbox_oldest_unpublished_s": "docker exec $ERP_DB_CONTAINER psql -U erp -d erp -Atc \"select coalesce(extract(epoch from now()-min(created_at)),0) from erp_temporal_event_outbox where published_at is null\"",
+    "erp_outbox_backlog_rows": "docker exec $ERP_DB_CONTAINER psql -U erp -d erp -Atc \"select count(*) from erp_temporal_event_outbox where published_at is null\""
+  },
+  "journeys": [
+    {"name": "customer-onboarding", "fn": "fpbench.journeys.foundgine_e2e:customer_onboarding", "rates": [5, 20, 50]},
+    {"name": "customer-to-cash", "fn": "fpbench.journeys.foundgine_e2e:customer_to_cash", "rates": [1, 5, 10, 20]},
+    {"name": "read-paths", "fn": "fpbench.journeys.foundgine_e2e:read_paths", "closed": [1, 8, 32], "duration_s": 30},
+    {"name": "customer-to-cash-erp-outage", "fn": "fpbench.journeys.foundgine_e2e:customer_to_cash", "rates": [5], "duration_s": 150,
+     "events": [
+       {"at_s": 45, "name": "fault_start", "cmd": "docker pause foundgine-e2e-erp-1"},
+       {"at_s": 105, "name": "fault_end", "cmd": "docker unpause foundgine-e2e-erp-1"}]}
+  ]
+}

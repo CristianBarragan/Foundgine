@@ -133,7 +133,7 @@ CREATE INDEX IF NOT EXISTS "IX_Transaction_Amount" ON fg_stateful."Transaction"(
 -- the schema itself is initialized only here.
 CREATE TABLE IF NOT EXISTS fg_correlation."Customer" (
     "Id" bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    "Name" text NOT NULL UNIQUE
+    "Name" text NOT NULL
 );
 CREATE TABLE IF NOT EXISTS fg_correlation."Account" (
     "Id" bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

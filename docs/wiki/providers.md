@@ -57,15 +57,15 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | JPA provider | Executes plans and mutations through Jakarta Persistence | n/a | `.../storage/orm/jpa` |
 | ORM map generator | Roslyn generator for typed entity maps | `Foundgine.Providers.Orm.Generator` | n/a |
 | PostgreSQL retrieval | pg_trgm / full-text (optional pg_search, Apache AGE) candidate retrieval | `Storage/Sql/Retrieval` | `.../storage/sql/retrieval` (source and parity tests; database runtime unverified) |
-| Elasticsearch retrieval | Lexical candidate retrieval backed by an Elasticsearch index | `Storage/Elasticsearch` | `.../storage/elasticsearch` |
-| PostgreSQL + pgvector retrieval | Vector/semantic lexicon indexing and candidate retrieval using pgvector | `Storage/PostgresVector` | `.../storage/postgresvector` |
+| Elasticsearch retrieval | Lexical candidate retrieval backed by an Elasticsearch index | `Foundgine.Providers.Elasticsearch` (own package) | `.../storage/elasticsearch` |
+| PostgreSQL + pgvector retrieval | Vector/semantic lexicon indexing and candidate retrieval using pgvector | `Foundgine.Providers.PostgresVector` (own package) | `.../storage/postgresvector` |
 | PostgreSQL event store | Persist and read event envelopes | `EventStore` | `.../eventstore` |
 | PostgreSQL outbox | Durable dispatch queue for integration events | `Outbox` | `.../outbox` |
 | Gateway/provider registry | Transport-neutral capability facade, provider registration/negotiation, events, approvals and HTTP/SSE adapters | `Gateway` | `.../gateway` |
 | MCP tools and client | Expose Foundgine capabilities to MCP clients and consume remote MCP capabilities | `Tools/MCP` | `.../tools/mcp` |
 | AOT metadata | Compile-time declarations and generated semantic metadata | `Aot` + `Foundgine.Providers.Aot.Generator` | `.../aot` + `foundgine-aot-generator` |
 | AI agent/toolset descriptors | Describe agent/toolset integration surfaces | `Models` | `.../models` |
-| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools; included in `Foundgine.Providers` | `src/csharp/Foundgine.Providers/AgentFramework` | n/a |
+| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools; separate package `Foundgine.Providers.AgentFramework` | `src/csharp/Foundgine.Providers.AgentFramework` | n/a |
 | Graph retrieval capability | Declare graph-retrieval capability metadata for provider negotiation | `Hosting/Capabilities` | `.../capabilities` |
 
 > The table is a source map, not a promise of identical implementation maturity or runtime dependencies. Verify the concrete language module, tests and package release before relying on a feature.
@@ -121,7 +121,7 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 - Define index refresh/rebuild procedures and stale-index behavior.
 - Bound candidate counts, query time and payload size. Fail or return a documented incomplete result when a budget is exhausted.
 
-**Source:** `Storage/Elasticsearch` in C# and `storage/elasticsearch` in Java.
+**Source:** `Foundgine.Providers.Elasticsearch` in C# and `storage/elasticsearch` in Java.
 
 ## PostgreSQL / pgvector retrieval provider
 
@@ -136,7 +136,7 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 - Bound candidate count, query time and vector dimensions; validate embedding compatibility.
 - Never interpret vector similarity as permission to execute a capability.
 
-**Source:** `Storage/PostgresVector` in C# and `storage/postgresvector` in Java.
+**Source:** `Foundgine.Providers.PostgresVector` in C# and `storage/postgresvector` in Java.
 
 ## ORM providers: EF Core and JPA
 

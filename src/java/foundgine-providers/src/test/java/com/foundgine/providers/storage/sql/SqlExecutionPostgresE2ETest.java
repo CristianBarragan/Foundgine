@@ -265,7 +265,7 @@ class SqlExecutionPostgresE2ETest {
             SemanticPlan allPlan = planWithFilter(allBalancesAtLeast100, 10);
             SqlPlan allSql = compiler.compile(allPlan);
             assertTrue(allSql.commandText().contains("NOT EXISTS"), allSql.commandText());
-            assertFalse(allSql.commandText().contains("100"), allSql.commandText());
+            assertFalse(allSql.commandText().replace(schema, "<schema>").contains("100"), allSql.commandText());
 
             ExecutionResult allResult =
                     new SqlExecutionProvider(connection)

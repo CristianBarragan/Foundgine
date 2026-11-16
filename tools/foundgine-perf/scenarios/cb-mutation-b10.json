@@ -1,0 +1,18 @@
+{
+ "name": "cb-mutation-b10",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "mutation BenchmarkUpsertBatch {\n  m1: upsertCustomer(input: { customerKey: \"a41c0fea-0a7b-5282-bc1e-84d3df2a1f35\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 1\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m2: upsertCustomer(input: { customerKey: \"aa244715-ba12-533f-86fd-1821b56af348\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 2\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m3: upsertCustomer(input: { customerKey: \"49fddd63-94ae-5134-b204-d0baa7a880ab\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 3\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m4: upsertCustomer(input: { customerKey: \"b1b1f7e5-20e8-500f-875f-26d5b466d539\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 4\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m5: upsertCustomer(input: { customerKey: \"bdcfd470-632d-57a9-b947-52146db1dd65\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 5\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m6: upsertCustomer(input: { customerKey: \"d4be54c1-266f-57bf-8fd7-309f2f1c5a76\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 6\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m7: upsertCustomer(input: { customerKey: \"6a17816e-a05a-5627-81c9-42a0b3b62df3\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 7\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m8: upsertCustomer(input: { customerKey: \"226a47a2-8673-555c-8595-c13cacae47ed\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 8\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m9: upsertCustomer(input: { customerKey: \"2cadfe33-0d40-5618-8afd-c2f8f5d90910\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 9\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n  m10: upsertCustomer(input: { customerKey: \"be3d8157-e2d9-5b6a-9c37-a2d05c1d5df4\" firstName: \"Benchmark\" lastName: \"Customer\" fullName: \"Benchmark Customer 10\" }, onConflict: [\"CustomerKey\"]) { id customerKey firstName lastName fullName }\n}",
+    "operationName": "BenchmarkUpsertBatch"
+   }
+  }
+ ],
+ "sort_lists_by": "id",
+ "ignore_keys": [
+  "id"
+ ],
+ "ops_per_request": 10
+}

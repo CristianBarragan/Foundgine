@@ -1,0 +1,11 @@
+# Overlay for src/csharp/benchmarks/CoffeeBeanery.Performance/compose/query.yml
+#   docker compose -f query.yml -f perf.override.yml up -d postgres database hotchocolate foundgine-cold foundgine-warm
+# Fixes: ports are not published in the original (loader must live on the host so the
+# sampler can read docker stats), and no CPU/memory limits were set. Equal limits for every API.
+services:
+  postgres:          { cpuset: "0-1", mem_limit: 2g, ports: ["15432:5432"] }
+  hotchocolate:      { cpuset: "2-3", mem_limit: 1g, cpus: 2, ports: ["4300:4300"] }
+  foundgine-cold:    { cpuset: "4-5", mem_limit: 1g, cpus: 2, ports: ["4301:4301"] }
+  foundgine-warm:    { cpuset: "4-5", mem_limit: 1g, cpus: 2, ports: ["4302:4302"] }
+# Cores 6+ are left to the load generator (taskset). Adjust to the host; record it in environment.json.
+# Run ONE API at a time under load (the harness resets/restarts between cells), so cpuset sharing is intentional.

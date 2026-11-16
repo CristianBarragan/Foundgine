@@ -116,7 +116,7 @@ source. This is the real `Foundgine.SupplyChain.csproj`:
     <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
 
     <ProjectReference
-      Include="../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+      Include="../../Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
       OutputItemType="Analyzer"
       ReferenceOutputAssembly="false"
       PrivateAssets="all"

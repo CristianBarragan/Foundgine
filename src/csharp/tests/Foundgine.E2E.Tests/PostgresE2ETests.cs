@@ -266,7 +266,7 @@ public sealed class PostgresE2ETests
             var customerId = Convert.ToInt64(result.Results[0].ReturnedFields![new FieldId(1)]);
             var accountId = Convert.ToInt64(result.Results[2].ReturnedFields![new FieldId(1)]);
             var orderId = Convert.ToInt64(result.Results[4].ReturnedFields![new FieldId(1)]);
-            var paymentOrderId = Convert.ToInt64(result.Results[6].ReturnedFields![new FieldId(2)]);
+            var paymentOrderId = Convert.ToInt64(result.Results[6].ReturnedFields![new FieldId(6)]);
 
             Assert.True(customerId > 0);
             Assert.True(accountId > 0);
@@ -301,7 +301,8 @@ public sealed class PostgresE2ETests
         var connectionString = Environment.GetEnvironmentVariable(ConnectionEnvironmentVariable);
 
         await using var connection = new NpgsqlConnection(connectionString);
-        await connection.OpenAsync();
+		await connection.OpenAsync();
+		await SetSearchPathAsync(connection, "fg_mutation");
 
         var metadata = BuildMetadata();
         var graph = BuildMeasurementGraph(batchSize, depth);

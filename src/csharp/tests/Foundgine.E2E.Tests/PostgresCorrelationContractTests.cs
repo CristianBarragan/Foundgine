@@ -358,6 +358,7 @@ public sealed class PostgresCorrelationContractTests
         Assert.True(await verifyReader.ReadAsync());
         Assert.Equal("Bob", verifyReader.GetString(0));
         Assert.Equal("Bob Primary", verifyReader.GetString(1));
+        await verifyReader.CloseAsync();
         await transaction.RollbackAsync();
     }
 

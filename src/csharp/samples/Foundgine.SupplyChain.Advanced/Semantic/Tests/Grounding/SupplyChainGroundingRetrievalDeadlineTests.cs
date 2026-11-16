@@ -34,9 +34,11 @@ public sealed class SupplyChainGroundingRetrievalDeadlineTests
     public void Ground_detects_retrieval_timeout_after_slow_provider_returns()
     {
         var contract = SupplyChainSemanticModel.Build().Freeze().CreateSnapshot();
-        var source = new RecordingSlowLexicalSource(TimeSpan.FromMilliseconds(20));
+        // Wide margins (as in the compact-token test below): with a 5 ms budget the deadline could expire before the provider
+        // was called at all (first-call JIT, a busy machine), leaving Requests empty. The provider must be called AND return late.
+        var source = new RecordingSlowLexicalSource(TimeSpan.FromMilliseconds(500));
         var resolver = new SemanticLexicalResolver(
-            contract, source, retrievalTimeout: TimeSpan.FromMilliseconds(5));
+            contract, source, retrievalTimeout: TimeSpan.FromMilliseconds(200));
 
         var decision = resolver.Ground("suppliers");
 

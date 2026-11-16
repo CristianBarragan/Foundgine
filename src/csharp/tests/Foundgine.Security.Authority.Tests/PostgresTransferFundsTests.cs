@@ -15,6 +15,38 @@ internal static class PostgresTestEnvironment
 
     public static bool IsConfigured =>
         !string.IsNullOrWhiteSpace(ConnectionString);
+
+    /// <summary>
+    /// Two fresh ids ordered the way PostgreSQL orders uuid (bytewise, big-endian). .NET's Guid.CompareTo orders by a
+    /// different field layout, so it cannot be used to predict ORDER BY id.
+    /// </summary>
+    public static (Guid Smaller, Guid Larger) NewOrderedUuidPair()
+    {
+        var a = Guid.NewGuid();
+        var b = Guid.NewGuid();
+        return a.ToByteArray(bigEndian: true).AsSpan().SequenceCompareTo(b.ToByteArray(bigEndian: true)) <= 0
+            ? (a, b)
+            : (b, a);
+    }
+
+    /// <summary>
+    /// Waits until at least <paramref name="expected"/> other sessions are blocked on a lock. The race tests depend on
+    /// a writer and a transfer queuing on the same rows in a known order; a fixed sleep only hopes that has happened.
+    /// </summary>
+    public static async Task WaitForBlockedAsync(NpgsqlDataSource dataSource, int expected, int timeoutMs = 10_000)
+    {
+        var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
+        while (true)
+        {
+            await using var command = dataSource.CreateCommand(
+                "SELECT count(*) FROM pg_stat_activity WHERE datname = current_database() AND wait_event_type = 'Lock' AND pid <> pg_backend_pid();");
+            var blocked = Convert.ToInt32(await command.ExecuteScalarAsync(), System.Globalization.CultureInfo.InvariantCulture);
+            if (blocked >= expected) return;
+            if (DateTime.UtcNow > deadline)
+                throw new TimeoutException($"Expected {expected} session(s) blocked on a lock, saw {blocked} after {timeoutMs} ms.");
+            await Task.Delay(10);
+        }
+    }
 }
 
 public sealed class PostgresTransferFundsTests

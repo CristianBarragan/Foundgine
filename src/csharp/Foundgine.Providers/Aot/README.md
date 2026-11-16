@@ -26,7 +26,7 @@ Attributes for:
 - `IMetadataSource`
 - AOT package marker/support types.
 
-`Foundgine.Providers.Aot` is paired with the `Foundgine.Providers.Aot.Generator` Roslyn source generator (still under its historical project name, built as its own netstandard2.0 assembly at `src/csharp/Foundgine.Providers/Foundgine.Providers.Aot.Generator/` and referenced as an analyzer, since source generators cannot be merged into a regular library assembly). The generator performs compile-time discovery and source generation; this folder supplies the public declarations and runtime support.
+`Foundgine.Providers.Aot` is paired with the `Foundgine.Providers.Aot.Generator` Roslyn source generator (still under its historical project name, built as its own netstandard2.0 assembly at `src/csharp/Foundgine.Providers.Aot.Generator/` and referenced as an analyzer, since source generators cannot be merged into a regular library assembly). The generator performs compile-time discovery and source generation; this folder supplies the public declarations and runtime support.
 
 ## Packaging
 

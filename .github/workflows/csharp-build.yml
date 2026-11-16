@@ -131,16 +131,22 @@ jobs:
             "Foundgine.Core"
             "Foundgine.Runtime"
             "Foundgine.Providers"
-            "Foundgine.Extensions"
+            "Foundgine.Providers.Redis"
+            "Foundgine.Providers.AgentFramework"
+            "Foundgine.Providers.PostgresVector"
+            "Foundgine.Providers.Elasticsearch"
+            "Foundgine.Extensions.GraphQL"
+            "Foundgine.Extensions.Temporal"
+            "Foundgine.Extensions.Keycloak"
           )
 
           if [[ "${#packages[@]}" -ne "${#expected_packages[@]}" ]]; then
-            echo "ERROR: Expected exactly four NuGet packages, produced ${#packages[@]}."
+            echo "ERROR: Expected exactly ten NuGet packages, produced ${#packages[@]}."
             exit 1
           fi
 
           for expected in "${expected_packages[@]}"; do
-            matches=(artifacts/nuget/"${expected}".*.nupkg)
+            matches=(artifacts/nuget/"${expected}".[0-9]*.nupkg)
 
             if [[ "${#matches[@]}" -ne 1 ]]; then
               echo "ERROR: Expected exactly one package for ${expected}, found ${#matches[@]}."
@@ -155,7 +161,7 @@ jobs:
             valid=false
 
             for expected in "${expected_packages[@]}"; do
-              if [[ "$filename" == "${expected}".*.nupkg ]]; then
+              if [[ "$filename" == "${expected}".[0-9]*.nupkg ]]; then
                 valid=true
                 break
               fi
@@ -167,7 +173,7 @@ jobs:
             fi
           done
 
-          providers_packages=(artifacts/nuget/Foundgine.Providers.*.nupkg)
+          providers_packages=(artifacts/nuget/Foundgine.Providers.[0-9]*.nupkg)
 
           if [[ "${#providers_packages[@]}" -ne 1 ]]; then
             echo "ERROR: Expected exactly one Foundgine.Providers package."
@@ -254,12 +260,22 @@ jobs:
             fi
           done
 
+          # Each optional integration is its own package and must carry its own assembly.
+          for optional in Foundgine.Providers.Redis Foundgine.Providers.AgentFramework Foundgine.Providers.PostgresVector Foundgine.Providers.Elasticsearch Foundgine.Extensions.GraphQL Foundgine.Extensions.Temporal Foundgine.Extensions.Keycloak; do
+            optional_packages=(artifacts/nuget/"${optional}".[0-9]*.nupkg)
+            if ! unzip -Z1 "${optional_packages[0]}" | grep -Fxq "lib/net10.0/${optional}.dll"; then
+              echo "ERROR: ${optional} package does not contain lib/net10.0/${optional}.dll"
+              exit 1
+            fi
+            echo "OK: ${optional} carries its own assembly"
+          done
+
           if compgen -G "artifacts/nuget/Foundgine.Experimental.Aot.*.nupkg" > /dev/null; then
             echo "ERROR: Obsolete Foundgine.Experimental.Aot package was produced."
             exit 1
           fi
 
-          echo "OK: exactly four expected NuGet packages"
+          echo "OK: exactly ten expected NuGet packages"
           echo "OK: AOT generator included as a compiler analyzer"
           echo "OK: no separate AOT generator package"
           echo "OK: no obsolete Experimental.Aot package"
@@ -838,11 +854,17 @@ jobs:
             "Foundgine.Core"
             "Foundgine.Runtime"
             "Foundgine.Providers"
-            "Foundgine.Extensions"
+            "Foundgine.Providers.Redis"
+            "Foundgine.Providers.AgentFramework"
+            "Foundgine.Providers.PostgresVector"
+            "Foundgine.Providers.Elasticsearch"
+            "Foundgine.Extensions.GraphQL"
+            "Foundgine.Extensions.Temporal"
+            "Foundgine.Extensions.Keycloak"
           )
 
           if [[ "${#packages[@]}" -ne "${#expected_packages[@]}" ]]; then
-            echo "ERROR: Expected exactly four packages, found ${#packages[@]}."
+            echo "ERROR: Expected exactly ten packages, found ${#packages[@]}."
             exit 1
           fi
 
@@ -852,7 +874,7 @@ jobs:
           done
 
           for expected in "${expected_packages[@]}"; do
-            matches=(artifacts/nuget/"${expected}".*.nupkg)
+            matches=(artifacts/nuget/"${expected}".[0-9]*.nupkg)
 
             if [[ "${#matches[@]}" -ne 1 ]]; then
               echo "ERROR: Expected exactly one ${expected} package."
@@ -860,7 +882,7 @@ jobs:
             fi
           done
 
-          providers_packages=(artifacts/nuget/Foundgine.Providers.*.nupkg)
+          providers_packages=(artifacts/nuget/Foundgine.Providers.[0-9]*.nupkg)
 
           if [[ "${#providers_packages[@]}" -ne 1 ]]; then
             echo "ERROR: Expected exactly one Foundgine.Providers package."

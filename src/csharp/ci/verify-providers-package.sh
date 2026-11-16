@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Verifies that a packed Foundgine.Providers .nupkg really carries the EF Core provider, the shared ORM core and both
-# build-time generators, and that a consumer needs nothing but this one Foundgine package.
+# build-time generators, and that the optional integrations (Redis, Agent Framework, pgvector, Elasticsearch) are not in it.
 # Usage: ci/verify-providers-package.sh path/to/Foundgine.Providers.<version>.nupkg
 #
 # The EF Core provider and ORM core are shipped as their own assemblies next to Foundgine.Providers.dll
@@ -22,7 +22,16 @@ require_assembly_types() {
   done
 }
 
-require_assembly_types Foundgine.Providers
+# The Redis, Microsoft Agent Framework, pgvector and Elasticsearch integrations are separate top-level projects and separate
+# packages (Foundgine.Providers.Redis, .AgentFramework, .PostgresVector, .Elasticsearch). They must not be compiled into
+# Foundgine.Providers.dll, and their client libraries must not be dependencies of this package.
+for t in FoundgineAgentFactory AddFoundgineAgentFramework RedisSecurityWarrantReplayStore PgVectorSemanticLexicalCandidateSource ElasticsearchSemanticLexicalCandidateSource; do
+  dll="$(find "$work/lib" -name Foundgine.Providers.dll | head -n1 || true)"
+  if [[ -n "$dll" ]] && grep -aq "$t" "$dll"; then echo "UNEXPECTED type in Foundgine.Providers.dll (belongs to its own package): $t"; fail=1; fi
+done
+for d in Microsoft.Agents.AI StackExchange.Redis Pgvector; do
+  if grep -q "id=\"$d\"" "$work"/*.nuspec; then echo "UNEXPECTED nuspec dependency on $d (owned by an optional integration package)"; fail=1; fi
+done
 require_assembly_types Foundgine.Providers.Orm OrmPlanCompiler OrmEntityMap OrmExecutionProvider
 require_assembly_types Foundgine.Providers.EntityFrameworkCore \
   FoundgineEfRepository FoundgineEfReader FoundgineEfModel EfCoreExecutionProvider AddFoundgineEf
@@ -43,5 +52,5 @@ for d in Foundgine.Providers.Orm Foundgine.Providers.EntityFrameworkCore Foundgi
   if grep -q "id=\"$d\"" "$work"/*.nuspec; then echo "UNEXPECTED nuspec dependency on $d (must be bundled, not a dependency)"; fail=1; fi
 done
 
-if [[ $fail -eq 0 ]]; then echo "OK: $pkg contains the EF Core provider, ORM core and both generators."; fi
+if [[ $fail -eq 0 ]]; then echo "OK: $pkg contains the EF Core provider, ORM core and both generators, and none of the optional integrations."; fi
 exit $fail

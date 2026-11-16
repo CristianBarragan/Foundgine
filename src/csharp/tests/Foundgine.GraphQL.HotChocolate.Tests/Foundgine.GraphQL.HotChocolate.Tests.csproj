@@ -13,7 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../Foundgine.Runtime/Foundgine.Runtime.csproj" />
-    <ProjectReference Include="../../Foundgine.Extensions/Foundgine.Extensions.csproj" />
+    <ProjectReference Include="../../Foundgine.Extensions.GraphQL/Foundgine.Extensions.GraphQL.csproj" />
     <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
     <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
   </ItemGroup>
