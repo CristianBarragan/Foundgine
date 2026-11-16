@@ -33,8 +33,8 @@ final class PersistenceConfigurations {
             model.toTable("warehouses");
             model.hasKey(Warehouse::id);
             model.property(Warehouse::id).hasColumnName("warehouse_id").hasColumnType("integer").isRequired();
-            model.property(Warehouse::businessUnitId).hasColumnName("business_unit_id").hasColumnType("integer").isRequired();
             model.property(Warehouse::name).hasColumnName("warehouse_name").hasMaxLength(120).isRequired();
+            model.property(Warehouse::businessUnitId).hasColumnName("business_unit_id").hasColumnType("integer").isRequired();
             model.property(Warehouse::tenantId).hasColumnName("tenant_id").hasMaxLength(80).isRequired();
         }
     }
