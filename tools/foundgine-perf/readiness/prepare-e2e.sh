@@ -6,9 +6,6 @@
 #  2. crm/Directory.Build.props defaults FoundgineVersion to 3.3.5, so scripts/demo.sh asks pack-foundgine.sh for 3.3.5 and is rejected;
 #  3. infrastructure/docker/erp.Dockerfile resolves foundgine-core/-providers 3.3.5 from Maven Central, i.e. NOT the checkout under test;
 #  4. scripts/demo.sh tears the stack down on exit unless --keep is given (use --keep before running journeys).
-#  5. newer Foundgine checkouts moved the agent-framework code into Foundgine.Providers (same namespaces). The old standalone
-#     Foundgine.Providers.AgentFramework project then no longer compiles (CS0436 duplicate types, CS0122 internal MutationJsonAdapter),
-#     so when the checkout has Foundgine.Providers/AgentFramework the copy stops packing/referencing the standalone package.
 set -euo pipefail
 E2E=$(cd "${1:?E2E_DIR}" && pwd); FG=$(cd "${2:?FOUNDGINE_DIR}" && pwd); WORK=${3:?WORK_DIR}
 COMMIT=${FOUNDGINE_COMMIT:-$(git -C "$FG" rev-parse HEAD 2>/dev/null)} || { echo "ERROR: $FG is not a git checkout; set FOUNDGINE_COMMIT" >&2; exit 2; }
@@ -21,14 +18,6 @@ sed -i "s|\(<FoundgineVersion Condition=\"'\$(FoundgineVersion)' == ''\">\)[^<]*
 sed -i "s|<foundgine.version>[^<]*</foundgine.version>|<foundgine.version>$VERSION</foundgine.version>|" "$OUT/erp/pom.xml"
 grep -q "$VERSION" "$OUT/crm/Directory.Build.props" || { echo "ERROR: could not set FoundgineVersion in Directory.Build.props" >&2; exit 2; }
 grep -q "$VERSION" "$OUT/erp/pom.xml" || { echo "ERROR: could not set foundgine.version in erp/pom.xml" >&2; exit 2; }
-# (5) The checkout carries the agent framework inside Foundgine.Providers: drop the standalone package from the copy.
-if [ -d "$FG/src/csharp/Foundgine.Providers/AgentFramework" ]; then
-  sed -i '/<PackageReference Include="Foundgine.Providers.AgentFramework"/d' "$OUT/crm/src/Crm.Api/Crm.Api.csproj"
-  sed -i '/^    Foundgine\.Providers\.AgentFramework$/d; /^    "Foundgine\.Providers\.AgentFramework",$/d' "$OUT/scripts/pack-foundgine.sh"
-  sed -i 's|foundgine\.providers\.agentframework\."\$V"\.nupkg|Foundgine.Providers."$V".nupkg|g; s|foundgine\.providers\.agentframework\.\$V\.nupkg|Foundgine.Providers.$V.nupkg|g' "$OUT/scripts/demo.sh"
-  ! grep -rqi "PackageReference Include=\"Foundgine.Providers.AgentFramework\"" "$OUT/crm/src/Crm.Api/Crm.Api.csproj" || { echo "ERROR: could not drop the AgentFramework package reference" >&2; exit 2; }
-  ! grep -q "Foundgine.Providers.AgentFramework" "$OUT/scripts/pack-foundgine.sh" || { echo "ERROR: could not drop AgentFramework from pack-foundgine.sh" >&2; exit 2; }
-fi
 # Java side: build the checkout's artifacts and hand them to the ERP image build as a pre-seeded local Maven repo.
 mvn -B -q -f "$FG/src/java/pom.xml" -Drevision="$VERSION" -DskipTests -Dgpg.skip=true -pl foundgine-core,foundgine-providers -am install >&2
 mkdir -p "$OUT/m2-local/io/github"; cp -r "$HOME/.m2/repository/io/github/cristianbarragan" "$OUT/m2-local/io/github/"

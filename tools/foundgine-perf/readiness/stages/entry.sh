@@ -2,41 +2,33 @@
 # EG1-EG4. Redis and PostgreSQL come from the Foundgine compose files, so adapter tests run against real services (EG3).
 source "$(dirname "$0")/../lib.sh"; need_dirs; need dotnet || die "dotnet SDK not found"; need mvn || die "mvn not found"; need docker || die "docker not found"
 PG=${POSTGRES_HOST_PORT:-55432}; RD=${REDIS_HOST_PORT:-56379}
-say "start Redis and PostgreSQL"
-(cd "$FG" && docker compose -f docker-compose.redis.yml up -d --wait && docker compose -f docker-compose.postgres.yml up -d --wait)
+export COMPOSE_IGNORE_ORPHANS=1   # the two compose files share a project name; --remove-orphans would stop the other service
+say "start Redis and PostgreSQL (fresh PostgreSQL volume: postgres-init.sql only runs on an empty data volume, and the E2E tests expect its fg_* schemas and a clean state)"
+(cd "$FG" && docker compose -f docker-compose.postgres.yml down -v >/dev/null 2>&1) || true
+(cd "$FG" && docker compose -f docker-compose.redis.yml up -d --wait && docker compose -f docker-compose.postgres.yml up -d --wait) || die "docker compose up --wait failed for Redis/PostgreSQL (ports $RD/$PG busy? run: docker ps; docker compose -f docker-compose.redis.yml logs)"
 # Names taken from the tests' own getenv calls (counted in the repo); values follow docker-compose.postgres.yml.
-# ADO.NET connection string for the C# integration tests.
 export FOUNDGINE_POSTGRES_CONNECTION_STRING="Host=localhost;Port=$PG;Database=foundgine_e2e;Username=foundgine;Password=foundgine"
-export FOUNDGINE_POSTGRES_CONNECTION="$FOUNDGINE_POSTGRES_CONNECTION_STRING"
-export FOUNDGINE_REDIS="localhost:$RD"
-# Java tests: the PG integration tests take a JDBC URL that carries its own credentials; the JPA tests read the
-# user/password separately and otherwise default to postgres/postgres, which the compose database rejects.
-export FOUNDGINE_TEST_PG_URL="jdbc:postgresql://localhost:$PG/foundgine_e2e?user=foundgine&password=foundgine"
-export FOUNDGINE_JPA_POSTGRES_URL="jdbc:postgresql://localhost:$PG/foundgine_e2e"
-export FOUNDGINE_JPA_POSTGRES_USER=foundgine FOUNDGINE_JPA_POSTGRES_PASSWORD=foundgine
-# Migration tooling (MigrationsCli).
-export FOUNDGINE_JDBC_URL="jdbc:postgresql://localhost:$PG/foundgine_e2e" FOUNDGINE_JDBC_USER=foundgine FOUNDGINE_JDBC_PASSWORD=foundgine
-
-# AdvancedPostgres16SchemaIntegrationTest is opt-in and asserts server_version 16.x (compose runs pg17), so it would be
-# skipped and fail the "0 skipped" gate. Give it a disposable PostgreSQL 16 on its own port; removed on exit.
-PG16=${POSTGRES16_HOST_PORT:-55433}; PG16_NAME=foundgine-perf-pg16
-docker rm -f "$PG16_NAME" >/dev/null 2>&1 || true
-docker run -d --name "$PG16_NAME" -e POSTGRES_USER=foundgine -e POSTGRES_PASSWORD=foundgine -e POSTGRES_DB=foundgine_pg16 -p "$PG16":5432 postgres:16 >/dev/null
-trap 'docker rm -f "$PG16_NAME" >/dev/null 2>&1 || true' EXIT
-for _ in $(seq 1 60); do docker exec "$PG16_NAME" pg_isready -U foundgine -d foundgine_pg16 >/dev/null 2>&1 && break; sleep 1; done
-docker exec "$PG16_NAME" pg_isready -U foundgine -d foundgine_pg16 >/dev/null 2>&1 || die "postgres:16 did not become ready"
-export FOUNDGINE_POSTGRES16_JDBC_URL="jdbc:postgresql://localhost:$PG16/foundgine_pg16" FOUNDGINE_POSTGRES16_USER=foundgine FOUNDGINE_POSTGRES16_PASSWORD=foundgine
-
+export FOUNDGINE_POSTGRES_CONNECTION="$FOUNDGINE_POSTGRES_CONNECTION_STRING" FOUNDGINE_REDIS="localhost:$RD"
+# .NET tests read the Npgsql-style FOUNDGINE_POSTGRES_CONNECTION_STRING exported above. The Java tests read the SAME name as a JDBC URL
+# (some pass it straight to DriverManager, so it must carry user and password), so the Java values are scoped to the mvn call only.
+# Assign first, then reference: inside one `export A=.. B="$A"` the $A is expanded before A exists (unbound variable under set -u).
+JDBC_PLAIN="jdbc:postgresql://localhost:$PG/foundgine_e2e"
+JDBC_CRED="$JDBC_PLAIN?user=foundgine&password=foundgine"
 RES=$WORK/entry; rm -rf "$RES"; mkdir -p "$RES"
-SLN=${FG_SLN:-$(find "$FG/src/csharp" -maxdepth 2 \( -name "*.sln" -o -name "*.slnx" \) | head -1)}; [ -n "$SLN" ] || die "no .sln under $FG/src/csharp (set FG_SLN)"
-say "EG1: dotnet build + test ($SLN)"
+# Foundgine.sln is the full solution; Foundgine.Orm.slnx is a subset and `find | head -1` picked whichever came first. Prefer the .sln, then sort.
+SLN=${FG_SLN:-$(find "$FG/src/csharp" -maxdepth 2 -name "*.sln" | sort | sed -n 1p)}
+[ -n "$SLN" ] || SLN=$(find "$FG/src/csharp" -maxdepth 2 -name "*.slnx" | sort | sed -n 1p)
+[ -n "$SLN" ] || die "no .sln under $FG/src/csharp (set FG_SLN)"
+say "EG1: dotnet build + test ($SLN)"; echo "using solution: $SLN" >&2
 ok1=1; dotnet build "$SLN" -c Release >"$RES/dotnet-build.log" 2>&1 && dotnet test "$SLN" -c Release --no-build --logger "trx" --results-directory "$RES/trx" >"$RES/dotnet-test.log" 2>&1 || ok1=0
 T=$($PY "$SUITE/readiness/parse_results.py" trx "$RES/trx" 'redis|migrat|agentframework|maf|postgres' 2>/dev/null) || ok1=0
 [ -n "$T" ] && echo "$T" > "$RES/trx.json" || echo "{\"totals\":{}}" > "$RES/trx.json"
 [ "$ok1" = 1 ] && rec EG1 pass --measured "$($PY -c 'import json,sys;print(json.dumps(json.load(open(sys.argv[1]))["totals"]))' "$RES/trx.json")" --threshold "build ok, >0 passed, 0 failed, 0 skipped" --artifact "$RES/trx.json" \
  || rec EG1 fail --detail "build/test failed or tests were skipped: $(tail -n 3 "$RES/dotnet-test.log" | tr '\n' ' ' | cut -c1-250)" --artifact "$RES/dotnet-test.log"
-say "EG2: mvn verify"
-ok2=1; mvn -B -f "$FG/src/java/pom.xml" -Dgpg.skip=true verify >"$RES/mvn.log" 2>&1 || ok2=0
+# clean: an interrupted earlier run leaves a half-written target/ (compile errors) and stale surefire reports that parse_results.py would count as evidence.
+say "EG2: mvn clean verify (gpg signing skipped: the release signing key is not on this machine)"
+ok2=1; env FOUNDGINE_POSTGRES_CONNECTION_STRING="$JDBC_CRED" FOUNDGINE_TEST_PG_URL="$JDBC_CRED" FOUNDGINE_JPA_POSTGRES_URL="$JDBC_PLAIN" FOUNDGINE_JPA_POSTGRES_USER=foundgine FOUNDGINE_JPA_POSTGRES_PASSWORD=foundgine \
+  mvn -B -Dgpg.skip=true -f "$FG/src/java/pom.xml" clean verify >"$RES/mvn.log" 2>&1 || ok2=0
 S=$($PY "$SUITE/readiness/parse_results.py" surefire "$FG/src/java" 'redis|migrat|postgres' 2>/dev/null) || ok2=0
 [ -n "$S" ] && echo "$S" > "$RES/surefire.json" || echo "{\"totals\":{}}" > "$RES/surefire.json"
 [ "$ok2" = 1 ] && rec EG2 pass --measured "$($PY -c 'import json,sys;print(json.dumps(json.load(open(sys.argv[1]))["totals"]))' "$RES/surefire.json")" --artifact "$RES/surefire.json" \

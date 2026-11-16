@@ -22,7 +22,15 @@ require_assembly_types() {
   done
 }
 
-require_assembly_types Foundgine.Providers
+# The Microsoft Agent Framework adapter is compiled into Foundgine.Providers.dll (source: Foundgine.Providers/AgentFramework);
+# there is deliberately no separate Foundgine.Providers.AgentFramework package.
+require_assembly_types Foundgine.Providers \
+  FoundgineAgentFactory FoundgineAgentTools FoundgineAgentFrameworkProvider AddFoundgineAgentFramework
+[[ -f "$work/AgentFramework/README.md" ]] || { echo "MISSING: AgentFramework/README.md"; fail=1; }
+# Its client library flows as a normal NuGet dependency and is never bundled.
+grep -q 'id="Microsoft.Agents.AI"' "$work"/*.nuspec || { echo "MISSING nuspec dependency: Microsoft.Agents.AI"; fail=1; }
+if find "$work/lib" -name 'Microsoft.Agents.AI*.dll' | grep -q .; then echo "UNEXPECTED bundled third-party DLL: Microsoft.Agents.AI"; fail=1; fi
+if grep -q 'id="Foundgine.Providers.AgentFramework"' "$work"/*.nuspec; then echo "UNEXPECTED nuspec dependency on Foundgine.Providers.AgentFramework (adapter is bundled)"; fail=1; fi
 require_assembly_types Foundgine.Providers.Orm OrmPlanCompiler OrmEntityMap OrmExecutionProvider
 require_assembly_types Foundgine.Providers.EntityFrameworkCore \
   FoundgineEfRepository FoundgineEfReader FoundgineEfModel EfCoreExecutionProvider AddFoundgineEf
@@ -43,5 +51,5 @@ for d in Foundgine.Providers.Orm Foundgine.Providers.EntityFrameworkCore Foundgi
   if grep -q "id=\"$d\"" "$work"/*.nuspec; then echo "UNEXPECTED nuspec dependency on $d (must be bundled, not a dependency)"; fail=1; fi
 done
 
-if [[ $fail -eq 0 ]]; then echo "OK: $pkg contains the EF Core provider, ORM core and both generators."; fi
+if [[ $fail -eq 0 ]]; then echo "OK: $pkg contains the EF Core provider, ORM core, Agent Framework adapter and both generators."; fi
 exit $fail
