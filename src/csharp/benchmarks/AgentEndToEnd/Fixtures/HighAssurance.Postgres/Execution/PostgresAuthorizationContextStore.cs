@@ -258,10 +258,8 @@ public sealed class PostgresAuthorizationContextStore
         var databaseRole = reader.GetString(3);
         var credentialFingerprint = reader.GetString(4);
         var lastSequence = reader.GetInt64(5);
-
-        // Npgsql allows one active command per connection: close the reader before
-        // CurrentDatabaseRoleAsync runs. The FOR UPDATE lock belongs to the transaction.
-        await reader.DisposeAsync();
+		
+		await reader.DisposeAsync();
 
         if (!active || writerTenant != tenantId || writerActor != actorId)
             throw new UnauthorizedAccessException(
@@ -276,6 +274,8 @@ public sealed class PostgresAuthorizationContextStore
         if (provenance.WriteSequence <= lastSequence)
             throw new InvalidOperationException(
                 $"Authorization writer sequence is stale. Last={lastSequence}, requested={provenance.WriteSequence}.");
+        await reader.DisposeAsync();
+
         const string update =
             "UPDATE banking.authorization_context_writer SET last_write_sequence = @sequence WHERE writer_id = @writer;";
         await using var updateCommand = new NpgsqlCommand(update, connection, transaction);
