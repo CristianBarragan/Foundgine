@@ -301,7 +301,8 @@ public sealed class PostgresE2ETests
         var connectionString = Environment.GetEnvironmentVariable(ConnectionEnvironmentVariable);
 
         await using var connection = new NpgsqlConnection(connectionString);
-        await connection.OpenAsync();
+		await connection.OpenAsync();
+		await SetSearchPathAsync(connection, "fg_mutation");
 
         var metadata = BuildMetadata();
         var graph = BuildMeasurementGraph(batchSize, depth);

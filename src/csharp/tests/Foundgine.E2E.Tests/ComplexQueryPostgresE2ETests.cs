@@ -7,6 +7,7 @@ using Foundgine.Core.Semantic;
 using Foundgine.Core.Semantic.Authorization;
 using Foundgine.Core.Semantic.Query;
 using Foundgine.Core.Semantic.Resolution;
+using Foundgine.Core.Semantic.IR;
 using Foundgine.Providers.Storage.Sql;
 using Npgsql;
 using Xunit;
@@ -101,8 +102,9 @@ public sealed class ComplexQueryPostgresE2ETests
         var cs = Environment.GetEnvironmentVariable(ConnectionEnvironmentVariable);
 
         await using var connection = new NpgsqlConnection(cs);
-        await connection.OpenAsync();
-        await using var transaction = await connection.BeginTransactionAsync(CancellationToken.None);
+		await connection.OpenAsync();
+		await SetSearchPathAsync(connection, "fg_query");
+		await using var transaction = await connection.BeginTransactionAsync(CancellationToken.None);
 
         try
         {
@@ -203,13 +205,30 @@ public sealed class ComplexQueryPostgresE2ETests
                 Limit: limit));
     }
 
-    internal static SqlPlan Compile(SemanticModel model, IMetadataProvider metadata, SemanticRequest request)
-    {
-        var resolved = new SemanticRequestResolver(model.Freeze().CreateSnapshot()).Resolve(request);
-        var authorized = new SemanticAuthorizer(new AllowAllSemanticAuthorizationPolicy()).Authorize(resolved);
-        var execution = new Planner().Plan(authorized);
-        return new SqlCompiler(metadata).Compile(execution);
-    }
+    internal static SqlPlan Compile(
+		SemanticModel model,
+		IMetadataProvider metadata,
+		SemanticRequest request)
+	{
+		var contract = model.Freeze().CreateSnapshot();
+
+		var graph = new SemanticRequestResolver(contract).Resolve(request);
+
+		var semanticOperation = SemanticOperationCompiler.Compile(graph);
+
+		var authorizer = new SemanticAuthorizer(
+			new AllowAllSemanticAuthorizationPolicy());
+
+		var authorization = authorizer.AuthorizeWithEvidence(
+			contract,
+			semanticOperation);
+
+		var execution = new Planner().Plan(
+			contract,
+			authorization);
+
+		return new SqlCompiler(metadata).Compile(execution);
+	}
 
     internal static SemanticModel BuildModel() =>
         new SemanticModelBuilder()
