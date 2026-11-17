@@ -1,0 +1,26 @@
+{
+ "name": "sc-java-warehouse-update",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "mutation RenameWarehouse($input: WarehouseInput!, $where: WarehouseWhereInput!) {\n updateWarehouse(input: $input, where: $where) { id name } }",
+    "operationName": "RenameWarehouse",
+    "variables": {
+     "input": {
+      "name": "Austin DC"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "as": "carol"
+  }
+ ],
+ "sort_lists_by": "id",
+ "ignore_keys": [
+  "id"
+ ]
+}

@@ -85,6 +85,12 @@ public sealed class FoundgineOptions
     /// <summary>Optional replay store used when executing warrant-backed requests.</summary>
     public ISecurityWarrantReplayStore? WarrantReplayStore { get; set; }
 
+    /// <summary>Optional monotonic warrant revocation store checked at request and provider boundaries.</summary>
+    public ISecurityWarrantRevocationStore? WarrantRevocationStore { get; set; }
+
+    /// <summary>Trust policy for issuers that are permitted to delegate warrant authority.</summary>
+    public ISecurityWarrantDelegationTrustResolver? WarrantDelegationTrustResolver { get; set; }
+
     /// <summary>Canonical engine-side bounds for untrusted semantic request complexity.</summary>
     public SecurityResourceLimits SecurityResourceLimits { get; set; } = new();
 
@@ -99,6 +105,12 @@ public sealed class FoundgineOptions
     public IMutationSchema? MutationSchema { get; set; }
 
     public Foundgine.Core.Execution.Mutation.IMutationBatchExecutionProvider? MutationProvider { get; set; }
+
+    /// <summary>
+    /// Optional DI-backed mutation provider factory. Use this when a singleton mutation engine
+    /// needs a provider that creates a fresh scoped resource (for example an EF DbContext) per batch.
+    /// </summary>
+    public Func<IServiceProvider, Foundgine.Core.Execution.Mutation.IMutationBatchExecutionProvider>? MutationProviderFactory { get; set; }
 
     private readonly List<Type> _enabledCapabilityOrder = [];
     private readonly Dictionary<Type, Action<FoundgineCapabilityContext>> _enabledCapabilities = [];

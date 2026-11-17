@@ -1,0 +1,15 @@
+{
+ "name": "sc-java-products",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query Products { product(first: 50) { id sku name category safetyStock } }",
+    "operationName": "Products"
+   },
+   "as": "alice"
+  }
+ ],
+ "sort_lists_by": "id"
+}

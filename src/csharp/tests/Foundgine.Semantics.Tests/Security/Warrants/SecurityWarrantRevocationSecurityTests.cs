@@ -105,6 +105,16 @@ public sealed class SecurityWarrantRevocationSecurityTests
     }
 
     [Fact]
+    public void Validation_rejects_revocation_that_races_the_individual_revocation_lookups()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var warrant = Create(now);
+        var store = new SequenceRacingStore();
+
+        Assert.Throws<InvalidOperationException>(() => SecurityWarrantRevocationGuard.Validate(warrant, store, now));
+    }
+
+    [Fact]
     public void Revocation_is_idempotent_for_same_warrant_identity_and_digest()
     {
         var now = DateTimeOffset.UtcNow;
@@ -116,6 +126,15 @@ public sealed class SecurityWarrantRevocationSecurityTests
 
         Assert.Equal(first, second);
         Assert.Equal(2, store.CurrentSequence); // attempted transitions remain monotonic
+    }
+
+    private sealed class SequenceRacingStore : ISecurityWarrantRevocationStore
+    {
+        private int _sequenceReads;
+        public long CurrentSequence => Interlocked.Increment(ref _sequenceReads) >= 2 ? 1 : 0;
+        public SecurityWarrantRevocation Revoke(SecurityWarrant warrant, DateTimeOffset now) => throw new NotSupportedException();
+        public bool IsRevoked(string warrantId, string warrantDigest) => false;
+        public bool IsDigestRevoked(string warrantDigest) => false;
     }
 
     private static SecurityWarrant Create(DateTimeOffset now) => new(

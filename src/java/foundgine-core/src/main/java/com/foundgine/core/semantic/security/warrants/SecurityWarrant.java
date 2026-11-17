@@ -66,8 +66,40 @@ public record SecurityWarrant(
         return delegationPath.size();
     }
 
+    /**
+     * Digest of the canonical unsigned form. The digest is read on every revocation, replay, cache-key and
+     * verification step of a request, and rebuilding the canonical bytes and re-hashing them each time is repeated
+     * CPU cost. A record cannot hold a cache field, so recent results are memoised per thread, keyed by instance
+     * identity. Warrants are immutable (collections are copied, the signature is cloned and excluded from the
+     * digest), so a hit for the same instance is always correct, and a modified copy is a different instance.
+     */
     public String digest() {
-        return SecurityWarrantCanonicalizer.digest(this);
+        DigestMemo memo = DIGEST_MEMO.get();
+        for (DigestMemo.Entry entry : memo.entries) {
+            if (entry != null && entry.owner.get() == this) return entry.digest;
+        }
+        String digest = SecurityWarrantCanonicalizer.digest(this);
+        memo.entries[memo.next] = new DigestMemo.Entry(this, digest);
+        memo.next = (memo.next + 1) % memo.entries.length;
+        return digest;
+    }
+
+    private static final ThreadLocal<DigestMemo> DIGEST_MEMO = ThreadLocal.withInitial(DigestMemo::new);
+
+    /** Small per-thread, identity-keyed memo of recently computed digests. Holds warrants weakly. */
+    private static final class DigestMemo {
+        final Entry[] entries = new Entry[4];
+        int next;
+
+        static final class Entry {
+            final java.lang.ref.WeakReference<SecurityWarrant> owner;
+            final String digest;
+
+            Entry(SecurityWarrant owner, String digest) {
+                this.owner = new java.lang.ref.WeakReference<>(owner);
+                this.digest = digest;
+            }
+        }
     }
 
     public boolean isTimeValid(Instant now) {

@@ -1,0 +1,37 @@
+{
+ "name": "sc-cs-order-create",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "mutation PlaceOrder($input: SalesOrderInput!) {\n createSalesOrder(input: $input) { id customerId status totalAmount } }",
+    "operationName": "PlaceOrder",
+    "variables": {
+     "input": {
+      "customerId": 1,
+      "status": "Pending",
+      "totalAmount": 70.0,
+      "lines": [
+       {
+        "productId": 1,
+        "quantity": 2,
+        "unitPrice": 10.0
+       },
+       {
+        "productId": 2,
+        "quantity": 1,
+        "unitPrice": 50.0
+       }
+      ]
+     }
+    }
+   },
+   "as": "alice"
+  }
+ ],
+ "sort_lists_by": "id",
+ "ignore_keys": [
+  "id"
+ ]
+}

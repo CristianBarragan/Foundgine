@@ -15,6 +15,13 @@ public sealed record SecurityExecutionContext(
     string? ResourceScope = null)
 {
     /// <summary>
+    /// Complete root-to-leaf chain for delegated warrants. The chain is untrusted input;
+    /// the runtime re-verifies every signature and delegation edge before execution.
+    /// Root warrants may omit this value or supply a one-element chain containing themselves.
+    /// </summary>
+    public IReadOnlyList<SecurityWarrant>? DelegationChain { get; init; }
+
+    /// <summary>
     /// Stable authority partition used to prevent cross-warrant provider-plan cache reuse.
     /// The full warrant digest is intentional and includes nonce/signature, making the
     /// cache boundary conservative rather than attempting to infer authority equivalence.

@@ -4,7 +4,7 @@
     <Authors>Foundgine</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageId>Foundgine.Providers.Redis</PackageId>
-    <Description>Shared state for horizontally scaled Foundgine hosts over the Redis protocol (Redis, Valkey, or Microsoft Garnet, which is built on FASTER): atomic warrant replay protection (ISecurityWarrantReplayStore, one SET NX PX per consumed warrant) and a shared MCP session store (IFoundgineMcpSessionStore, one Lua script per operation). Both fail closed when the server is unreachable.</Description>
+    <Description>Shared state for horizontally scaled Foundgine hosts over the Redis protocol (Redis, Valkey, or Microsoft Garnet, which is built on FASTER): atomic warrant replay protection, shared monotonic warrant revocation (ISecurityWarrantRevocationStore), and a shared MCP session store (IFoundgineMcpSessionStore, one Lua script per operation). Both fail closed when the server is unreachable.</Description>
     <PackageTags>providers;redis;garnet;faster;security;warrants;replay;mcp;sessions;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Providers.Redis</RootNamespace>

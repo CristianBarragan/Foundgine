@@ -1,0 +1,75 @@
+# Supply-chain ORM pairs. Start Keycloak first (compose/keycloak.yml; same project name `supplychain`, shared network), then:
+#   docker compose -f compose/keycloak.yml -f compose/supplychain.yml -f compose/supplychain.perf.yml up -d --build
+# C# arms build from the REPO ROOT so the root Directory.Build.props (net10.0, nullable, warnings-as-errors) applies to both.
+# Four arms, each with its OWN database and its OWN migration tool (this is what the benchmark measures against):
+#   cs-baseline      Hot Chocolate + plain EF Core       migrations: `dotnet ef migrations add Baseline` (plain EF)       -> sc_cs_baseline
+#   cs-foundgine     Foundgine GraphQL + Foundgine EF    migrations: `dotnet ef migrations add InitialSupplyChain`       -> sc_cs_foundgine
+#                                                         (Foundgine-derived EF model; independent migration assembly)
+#   java-baseline    Spring GraphQL + plain Hibernate    migrations: hand-written Flyway V1__baseline.sql                  -> sc_java_baseline
+#   java-foundgine   Foundgine GraphQL + Foundgine JPA   migrations: foundgine-migrations (V<ts>__InitialCreate.sql, Flyway) -> sc_java_foundgine
+# Every arm validates the SAME Keycloak issuer/audience (see keycloak.yml). The Foundgine C# host uses a development-only
+# ephemeral warrant key in this single-instance compose profile; production must mount a stable private key.
+name: supplychain
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "always"]
+    volumes: ["supplychain-redis-data:/data"]
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 2s, timeout: 2s, retries: 30 }
+
+  postgres:
+    image: postgres:17
+    environment: { POSTGRES_USER: benchmark, POSTGRES_PASSWORD: benchmark, POSTGRES_DB: postgres }
+    volumes: [ "./supplychain-init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro" ]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U benchmark"], interval: 3s, timeout: 3s, retries: 30 }
+
+  cs-baseline:
+    build: { context: ../../.., dockerfile: src/csharp/benchmarks/SupplyChain.Performance/HotChocolate.SupplyChain.BenchmarkApi/Dockerfile }
+    environment: &kc
+      ConnectionStrings__SupplyChain: "Host=postgres;Database=sc_cs_baseline;Username=benchmark;Password=benchmark"
+      Keycloak__Authority: http://keycloak:8080/realms/supplychain
+      Keycloak__Audience: supplychain-api
+      Keycloak__RequireHttpsMetadata: "false"
+      Database__MigrateOnStart: "true"
+      Redis__ConnectionString: redis:6379,abortConnect=false,syncTimeout=2000,connectTimeout=2000
+      ASPNETCORE_URLS: http://+:4410
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_healthy }, keycloak: { condition: service_healthy } }
+  cs-foundgine:
+    build: { context: ../../.., dockerfile: src/csharp/benchmarks/SupplyChain.Performance/Foundgine.SupplyChain.BenchmarkApi/Dockerfile }
+    environment:
+      <<: *kc
+      ConnectionStrings__SupplyChain: "Host=postgres;Database=sc_cs_foundgine;Username=benchmark;Password=benchmark"
+      Foundgine__Keycloak__Authority: http://keycloak:8080/realms/supplychain
+      Foundgine__Keycloak__Audience: supplychain-api
+      Foundgine__Keycloak__RequireHttpsMetadata: "false"
+      Foundgine__Keycloak__EphemeralWarrantKey: "true"
+      ASPNETCORE_ENVIRONMENT: Development      # EphemeralWarrantKey is Development-only (same rule as the CRM)
+      Redis__ConnectionString: redis:6379,abortConnect=false,syncTimeout=2000,connectTimeout=2000
+      ASPNETCORE_URLS: http://+:4411
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_healthy }, keycloak: { condition: service_healthy } }
+
+  java-baseline:
+    build: { context: ../../../src/java, dockerfile: benchmarks/supply-chain/spring-baseline/Dockerfile }
+    environment: &jkc
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sc_java_baseline
+      SPRING_DATASOURCE_USERNAME: benchmark
+      SPRING_DATASOURCE_PASSWORD: benchmark
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/supplychain
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_AUDIENCES: supplychain-api
+      SERVER_PORT: "4420"
+      FOUNGDINE_BENCHMARK_REDIS_URI: redis://redis:6379
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_healthy }, keycloak: { condition: service_healthy } }
+  java-foundgine:
+    build: { context: ../../../src/java, dockerfile: benchmarks/supply-chain/foundgine/Dockerfile }
+    environment:
+      <<: *jkc
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sc_java_foundgine
+      SERVER_PORT: "4421"
+      FOUNGDINE_BENCHMARK_REDIS_URI: redis://redis:6379
+      SUPPLYCHAIN_JDBC_URL: jdbc:postgresql://postgres:5432/sc_java_foundgine
+      SUPPLYCHAIN_JDBC_USER: benchmark
+      SUPPLYCHAIN_JDBC_PASSWORD: benchmark
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_healthy }, keycloak: { condition: service_healthy } }
+
+volumes:
+  supplychain-redis-data:

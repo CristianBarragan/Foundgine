@@ -145,6 +145,7 @@ public sealed class TenantFirstGateTests
                 AuthorizationPolicy = new AllowAllSemanticAuthorizationPolicy(),
                 WarrantKeyResolver = new TestKeyResolver(Key),
                 WarrantReplayStore = new MemorySecurityWarrantReplayStore(),
+                WarrantRevocationStore = new MemorySecurityWarrantRevocationStore(),
                 ExpectedWarrantIssuer = "issuer"
             };
             Engine = new FoundgineEngine(options, new TestProviderPlanCompiler(), Provider);

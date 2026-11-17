@@ -13,7 +13,7 @@ public sealed class Customer
     public string LastName { get; init; } = "";
     public string Email { get; init; } = "";
 
-    public IReadOnlyList<SalesOrder> Orders { get; init; } = [];
+    public IReadOnlyList<SalesOrder> Orders { get; init; } = new List<SalesOrder>();
 }
 
 public sealed class SalesOrder
@@ -23,8 +23,8 @@ public sealed class SalesOrder
     public string Status { get; init; } = "";
     public decimal TotalAmount { get; init; }
 
-    public IReadOnlyList<SalesOrderLine> Lines { get; init; } = [];
-    public IReadOnlyList<Shipment> Shipments { get; init; } = [];
+    public IReadOnlyList<SalesOrderLine> Lines { get; init; } = new List<SalesOrderLine>();
+    public IReadOnlyList<Shipment> Shipments { get; init; } = new List<Shipment>();
 }
 
 public sealed class SalesOrderLine
@@ -49,7 +49,7 @@ public sealed class CatalogProduct
 
     public Supplier Supplier { get; init; } = null!;
     public Category Category { get; init; } = null!;
-    public IReadOnlyList<InventoryPosition> InventoryPositions { get; init; } = [];
+    public IReadOnlyList<InventoryPosition> InventoryPositions { get; init; } = new List<InventoryPosition>();
 }
 
 public sealed class Supplier
@@ -90,7 +90,7 @@ public sealed class Shipment
     public int CarrierId { get; init; }
     public int WarehouseId { get; init; }
     public string TrackingNumber { get; init; } = "";
-    public string Status { get; init; } = "";
+    public string Status { get; set; } = "";
 
     public SalesOrder Order { get; init; } = null!;
     public Carrier Carrier { get; init; } = null!;

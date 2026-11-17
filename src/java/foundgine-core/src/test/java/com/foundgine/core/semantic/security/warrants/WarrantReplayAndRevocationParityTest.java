@@ -60,4 +60,39 @@ class WarrantReplayAndRevocationParityTest {
                 IllegalStateException.class,
                 () -> SecurityWarrantReplayGuard.consume(w, store, Instant.now()));
     }
+
+    private static final class BatchedFake implements IBatchedSecurityWarrantRevocationStore {
+        final SecurityWarrantRevocationLookup result; int lookups;
+        BatchedFake(SecurityWarrantRevocationLookup result) { this.result = result; }
+        public long currentSequence() { throw new AssertionError("batched path must not bracket with currentSequence"); }
+        public SecurityWarrantRevocation revoke(SecurityWarrant w, Instant now) { throw new UnsupportedOperationException(); }
+        public boolean isRevoked(String id, String digest) { throw new AssertionError(); }
+        public boolean isDigestRevoked(String digest) { throw new AssertionError(); }
+        public SecurityWarrantRevocationLookup lookup(String id, String digest, List<String> ancestors) { lookups++; return result; }
+    }
+
+    @Test
+    void guardUsesSingleBatchedLookupWhenAvailable() {
+        var fake = new BatchedFake(new SecurityWarrantRevocationLookup(11, false, false));
+        var snapshot = SecurityWarrantRevocationGuard.validate(warrant(), fake, Instant.now());
+        assertEquals(11, snapshot.sequence());
+        assertEquals(1, fake.lookups);
+    }
+
+    @Test
+    void guardRejectsRevokedWarrantAndRevokedAncestorFromBatchedLookup() {
+        var revoked = new BatchedFake(new SecurityWarrantRevocationLookup(1, true, false));
+        var ex1 = assertThrows(IllegalStateException.class, () -> SecurityWarrantRevocationGuard.validate(warrant(), revoked, Instant.now()));
+        assertTrue(ex1.getMessage().contains("has been revoked"));
+        var ancestor = new BatchedFake(new SecurityWarrantRevocationLookup(1, false, true));
+        var ex2 = assertThrows(IllegalStateException.class, () -> SecurityWarrantRevocationGuard.validate(warrant(), ancestor, Instant.now()));
+        assertTrue(ex2.getMessage().contains("parent"));
+    }
+
+    @Test
+    void snapshotComparesAgainstFreshSnapshotWithoutStoreReads() {
+        var a = new SecurityWarrantRevocationSnapshot(5);
+        a.assertUnchanged(new SecurityWarrantRevocationSnapshot(5));
+        assertThrows(IllegalStateException.class, () -> a.assertUnchanged(new SecurityWarrantRevocationSnapshot(6)));
+    }
 }

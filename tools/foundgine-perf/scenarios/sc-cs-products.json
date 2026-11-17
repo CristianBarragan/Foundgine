@@ -1,0 +1,15 @@
+{
+ "name": "sc-cs-products",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query Products { catalogProduct(first: 50) { id name sku unitPrice supplierId categoryId } }",
+    "operationName": "Products"
+   },
+   "as": "bob"
+  }
+ ],
+ "sort_lists_by": "id"
+}

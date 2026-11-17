@@ -78,6 +78,8 @@
     <module>security/foundgine-redteam</module>
     <!-- Keep the annotation-processor consumer in the same reactor as its
          build-time-only processor so Maven resolves it without Maven Central. -->
+    <module>benchmarks/supply-chain/spring-baseline</module>
+    <module>benchmarks/supply-chain/foundgine</module>
     <module>samples/foundgine-supply-chain</module>
     <module>samples/foundgine-supply-chain-advanced</module>
   </modules>

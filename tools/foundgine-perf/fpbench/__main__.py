@@ -24,6 +24,10 @@ def main():
     ck.add_argument("path"); ck.add_argument("--dir", required=True); ck.add_argument("--id"); ck.add_argument("--prefix"); ck.add_argument("--require", default="")
     ck.add_argument("--max-drain-s", type=float); ck.add_argument("--vectors"); ck.add_argument("--endpoint", action="append", default=[]); ck.add_argument("--max-recovery-s", type=float, default=120); ck.add_argument("--max-error-rate", type=float, default=0.001); ck.add_argument("--min-hours", type=float, default=24.0); ck.add_argument("--rate", type=float); ck.add_argument("--duration", type=float, default=30)
     ck.add_argument("--min-journeys", type=int, default=1000); ck.add_argument("--slo-p99-s", type=float); ck.add_argument("--target-rate", type=float)
+    sp = sub.add_parser("schemaparity", help="each arm's schema must come from its own migration tool, and arms of one runtime must have the same schema")
+    sp.add_argument("config"); sp.add_argument("--out", required=True)
+    az = sub.add_parser("armauthz", help="all arms of a group must make identical Keycloak authn/authz decisions and return identical rows")
+    az.add_argument("config"); az.add_argument("--vectors", required=True); az.add_argument("--out", required=True)
     iv = sub.add_parser("invariants"); iv.add_argument("rest", nargs=argparse.REMAINDER)
     a = p.parse_args()
     if a.cmd == "gate":
@@ -32,6 +36,16 @@ def main():
         raise SystemExit(gate.main(args))
     if a.cmd == "invariants":
         from . import invariants; raise SystemExit(invariants.main(a.rest))
+    if a.cmd == "armauthz":
+        from . import armauthz
+        rep = armauthz.run(a.config, a.vectors, a.out)
+        print("armauthz:", "PASS" if rep["pass"] else "FAIL"); [print(" -", f) for f in rep["failures"]]
+        raise SystemExit(0 if rep["pass"] else 1)
+    if a.cmd == "schemaparity":
+        from . import schemaparity
+        rep = schemaparity.run(a.config, a.out)
+        print("schemaparity:", "PASS" if rep["pass"] else "FAIL"); [print(" -", f) for f in rep["failures"]]
+        raise SystemExit(0 if rep["pass"] else 1)
     if a.cmd == "evidence":
         from . import readiness
         m = a.measured

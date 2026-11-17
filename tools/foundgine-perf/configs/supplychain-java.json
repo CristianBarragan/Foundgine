@@ -1,0 +1,85 @@
+{
+  "_comment": "Java pair: Spring GraphQL+plain Hibernate/Flyway vs Foundgine+JPA with foundgine-migrations. Same gate order. Not yet runnable: arm projects not built.",
+  "scenarios": [
+    "../scenarios/sc-java-suppliers-analyst.json",
+    "../scenarios/sc-java-products.json",
+    "../scenarios/sc-java-warehouses-operator.json",
+    "../scenarios/sc-java-suppliers-mixed.json",
+    "../scenarios/sc-java-warehouse-update.json"
+  ],
+  "closed_concurrency": [
+    1,
+    8,
+    16,
+    32,
+    64,
+    128
+  ],
+  "open_loop_fractions": [
+    0.25,
+    0.5,
+    0.75,
+    0.9
+  ],
+  "sessions": 5,
+  "measure_s": 20,
+  "max_error_rate": 0.01,
+  "seed": 20261117,
+  "warmup": {
+    "min_s": 5,
+    "max_s": 60,
+    "cv": 0.05
+  },
+  "environment": {
+    "note": "Record host details and equal service cpusets; Redis is shared by the four arms and included in each arm resource sample."
+  },
+  "auth": {
+    "keycloak_url": "http://127.0.0.1:8080",
+    "realm": "supplychain",
+    "client_id": "supplychain-bench",
+    "password": "dev-password",
+    "refresh_margin_s": 20
+  },
+  "targets": {
+    "java-baseline": {
+      "url": "http://127.0.0.1:4420/graphql",
+      "group": "java",
+      "history_kind": "flyway",
+      "expect_history": [
+        "^V1__baseline\\.sql$"
+      ],
+      "forbid_history": [
+        "__InitialCreate\\.sql$"
+      ],
+      "schema_cmd": "docker compose -f compose/keycloak.yml -f compose/supplychain.yml exec -T postgres psql -U benchmark -d sc_java_baseline -At < scenarios/schema_dump.sql",
+      "reset_cmd": "docker compose -f compose/keycloak.yml -f compose/supplychain.yml restart java-baseline >/dev/null && sleep 8 && docker compose -f compose/keycloak.yml -f compose/supplychain.yml exec -T postgres psql -U benchmark -d sc_java_baseline -At < seed/reset-java.sql >/dev/null",
+      "resources": {
+        "kind": "docker",
+        "containers": [
+          "supplychain-java-baseline-1",
+          "supplychain-redis-1"
+        ]
+      }
+    },
+    "java-foundgine": {
+      "url": "http://127.0.0.1:4421/graphql",
+      "group": "java",
+      "history_kind": "flyway",
+      "expect_history": [
+        "^V\\d{14}__InitialCreate\\.sql$"
+      ],
+      "forbid_history": [
+        "^V1__baseline\\.sql$"
+      ],
+      "schema_cmd": "docker compose -f compose/keycloak.yml -f compose/supplychain.yml exec -T postgres psql -U benchmark -d sc_java_foundgine -At < scenarios/schema_dump.sql",
+      "reset_cmd": "docker compose -f compose/keycloak.yml -f compose/supplychain.yml restart java-foundgine >/dev/null && sleep 8 && docker compose -f compose/keycloak.yml -f compose/supplychain.yml exec -T postgres psql -U benchmark -d sc_java_foundgine -At < seed/reset-java.sql >/dev/null",
+      "resources": {
+        "kind": "docker",
+        "containers": [
+          "supplychain-java-foundgine-1",
+          "supplychain-redis-1"
+        ]
+      }
+    }
+  }
+}

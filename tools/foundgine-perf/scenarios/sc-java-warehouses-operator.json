@@ -1,0 +1,15 @@
+{
+ "name": "sc-java-warehouses-operator",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query Warehouses { warehouse(first: 50) { id businessUnitId name tenantId } }",
+    "operationName": "Warehouses"
+   },
+   "as": "carol"
+  }
+ ],
+ "sort_lists_by": "id"
+}

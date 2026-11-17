@@ -1,0 +1,15 @@
+{
+ "name": "sc-java-suppliers-analyst",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "as": "dave"
+  }
+ ],
+ "sort_lists_by": "id"
+}

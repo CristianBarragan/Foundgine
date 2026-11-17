@@ -16,5 +16,8 @@
     <ProjectReference Include="../../Foundgine.Extensions.GraphQL/Foundgine.Extensions.GraphQL.csproj" />
     <ProjectReference Include="../../Foundgine.Providers/Foundgine.Providers.csproj" />
     <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../Foundgine.Extensions.Keycloak/Foundgine.Extensions.Keycloak.csproj" />
+    <ProjectReference Include="../../benchmarks/SupplyChain.Performance/Foundgine.SupplyChain.BenchmarkApi/Foundgine.SupplyChain.BenchmarkApi.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>

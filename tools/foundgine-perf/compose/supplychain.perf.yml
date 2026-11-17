@@ -1,0 +1,9 @@
+# Equal limits for every arm, ports published for the host-side loader. Run ONE arm at a time under load (the harness restarts
+# between cells), so cpuset sharing is intentional. Same cores as perf.override.yml; adjust to the host and record in environment.json.
+services:
+  postgres:       { cpuset: "0-1", mem_limit: 2g, ports: ["15433:5432"] }
+  redis:          { cpuset: "0-1", mem_limit: 512m, ports: ["16379:6379"] }
+  cs-baseline:    { cpuset: "2-3", mem_limit: 1g, cpus: 2, ports: ["4410:4410"] }
+  cs-foundgine:   { cpuset: "2-3", mem_limit: 1g, cpus: 2, ports: ["4411:4411"] }
+  java-baseline:  { cpuset: "4-5", mem_limit: 1g, cpus: 2, ports: ["4420:4420"] }
+  java-foundgine: { cpuset: "4-5", mem_limit: 1g, cpus: 2, ports: ["4421:4421"] }

@@ -17,7 +17,13 @@ namespace Foundgine.Runtime;
 /// Application-facing facade over the Foundgine semantic execution pipeline.
 /// Applications normally obtain this through dependency injection.
 /// </summary>
-public sealed class FoundgineEngine : IFoundgine
+public interface IProviderPlanCacheLifecycle
+{
+    /// <summary>Invalidates this engine's cache namespace. Stop routing and drain requests first.</summary>
+    void InvalidateProviderPlanCache();
+}
+
+public sealed class FoundgineEngine : IFoundgine, IProviderPlanCacheLifecycle
 {
     private readonly SemanticModel _model;
     private readonly SemanticContractSnapshot _contract;
@@ -32,6 +38,8 @@ public sealed class FoundgineEngine : IFoundgine
     private readonly ISecurityWarrantKeyResolver? _warrantKeyResolver;
     private readonly string? _expectedWarrantIssuer;
     private readonly ISecurityWarrantReplayStore? _warrantReplayStore;
+    private readonly ISecurityWarrantRevocationStore? _warrantRevocationStore;
+    private readonly ISecurityWarrantDelegationTrustResolver? _warrantDelegationTrustResolver;
     private readonly SecurityResourceLimits _securityResourceLimits;
     private readonly IExecutionAuthorizationRevalidator _executionAuthorizationRevalidator;
 
@@ -64,6 +72,8 @@ public sealed class FoundgineEngine : IFoundgine
         _warrantKeyResolver = options.WarrantKeyResolver;
         _expectedWarrantIssuer = options.ExpectedWarrantIssuer;
         _warrantReplayStore = options.WarrantReplayStore;
+        _warrantRevocationStore = options.WarrantRevocationStore;
+        _warrantDelegationTrustResolver = options.WarrantDelegationTrustResolver;
         _securityResourceLimits = options.SecurityResourceLimits ?? new SecurityResourceLimits();
         _executionAuthorizationRevalidator = options.ExecutionAuthorizationRevalidator ??
                                              new SemanticExecutionAuthorizationRevalidator();
@@ -153,12 +163,22 @@ public sealed class FoundgineEngine : IFoundgine
             throw new InvalidOperationException(
                 "Warrant-backed capability discovery requires a warrant key resolver.");
 
-        SecurityWarrantVerifier.Verify(
-            security.Warrant,
-            _warrantKeyResolver,
-            DateTimeOffset.UtcNow,
-            _expectedWarrantIssuer,
-            security.Audience);
+        VerifyWarrantTrust(security, DateTimeOffset.UtcNow);
+        ValidateWarrantRevocation(security, DateTimeOffset.UtcNow);
+    }
+
+    /// <summary>
+    /// Permanently invalidates this engine generation's provider-plan cache entries.
+    /// The host must stop routing new requests and drain in-flight requests before calling.
+    /// Warrant replay, revocation and signing-key state are not affected.
+    /// </summary>
+    public void InvalidateProviderPlanCache()
+    {
+        if (_planCache is not INamespacedProviderPlanCache namespacedCache)
+            throw new NotSupportedException(
+                "The configured provider-plan cache does not support namespace invalidation.");
+
+        namespacedCache.RemoveNamespace(_cacheNamespace);
     }
 
     public SemanticVersionSet DescribeVersionSet() => _versions;
@@ -343,6 +363,44 @@ public sealed class FoundgineEngine : IFoundgine
                 "The warrant does not authorize the requested subject or tenant scope.");
     }
 
+    private void VerifyWarrantTrust(SecurityExecutionContext security, DateTimeOffset now)
+    {
+        var warrant = security.Warrant;
+        var isDelegated = warrant.ParentId is not null || warrant.ParentDigest is not null ||
+                          warrant.DelegationPath.Count != 0;
+
+        if (isDelegated || security.DelegationChain is not null)
+        {
+            if (string.IsNullOrWhiteSpace(_expectedWarrantIssuer))
+                throw new InvalidOperationException(
+                    "Delegated warrant execution requires an explicitly configured root issuer.");
+
+            SecurityWarrantExecutionTrust.Verify(
+                warrant,
+                _warrantKeyResolver!,
+                _expectedWarrantIssuer,
+                security.Audience,
+                now,
+                security.DelegationChain,
+                _warrantDelegationTrustResolver,
+                security.Tenant);
+            return;
+        }
+
+        SecurityWarrantVerifier.Verify(
+            warrant, _warrantKeyResolver!, now, _expectedWarrantIssuer, security.Audience);
+    }
+
+    private SecurityWarrantRevocationSnapshot ValidateWarrantRevocation(SecurityExecutionContext security, DateTimeOffset now)
+    {
+        if (_warrantRevocationStore is null)
+            throw new InvalidOperationException(
+                "Warrant-backed discovery and execution require a warrant revocation store; refusing to run without current revocation state.");
+
+        return SecurityWarrantRevocationGuard.Validate(
+            security.Warrant, _warrantRevocationStore, now);
+    }
+
     private void ValidateWarrant(SemanticRequest request, SemanticOperation operation, bool consumeReplay)
     {
         var security = request.Security;
@@ -353,12 +411,8 @@ public sealed class FoundgineEngine : IFoundgine
             throw new InvalidOperationException(
                 "A security warrant was supplied, but no warrant key resolver is configured.");
 
-        SecurityWarrantVerifier.Verify(
-            security.Warrant,
-            _warrantKeyResolver,
-            DateTimeOffset.UtcNow,
-            _expectedWarrantIssuer,
-            security.Audience);
+        VerifyWarrantTrust(security, DateTimeOffset.UtcNow);
+        ValidateWarrantRevocation(security, DateTimeOffset.UtcNow);
 
         var capabilities = operation.Root.TraverseDepthFirst()
             .Select(node => _securityContract.Capabilities.FirstOrDefault(c =>
@@ -473,9 +527,24 @@ public sealed class FoundgineEngine : IFoundgine
 
         context.EnsureWithinDeadline();
         var startedAt = DateTimeOffset.UtcNow;
+        SecurityWarrantRevocationSnapshot? revocationSnapshot = null;
+        if (request.Security is { } security)
+        {
+            // Revalidate signatures, delegation edges, expiry and revocation immediately before dispatch.
+            VerifyWarrantTrust(security, startedAt);
+            // One validation both enforces revocation (and throws when no store is configured) and captures the snapshot.
+            revocationSnapshot = ValidateWarrantRevocation(security, startedAt);
+        }
         using var deadlineCts = context.CreateDeadlineCancellationSource(cancellationToken);
         var result = await _provider.ExecuteAsync(providerPlan, context, deadlineCts.Token);
         context.EnsureWithinDeadline();
+        if (revocationSnapshot is { } snapshot)
+        {
+            // One bracketed validation re-checks revocation and yields the current sequence to compare.
+            var finalSnapshot = SecurityWarrantRevocationGuard.Validate(
+                request.Security!.Warrant, _warrantRevocationStore!, DateTimeOffset.UtcNow);
+            snapshot.AssertUnchanged(finalSnapshot);
+        }
         var completedAt = DateTimeOffset.UtcNow;
         if (result.Evidence is null)
             return result;

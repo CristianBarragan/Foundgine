@@ -113,7 +113,40 @@ public sealed record SecurityWarrant(
     /// <summary>Number of delegation edges represented by this warrant.</summary>
     public int DelegationDepth => DelegationPath.Count;
 
-    public string Digest => SecurityWarrantCanonicalizer.Digest(this);
+    /// <summary>
+    /// Cryptographic digest of the canonical unsigned form. Computed once per instance and then reused: the digest is
+    /// read on every revocation, replay, cache-key and verification step of a request, and rebuilding the canonical
+    /// JSON and re-hashing it each time is pure repeated CPU cost.
+    /// </summary>
+    /// <remarks>
+    /// A warrant is an immutable value. Its collections must not be mutated after construction, or the cached digest
+    /// would no longer match the canonical form. A <c>with</c> copy never reuses the original's digest, because the
+    /// cache records which instance computed it (see <see cref="DigestMemo"/>).
+    /// </remarks>
+    public string Digest
+    {
+        get
+        {
+            var memo = Volatile.Read(ref _digestMemo);
+            if (ReferenceEquals(memo.Owner, this)) return memo.Value!;
+            var value = SecurityWarrantCanonicalizer.Digest(this);
+            Volatile.Write(ref _digestMemo, new DigestMemo(this, value));
+            return value;
+        }
+    }
+
+    // Never null and always "equal", so this field cannot change record equality, hashing or ToString. A `with`
+    // copy carries the original's memo reference, but the Owner check above makes that copy recompute its own digest.
+    private DigestMemo _digestMemo = DigestMemo.Empty;
+
+    private sealed class DigestMemo(SecurityWarrant? owner, string? value)
+    {
+        public static readonly DigestMemo Empty = new(null, null);
+        public SecurityWarrant? Owner { get; } = owner;
+        public string? Value { get; } = value;
+        public override bool Equals(object? obj) => obj is DigestMemo;
+        public override int GetHashCode() => 0;
+    }
 
     public bool IsTimeValid(DateTimeOffset now) => now >= IssuedAt && now < ExpiresAt;
 }

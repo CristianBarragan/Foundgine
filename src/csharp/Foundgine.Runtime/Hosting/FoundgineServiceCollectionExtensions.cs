@@ -2,6 +2,7 @@ using Foundgine.Core.Execution;
 using Foundgine.Core.Semantic.Metadata;
 using Foundgine.Core.Semantic;
 using Foundgine.Core.Semantic.Authorization;
+using Foundgine.Core.Semantic.Security.Warrants;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Foundgine.Runtime;
@@ -87,25 +88,47 @@ public static class FoundgineServiceCollectionExtensions
         services.AddSingleton(options);
         services.AddSingleton(contract);
         services.AddSingleton<ISemanticContractProvider>(new SemanticContractProvider(contract));
-        services.AddSingleton<FoundgineEngine>(serviceProvider => new FoundgineEngine(
-            serviceProvider.GetRequiredService<FoundgineOptions>(),
-            serviceProvider.GetRequiredService<SemanticContractSnapshot>(),
-            serviceProvider.GetRequiredService<IProviderPlanCompiler>(),
-            serviceProvider.GetRequiredService<IExecutionProvider>()));
+        services.AddSingleton<FoundgineEngine>(serviceProvider =>
+        {
+            // Security services are registered by host integrations (Keycloak, etc.) and
+            // resolved here, at the trust boundary, rather than captured in transport input.
+            options.WarrantKeyResolver ??= serviceProvider.GetService<ISecurityWarrantKeyResolver>();
+            options.WarrantReplayStore ??= serviceProvider.GetService<ISecurityWarrantReplayStore>();
+            options.WarrantRevocationStore ??= serviceProvider.GetService<ISecurityWarrantRevocationStore>();
+            options.WarrantDelegationTrustResolver ??= serviceProvider.GetService<ISecurityWarrantDelegationTrustResolver>();
+            return new FoundgineEngine(
+                serviceProvider.GetRequiredService<FoundgineOptions>(),
+                serviceProvider.GetRequiredService<SemanticContractSnapshot>(),
+                serviceProvider.GetRequiredService<IProviderPlanCompiler>(),
+                serviceProvider.GetRequiredService<IExecutionProvider>());
+        });
         services.AddSingleton<IFoundgine>(serviceProvider =>
             serviceProvider.GetRequiredService<FoundgineEngine>());
         services.AddSingleton<IFoundgineExecutor>(serviceProvider =>
             serviceProvider.GetRequiredService<FoundgineEngine>());
 
-        if (options.MutationSchema is not null && options.MutationProvider is not null)
-            services.AddSingleton<IFoundgineMutations>(_ => new FoundgineMutationEngine(
-                options.MutationSchema,
-                options.AuthorizationPolicy,
-                options.MutationProvider,
-                options.Model,
-                options.WarrantKeyResolver,
-                options.ExpectedWarrantIssuer,
-                options.WarrantReplayStore));
+        if (options.MutationSchema is not null &&
+            (options.MutationProvider is not null || options.MutationProviderFactory is not null))
+            services.AddSingleton<IFoundgineMutations>(serviceProvider =>
+            {
+                options.WarrantKeyResolver ??= serviceProvider.GetService<ISecurityWarrantKeyResolver>();
+                options.WarrantReplayStore ??= serviceProvider.GetService<ISecurityWarrantReplayStore>();
+                options.WarrantRevocationStore ??= serviceProvider.GetService<ISecurityWarrantRevocationStore>();
+                options.WarrantDelegationTrustResolver ??= serviceProvider.GetService<ISecurityWarrantDelegationTrustResolver>();
+                var mutationProvider = options.MutationProvider ??
+                    options.MutationProviderFactory!(serviceProvider);
+                return new FoundgineMutationEngine(
+                    options.MutationSchema,
+                    options.AuthorizationPolicy,
+                    mutationProvider,
+                    options.Model,
+                    options.WarrantKeyResolver,
+                    options.ExpectedWarrantIssuer,
+                    options.WarrantReplayStore,
+                    options.SecurityResourceLimits,
+                    options.WarrantRevocationStore,
+                    options.WarrantDelegationTrustResolver);
+            });
 
         return services;
     }

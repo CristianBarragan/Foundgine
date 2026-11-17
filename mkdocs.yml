@@ -39,6 +39,7 @@ nav:
   - Grounding decisions: GROUNDING-DECISIONS.md
   - Public API and provider independence: PUBLIC-API.md
   - Security: SECURITY.md
+  - Warrant revocation durability: security/warrant-revocation-checkpoint-8.md
   - Runtime: RUNTIME.md
   - AOT: AOT.md
   - AI agent integration: AI-AGENT.md
