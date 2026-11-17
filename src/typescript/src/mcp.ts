@@ -34,7 +34,7 @@ export class McpSession {
     this.#fetch = options.fetch ?? globalThis.fetch.bind(globalThis);
     this.#token = options.token;
     this.#requestedVersion = options.protocolVersion ?? DEFAULT_PROTOCOL_VERSION;
-    this.#userAgent = options.userAgent ?? "foundgine-sdk/3.3.5";
+    this.#userAgent = options.userAgent ?? "foundgine-sdk/3.4.0";
   }
 
   get session(): string | undefined { return this.#session; }
@@ -164,7 +164,7 @@ export class McpSession {
 
   async #initializeCore(): Promise<void> {
     const id = this.#nextId++;
-    const payload = { jsonrpc: "2.0", id, method: "initialize", params: { protocolVersion: this.#requestedVersion, capabilities: {}, clientInfo: { name: "foundgine-typescript", version: "3.3.5" } } };
+    const payload = { jsonrpc: "2.0", id, method: "initialize", params: { protocolVersion: this.#requestedVersion, capabilities: {}, clientInfo: { name: "foundgine-typescript", version: "3.4.0" } } };
     let response: Response;
     try { response = await this.#fetch(this.url, { method: "POST", headers: await this.#headers(undefined, true), body: JSON.stringify(payload) }); }
     catch { throw new FoundgineError("MCP initialization failed before an HTTP response was received"); }

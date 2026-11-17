@@ -2,10 +2,15 @@
 
 ## Unreleased
 
+_No unreleased changes._
+
+## 3.4.0 — November 18, 2026
+
 ### Added
 
 - Added bounded FIFO provider-plan cache admission with single-flight compilation, race-safe replacement/eviction, and permanent per-engine namespace invalidation. `FoundgineEngine.InvalidateProviderPlanCache()` is a lifecycle operation: hosts must stop routing and drain in-flight requests first. Cache retirement does not touch warrant replay, revocation, or signing-key state.
 - Connected the existing warrant delegation trust and revocation guards to the read execution pipeline. Delegated warrants now require an explicit root issuer, a complete root-to-leaf chain, and a configured delegation trust resolver. Warrant-backed discovery and execution fail closed when no revocation store is configured; the revocation sequence is checked again after provider execution to detect concurrent state changes.
+- Java parity for batched warrant revocation lookup: `IBatchedSecurityWarrantRevocationStore` / `SecurityWarrantRevocationLookup` in core, a single-round-trip Lua `lookup` in `RedisSecurityWarrantRevocationStore`, an anchored `lookup` in `AnchoredSecurityWarrantRevocationStore` (one anchor read, no write in steady state), `SecurityWarrantRevocationGuard` using the batched snapshot when available, and `SecurityWarrantRevocationSnapshot.assertUnchanged(snapshot)`. The supply-chain benchmark filter uses the batched lookup.
 - Added provider-plan cache namespace-retirement tests, including an in-flight compilation racing namespace invalidation.
 
 ### Changed
@@ -13,8 +18,11 @@
 - Preserved the conservative per-warrant provider-plan cache partition. The authority-equivalence cache-key optimization from the supplied checkpoint was not adopted because it needs additional proof that compiled plans contain no subject-specific or request-specific values.
 - `HighAssurance` supplies an in-memory revocation store only as a local-development default. Production hosts must configure a durable, shared revocation store and a delegation trust resolver when delegation is enabled.
 
+- Redis revocation stores (C# and Java) no longer fail closed on out-of-order completion of concurrent calls: a reply is compared with the highest sequence observed *before the request was sent*, so genuine rollbacks are still detected while reordered concurrent replies are not mistaken for one.
+
 ### Verification status
 
+- Revocation work: the Java core/Redis/Anchored classes and their 19 JUnit tests compile and pass on JDK 21; the C# core and Redis stores compile on the .NET 8 SDK and a console harness confirmed the out-of-order, rollback and lookup behavior. The xUnit projects and the Spring benchmark filter could not be built offline.
 - Source and ZIP integrity checks completed. .NET compilation and xUnit execution could not be performed because the .NET SDK is unavailable in this environment. The concurrent revocation sequence check detects a change during provider execution, but cannot roll back side effects already committed by a provider; strict atomic revocation-versus-side-effect guarantees require provider transaction/authorization coordination. The current revocation-store interface also has no freshness/health contract, so distributed-store staleness must be addressed by the concrete store implementation before production use.
 
 
@@ -59,6 +67,23 @@
 - The Java migration generator includes PostgreSQL 16 catalog-parity tests, but the supplied checkpoint does not establish that Flyway itself or the full Java 27 test suite passed. Keep the handwritten Advanced V1 migration as the baseline until schema parity and migration execution are verified.
 - The latest reported Java Advanced sample test phase was failing before the final fixes in this checkpoint; those fixes have not been re-run. Do not describe the full Java suite as passing.
 
+### Performance evidence
+
+- Recorded a preliminary C# SupplyChain closed-loop run in `docs/performance/SUPPLYCHAIN-CSHARP-PRELIMINARY-RESULTS.md`. On the `sc-cs-orders-customer` read scenario, the plain Hot Chocolate + EF Core baseline had about 2.3x to 3.1x the throughput and lower p99 than the Foundgine arm at concurrency 1, 8 and 16 (the cells where both were valid); both arms were invalid from concurrency 64. This is preliminary and not claim-grade: one scenario, no recorded equivalence gate or resource telemetry, no Java results. The page lists likely causes as hypotheses with checks. The website performance page links to it.
+
+- Added `tools/foundgine-perf/java/` (generate-baseline, generate-foundgine and verify-migration-provenance scripts), mirroring `tools/foundgine-perf/csharp/`, with `tests/test_java_migration_scripts.py`.
+
+### Fixed
+
+- Java SupplyChain benchmark arms did not start under Spring Boot 4: both applications now depend on `spring-boot-starter-flyway` (Flyway auto-configuration is no longer part of `flyway-core`, so no migration ran and Hibernate validation reported a missing table), and the Foundgine arm marks the anchored revocation store `@Primary` so the readiness controller and filter no longer see two `ISecurityWarrantRevocationStore` beans. Also: both Java arms override `graphql-java` to 25.0 (the parent pins 22.3, which breaks Spring GraphQL 2.0 with `NoClassDefFoundError: org.dataloader.DataLoaderOptions$Builder`); the Foundgine arm creates the revocation anchor table only after its Flyway migration (`@DependsOn`), and the compose profile sets `SUPPLYCHAIN_SEED_DEMO=false` so the harness alone seeds both arms. Both Java arms also compile with `-parameters` (the parent is not `spring-boot-starter-parent`, so Spring GraphQL `@Argument` names were missing), and the Foundgine arm now includes `spring-boot-starter-web` (without it the application was not a web app and Spring Security had no `HttpSecurity`). Not yet rebuilt or run; verify with `docker compose ... up -d --build` and the schemaparity/armauthz gates.
+
+- Split the SupplyChain benchmark Postgres init script into `tools/foundgine-perf/compose/csharp/supplychain-init.sql` and `compose/java/supplychain-init.sql` (each creates only its runtime's databases); `compose/supplychain.yml` mounts both. This only changes first-time database creation: on an existing Postgres volume the init scripts do not re-run.
+
+### Release metadata
+
+- Updated the .NET (`Directory.Build.props`) and Java (`src/java/pom.xml` `<revision>`, generated flattened POMs) canonical versions, the TypeScript, Python and Rust/WebAssembly SDK package metadata and lockfiles, client user-agent/`clientInfo` versions, MCP manifests (`mcp.json`, `.well-known/mcp.json`), README release notes and install snippets, module READMEs, the packages page, website metadata and footers, `llms*.txt`, `ai.seo.md` and the documentation verification/coverage pages to `3.4.0`.
+- The Microsoft Agent Framework adapter, Java PostgreSQL migrations and Redis/shared-state work previously listed after the `v3.3.5` tag are now part of the `3.4.0` source. Because this is a minor release, note the package restructuring under **Changed**: optional adapters and extensions are separate NuGet packages.
+
 ## 3.3.5 — November 15, 2026
 
 ### Added
@@ -80,7 +105,7 @@
 
 ### Verification status
 
-- The `v3.3.5` tag points to commit `505240dd` (`update npm builds`). The Java migrations and Microsoft Agent Framework adapter were merged after that tag and are therefore listed under **Unreleased**, not as `3.3.5` release contents.
+- The `v3.3.5` tag points to commit `505240dd` (`update npm builds`). The Java migrations and Microsoft Agent Framework adapter were merged after that tag and are therefore listed under `3.4.0`, not as `3.3.5` release contents.
 - The tag and source history establish the changes listed above; they do not by themselves prove that every hosted workflow or package publication completed successfully.
 
 ## 3.3.4 — November 14, 2026

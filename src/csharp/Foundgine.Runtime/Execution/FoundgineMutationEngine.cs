@@ -156,8 +156,8 @@ public sealed class FoundgineMutationEngine : IFoundgineMutations
         executionContext.EnsureWithinDeadline();
         if (security is not null && revocationSnapshot is { } snapshot)
         {
-            snapshot.AssertUnchanged(_warrantRevocationStore!);
-            ValidateWarrantRevocation(security, DateTimeOffset.UtcNow);
+            var finalSnapshot = ValidateWarrantRevocation(security, DateTimeOffset.UtcNow);
+            snapshot.AssertUnchanged(finalSnapshot);
         }
         var resultFingerprint = FingerprintResult(result);
         return Task.FromResult(new MutationExecutionResult(

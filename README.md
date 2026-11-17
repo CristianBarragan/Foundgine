@@ -15,6 +15,7 @@
 [![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 [![Java Security Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 
+[![Python Version](https://img.shields.io/pypi/v/foundgine-sdk?label=PyPI%20Version)](https://pypi.org/project/foundgine-sdk/)
 [![Python Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/python-build.yml)
 
 [![TypeScript Version](https://img.shields.io/npm/v/@foundgine/typescript?label=npm%20%40foundgine%2Ftypescript)](https://www.npmjs.com/package/@foundgine/typescript)
@@ -33,8 +34,6 @@ Foundgine gives AI agents and other callers a way to express what they want, whi
 - and the actual operations performed on your data, APIs, GraphQL, MCP tools, or backend systems.
 
 This boundary ensures that agents can propose actions, but only your application decides **what is allowed, what is safe, and what is actually executed.**
-
-[**Go to website →**](https://cristianbarragan.github.io/Foundgine/)
 
 ## Why Foundgine matters
 
@@ -289,13 +288,13 @@ PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). 
 - [Client SDKs](docs/wiki/client-sdks.md) — TypeScript, Python and WebAssembly clients.
 - [Website](https://cristianbarragan.github.io/Foundgine/) · [`CHANGELOG.md`](CHANGELOG.md)
 
-## Release 3.3.5
+## Release 3.4.0
 
-**Current server release: 3.3.5 · .NET 10 and Java 27; client SDK publication and verification status is tracked separately**
+**Current server release: 3.4.0 · .NET 10 and Java 27; client SDK publication and verification status is tracked separately**
 
-Foundgine 3.3.5 advances the Supply Chain persistence path across the .NET and Java samples and adds Java model-derived PostgreSQL migrations. The Java fluent persistence metadata now carries defaults, identity generation, named/composite foreign keys and referential actions, CHECK constraints, index access methods/operator classes, and required PostgreSQL extensions into the migration schema, differ and SQL generator. The starter and Advanced samples now include physical-schema projections, migration snapshots/history, rollback generation and schema-parity tests.
+Foundgine 3.4.0 hardens the warrant security path and broadens the integration surface. Warrant-backed reads now enforce delegation trust and fail-closed revocation checks, with batched revocation lookup in Java and shared Redis-protocol replay/revocation stores (Redis, Valkey, Garnet) in both implementations; warrant replay stores are bounded, and the provider-plan cache has bounded admission with single-flight compilation and namespace invalidation. The release adds a Microsoft Agent Framework adapter, Java model-derived PostgreSQL migrations, and an expanded .NET Supply Chain starter.
 
-The release also includes the Java fluent-model/JPA integration updates and the .NET Supply Chain starter's typed semantic query and persistence/sample improvements. Version metadata is aligned across .NET, Java/Maven, MCP manifests, TypeScript, Python and Rust/WASM client metadata. The transport SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface.
+The .NET `src/csharp` tree is restructured so each optional adapter or extension is its own NuGet package (`Foundgine.Providers.Redis`, `.AgentFramework`, `.PostgresVector`, `.Elasticsearch`, `Foundgine.Extensions.GraphQL`, `.Temporal`, `.Keycloak`); C# namespaces are unchanged. See [`CHANGELOG.md`](CHANGELOG.md) for details and the verification status. Version metadata is aligned across .NET, Java/Maven, MCP manifests, TypeScript, Python and Rust/WASM client metadata. The transport SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface.
 
 ## License
 

@@ -391,13 +391,13 @@ public sealed class FoundgineEngine : IFoundgine, IProviderPlanCacheLifecycle
             warrant, _warrantKeyResolver!, now, _expectedWarrantIssuer, security.Audience);
     }
 
-    private void ValidateWarrantRevocation(SecurityExecutionContext security, DateTimeOffset now)
+    private SecurityWarrantRevocationSnapshot ValidateWarrantRevocation(SecurityExecutionContext security, DateTimeOffset now)
     {
         if (_warrantRevocationStore is null)
             throw new InvalidOperationException(
                 "Warrant-backed discovery and execution require a warrant revocation store; refusing to run without current revocation state.");
 
-        SecurityWarrantRevocationGuard.Validate(
+        return SecurityWarrantRevocationGuard.Validate(
             security.Warrant, _warrantRevocationStore, now);
     }
 
@@ -532,19 +532,18 @@ public sealed class FoundgineEngine : IFoundgine, IProviderPlanCacheLifecycle
         {
             // Revalidate signatures, delegation edges, expiry and revocation immediately before dispatch.
             VerifyWarrantTrust(security, startedAt);
-            ValidateWarrantRevocation(security, startedAt);
-            if (_warrantRevocationStore is not null)
-                revocationSnapshot = SecurityWarrantRevocationGuard.Validate(
-                    security.Warrant, _warrantRevocationStore, startedAt);
+            // One validation both enforces revocation (and throws when no store is configured) and captures the snapshot.
+            revocationSnapshot = ValidateWarrantRevocation(security, startedAt);
         }
         using var deadlineCts = context.CreateDeadlineCancellationSource(cancellationToken);
         var result = await _provider.ExecuteAsync(providerPlan, context, deadlineCts.Token);
         context.EnsureWithinDeadline();
         if (revocationSnapshot is { } snapshot)
         {
-            snapshot.AssertUnchanged(_warrantRevocationStore!);
-            SecurityWarrantRevocationGuard.Validate(
+            // One bracketed validation re-checks revocation and yields the current sequence to compare.
+            var finalSnapshot = SecurityWarrantRevocationGuard.Validate(
                 request.Security!.Warrant, _warrantRevocationStore!, DateTimeOffset.UtcNow);
+            snapshot.AssertUnchanged(finalSnapshot);
         }
         var completedAt = DateTimeOffset.UtcNow;
         if (result.Evidence is null)

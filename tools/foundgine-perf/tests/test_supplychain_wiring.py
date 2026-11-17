@@ -49,13 +49,20 @@ class Wiring(unittest.TestCase):
             self.assertIn("schema_cmd", f); self.assertIn("schema_cmd", b)
 
     def test_each_arm_has_its_own_database(self):
-        dbs = []
-        for cfgname in ("supplychain-csharp", "supplychain-java"):
-            for t in J(f"configs/{cfgname}.json")["targets"].values():
-                dbs.append(re.search(r"-d (\w+)", t["schema_cmd"]).group(1))
-        self.assertEqual(len(dbs), len(set(dbs)))
-        init = open(os.path.join(ROOT, "compose", "supplychain-init.sql")).read()
-        for d in dbs: self.assertIn(f"CREATE DATABASE {d};", init)
+        # each runtime's init script creates only that runtime's databases, and postgres mounts both
+        for cfgname, folder, prefix in (("supplychain-csharp", "csharp", "sc_cs_"), ("supplychain-java", "java", "sc_java_")):
+            dbs = [re.search(r"-d (\w+)", t["schema_cmd"]).group(1) for t in J(f"configs/{cfgname}.json")["targets"].values()]
+            init = open(os.path.join(ROOT, "compose", folder, "supplychain-init.sql")).read()
+            for d in dbs:
+                self.assertTrue(d.startswith(prefix), d)
+                self.assertIn(f"CREATE DATABASE {d};", init)
+            self.assertEqual(sorted(re.findall(r"CREATE DATABASE (\w+);", init)), sorted(dbs))
+        all_dbs = [re.search(r"-d (\w+)", t["schema_cmd"]).group(1) for c in ("supplychain-csharp", "supplychain-java")
+                   for t in J(f"configs/{c}.json")["targets"].values()]
+        self.assertEqual(len(all_dbs), len(set(all_dbs)))
+        vols = yaml.safe_load(open(os.path.join(ROOT, "compose", "supplychain.yml")))["services"]["postgres"]["volumes"]
+        self.assertTrue(any("csharp/supplychain-init.sql" in v for v in vols))
+        self.assertTrue(any("java/supplychain-init.sql" in v for v in vols))
 
     def test_compose_parses_and_arms_share_one_audience(self):
         for f in ("keycloak.yml", "supplychain.yml", "supplychain.perf.yml"):

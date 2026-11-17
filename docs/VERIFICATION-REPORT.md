@@ -1,9 +1,9 @@
 # Documentation verification report
 
-Scope: docs vs source for C#, Java, TypeScript, Python and WASM. Version audited: 3.3.5.
+Scope: docs vs source for C#, Java, TypeScript, Python and WASM. Version audited: 3.4.0.
 
 ## Verified (matches source)
-- Version `3.3.5` in `Directory.Build.props`, Java `<revision>`, `@foundgine/typescript`, `foundgine-sdk` (Python), `@foundgine/wasm`, WASM `Cargo.toml`.
+- Version `3.4.0` in `Directory.Build.props`, Java `<revision>`, `@foundgine/typescript`, `foundgine-sdk` (Python), `@foundgine/wasm`, WASM `Cargo.toml`.
 - Java artifactIds in `docs-site/packages` (`foundgine-runtime`, `-providers`, `-extensions`, `-migrations`) exist as modules.
 - C# install commands name real projects (`Foundgine.Runtime`, `Foundgine.Providers`).
 - All six CI workflows referenced by README badges exist.

@@ -45,7 +45,7 @@ Selecting a field you may not read, or reading an entity you may not read, is a 
 write that matches no row in the caller's tenant also counts as denied (all root fields null).
 
 ## Migrations: what each arm must prove
-Each arm has its own database (`compose/supplychain-init.sql`). Schema comes only from that arm's migration tool; the harness applies
+Each arm has its own database (`compose/csharp/supplychain-init.sql` and `compose/java/supplychain-init.sql`). Schema comes only from that arm's migration tool; the harness applies
 identical benchmark data afterwards (`seed/reset-*.sql`). `fpbench schemaparity` reads the live databases (`scenarios/schema_dump.sql`) and fails if
 * an arm has **no history table** (EnsureCreated / Hibernate `ddl-auto` / hand SQL),
 * the applied migration ids do not match the arm's tool (`expect_history`) or match the other tool (`forbid_history`),
@@ -86,3 +86,12 @@ python3 -m fpbench run configs/supplychain-java.json --out out/sc-java
 ```
 
 Before performance runs, verify `/health/ready` returns 200 for all four arms. It now includes a Redis write/read/delete probe and a PostgreSQL primary-backed high-water synchronization check. Redis is intentionally shared by the arms but namespaces are isolated by runtime; restart the app between measurement cells, not Redis. Re-seed after `armauthz`, which includes mutating authorization probes.
+
+## Migration provenance scripts
+
+`tools/foundgine-perf/csharp/` and `tools/foundgine-perf/java/` hold the same three scripts per runtime:
+`generate-baseline-migration.sh`, `generate-foundgine-migration.sh` and `verify-migration-provenance.sh`.
+In `java/`, the baseline script only checks that the hand-authored `V1__baseline.sql` is in place, the Foundgine
+script runs the `foundgine-migrations` CLI through `src/java/samples/foundgine-supply-chain/migrations.sh`, and the
+provenance script checks source artifacts only (no local migration copy in the Foundgine arm, Hibernate never creates the schema).
+`tests/test_java_migration_scripts.py` covers them without Maven or a database.

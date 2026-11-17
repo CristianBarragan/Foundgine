@@ -20,7 +20,9 @@ services:
   postgres:
     image: postgres:17
     environment: { POSTGRES_USER: benchmark, POSTGRES_PASSWORD: benchmark, POSTGRES_DB: postgres }
-    volumes: [ "./supplychain-init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro" ]
+    volumes:
+      - "./csharp/supplychain-init.sql:/docker-entrypoint-initdb.d/10-csharp-init.sql:ro"
+      - "./java/supplychain-init.sql:/docker-entrypoint-initdb.d/20-java-init.sql:ro"
     healthcheck: { test: ["CMD-SHELL", "pg_isready -U benchmark"], interval: 3s, timeout: 3s, retries: 30 }
 
   cs-baseline:
@@ -69,6 +71,7 @@ services:
       SUPPLYCHAIN_JDBC_URL: jdbc:postgresql://postgres:5432/sc_java_foundgine
       SUPPLYCHAIN_JDBC_USER: benchmark
       SUPPLYCHAIN_JDBC_PASSWORD: benchmark
+      SUPPLYCHAIN_SEED_DEMO: "false"   # the harness seeds both arms identically (seed/reset-java.sql)
     depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_healthy }, keycloak: { condition: service_healthy } }
 
 volumes:

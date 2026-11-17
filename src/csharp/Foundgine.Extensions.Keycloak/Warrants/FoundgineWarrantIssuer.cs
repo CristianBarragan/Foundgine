@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using Foundgine.Core.Semantic.Security.Execution;
 using Foundgine.Core.Semantic.Security.Warrants;
@@ -54,6 +55,59 @@ public sealed class FoundgineKeycloakWarrantIssuer(
 {
     private readonly object _signGate = new(); // RSA instances are not guaranteed thread-safe for concurrent use.
     private readonly TimeProvider _time = time ?? TimeProvider.System;
+    private volatile SignerPool? _pool;
+
+    /// <summary>
+    /// Private-key signing is CPU-bound (about a millisecond for RSA-2048). A single lock around the provider's key
+    /// serialises every request behind it, so signing uses per-concurrent-caller clones of the key instead. Keys that
+    /// cannot be exported (KMS/HSM-backed) keep the original single-lock path.
+    /// </summary>
+    private sealed class SignerPool(RSA source)
+    {
+        public RSA Source { get; } = source;
+        public ConcurrentBag<RSA> Clones { get; } = new();
+        public volatile bool Unavailable;
+    }
+
+    private SecurityWarrant Sign(SecurityWarrant unsigned)
+    {
+        var source = keys.PrivateKey;
+        var pool = _pool;
+        // A provider that hands back a different key instance (rotation) gets a fresh pool; stale clones are dropped.
+        if (pool is null || !ReferenceEquals(pool.Source, source))
+        {
+            pool = new SignerPool(source);
+            _pool = pool;
+        }
+
+        if (!pool.Unavailable)
+        {
+            RSA? signer;
+            if (!pool.Clones.TryTake(out signer))
+            {
+                try
+                {
+                    RSAParameters parameters;
+                    lock (_signGate) parameters = source.ExportParameters(includePrivateParameters: true);
+                    signer = RSA.Create();
+                    signer.ImportParameters(parameters);
+                }
+                catch (CryptographicException)
+                {
+                    pool.Unavailable = true;
+                    signer = null;
+                }
+            }
+
+            if (signer is not null)
+            {
+                try { return SecurityWarrantSigner.Sign(unsigned, signer); }
+                finally { pool.Clones.Add(signer); }
+            }
+        }
+
+        lock (_signGate) return SecurityWarrantSigner.Sign(unsigned, source);
+    }
 
     public SecurityExecutionContext? Issue(
         string subject, string tenant, IReadOnlyCollection<string> roles, TimeSpan? lifetime = null)
@@ -93,8 +147,7 @@ public sealed class FoundgineKeycloakWarrantIssuer(
             ParentId: null!, // root warrant
             Signature: []);
 
-        SecurityWarrant signed;
-        lock (_signGate) signed = SecurityWarrantSigner.Sign(unsigned, keys.PrivateKey);
+        var signed = Sign(unsigned);
 
         var scope = options.ResourceScopeResolver?.Invoke(tenant, roles) ?? tenant;
         return new SecurityExecutionContext(signed, subject, options.WarrantAudience, tenant, scope);

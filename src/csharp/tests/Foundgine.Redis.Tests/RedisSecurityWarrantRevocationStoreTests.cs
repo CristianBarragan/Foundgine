@@ -35,6 +35,24 @@ public sealed class RedisSecurityWarrantRevocationStoreTests
     }
 
     [Fact]
+    public async Task Out_of_order_completion_of_concurrent_calls_is_not_a_rollback()
+    {
+        var backend = new GatedBackend();
+        var store = new RedisSecurityWarrantRevocationStore(backend);
+
+        // Call A reaches Redis first (value 47) but is delayed; call B reaches Redis second (value 48) and returns first.
+        var a = Task.Run(() => store.CurrentSequence);
+        Assert.True(backend.FirstCallEntered.Wait(TimeSpan.FromSeconds(10)));
+        Assert.Equal(48, store.CurrentSequence);
+        backend.ReleaseFirstCall.Set();
+
+        Assert.Equal(47, await a);
+        // The high-water mark stays at 48, so a genuine later rollback is still detected.
+        backend.Next = 47;
+        Assert.Throws<InvalidOperationException>(() => _ = store.CurrentSequence);
+    }
+
+    [Fact]
     public void Readiness_probe_requires_a_successful_write_read_round_trip()
     {
         var backend = new ProbeBackend(success: true, sequence: 17);
@@ -109,10 +127,32 @@ public sealed class RedisSecurityWarrantRevocationStoreTests
             [Sequence.ToString(System.Globalization.CultureInfo.InvariantCulture)];
     }
 
+    private sealed class GatedBackend : IRedisScriptBackend
+    {
+        private int _calls;
+        public long Next { get; set; } = 48;
+        public ManualResetEventSlim FirstCallEntered { get; } = new();
+        public ManualResetEventSlim ReleaseFirstCall { get; } = new();
+
+        public IReadOnlyList<string> Eval(string script, IReadOnlyList<string> keys, IReadOnlyList<string> args)
+        {
+            if (Interlocked.Increment(ref _calls) == 1)
+            {
+                FirstCallEntered.Set();
+                Assert.True(ReleaseFirstCall.Wait(TimeSpan.FromSeconds(10)));
+                return ["47"];
+            }
+
+            return [Next.ToString(System.Globalization.CultureInfo.InvariantCulture)];
+        }
+    }
+
     private sealed class ProbeBackend(bool success, long sequence) : IRedisScriptBackend
     {
         public IReadOnlyList<string> Eval(string script, IReadOnlyList<string> keys, IReadOnlyList<string> args) =>
-            [success ? "1" : "0", sequence.ToString(System.Globalization.CultureInfo.InvariantCulture)];
+            keys.Count == 1
+                ? [sequence.ToString(System.Globalization.CultureInfo.InvariantCulture)]
+                : [success ? "1" : "0", sequence.ToString(System.Globalization.CultureInfo.InvariantCulture)];
     }
 
     private sealed class DownBackend : IRedisScriptBackend

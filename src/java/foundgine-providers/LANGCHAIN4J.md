@@ -42,7 +42,7 @@ Assistant assistant = AiServices.builder(Assistant.class)
 <dependency>
   <groupId>io.github.cristianbarragan</groupId>
   <artifactId>foundgine-providers</artifactId>
-  <version>3.3.5</version>
+  <version>3.4.0</version>
 </dependency>
 ```
 

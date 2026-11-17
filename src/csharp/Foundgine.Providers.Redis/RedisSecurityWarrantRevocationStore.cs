@@ -14,7 +14,7 @@ namespace Foundgine.Providers.Redis;
 /// Redis replication/failover durability is an operational property: configure persistence and an appropriate
 /// replication acknowledgement/failover policy if acknowledged revocations must survive primary loss.
 /// </remarks>
-public sealed class RedisSecurityWarrantRevocationStore : ISecurityWarrantRevocationStore
+public sealed class RedisSecurityWarrantRevocationStore : IBatchedSecurityWarrantRevocationStore
 {
     public const string DefaultKeyPrefix = "foundgine:";
 
@@ -35,6 +35,18 @@ public sealed class RedisSecurityWarrantRevocationStore : ISecurityWarrantRevoca
 
     private const string CurrentSequenceScript = "return {tostring(redis.call('GET', KEYS[1]) or '0')}";
     private const string ExistsScript = "return {tostring(redis.call('EXISTS', KEYS[1]))}";
+    // KEYS: [1] sequence, [2] identity, [3] digest, [4..] delegation ancestor digests. One atomic snapshot.
+    private const string LookupScript = """
+        local sequence = redis.call('GET', KEYS[1]) or '0'
+        local revoked = '0'
+        if redis.call('EXISTS', KEYS[2]) == 1 or redis.call('EXISTS', KEYS[3]) == 1 then revoked = '1' end
+        local ancestor = '0'
+        for i = 4, #KEYS do
+          if redis.call('EXISTS', KEYS[i]) == 1 then ancestor = '1' break end
+        end
+        return {tostring(sequence), revoked, ancestor}
+        """;
+
     private const string HealthProbeScript = """
         local sequence = redis.call('GET', KEYS[1]) or '0'
         local written = redis.call('SET', KEYS[2], ARGV[1], 'NX', 'PX', 5000)
@@ -65,10 +77,11 @@ public sealed class RedisSecurityWarrantRevocationStore : ISecurityWarrantRevoca
     {
         get
         {
+            var floor = Interlocked.Read(ref _lastObservedSequence);
             try
             {
                 var result = _backend.Eval(CurrentSequenceScript, [SequenceKey], []);
-                return ObserveSequence(ParseSingleLong(result, "current revocation sequence"));
+                return ObserveSequence(ParseSingleLong(result, "current revocation sequence"), floor);
             }
             catch (Exception ex) when (ex is not InvalidOperationException)
             {
@@ -83,6 +96,7 @@ public sealed class RedisSecurityWarrantRevocationStore : ISecurityWarrantRevoca
         if (string.IsNullOrWhiteSpace(warrant.Id) || string.IsNullOrWhiteSpace(warrant.Digest))
             throw new InvalidOperationException("A warrant must have an identity and digest before revocation.");
 
+        var floor = Interlocked.Read(ref _lastObservedSequence);
         try
         {
             var result = _backend.Eval(
@@ -96,7 +110,7 @@ public sealed class RedisSecurityWarrantRevocationStore : ISecurityWarrantRevoca
                 !long.TryParse(result[4], NumberStyles.Integer, CultureInfo.InvariantCulture, out var currentSequence) || currentSequence < sequence)
                 throw new InvalidOperationException("Redis returned an invalid warrant revocation record.");
 
-            ObserveSequence(currentSequence);
+            ObserveSequence(currentSequence, floor);
             return new SecurityWarrantRevocation(
                 result[0], result[1], DateTimeOffset.FromUnixTimeMilliseconds(revokedAt), sequence);
         }
@@ -115,6 +129,7 @@ public sealed class RedisSecurityWarrantRevocationStore : ISecurityWarrantRevoca
     {
         var probeKey = _keyPrefix + "health:" + Guid.NewGuid().ToString("N");
         var token = Guid.NewGuid().ToString("N");
+        var floor = Interlocked.Read(ref _lastObservedSequence);
         try
         {
             var result = _backend.Eval(HealthProbeScript, [SequenceKey, probeKey], [token]);
@@ -122,7 +137,36 @@ public sealed class RedisSecurityWarrantRevocationStore : ISecurityWarrantRevoca
                 throw new InvalidOperationException("Redis warrant revocation readiness probe failed its write/read verification.");
             if (!long.TryParse(result[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var sequence) || sequence < 0)
                 throw new InvalidOperationException("Redis returned an invalid sequence during the warrant revocation readiness probe.");
-            return ObserveSequence(sequence);
+            return ObserveSequence(sequence, floor);
+        }
+        catch (Exception ex) when (ex is not InvalidOperationException)
+        {
+            throw Unavailable(ex);
+        }
+    }
+
+    public SecurityWarrantRevocationLookup Lookup(string warrantId, string warrantDigest, IReadOnlyList<string> ancestorDigests)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(warrantId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(warrantDigest);
+        ArgumentNullException.ThrowIfNull(ancestorDigests);
+
+        var keys = new List<string>(3 + ancestorDigests.Count)
+        {
+            SequenceKey, IdentityKey(warrantId, warrantDigest), DigestKey(warrantDigest)
+        };
+        foreach (var ancestor in ancestorDigests)
+            keys.Add(DigestKey(ancestor));
+
+        var floor = Interlocked.Read(ref _lastObservedSequence);
+        try
+        {
+            var result = _backend.Eval(LookupScript, keys, []);
+            if (result.Count != 3 ||
+                !long.TryParse(result[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var sequence) || sequence < 0 ||
+                (result[1] != "0" && result[1] != "1") || (result[2] != "0" && result[2] != "1"))
+                throw new InvalidOperationException("Redis returned an invalid warrant revocation lookup result.");
+            return new SecurityWarrantRevocationLookup(ObserveSequence(sequence, floor), result[1] == "1", result[2] == "1");
         }
         catch (Exception ex) when (ex is not InvalidOperationException)
         {
@@ -156,15 +200,22 @@ public sealed class RedisSecurityWarrantRevocationStore : ISecurityWarrantRevoca
         }
     }
 
-    private long ObserveSequence(long sequence)
+    /// <summary>
+    /// Records a sequence returned by Redis. <paramref name="floor"/> is the highest sequence this store had already
+    /// observed <em>before the request was sent</em>. Redis executes the request after everything observed by then, so a
+    /// reply below the floor means the primary's state rolled back. A reply below a value observed <em>after</em> the
+    /// request was sent is not a rollback: concurrent calls can complete out of order, and that must not fail closed.
+    /// </summary>
+    private long ObserveSequence(long sequence, long floor)
     {
+        if (sequence < floor)
+            throw new InvalidOperationException(
+                $"Warrant revocation sequence regressed from {floor} to {sequence}; failing closed after possible Redis state rollback.");
+
         while (true)
         {
             var previous = Interlocked.Read(ref _lastObservedSequence);
-            if (sequence < previous)
-                throw new InvalidOperationException(
-                    $"Warrant revocation sequence regressed from {previous} to {sequence}; failing closed after possible Redis state rollback.");
-            if (sequence == previous || Interlocked.CompareExchange(ref _lastObservedSequence, sequence, previous) == previous)
+            if (sequence <= previous || Interlocked.CompareExchange(ref _lastObservedSequence, sequence, previous) == previous)
                 return sequence;
         }
     }

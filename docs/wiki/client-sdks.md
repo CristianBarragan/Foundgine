@@ -13,7 +13,7 @@ Foundgine ships three **thin transport clients** for talking to a running Foundg
 | Source | [`src/typescript/`](../../src/typescript/README.md) | [`src/python/`](../../src/python/README.md) | [`src/wasm/`](../../src/wasm/README.md) |
 | Runtime | Node.js 20+ or any runtime with `fetch` | Python 3.11+, `httpx` | Node.js 20+, browsers, Workers, Deno (host supplies `fetch`) |
 | Style | async, `camelCase`, `AbortSignal` | async **and** sync clients, `snake_case`, `asyncio.Event` cancel | async, `camelCase`, `AbortSignal`; pure-Rust sans-I/O core |
-| Version | `3.3.5` | `3.3.5` | `3.3.5` |
+| Version | `3.4.0` | `3.4.0` | `3.4.0` |
 | CI workflow | `typescript-build.yml` (Node 20, 22) | `python-build.yml` (3.11–3.14, ruff, mypy) | `wasm-build.yml` (Rust 1.75, wasm-bindgen, Node 20) |
 
 All three are marked in their own READMEs as **development packages, not release-ready SDKs**. The repository does not claim that a registry release is available; check npm or PyPI before pinning a version.

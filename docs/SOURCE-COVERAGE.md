@@ -6,7 +6,7 @@ This page is an implementation inventory checked against the supplied `Foundgine
 
 | Runtime | Value found in source | Evidence |
 |---|---|---|
-| Foundgine release line | `3.3.5` | `Directory.Build.props` `VersionPrefix` and `src/java/pom.xml` `<revision>` |
+| Foundgine release line | `3.4.0` | `Directory.Build.props` `VersionPrefix` and `src/java/pom.xml` `<revision>` |
 | .NET | `net10.0` | C# project files, including `Foundgine.Core.csproj` |
 | Java | `27` | `src/java/pom.xml` `maven.compiler.release` |
 
@@ -49,9 +49,9 @@ The Maven publishing configuration excludes the parent, AOT generator, red-team 
 
 | SDK | Package metadata in source | Documented boundary |
 |---|---|---|
-| TypeScript | `src/typescript/package.json` — `@foundgine/typescript`, `3.3.5` | HTTP/MCP and Temporal workflow transport client; not the C#/Java semantic runtime. |
-| Python | `src/python/pyproject.toml` — `foundgine-sdk`, `3.3.5` | Async and synchronous HTTP/MCP and Temporal workflow transport client; not the C#/Java semantic runtime. |
-| Rust / WebAssembly | `src/wasm/package.json` — `@foundgine/wasm`, `3.3.5`; Rust crate under `src/wasm/Cargo.toml` | Sans-I/O transport core with host-injected fetch; not the C#/Java semantic runtime. |
+| TypeScript | `src/typescript/package.json` — `@foundgine/typescript`, `3.4.0` | HTTP/MCP and Temporal workflow transport client; not the C#/Java semantic runtime. |
+| Python | `src/python/pyproject.toml` — `foundgine-sdk`, `3.4.0` | Async and synchronous HTTP/MCP and Temporal workflow transport client; not the C#/Java semantic runtime. |
+| Rust / WebAssembly | `src/wasm/package.json` — `@foundgine/wasm`, `3.4.0`; Rust crate under `src/wasm/Cargo.toml` | Sans-I/O transport core with host-injected fetch; not the C#/Java semantic runtime. |
 
 See [Client SDKs](wiki/client-sdks.md) for the combined overview. The SDK READMEs record their own test coverage and remaining limitations. The current README status sections identify remaining gaps, including live-server integration and runtime-specific coverage. Package metadata and a passing unit suite do not establish compatibility with every browser/runtime or a successful live-server integration.
 
@@ -86,7 +86,7 @@ Presence in both source trees does not prove identical behavior, supported featu
 
 The source tree contains dedicated .NET test projects for semantic behavior, planning, SQL, InMemory, ORM, MCP, GraphQL, AOT, event store, gateway, security/authority, high assurance, Microsoft Agent Framework, and end-to-end behavior. It also contains security harnesses, conformance data and runnable Supply Chain / Temporal samples.
 
-Java verification is distributed across module tests, the `foundgine-redteam` module, ORM/JPA parity plan and the starter/advanced Supply Chain samples. The `foundgine-aot-generator` module is part of the root reactor and is excluded from standalone publication; processor-related sources also exist in `foundgine-providers`. At the 3.3.5 checkpoint, the latest reported Maven run had the Starter sample passing and the Advanced sample test phase failing; fixes are present but have not been rerun. The `foundgine-migrations` module has source and tests, but full Maven/runtime verification remains pending. The PostgreSQL 16 schema-parity test is defined but has not been executed. The C# Agent Framework adapter and its test project exist in the tree but are not included in `Foundgine.sln`; the changelog records that they have not yet been compiled or run. A source file or test class is not evidence that a test has passed. Record executed build/test commands and environment in the relevant conformance page.
+Java verification is distributed across module tests, the `foundgine-redteam` module, ORM/JPA parity plan and the starter/advanced Supply Chain samples. The `foundgine-aot-generator` module is part of the root reactor and is excluded from standalone publication; processor-related sources also exist in `foundgine-providers`. At the 3.4.0 checkpoint, the latest reported Maven run had the Starter sample passing and the Advanced sample test phase failing; fixes are present but have not been rerun. The `foundgine-migrations` module has source and tests, but full Maven/runtime verification remains pending. The PostgreSQL 16 schema-parity test is defined but has not been executed. The C# Agent Framework adapter and its test project exist in the tree but are not included in `Foundgine.sln`; the changelog records that they have not yet been compiled or run. A source file or test class is not evidence that a test has passed. Record executed build/test commands and environment in the relevant conformance page.
 
 ## Completeness rule for future changes
 
