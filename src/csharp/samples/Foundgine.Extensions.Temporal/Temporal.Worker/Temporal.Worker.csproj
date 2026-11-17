@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../Foundgine.Extensions.Temporal/Foundgine.Extensions.Temporal.csproj" />
+    <ProjectReference Include="../../../Foundgine.Extensions.Keycloak/Foundgine.Extensions.Keycloak.csproj" />
+  </ItemGroup>
+</Project>

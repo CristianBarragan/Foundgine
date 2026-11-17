@@ -15,12 +15,12 @@ This page maps capabilities to the repository's current module layout. It is an 
 | Gateway, event and outbox | `Foundgine.Providers/Gateway`, `EventStore`, `Outbox` | `foundgine-providers` gateway/event/outbox packages |
 | MCP and agent tooling | `Foundgine.Providers/Tools/MCP`, runtime control plane | `foundgine-providers` tool/MCP packages and `foundgine-runtime` governance |
 | AI model and agent adapters | `Foundgine.Providers.Models` (Microsoft.Extensions.AI) and Microsoft Agent Framework, both in `Foundgine.Providers` | `foundgine-providers` (LangChain4j adapter included) |
-| Redis shared state | `Foundgine.Providers/Redis` (warrant replay and MCP sessions) | `foundgine-providers/.../security/redis` (warrant replay) |
+| Redis shared state | `Foundgine.Providers.Redis` (warrant replay and MCP sessions) | `foundgine-providers/.../security/redis` (warrant replay) |
 | Spring Boot integration | N/A | `foundgine-providers` (Spring Boot adapter included) |
 | AOT metadata | `Foundgine.Providers/Aot`, `Foundgine.Providers.Aot.Generator` | `foundgine-aot-generator` and provider annotations/metadata |
-| Keycloak | `src/csharp/Foundgine.Extensions/Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
-| Temporal | `src/csharp/Foundgine.Extensions/Temporal` | `src/java/foundgine-extensions/.../temporal` |
-| GraphQL adapter | `src/csharp/Foundgine.Extensions/GraphQL/HotChocolate` | `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql` (GraphQL Java; different API, no Hot Chocolate parity claim) |
+| Keycloak | `src/csharp/Foundgine.Extensions.Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
+| Temporal | `src/csharp/Foundgine.Extensions.Temporal` | `src/java/foundgine-extensions/.../temporal` |
+| GraphQL adapter | `src/csharp/Foundgine.Extensions.GraphQL/HotChocolate` | `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql` (GraphQL Java; different API, no Hot Chocolate parity claim) |
 | Samples and tests | `src/csharp/samples`, `tests`, `security` | `src/java/samples`, module tests, `security` |
 | Client SDK for a running server (TypeScript) | N/A (server) | N/A (server); client lives in `src/typescript` (`@foundgine/typescript`) |
 | Client SDK (Python) | N/A (server) | N/A (server); client lives in `src/python` (`foundgine-sdk`) |

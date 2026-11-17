@@ -6,5 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../Foundgine.Providers.csproj" />
+    <ProjectReference Include="../../../Foundgine.Providers.PostgresVector/Foundgine.Providers.PostgresVector.csproj" />
+    <ProjectReference Include="../../../Foundgine.Providers.Elasticsearch/Foundgine.Providers.Elasticsearch.csproj" />
   </ItemGroup>
 </Project>

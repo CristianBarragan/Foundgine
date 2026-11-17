@@ -72,13 +72,32 @@ public sealed class PostgresAuthorizationContextIntegritySecurityTests
         }
 
         await RestoreAsync(ds, actor, tenant, true, 1, "auth-v1");
-        await TamperAsync(ds, actor, tenant, "integrity_algorithm = 'HMAC-SHA512/v1'");
-        await using (var c = await ds.OpenConnectionAsync())
-        await using (var tx = await c.BeginTransactionAsync(IsolationLevel.ReadCommitted))
+
+        // schema.sql pins integrity_algorithm with ck_authorization_context_integrity_algorithm, so the database itself
+        // refuses an unknown algorithm. To still prove the store fails closed on a row that bypassed that guard
+        // (defence in depth), the CHECK is lifted for this step only and always put back, with the row repaired first.
+        await ExecuteDdlAsync(ds,
+            "ALTER TABLE banking.authorization_context DROP CONSTRAINT IF EXISTS ck_authorization_context_integrity_algorithm;");
+        try
         {
+            await TamperAsync(ds, actor, tenant, "integrity_algorithm = 'HMAC-SHA512/v1'");
+            await using var c = await ds.OpenConnectionAsync();
+            await using var tx = await c.BeginTransactionAsync(IsolationLevel.ReadCommitted);
             await Assert.ThrowsAsync<InvalidOperationException>(() => store.LoadForUpdateAsync(c, tx, actor, tenant));
             await tx.RollbackAsync();
         }
+        finally
+        {
+            await TamperAsync(ds, actor, tenant, "integrity_algorithm = 'HMAC-SHA256/v1'");
+            await ExecuteDdlAsync(ds,
+                "ALTER TABLE banking.authorization_context ADD CONSTRAINT ck_authorization_context_integrity_algorithm CHECK (integrity_algorithm = 'HMAC-SHA256/v1');");
+        }
+    }
+
+    private static async Task ExecuteDdlAsync(NpgsqlDataSource ds, string sql)
+    {
+        await using var cmd = ds.CreateCommand(sql);
+        await cmd.ExecuteNonQueryAsync();
     }
 
     [PostgresFact]

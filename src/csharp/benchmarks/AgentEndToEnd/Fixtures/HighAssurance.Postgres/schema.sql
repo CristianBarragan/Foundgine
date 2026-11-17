@@ -114,3 +114,12 @@ CREATE TABLE IF NOT EXISTS banking.authorization_security_recovery_checkpoint
     status        text NOT NULL CHECK (status IN ('sealed', 'recovery-required')),
     updated_at    timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS banking.authorization_security_recovery_checkpoint
+(
+    checkpoint_id bigint PRIMARY KEY CHECK (checkpoint_id = 1),
+    sequence      bigint NOT NULL CHECK (sequence > 0),
+    state_digest  text NOT NULL CHECK (length(state_digest) = 64),
+    status        text NOT NULL CHECK (status IN ('sealed', 'recovery-required')),
+    updated_at    timestamptz NOT NULL DEFAULT now()
+);

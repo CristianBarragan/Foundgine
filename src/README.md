@@ -8,8 +8,11 @@ src/
 ├── csharp/                         # .NET 10 implementation
 │   ├── Foundgine.Core/
 │   ├── Foundgine.Runtime/
-│   ├── Foundgine.Providers/             # includes Redis and Microsoft Agent Framework adapters
-│   └── Foundgine.Extensions/
+│   ├── Foundgine.Providers/             # core providers: SQL, EventStore, gateway, MCP, models, AOT runtime
+│   ├── Foundgine.Providers.Orm/ .Orm.Generator/ .EntityFrameworkCore/ .Aot.Generator/   # bundled into the Providers package
+│   ├── Foundgine.Providers.Redis/ .AgentFramework/ .PostgresVector/ .Elasticsearch/   # optional adapters, one package each
+│   ├── Foundgine.Extensions.GraphQL/ .Temporal/ .Keycloak/                            # optional integrations, one package each
+│   └── tests/ samples/ benchmarks/ ...
 ├── java/                           # Java 27 Maven reactor
 │   ├── pom.xml
 │   ├── foundgine-core/
@@ -30,7 +33,7 @@ src/
 
 | Integration | Path | README | Status |
 |---|---|---|---|
-| Microsoft Agent Framework | `src/csharp/Foundgine.Providers/AgentFramework/` | [README](csharp/Foundgine.Providers/AgentFramework/README.md) | Included in `Foundgine.Providers` |
+| Microsoft Agent Framework | `src/csharp/Foundgine.Providers.AgentFramework/` | [README](csharp/Foundgine.Providers.AgentFramework/README.md) | Separate package `Foundgine.Providers.AgentFramework` |
 | LangChain4j | `src/java/foundgine-providers` | [README](java/foundgine-providers/LANGCHAIN4J.md) | Included in `foundgine-providers` |
 | Spring Boot | `src/java/foundgine-providers` | [README](java/foundgine-providers/SPRING-BOOT.md) | Included in `foundgine-providers` |
 
@@ -87,13 +90,13 @@ without mixing Java and C# projects in the same directory.
 - `src/csharp/` contains the existing .NET solution projects.
 - `src/java/` contains the Maven reactor, server modules, optional integrations, migration tooling, security module and samples.
 - `src/conformance/` contains shared cross-language fixtures and their generators; see its [README](conformance/README.md).
-- Redis and Microsoft Agent Framework adapters compile into the C# `Foundgine.Providers` package. Java Redis, Spring Boot and LangChain4j adapters compile into the Maven `foundgine-providers` artifact.
+- In C#, every optional adapter (Redis, Microsoft Agent Framework, PostgreSQL pgvector, Elasticsearch) and every extension (GraphQL, Temporal, Keycloak) is its own top-level project and NuGet package next to `Foundgine.Providers`. Java Redis, Spring Boot and LangChain4j adapters compile into the Maven `foundgine-providers` artifact.
 - C# tests remain under `src/csharp/tests/`.
 - Java tests follow Maven convention inside each Java module under
   `src/test/java/`.
 
 - `src/typescript/`, `src/python/` and `src/wasm/` contain the **client SDKs** described below.
-- The optional framework integrations are `src/csharp/Foundgine.Providers/AgentFramework` (Microsoft Agent Framework), `src/java/foundgine-providers` (LangChain4j and Spring Boot); see below.
+- The optional framework integrations are `src/csharp/Foundgine.Providers.AgentFramework` (Microsoft Agent Framework), `src/java/foundgine-providers` (LangChain4j and Spring Boot); see below.
 
 The two implementations can therefore evolve side-by-side while preserving
 the same conceptual Foundgine module boundaries.

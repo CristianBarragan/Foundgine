@@ -20,11 +20,28 @@ namespace Foundgine.E2E.Tests;
 ///
 ///   query -> mutation -> query -> mutation
 ///
-/// The same PostgreSQL transaction is shared by every operation. The first
-/// mutation creates a customer/account graph; the first query must observe the
-/// newly-created state. A second semantic mutation then changes the account
-/// status, and the second query must observe the changed state and exclude that
-/// customer. The entire scenario is rolled back at the end.
+/// The same PostgreSQL transaction is shared by every pass, and everything is
+/// rolled back at the end.
+///
+///   1. Query:    baseline over seeded data (before any mutation).
+///   2. Mutation: ComplexSemanticMutationE2ETests.BuildGraph() creates a
+///                Customer/Account/... graph.
+///   3. Query:    the same query plan must now observe the created customer
+///                (after one fixture Transaction row is added, because the
+///                query INNER JOINs transactions and BuildGraph() creates none).
+///   4. Mutation: a second, independent semantic mutation blocks that
+///                customer's account. This is verified through the
+///                mutation's own result (AffectedRows and the returned
+///                Status); there is no further query after pass 4.
+///
+/// Note on account status: BuildGraph() upserts the Account with Status
+/// "Open", but its operation 8 then sets Status to "Active" for accounts
+/// that have at least one order (operation 4 creates one). Because
+/// BuildGraph() mixes Create/Upsert and Update on the same entities, the
+/// Postgres provider executes it through the sequential fallback (see
+/// PostgresBatchedMutationCompiler.TryCompile), so operation 8 does see the
+/// order and the account ends up "Active". Pass 4 therefore filters on
+/// "Active", not "Open".
 ///
 /// This proves that the semantic, execution, SQL compilation and PostgreSQL
 /// layers agree on state across multiple requests rather than only proving each
@@ -34,11 +51,10 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
 {
     private const string ConnectionEnvironmentVariable = "FOUNDGINE_POSTGRES_CONNECTION_STRING";
 
-    // SkippableFact (not [Fact]): when FOUNDGINE_POSTGRES_CONNECTION_STRING is
-    // unset this test is reported as SKIPPED, not PASSED. A plain [Fact] with
-    // an early `return;` shows as a pass, which lets CI go green without ever
-    // touching PostgreSQL — silently defeating the point of a "flagship
-    // stateful proof" test if the env var is ever misconfigured.
+    // [PostgreSqlFact] (not a plain [Fact]): when
+    // FOUNDGINE_POSTGRES_CONNECTION_STRING is unset the test is reported as
+    // SKIPPED, not PASSED. A plain [Fact] with an early `return;` shows as a
+    // pass, which would let CI go green without ever touching PostgreSQL.
     [PostgreSqlFact]
     public async Task PostgresE2E_query_mutation_query_mutation_is_stateful_end_to_end_against_postgresql17()
     {
@@ -47,10 +63,9 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
         await using var connection = new NpgsqlConnection(cs);
         await connection.OpenAsync();
         await SetSearchPathAsync(connection, "fg_stateful");
-        await SetSearchPathAsync(connection, "fg_stateful");
 
         var mutationMetadata = PostgresE2ETests.BuildMetadata();
-        var queryMetadata = PostgresE2ETests.BuildMetadata();
+        var queryMetadata = ComplexQueryPostgresE2ETests.BuildMetadata();
         var metadata = MergeMetadata(mutationMetadata, queryMetadata);
 
         await using var transaction = await connection.BeginTransactionAsync();
@@ -93,6 +108,10 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
             var mutationIr = new SemanticMutationExecutionLowerer(metadata).Lower(mutationPlan);
             mutationIr.ValidateDerivedDependencies();
 
+            // Compile() is called directly only to inspect the single-statement
+            // batched SQL shape. ExecuteBatch below uses TryCompile(), which
+            // falls back to sequential execution for this graph (see class
+            // summary), so this SQL is not what actually runs.
             var mutationSql = new PostgresBatchedMutationCompiler(metadata).Compile(mutationIr);
             Assert.NotEmpty(mutationSql.CommandText);
             Assert.Contains("unnest", mutationSql.CommandText, StringComparison.OrdinalIgnoreCase);
@@ -106,6 +125,21 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
             var createdCustomerId = Convert.ToInt64(
                 firstMutation.Results[0].ReturnedFields![ComplexSemanticMutationE2ETests.Id]);
             Assert.True(createdCustomerId > 0);
+
+            // Operation 2 of BuildGraph() is the Account upsert and returns Id.
+            var createdAccountId = Convert.ToInt64(
+                firstMutation.Results[2].ReturnedFields![ComplexSemanticMutationE2ETests.Id]);
+            Assert.True(createdAccountId > 0);
+
+            // The query below INNER JOINs Account -> Transaction and only
+            // matches customers with a 100/250-balance account or a
+            // 250-amount transaction. BuildGraph() creates no Transaction and
+            // the Account keeps the column default Balance (150), so the new
+            // customer is not yet visible to that query. Add the one fixture
+            // row that makes it visible; the Customer/Account rows it joins
+            // to were created by the mutation above, not by SQL.
+            await InsertTransactionAsync(
+                connection, transaction, createdAccountId, 250m, new DateTime(2026, 1, 3));
 
             // -----------------------------------------------------------------
             // PASS 3 — QUERY
@@ -122,22 +156,27 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
                 .Where(r => Convert.ToInt64(r.Values["__fg_0_Id"]) == createdCustomerId)
                 .ToArray();
             Assert.NotEmpty(createdRows);
-            Assert.All(createdRows, row => Assert.Equal("Primary", row.Values["__fg_1_Name"]));
+            // The query selects Account Id/Balance (not Name), so identify the
+            // account by Id.
+            Assert.All(createdRows, row =>
+                Assert.Equal(createdAccountId, Convert.ToInt64(row.Values["__fg_1_Id"])));
 
             // -----------------------------------------------------------------
-            // PASS 4 — MUTATION: change the account created by mutation #1 from Open
-            //    to Blocked. This is a second, independent semantic mutation
-            //    request, not a direct SQL update.
+            // PASS 4 — MUTATION
+            // Block the account created in pass 2 (Active -> Blocked) with a
+            // second, independent semantic mutation request, not a direct SQL
+            // update.
+            //
+            // The filter is scoped by CustomerId in addition to Name/Status.
+            // Without the CustomerId condition it would match *any* "Primary"
+            // /"Active" Account (e.g. one belonging to another customer
+            // created the same way), and this test could pass for the wrong
+            // reason. That risk is exercised directly by
+            // Second_mutation_only_blocks_the_intended_customers_account
+            // below. BuildBlockAccountGraph also uses the builder's own
+            // constants instead of restating EntityId(702)/FieldId(2)/
+            // FieldId(3).
             // -----------------------------------------------------------------
-            // Scoped to CustomerId == createdCustomerId in addition to
-            // Name/Status: without the CustomerId condition this update would
-            // silently match *any* Account named "Primary" with Status "Open"
-            // (e.g. another customer created the same way), which would let
-            // this test pass for the wrong reason. This exact risk is what
-            // Second_mutation_only_blocks_the_intended_customers_account below
-            // proves against a second, independently-created customer. Also
-            // uses the builder's own constants instead of restating
-            // EntityId(702)/FieldId(2)/FieldId(3).
             var secondMutationGraph = BuildBlockAccountGraph(createdCustomerId);
 
             var secondMutationPlan = new SemanticMutationPlanner().Plan(secondMutationGraph);
@@ -150,11 +189,8 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
             var secondMutation = mutationProvider.ExecuteBatch(secondMutationIr, new ExecutionContext());
             Assert.Single(secondMutation.Results);
 
-            // -----------------------------------------------------------------
-            // PASS 4 — MUTATION
-            // The final pass changes only the account created by pass 2.
-            // Exactly one row must be affected.
-            // -----------------------------------------------------------------
+            // Exactly one row must be affected, and it must be the account
+            // created in pass 2.
             Assert.Equal(1, secondMutation.Results[0].AffectedRows);
             Assert.Equal(
                 "Blocked",
@@ -162,36 +198,38 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
         }
         finally
         {
-            // The outer transaction is rolled back, so the
-            // database is left unchanged."
+            // The outer transaction is rolled back, so the database is left
+            // unchanged.
             await transaction.RollbackAsync();
         }
     }
 
     /// <summary>
     /// Negative counterpart to the main scenario above. It exists to prove
-    /// that scoping the second mutation's filter by CustomerId (in addition
+    /// that scoping the block mutation's filter by CustomerId (in addition
     /// to Name/Status) is doing real work, not just defensive-looking
     /// decoration.
     ///
-    /// The main test's second mutation filters on
-    /// Name == "Primary" AND Status == "Open" AND CustomerId == created.
+    /// The block mutation filters on
+    /// Name == "Primary" AND Status == "Active" AND CustomerId == target.
     /// If the CustomerId condition were ever dropped, the main test would
     /// still pass by coincidence, because it only ever creates one such
-    /// account. Here we run ComplexSemanticMutationE2ETests'
-    /// Create/Upsert graph *twice* against the same transaction, producing
-    /// two independent customers who each get an Account named "Primary"
-    /// with Status "Open" (the values BuildGraph() always uses). We then
-    /// block only the first customer's account and assert the second is
-    /// untouched — an unscoped filter would match both rows and either fail
-    /// AffectedRows == 1 or block the wrong customer's account.
+    /// account. Here we run ComplexSemanticMutationE2ETests.BuildGraph()
+    /// *twice* against the same transaction, producing two independent
+    /// customers who each end up with an Account named "Primary" with
+    /// Status "Active". (BuildGraph() upserts the Account as "Open", then
+    /// its operation 8 flips it to "Active" because the graph also creates an
+    /// order for it.) We then block only the first customer's account and
+    /// assert the second is untouched — an unscoped filter would match both
+    /// rows and either fail AffectedRows == 1 or block the wrong customer's
+    /// account.
     ///
     /// This is built via two independent mutations rather than a raw SQL
     /// decoy row because PrepareUnifiedDatabaseAsync declares a genuinely
     /// unique index on Account.CustomerId (required as the ON CONFLICT
-    /// arbiter for the Upsert in mutation #1) — a customer can only ever
-    /// have one Account row in this schema, so two customers are needed to
-    /// produce two "Primary"/"Open" rows.
+    /// arbiter for the Account Upsert in BuildGraph()) — a customer can only
+    /// ever have one Account row in this schema, so two customers are needed
+    /// to produce two "Primary"/"Active" rows.
     /// </summary>
     [PostgreSqlFact]
     public async Task Second_mutation_only_blocks_the_intended_customers_account()
@@ -203,7 +241,7 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
         await SetSearchPathAsync(connection, "fg_stateful");
 
         var mutationMetadata = PostgresE2ETests.BuildMetadata();
-        var queryMetadata = PostgresE2ETests.BuildMetadata();
+        var queryMetadata = ComplexQueryPostgresE2ETests.BuildMetadata();
         var metadata = MergeMetadata(mutationMetadata, queryMetadata);
 
         await using var transaction = await connection.BeginTransactionAsync();
@@ -214,8 +252,8 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
             var mutationProvider = new PostgresBatchedMutationExecutionProvider(
                 connection, metadata, transaction);
 
-            var firstCustomerId = CreatePrimaryOpenCustomer(mutationProvider, metadata);
-            var secondCustomerId = CreatePrimaryOpenCustomer(mutationProvider, metadata);
+            var firstCustomerId = CreatePrimaryActiveCustomer(mutationProvider, metadata);
+            var secondCustomerId = CreatePrimaryActiveCustomer(mutationProvider, metadata);
             Assert.NotEqual(firstCustomerId, secondCustomerId);
 
             var blockGraph = BuildBlockAccountGraph(firstCustomerId);
@@ -227,7 +265,7 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
 
             // Exactly one row touched: the CustomerId condition is the only
             // thing distinguishing the two otherwise-identical
-            // "Primary"/"Open" accounts. Without it, both would match.
+            // "Primary"/"Active" accounts. Without it, both would match.
             Assert.Single(blockResult.Results);
             Assert.Equal(1, blockResult.Results[0].AffectedRows);
 
@@ -239,9 +277,11 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
             firstCheck.Parameters.AddWithValue("customerId", firstCustomerId);
             Assert.Equal("Blocked", (string?)await firstCheck.ExecuteScalarAsync());
 
+            // The second customer's account keeps the status BuildGraph()
+            // left it in ("Active"); it must not have been blocked.
             await using var secondCheck = new NpgsqlCommand(statusCheckSql, connection, transaction);
             secondCheck.Parameters.AddWithValue("customerId", secondCustomerId);
-            Assert.Equal("Open", (string?)await secondCheck.ExecuteScalarAsync());
+            Assert.Equal("Active", (string?)await secondCheck.ExecuteScalarAsync());
         }
         finally
         {
@@ -249,7 +289,12 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
         }
     }
 
-    private static long CreatePrimaryOpenCustomer(
+    /// <summary>
+    /// Runs ComplexSemanticMutationE2ETests.BuildGraph() and returns the
+    /// created customer's id. The customer's Account ends up as
+    /// "Primary"/"Active" (see the class summary).
+    /// </summary>
+    private static long CreatePrimaryActiveCustomer(
         PostgresBatchedMutationExecutionProvider mutationProvider,
         MetadataRegistry metadata)
     {
@@ -263,6 +308,12 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
             result.Results[0].ReturnedFields![ComplexSemanticMutationE2ETests.Id]);
     }
 
+    /// <summary>
+    /// Update graph that sets Status = "Blocked" on the Account where
+    /// CustomerId == <paramref name="customerId"/>, Name == "Primary" and
+    /// Status == "Active". "Active" is the status BuildGraph() leaves the
+    /// account in, not the "Open" it is first upserted with.
+    /// </summary>
     private static SemanticMutationOperationGraph BuildBlockAccountGraph(long customerId)
     {
         return new SemanticMutationOperationGraph(
@@ -284,7 +335,7 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
                     new SemanticFieldFilter(
                         ComplexSemanticMutationE2ETests.Status,
                         SemanticFilterOperator.Eq,
-                        "Open")
+                        "Active")
                 ]),
                 ConflictFields: [],
                 ReturnFields:
@@ -328,12 +379,17 @@ public sealed class QueryMutationQueryMutationIntegrationE2ETests
         var customer2Id = await InsertCustomerAsync(connection, transaction, "Bob", "Active");
         var customer3Id = await InsertCustomerAsync(connection, transaction, "Carol", "Active");
 
+        // Balance 250 on the "included" accounts: the shared complex query
+        // (ComplexQueryPostgresE2ETests.BuildComplexRequest) only matches
+        // customers that have an account with Balance IN (100, 250) or a
+        // transaction with Amount 250. Bob's Blocked account is excluded by
+        // the "all accounts != Blocked" predicate.
         var account1Id = await InsertAccountAsync(
-            connection, transaction, customer1Id, "Seed", 150m, "Active");
+            connection, transaction, customer1Id, "Seed", 250m, "Active");
         var account2Id = await InsertAccountAsync(
             connection, transaction, customer2Id, "Seed", 25m, "Blocked");
         var account3Id = await InsertAccountAsync(
-            connection, transaction, customer3Id, "Seed", 150m, "Active");
+            connection, transaction, customer3Id, "Seed", 250m, "Active");
 
         await InsertTransactionAsync(
             connection, transaction, account1Id, 300m, new DateTime(2026, 1, 1));

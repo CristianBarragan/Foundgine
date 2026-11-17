@@ -49,7 +49,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
             tenant,
             new TransferFundsCommand(source, destination, 100m, "visibility-authorization-context-race"));
 
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 1);
         Assert.False(transferTask.IsCompleted, "Transfer should wait for the account row locks.");
 
         // Revoke authorization while the transfer is blocked. A correct implementation
@@ -77,8 +77,11 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
         var tenant = 108;
         var originalActor = Guid.NewGuid();
         var newOwner = Guid.NewGuid();
-        var source = Guid.NewGuid();
-        var destination = Guid.NewGuid();
+        // The queued writer targets `source`. The transfer locks rows ORDER BY id, and PostgreSQL only queues a row-lock request
+        // behind an earlier waiter when that request has to wait on the row. If the writer's row sorted second, the transfer
+        // could lock it the instant the blocker commits, ahead of the writer: a valid serial order, but not the one this
+        // test asserts. Making the writer's row sort first makes the queue order deterministic.
+        var (source, destination) = PostgresTestEnvironment.NewOrderedUuidPair();
         await SeedAsync(dataSource, tenant, originalActor, source, destination);
 
         await using var blocker = await dataSource.OpenConnectionAsync();
@@ -92,7 +95,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
         await using var ownershipConnection = await dataSource.OpenConnectionAsync();
         await using var ownershipTx = await ownershipConnection.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         var ownershipTask = ChangeOwnerAsync(ownershipConnection, ownershipTx, source, newOwner);
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 1);
 
         var service = new PostgresTransferFundsService(
             new PostgresTransferFundsExecutor(
@@ -105,7 +108,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
             tenant,
             new TransferFundsCommand(source, destination, 100m, "visibility-race"));
 
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 2);
         Assert.False(transferTask.IsCompleted, "Transfer should wait for the account row locks.");
 
         await blockerTx.CommitAsync();
@@ -132,8 +135,11 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
 
         var tenant = 109;
         var actor = Guid.NewGuid();
-        var source = Guid.NewGuid();
-        var destination = Guid.NewGuid();
+        // The queued writer targets `destination`. The transfer locks rows ORDER BY id, and PostgreSQL only queues a row-lock request
+        // behind an earlier waiter when that request has to wait on the row. If the writer's row sorted second, the transfer
+        // could lock it the instant the blocker commits, ahead of the writer: a valid serial order, but not the one this
+        // test asserts. Making the writer's row sort first makes the queue order deterministic.
+        var (destination, source) = PostgresTestEnvironment.NewOrderedUuidPair();
         await SeedAsync(dataSource, tenant, actor, source, destination);
 
         await using var blocker = await dataSource.OpenConnectionAsync();
@@ -143,7 +149,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
         await using var stateConnection = await dataSource.OpenConnectionAsync();
         await using var stateTx = await stateConnection.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         var freezeTask = SetFrozenAsync(stateConnection, stateTx, destination);
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 1);
 
         var service = new PostgresTransferFundsService(
             new PostgresTransferFundsExecutor(
@@ -155,7 +161,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
             tenant,
             new TransferFundsCommand(source, destination, 100m, "visibility-frozen-race"));
 
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 2);
         Assert.False(transferTask.IsCompleted);
 
         await blockerTx.CommitAsync();
@@ -182,8 +188,11 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
         var originalTenant = 110;
         var reassignedTenant = 111;
         var actor = Guid.NewGuid();
-        var source = Guid.NewGuid();
-        var destination = Guid.NewGuid();
+        // The queued writer targets `source`. The transfer locks rows ORDER BY id, and PostgreSQL only queues a row-lock request
+        // behind an earlier waiter when that request has to wait on the row. If the writer's row sorted second, the transfer
+        // could lock it the instant the blocker commits, ahead of the writer: a valid serial order, but not the one this
+        // test asserts. Making the writer's row sort first makes the queue order deterministic.
+        var (source, destination) = PostgresTestEnvironment.NewOrderedUuidPair();
         await SeedAsync(dataSource, originalTenant, actor, source, destination);
 
         await using var blocker = await dataSource.OpenConnectionAsync();
@@ -193,7 +202,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
         await using var tenantConnection = await dataSource.OpenConnectionAsync();
         await using var tenantTx = await tenantConnection.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         var reassignmentTask = ChangeTenantAsync(tenantConnection, tenantTx, source, reassignedTenant);
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 1);
 
         var service = new PostgresTransferFundsService(
             new PostgresTransferFundsExecutor(
@@ -205,7 +214,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
             originalTenant,
             new TransferFundsCommand(source, destination, 100m, "visibility-tenant-race"));
 
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 2);
         Assert.False(transferTask.IsCompleted, "Transfer should wait for the account row locks.");
 
         await blockerTx.CommitAsync();
@@ -231,8 +240,11 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
 
         var tenant = 112;
         var actor = Guid.NewGuid();
-        var source = Guid.NewGuid();
-        var destination = Guid.NewGuid();
+        // The queued writer targets `source`. The transfer locks rows ORDER BY id, and PostgreSQL only queues a row-lock request
+        // behind an earlier waiter when that request has to wait on the row. If the writer's row sorted second, the transfer
+        // could lock it the instant the blocker commits, ahead of the writer: a valid serial order, but not the one this
+        // test asserts. Making the writer's row sort first makes the queue order deterministic.
+        var (source, destination) = PostgresTestEnvironment.NewOrderedUuidPair();
         await SeedAsync(dataSource, tenant, actor, source, destination);
 
         await using var blocker = await dataSource.OpenConnectionAsync();
@@ -242,7 +254,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
         await using var deleteConnection = await dataSource.OpenConnectionAsync();
         await using var deleteTx = await deleteConnection.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         var deleteTask = DeleteAccountAsync(deleteConnection, deleteTx, source);
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 1);
 
         var service = new PostgresTransferFundsService(
             new PostgresTransferFundsExecutor(
@@ -254,7 +266,7 @@ public sealed class PostgresTransferFundsVisibilityRaceTests
             tenant,
             new TransferFundsCommand(source, destination, 100m, "visibility-delete-race"));
 
-        await Task.Delay(100);
+        await PostgresTestEnvironment.WaitForBlockedAsync(dataSource, 2);
         Assert.False(transferTask.IsCompleted, "Transfer should wait for the account row locks.");
 
         await blockerTx.CommitAsync();

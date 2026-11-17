@@ -91,22 +91,27 @@ class AdvancedPostgres16SchemaIntegrationTest {
                         + "CASE WHEN c.contype='f' THEN c.confmatchtype::text ELSE '' END, "
                         + "CASE WHEN c.contype='f' THEN c.confupdtype::text ELSE '' END, "
                         + "CASE WHEN c.contype='f' THEN c.confdeltype::text ELSE '' END, "
-                        + "pg_get_constraintdef(c.oid, true) FROM pg_constraint c "
+                        + "replace(replace(pg_get_constraintdef(c.oid, true), '\"' || n.nspname || '\".', ''), n.nspname || '.', '') FROM pg_constraint c "
                         + "JOIN pg_class t ON t.oid=c.conrelid "
                         + "JOIN pg_namespace n ON n.oid=t.relnamespace WHERE n.nspname=? AND c.contype <> 'u' "
-                        + "ORDER BY t.relname, c.contype, pg_get_constraintdef(c.oid, true)";
+                        + "ORDER BY t.relname, c.contype, "
+                        + "replace(replace(pg_get_constraintdef(c.oid, true), '\"' || n.nspname || '\".', ''), n.nspname || '.', '')";
                 assertEquals(catalogRows(connection, referenceSchema, constraintsSql),
                         catalogRows(connection, generatedSchema, constraintsSql),
                         "Constraint catalog differs from handwritten V1");
 
-                String indexesSql = "SELECT t.relname, i.relname, x.indisunique, x.indisprimary, "
+                String indexDef = "replace(replace(pg_get_indexdef(x.indexrelid), '\"' || n.nspname || '\".', ''), n.nspname || '.', '')";
+                // Primary-key index names are not compared (same rule as constraints above): V1 declares PRIMARY KEY inline,
+                // so PostgreSQL names it <table>_pkey, while the generator names it pk_<table>.
+                String indexName = "CASE WHEN x.indisprimary THEN '<pk>' ELSE i.relname END";
+                String indexesSql = "SELECT t.relname, " + indexName + ", x.indisunique, x.indisprimary, "
                         + "x.indisvalid, x.indisready, x.indislive, x.indnkeyatts, x.indnatts, "
                         + "x.indnullsnotdistinct, "
-                        + "replace(replace(pg_get_indexdef(x.indexrelid), '\"' || n.nspname || '\".', ''), n.nspname || '.', '') "
+                        + "CASE WHEN x.indisprimary THEN replace(" + indexDef + ", i.relname, '<pk>') ELSE " + indexDef + " END "
                         + "FROM pg_index x JOIN pg_class t ON t.oid=x.indrelid "
                         + "JOIN pg_class i ON i.oid=x.indexrelid "
                         + "JOIN pg_namespace n ON n.oid=t.relnamespace WHERE n.nspname=? "
-                        + "ORDER BY t.relname, i.relname";
+                        + "ORDER BY t.relname, " + indexName + ", 11";
                 assertEquals(catalogRows(connection, referenceSchema, indexesSql),
                         catalogRows(connection, generatedSchema, indexesSql),
                         "Index catalog differs from handwritten V1");
@@ -147,7 +152,10 @@ class AdvancedPostgres16SchemaIntegrationTest {
     private static void applyInSchema(Statement statement, String schema, String sql) throws Exception {
         statement.execute("SET search_path TO \"" + schema + "\", public");
         try {
-            for (String part : sql.split(";")) {
+            String stripped = sql.lines()
+                    .filter(l -> !l.stripLeading().startsWith("--"))
+                    .collect(java.util.stream.Collectors.joining("\n"));
+            for (String part : stripped.split(";")) {
                 String command = part.strip();
                 if (command.isEmpty() || command.toUpperCase().contains("CREATE EXTENSION")) continue;
                 statement.execute(command);

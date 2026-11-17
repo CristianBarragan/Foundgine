@@ -197,10 +197,11 @@ The core package family has four architectural packages (the .NET names are show
 | ---------------------- | -------------------------------------------------------------------------------------------------------- |
 | `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts                            |
 | `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                                            |
-| `Foundgine.Providers`  | Concrete storage (SQL, **EF Core**, in-memory, search), Redis, Microsoft Agent Framework, events, gateway, AI/model, MCP and AOT |
-| `Foundgine.Extensions` | Optional GraphQL, Keycloak identity and Temporal workflow integrations |
+| `Foundgine.Providers`  | Concrete storage (SQL, **EF Core**, in-memory), events, outbox, gateway, AI/model, MCP and AOT |
+| `Foundgine.Providers.Redis` / `.AgentFramework` / `.PostgresVector` / `.Elasticsearch` | Optional adapters, one package each |
+| `Foundgine.Extensions.GraphQL` / `.Temporal` / `.Keycloak` | Optional GraphQL, Temporal workflow and Keycloak identity integrations, one package each |
 
-The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. Redis and Microsoft Agent Framework integrations ship in the .NET `Foundgine.Providers` package. Java Redis, Spring Boot and LangChain4j integrations ship in the `foundgine-providers` Maven artifact; Spring Boot and LangChain4j framework dependencies are optional. See the [package guide](docs-site/packages/) for the current boundary map.
+The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. The Redis, Microsoft Agent Framework, pgvector and Elasticsearch integrations are separate optional .NET packages. Java Redis, Spring Boot and LangChain4j integrations ship in the `foundgine-providers` Maven artifact; Spring Boot and LangChain4j framework dependencies are optional. See the [package guide](docs-site/packages/) for the current boundary map.
 
 ## Providers and extensions at a glance
 
@@ -229,7 +230,7 @@ Three optional integrations put Foundgine behind the frameworks teams already us
 
 | Integration | Module | Docs |
 | --- | --- | --- |
-| Microsoft Agent Framework (.NET) | `Foundgine.Providers` | [README](src/csharp/Foundgine.Providers/AgentFramework/README.md) |
+| Microsoft Agent Framework (.NET) | `Foundgine.Providers.AgentFramework` | [README](src/csharp/Foundgine.Providers.AgentFramework/README.md) |
 | LangChain4j (Java) | `foundgine-providers` | [README](src/java/foundgine-providers/LANGCHAIN4J.md) |
 | Spring Boot (Java) | `foundgine-providers` | [README](src/java/foundgine-providers/SPRING-BOOT.md) |
 

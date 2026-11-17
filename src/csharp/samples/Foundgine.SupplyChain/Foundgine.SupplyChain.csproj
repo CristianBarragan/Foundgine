@@ -21,7 +21,7 @@
     <ProjectReference Include="../../Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj" />
 
     <ProjectReference
-      Include="../../Foundgine.Providers/Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
+      Include="../../Foundgine.Providers.Aot.Generator/Foundgine.Providers.Aot.Generator.csproj"
       OutputItemType="Analyzer"
       ReferenceOutputAssembly="false"
       PrivateAssets="all"

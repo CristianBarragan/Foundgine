@@ -1,4 +1,5 @@
 using Foundgine.Runtime.ControlPlane;
+using Foundgine.Core.Semantic.Authorization;
 using Foundgine.HighAssurance.Banking;
 using Foundgine.HighAssurance.Postgres;
 using Foundgine.HighAssurance.Postgres.Execution;
@@ -37,7 +38,7 @@ public sealed class PostgresTransferFundsAuthorizationAtomicityTests
                 authorizationContextStore: new PostgresAuthorizationContextStore(TestAuthorizationIntegrity
                     .CreateKeyRing())));
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        await Assert.ThrowsAsync<SemanticAuthorizationException>(() =>
             service.ExecuteAsync(
                 actor,
                 tenant,

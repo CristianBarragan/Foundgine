@@ -4,17 +4,17 @@ Foundgine ships its framework adapters inside the existing provider packages. Th
 
 | Integration | Language | Package | Source and guide |
 |---|---|---|---|
-| Microsoft Agent Framework | C# / .NET | `Foundgine.Providers` | [`AgentFramework/README.md`](../../src/csharp/Foundgine.Providers/AgentFramework/README.md) |
-| Redis / Valkey / Garnet | C# / .NET | `Foundgine.Providers` | [`Redis/README.md`](../../src/csharp/Foundgine.Providers/Redis/README.md) |
+| Microsoft Agent Framework | C# / .NET | `Foundgine.Providers.AgentFramework` | [`AgentFramework/README.md`](../../src/csharp/Foundgine.Providers.AgentFramework/README.md) |
+| Redis / Valkey / Garnet | C# / .NET | `Foundgine.Providers.Redis` | [`Redis/README.md`](../../src/csharp/Foundgine.Providers.Redis/README.md) |
 | LangChain4j | Java | `io.github.cristianbarragan:foundgine-providers` | [`LANGCHAIN4J.md`](../../src/java/foundgine-providers/LANGCHAIN4J.md) |
 | Spring Boot | Java | `io.github.cristianbarragan:foundgine-providers` | [`SPRING-BOOT.md`](../../src/java/foundgine-providers/SPRING-BOOT.md) |
 | Redis / Valkey / Garnet | Java | `io.github.cristianbarragan:foundgine-providers` | Redis implementation under `com.foundgine.providers.security.redis` |
 
 ## Package dependencies
 
-- The .NET `Foundgine.Providers` assembly compiles the Redis and Microsoft Agent Framework adapters. NuGet restores `StackExchange.Redis` and `Microsoft.Agents.AI` as package dependencies.
+- In .NET, `Foundgine.Providers.Redis` and `Foundgine.Providers.AgentFramework` are separate packages that depend on `Foundgine.Providers`. NuGet restores `StackExchange.Redis` and `Microsoft.Agents.AI` as their package dependencies.
 - The Java `foundgine-providers` jar contains the Redis, LangChain4j and Spring Boot classes and Spring auto-configuration metadata. Lettuce, Spring Boot/Spring MVC and LangChain4j dependencies are declared by the provider artifact; framework integrations are marked optional where consumers should opt in.
-- No separate `Foundgine.Providers.Redis`, `Foundgine.Providers.AgentFramework`, `foundgine-spring` or `foundgine-langchain4j` package is required.
+- No separate `foundgine-spring` or `foundgine-langchain4j` Java package is required.
 
 ## Shared security model
 
@@ -33,7 +33,7 @@ builder.Services.AddFoundgineAgentFramework(options =>
 });
 ```
 
-The adapter exposes Foundgine capability discovery, semantic/open-intent reads and mutation dry-run/execute tools. The `foundgine_mutation_execute` tool is wrapped for MAF approval; there is no model-callable approval tool. See the [adapter guide](../../src/csharp/Foundgine.Providers/AgentFramework/README.md).
+The adapter exposes Foundgine capability discovery, semantic/open-intent reads and mutation dry-run/execute tools. The `foundgine_mutation_execute` tool is wrapped for MAF approval; there is no model-callable approval tool. See the [adapter guide](../../src/csharp/Foundgine.Providers.AgentFramework/README.md).
 
 Install the normal provider package:
 

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageId>Foundgine.Providers.Elasticsearch</PackageId>
+    <Description>Optional Elasticsearch/OpenSearch integration for Foundgine lexical grounding: projects a frozen semantic contract into a search index and retrieves ranked lexical candidates for semantic grounding. Search results are a retrieval signal only; the frozen semantic contract stays authoritative.</Description>
+    <PackageTags>providers;elasticsearch;opensearch;search;lexical-grounding;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RootNamespace>Foundgine.Providers.Storage.Elasticsearch</RootNamespace>
+    <AssemblyName>Foundgine.Providers.Elasticsearch</AssemblyName>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
+  </ItemGroup>
+</Project>

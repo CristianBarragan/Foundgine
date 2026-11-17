@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/CristianBarragan/Foundgine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
+    <PackageId>Foundgine.Extensions.Keycloak</PackageId>
+    <Description>Optional Keycloak identity integration for Foundgine 3.x: JWT validation, role and tenant mapping, and issuance of short-lived signed Foundgine warrants from Keycloak identities, including for Temporal workers.</Description>
+    <PackageTags>keycloak;oidc;jwt;warrants;identity;extensions;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RootNamespace>Foundgine.Extensions.Keycloak</RootNamespace>
+    <AssemblyName>Foundgine.Extensions.Keycloak</AssemblyName>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <!-- KeycloakTemporalSecurityContextFactory and the Temporal-worker warrant wiring use the Temporal integration. -->
+    <ProjectReference Include="../Foundgine.Extensions.Temporal/Foundgine.Extensions.Temporal.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+  </ItemGroup>
+</Project>

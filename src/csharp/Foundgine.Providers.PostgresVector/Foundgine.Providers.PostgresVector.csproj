@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageId>Foundgine.Providers.PostgresVector</PackageId>
+    <Description>Optional PostgreSQL pgvector integration for Foundgine lexical grounding: indexes the derived semantic lexicon projection with embeddings and retrieves nearest-neighbour lexical candidates. Vector similarity is a retrieval signal only; the frozen semantic contract stays authoritative for topology and legal semantic paths.</Description>
+    <PackageTags>providers;postgresql;pgvector;vector;embeddings;lexical-grounding;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RootNamespace>Foundgine.Providers.Storage.PostgresVector</RootNamespace>
+    <AssemblyName>Foundgine.Providers.PostgresVector</AssemblyName>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="Pgvector" Version="0.3.2" />
+  </ItemGroup>
+</Project>

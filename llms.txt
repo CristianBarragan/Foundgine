@@ -59,7 +59,7 @@ Optional adapters that put Foundgine behind agent frameworks or host it in Sprin
 
 | Integration | Language | Module / path | Provides |
 |---|---|---|---|
-| Microsoft Agent Framework (MAF) | .NET | `Foundgine.Providers` (`src/csharp/Foundgine.Providers/AgentFramework/`) | `AddFoundgineAgentFramework()`, `FoundgineAgentTools` (Microsoft.Extensions.AI `AITool`s), `FoundgineAgentFactory`; writes off by default and human-approved via MAF |
+| Microsoft Agent Framework (MAF) | .NET | `Foundgine.Providers` (`src/csharp/Foundgine.Providers.AgentFramework/`) | `AddFoundgineAgentFramework()`, `FoundgineAgentTools` (Microsoft.Extensions.AI `AITool`s), `FoundgineAgentFactory`; writes off by default and human-approved via MAF |
 | LangChain4j | Java | `foundgine-providers` (`src/java/foundgine-providers/.../langchain4j/`) | `FoundgineLangChain4jTools.toolMap(FoundgineMcpServer)` returning LangChain4j `ToolSpecification`/`ToolExecutor` pairs for `AiServices` |
 | Spring Boot | Java | `foundgine-providers` (`src/java/foundgine-providers/.../spring/`) | Auto-configuration for the MCP server and `POST /mcp` controller (sessions, SSE; property prefix `foundgine.mcp.*`, off by default) and for the JPA `FoundgineOrm` provider |
 

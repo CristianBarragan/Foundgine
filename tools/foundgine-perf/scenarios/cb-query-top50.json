@@ -1,0 +1,14 @@
+{
+ "name": "cb-query-top50",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query Top50Customers { customer(first: 50) { id customerKey firstName lastName fullName\n customerBankingRelationship { id customerBankingRelationshipKey contract { id contractKey amount\n transaction { id transactionKey amount balance } } } } }",
+    "operationName": "Top50Customers"
+   }
+  }
+ ],
+ "sort_lists_by": "id"
+}

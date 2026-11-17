@@ -1,0 +1,26 @@
+{
+ "name": "cb-mutation-b1",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "mutation UpsertCustomer($input: CustomerInput!) { upsertCustomer(input: $input, onConflict: [\"CustomerKey\"])\n { id customerKey firstName lastName fullName } }",
+    "operationName": "UpsertCustomer",
+    "variables": {
+     "input": {
+      "customerKey": "a41c0fea-0a7b-5282-bc1e-84d3df2a1f35",
+      "firstName": "Benchmark",
+      "lastName": "Customer",
+      "fullName": "Benchmark Customer 1"
+     }
+    }
+   }
+  }
+ ],
+ "sort_lists_by": "id",
+ "ignore_keys": [
+  "id"
+ ],
+ "ops_per_request": 1
+}

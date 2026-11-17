@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/CristianBarragan/Foundgine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
+    <PackageId>Foundgine.Extensions.Temporal</PackageId>
+    <Description>Optional Temporal durable-workflow integration for Foundgine 3.x: outbox-to-workflow bridge, saga and approval process workflow, operation activities, and start, status, decision and cancel endpoints. Reuses Foundgine.Providers contracts (outbox publisher seam, provider descriptors, gateway execution).</Description>
+    <PackageTags>temporal;workflow;saga;outbox;extensions;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RootNamespace>Foundgine.Extensions.Temporal</RootNamespace>
+    <AssemblyName>Foundgine.Extensions.Temporal</AssemblyName>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../Foundgine.Providers/Foundgine.Providers.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
+    <PackageReference Include="Temporalio" Version="1.21.1" />
+    <PackageReference Include="Temporalio.Extensions.Hosting" Version="1.18.0" />
+  </ItemGroup>
+</Project>

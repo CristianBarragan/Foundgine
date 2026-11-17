@@ -10,8 +10,9 @@ namespace Foundgine.EventStore.Tests;
 
 public sealed class PostgresGatewayEventStoreIntegrationTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:17-alpine")
+    private PostgreSqlContainer _postgres = CreateContainer();
+    private static PostgreSqlContainer CreateContainer() => new PostgreSqlBuilder()
+        .WithImage("postgres:17.11-alpine")
         .WithDatabase("foundgine").WithUsername("foundgine").WithPassword("foundgine")
         .Build();
 
@@ -21,8 +22,7 @@ public sealed class PostgresGatewayEventStoreIntegrationTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await _postgres.StartAsync();
-        _dataSource = NpgsqlDataSource.Create(_postgres.GetConnectionString());
+        (_postgres, _dataSource) = await PostgresReady.StartAsync(_postgres, CreateContainer);
         await EventStoreMigrator.ApplyAsync(_dataSource);
         // Small page sizes force the adapter's paging path.
         _events = new PostgresEventStore(_dataSource,
