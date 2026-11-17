@@ -16,6 +16,19 @@ public interface ISecurityWarrantRevocationStore
     bool IsDigestRevoked(string warrantDigest);
 }
 
+/// <summary>Result of one atomic revocation lookup: the observed sequence and what was found at that sequence.</summary>
+public readonly record struct SecurityWarrantRevocationLookup(long Sequence, bool Revoked, bool AncestorRevoked);
+
+/// <summary>
+/// Optional capability: answers the warrant, digest and delegation-ancestor revocation questions together
+/// with the sequence they were observed at, as one consistent snapshot. Remote stores can implement this in a
+/// single round trip instead of one call per question plus sequence bracketing.
+/// </summary>
+public interface IBatchedSecurityWarrantRevocationStore : ISecurityWarrantRevocationStore
+{
+    SecurityWarrantRevocationLookup Lookup(string warrantId, string warrantDigest, IReadOnlyList<string> ancestorDigests);
+}
+
 /// <summary>Thread-safe in-memory implementation for security tests and deterministic execution tests.</summary>
 public sealed class MemorySecurityWarrantRevocationStore : ISecurityWarrantRevocationStore
 {
@@ -70,6 +83,16 @@ public readonly record struct SecurityWarrantRevocationSnapshot(long Sequence)
         if (store.CurrentSequence != Sequence)
             throw new InvalidOperationException("Authorization revocation state changed during execution.");
     }
+
+    /// <summary>
+    /// Compares against a snapshot returned by a fresh, bracketed <see cref="SecurityWarrantRevocationGuard.Validate"/>,
+    /// avoiding a second round of store reads just to re-observe the sequence.
+    /// </summary>
+    public void AssertUnchanged(SecurityWarrantRevocationSnapshot current)
+    {
+        if (current.Sequence != Sequence)
+            throw new InvalidOperationException("Authorization revocation state changed during execution.");
+    }
 }
 
 /// <summary>
@@ -87,6 +110,17 @@ public static class SecurityWarrantRevocationGuard
         ArgumentNullException.ThrowIfNull(store);
         if (!warrant.IsTimeValid(now))
             throw new InvalidOperationException("Security warrant is expired or not yet valid.");
+
+        if (store is IBatchedSecurityWarrantRevocationStore batched)
+        {
+            // The lookup is one consistent snapshot, so no separate before/after sequence bracket is needed.
+            var lookup = batched.Lookup(warrant.Id, warrant.Digest, warrant.DelegationPath);
+            if (lookup.Revoked)
+                throw new InvalidOperationException("Security warrant has been revoked.");
+            if (lookup.AncestorRevoked)
+                throw new InvalidOperationException("A parent security warrant has been revoked.");
+            return new SecurityWarrantRevocationSnapshot(lookup.Sequence);
+        }
 
         // Bracket all revocation reads with the monotonic sequence. If a revocation races any
         // individual lookup, the sequence changes and this validation fails closed. Capturing

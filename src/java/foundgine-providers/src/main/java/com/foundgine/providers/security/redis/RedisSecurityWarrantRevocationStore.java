@@ -1,6 +1,7 @@
 package com.foundgine.providers.security.redis;
 
-import com.foundgine.core.semantic.security.warrants.ISecurityWarrantRevocationStore;
+import com.foundgine.core.semantic.security.warrants.IBatchedSecurityWarrantRevocationStore;
+import com.foundgine.core.semantic.security.warrants.SecurityWarrantRevocationLookup;
 import com.foundgine.core.semantic.security.warrants.SecurityWarrant;
 import com.foundgine.core.semantic.security.warrants.SecurityWarrantRevocation;
 import java.nio.charset.StandardCharsets;
@@ -14,7 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 /** Shared, monotonic warrant revocation state for horizontally scaled Redis/Valkey/Garnet hosts. */
-public final class RedisSecurityWarrantRevocationStore implements ISecurityWarrantRevocationStore {
+public final class RedisSecurityWarrantRevocationStore implements IBatchedSecurityWarrantRevocationStore {
     public static final String DEFAULT_PREFIX = "foundgine:";
     private static final String REVOKE = """
             local existing = redis.call('HGET', KEYS[1], 'sequence')
@@ -30,6 +31,17 @@ public final class RedisSecurityWarrantRevocationStore implements ISecurityWarra
             """;
     private static final String CURRENT = "return {tostring(redis.call('GET', KEYS[1]) or '0')}";
     private static final String EXISTS = "return {tostring(redis.call('EXISTS', KEYS[1]))}";
+    // KEYS: [1] sequence, [2] identity, [3] digest, [4..] delegation ancestor digests. One atomic snapshot.
+    private static final String LOOKUP = """
+            local sequence = redis.call('GET', KEYS[1]) or '0'
+            local revoked = '0'
+            if redis.call('EXISTS', KEYS[2]) == 1 or redis.call('EXISTS', KEYS[3]) == 1 then revoked = '1' end
+            local ancestor = '0'
+            for i = 4, #KEYS do
+              if redis.call('EXISTS', KEYS[i]) == 1 then ancestor = '1' break end
+            end
+            return {tostring(sequence), revoked, ancestor}
+            """;
     private static final String HEALTH_PROBE = """
             local sequence = redis.call('GET', KEYS[1]) or '0'
             local written = redis.call('SET', KEYS[2], ARGV[1], 'NX', 'PX', 5000)
@@ -54,13 +66,15 @@ public final class RedisSecurityWarrantRevocationStore implements ISecurityWarra
     }
 
     @Override public long currentSequence() {
-        try { return observe(parseOne(backend.eval(CURRENT, List.of(sequenceKey()), List.of()), "current revocation sequence")); }
+        long floor = lastObservedSequence.get();
+        try { return observe(parseOne(backend.eval(CURRENT, List.of(sequenceKey()), List.of()), "current revocation sequence"), floor); }
         catch (RuntimeException e) { throw unavailable(e); }
     }
 
     @Override public SecurityWarrantRevocation revoke(SecurityWarrant warrant, Instant now) {
         Objects.requireNonNull(warrant, "warrant"); Objects.requireNonNull(now, "now");
         if (warrant.id().isBlank() || warrant.digest().isBlank()) throw new IllegalArgumentException("Warrant identity and digest are required.");
+        long floor = lastObservedSequence.get();
         try {
             List<String> result = backend.eval(REVOKE,
                     List.of(identityKey(warrant.id(), warrant.digest()), digestKey(warrant.digest()), sequenceKey()),
@@ -71,7 +85,7 @@ public final class RedisSecurityWarrantRevocationStore implements ISecurityWarra
             long sequence = parse(result.get(3), "revocation sequence");
             long current = parse(result.get(4), "current revocation sequence");
             if (sequence <= 0 || current < sequence) throw new IllegalStateException("Redis returned an invalid warrant revocation sequence.");
-            observe(current);
+            observe(current, floor);
             return new SecurityWarrantRevocation(result.get(0), result.get(1), Instant.ofEpochMilli(revokedAt), sequence);
         } catch (RuntimeException e) { throw unavailable(e); }
     }
@@ -89,12 +103,30 @@ public final class RedisSecurityWarrantRevocationStore implements ISecurityWarra
     public long probe() {
         String key = keyPrefix + "health:" + UUID.randomUUID().toString().replace("-", "");
         String token = UUID.randomUUID().toString().replace("-", "");
+        long floor = lastObservedSequence.get();
         try {
             List<String> result = backend.eval(HEALTH_PROBE, List.of(sequenceKey(), key), List.of(token));
             if (result.size() != 2 || !"1".equals(result.get(0))) throw new IllegalStateException("Redis warrant revocation readiness probe failed its write/read verification.");
-            return observe(parse(result.get(1), "sequence during readiness probe"));
+            return observe(parse(result.get(1), "sequence during readiness probe"), floor);
         } catch (RuntimeException e) { throw unavailable(e); }
     }
+
+    @Override public SecurityWarrantRevocationLookup lookup(String id, String digest, List<String> ancestorDigests) {
+        if (id == null || id.isBlank() || digest == null || digest.isBlank()) throw new IllegalArgumentException("warrant id and digest are required.");
+        Objects.requireNonNull(ancestorDigests, "ancestorDigests");
+        java.util.ArrayList<String> keys = new java.util.ArrayList<>(3 + ancestorDigests.size());
+        keys.add(sequenceKey()); keys.add(identityKey(id, digest)); keys.add(digestKey(digest));
+        for (String ancestor : ancestorDigests) keys.add(digestKey(ancestor));
+        long floor = lastObservedSequence.get();
+        try {
+            List<String> result = backend.eval(LOOKUP, keys, List.of());
+            if (result.size() != 3 || !isFlag(result.get(1)) || !isFlag(result.get(2)))
+                throw new IllegalStateException("Redis returned an invalid warrant revocation lookup result.");
+            long sequence = parse(result.get(0), "revocation lookup sequence");
+            return new SecurityWarrantRevocationLookup(observe(sequence, floor), "1".equals(result.get(1)), "1".equals(result.get(2)));
+        } catch (RuntimeException e) { throw unavailable(e); }
+    }
+    private static boolean isFlag(String v) { return "0".equals(v) || "1".equals(v); }
 
     private boolean exists(String key) {
         try {
@@ -102,12 +134,17 @@ public final class RedisSecurityWarrantRevocationStore implements ISecurityWarra
             return parseOne(result, "revocation existence result") == 1;
         } catch (RuntimeException e) { throw unavailable(e); }
     }
-    private long observe(long value) {
-        long previous = lastObservedSequence.get();
+    /**
+     * Records a sequence returned by Redis. {@code floor} is the highest sequence this store had already observed
+     * <em>before the request was sent</em>. Redis executes the request after everything observed by then, so a reply
+     * below the floor means the primary's state rolled back. A reply below a value observed <em>after</em> the request
+     * was sent is not a rollback: concurrent calls can complete out of order, and that must not fail closed.
+     */
+    private long observe(long value, long floor) {
+        if (value < floor) throw new IllegalStateException("Warrant revocation sequence regressed from " + floor + " to " + value + "; failing closed after possible Redis state rollback.");
         while (true) {
-            if (value < previous) throw new IllegalStateException("Warrant revocation sequence regressed from " + previous + " to " + value + "; failing closed after possible Redis state rollback.");
-            if (value == previous || lastObservedSequence.compareAndSet(previous, value)) return value;
-            previous = lastObservedSequence.get();
+            long previous = lastObservedSequence.get();
+            if (value <= previous || lastObservedSequence.compareAndSet(previous, value)) return value;
         }
     }
     private String sequenceKey() { return keyPrefix + "sequence"; }

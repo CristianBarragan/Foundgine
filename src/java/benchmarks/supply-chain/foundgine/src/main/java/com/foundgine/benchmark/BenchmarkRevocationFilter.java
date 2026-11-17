@@ -25,6 +25,13 @@ public final class BenchmarkRevocationFilter extends OncePerRequestFilter {
         try {
             String digest = HexFormat.of().withUpperCase().formatHex(MessageDigest.getInstance("SHA-256").digest(jwt.getToken().getTokenValue().getBytes(StandardCharsets.UTF_8)));
             String warrantId = jwt.getToken().getId() == null ? jwt.getName() : jwt.getToken().getId();
+            if (revocations instanceof com.foundgine.core.semantic.security.warrants.IBatchedSecurityWarrantRevocationStore batched) {
+                // One consistent snapshot: no separate before/after sequence bracket is needed.
+                var lookup = batched.lookup(warrantId, digest, java.util.List.of());
+                if (lookup.revoked()) { response.sendError(401, "Bearer token revoked"); return; }
+                chain.doFilter(request, response);
+                return;
+            }
             long before = revocations.currentSequence();
             boolean revokedByIdentity = revocations.isRevoked(warrantId, digest);
             boolean revokedByDigest = revocations.isDigestRevoked(digest);

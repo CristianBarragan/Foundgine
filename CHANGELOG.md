@@ -6,6 +6,7 @@
 
 - Added bounded FIFO provider-plan cache admission with single-flight compilation, race-safe replacement/eviction, and permanent per-engine namespace invalidation. `FoundgineEngine.InvalidateProviderPlanCache()` is a lifecycle operation: hosts must stop routing and drain in-flight requests first. Cache retirement does not touch warrant replay, revocation, or signing-key state.
 - Connected the existing warrant delegation trust and revocation guards to the read execution pipeline. Delegated warrants now require an explicit root issuer, a complete root-to-leaf chain, and a configured delegation trust resolver. Warrant-backed discovery and execution fail closed when no revocation store is configured; the revocation sequence is checked again after provider execution to detect concurrent state changes.
+- Java parity for batched warrant revocation lookup: `IBatchedSecurityWarrantRevocationStore` / `SecurityWarrantRevocationLookup` in core, a single-round-trip Lua `lookup` in `RedisSecurityWarrantRevocationStore`, an anchored `lookup` in `AnchoredSecurityWarrantRevocationStore` (one anchor read, no write in steady state), `SecurityWarrantRevocationGuard` using the batched snapshot when available, and `SecurityWarrantRevocationSnapshot.assertUnchanged(snapshot)`. The supply-chain benchmark filter uses the batched lookup.
 - Added provider-plan cache namespace-retirement tests, including an in-flight compilation racing namespace invalidation.
 
 ### Changed
@@ -13,8 +14,11 @@
 - Preserved the conservative per-warrant provider-plan cache partition. The authority-equivalence cache-key optimization from the supplied checkpoint was not adopted because it needs additional proof that compiled plans contain no subject-specific or request-specific values.
 - `HighAssurance` supplies an in-memory revocation store only as a local-development default. Production hosts must configure a durable, shared revocation store and a delegation trust resolver when delegation is enabled.
 
+- Redis revocation stores (C# and Java) no longer fail closed on out-of-order completion of concurrent calls: a reply is compared with the highest sequence observed *before the request was sent*, so genuine rollbacks are still detected while reordered concurrent replies are not mistaken for one.
+
 ### Verification status
 
+- Revocation work: the Java core/Redis/Anchored classes and their 19 JUnit tests compile and pass on JDK 21; the C# core and Redis stores compile on the .NET 8 SDK and a console harness confirmed the out-of-order, rollback and lookup behavior. The xUnit projects and the Spring benchmark filter could not be built offline.
 - Source and ZIP integrity checks completed. .NET compilation and xUnit execution could not be performed because the .NET SDK is unavailable in this environment. The concurrent revocation sequence check detects a change during provider execution, but cannot roll back side effects already committed by a provider; strict atomic revocation-versus-side-effect guarantees require provider transaction/authorization coordination. The current revocation-store interface also has no freshness/health contract, so distributed-store staleness must be addressed by the concrete store implementation before production use.
 
 
