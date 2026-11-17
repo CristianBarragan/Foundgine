@@ -74,7 +74,7 @@ jobs:
           fetch-depth: 0
       - name: Tagged commit is on main
         run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: python-package
           path: dist
