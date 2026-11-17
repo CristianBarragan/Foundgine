@@ -102,8 +102,9 @@ def canonical(payload, ignore_keys=(), sort_lists_by=None):
     return hashlib.sha256(flat.encode()).hexdigest(), count
 
 class Target:
-    def __init__(self, url, scenario, timeout=30.0):
+    def __init__(self, url, scenario, timeout=30.0, tokens=None):
         u = urlsplit(url)
+        self.tokens = tokens
         self.host, self.port = u.hostname, u.port or 80
         self.base = u.path.rstrip("/")
         self.s, self.timeout = scenario, timeout
@@ -116,6 +117,10 @@ class Target:
         if isinstance(body, (dict, list)):
             body = json.dumps(body)
         hdrs = {"Content-Type": "application/json", **r.get("headers", {})}
+        if r.get("as"):
+            if self.tokens is None:
+                raise RuntimeError(f"scenario {self.s.get('name')} requests identity {r['as']!r} but the config has no `auth` block")
+            hdrs["Authorization"] = "Bearer " + self.tokens.get(r["as"])
         return r.get("method", "GET"), self.base + r["path"], body, hdrs
 
     def ok(self, status, payload):

@@ -7,5 +7,6 @@ services:
   hotchocolate:      { cpuset: "2-3", mem_limit: 1g, cpus: 2, ports: ["4300:4300"] }
   foundgine-cold:    { cpuset: "4-5", mem_limit: 1g, cpus: 2, ports: ["4301:4301"] }
   foundgine-warm:    { cpuset: "4-5", mem_limit: 1g, cpus: 2, ports: ["4302:4302"] }
+  foundgine-ef:      { cpuset: "4-5", mem_limit: 1g, cpus: 2, ports: ["4303:4303"] }
 # Cores 6+ are left to the load generator (taskset). Adjust to the host; record it in environment.json.
 # Run ONE API at a time under load (the harness resets/restarts between cells), so cpuset sharing is intentional.

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../samples/Foundgine.SupplyChain/Foundgine.SupplyChain.csproj" />
+    <ProjectReference Include="../../../Foundgine.Extensions.GraphQL/Foundgine.Extensions.GraphQL.csproj" />
+    <ProjectReference Include="../../../Foundgine.Extensions.Keycloak/Foundgine.Extensions.Keycloak.csproj" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <ProjectReference Include="../../../Foundgine.Providers.Redis/Foundgine.Providers.Redis.csproj" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" PrivateAssets="all" />
+  </ItemGroup>
+  <!-- The referenced sample is a Web SDK project, so its appsettings*.json flow into this host's publish output and collide
+       with this project's own appsettings.json (NETSDK1152). This arm owns its configuration. -->
+  <Target Name="ExcludeReferencedSampleAppSettings" BeforeTargets="_HandleFileConflictsForPublish">
+    <ItemGroup>
+      <_SampleAppSettings Include="@(ResolvedFileToPublish)"
+                          Condition="$([System.String]::Copy('%(ResolvedFileToPublish.FullPath)').Replace('\','/').Contains('/samples/Foundgine.SupplyChain/appsettings'))" />
+      <ResolvedFileToPublish Remove="@(_SampleAppSettings)" />
+    </ItemGroup>
+  </Target>
+</Project>

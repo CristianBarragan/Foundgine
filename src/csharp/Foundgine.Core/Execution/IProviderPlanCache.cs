@@ -12,3 +12,11 @@ public interface IProviderPlanCache
 
     void Set(string key, ProviderPlan plan);
 }
+
+
+/// <summary>Optional lifecycle capability for retiring one engine-generation cache namespace.</summary>
+public interface INamespacedProviderPlanCache
+{
+    /// <summary>Invalidates and removes all entries with the supplied namespace prefix.</summary>
+    void RemoveNamespace(string cacheNamespace);
+}

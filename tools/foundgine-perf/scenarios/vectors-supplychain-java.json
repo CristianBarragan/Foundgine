@@ -1,0 +1,310 @@
+{
+ "group": "java",
+ "min_vectors": 12,
+ "vectors": [
+  {
+   "id": "j-analyst-tenant-a-suppliers",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "supplier",
+     "field": "tenantId",
+     "in": [
+      "tenant-a"
+     ],
+     "min_rows": 2
+    }
+   },
+   "as": "dave"
+  },
+  {
+   "id": "j-other-tenant-suppliers",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "supplier",
+     "field": "tenantId",
+     "in": [
+      "tenant-b"
+     ],
+     "min_rows": 1
+    }
+   },
+   "as": "erin"
+  },
+  {
+   "id": "j-manager-suppliers",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "supplier",
+     "field": "tenantId",
+     "in": [
+      "tenant-a"
+     ],
+     "min_rows": 2
+    }
+   },
+   "as": "admin"
+  },
+  {
+   "id": "j-operator-supplier-risk-denied",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "carol"
+  },
+  {
+   "id": "j-operator-suppliers-without-risk",
+   "token_mode": "valid",
+   "body": {
+    "query": "query SuppliersNoRisk { supplier(first: 50) { id name country tenantId } }",
+    "operationName": "SuppliersNoRisk"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "supplier",
+     "field": "tenantId",
+     "in": [
+      "tenant-a"
+     ],
+     "min_rows": 2
+    }
+   },
+   "as": "carol"
+  },
+  {
+   "id": "j-customer-no-suppliers",
+   "token_mode": "valid",
+   "body": {
+    "query": "query SuppliersNoRisk { supplier(first: 50) { id name country tenantId } }",
+    "operationName": "SuppliersNoRisk"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "j-operator-warehouses",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Warehouses { warehouse(first: 50) { id businessUnitId name tenantId } }",
+    "operationName": "Warehouses"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "warehouse",
+     "field": "tenantId",
+     "in": [
+      "tenant-a"
+     ],
+     "min_rows": 2
+    }
+   },
+   "as": "carol"
+  },
+  {
+   "id": "j-analyst-no-warehouses",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Warehouses { warehouse(first: 50) { id businessUnitId name tenantId } }",
+    "operationName": "Warehouses"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "dave"
+  },
+  {
+   "id": "j-customer-products",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Products { product(first: 50) { id sku name category safetyStock } }",
+    "operationName": "Products"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "product",
+     "field": "id",
+     "in": [
+      1,
+      2
+     ],
+     "min_rows": 2
+    }
+   },
+   "as": "alice"
+  },
+  {
+   "id": "j-norole-denied",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Products { product(first: 50) { id sku name category safetyStock } }",
+    "operationName": "Products"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "mallory"
+  },
+  {
+   "id": "j-notenant-denied",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Products { product(first: 50) { id sku name category safetyStock } }",
+    "operationName": "Products"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "notenant"
+  },
+  {
+   "id": "j-operator-renames-warehouse",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation RenameWarehouse($input: WarehouseInput!, $where: WarehouseWhereInput!) {\n updateWarehouse(input: $input, where: $where) { id name } }",
+    "operationName": "RenameWarehouse",
+    "variables": {
+     "input": {
+      "name": "Austin DC"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "expect": {
+    "decision": "allow"
+   },
+   "ignore_keys": [
+    "id"
+   ],
+   "as": "carol"
+  },
+  {
+   "id": "j-analyst-cannot-write",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation RenameWarehouse($input: WarehouseInput!, $where: WarehouseWhereInput!) {\n updateWarehouse(input: $input, where: $where) { id name } }",
+    "operationName": "RenameWarehouse",
+    "variables": {
+     "input": {
+      "name": "Austin DC"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "dave"
+  },
+  {
+   "id": "j-operator-cannot-write-other-tenant",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation RenameWarehouse($input: WarehouseInput!, $where: WarehouseWhereInput!) {\n updateWarehouse(input: $input, where: $where) { id name } }",
+    "operationName": "RenameWarehouse",
+    "variables": {
+     "input": {
+      "name": "Hidden DC"
+     },
+     "where": {
+      "id": 3
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "carol"
+  },
+  {
+   "id": "j-token-none",
+   "token_mode": "none",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "dave"
+  },
+  {
+   "id": "j-token-garbage",
+   "token_mode": "garbage",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "dave"
+  },
+  {
+   "id": "j-token-bad_signature",
+   "token_mode": "bad_signature",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "dave"
+  },
+  {
+   "id": "j-token-alg_none",
+   "token_mode": "alg_none",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "dave"
+  },
+  {
+   "id": "j-token-edited_payload",
+   "token_mode": "edited_payload",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name country riskScore tenantId } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "dave"
+  }
+ ]
+}

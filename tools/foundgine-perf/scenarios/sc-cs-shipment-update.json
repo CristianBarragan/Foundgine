@@ -1,0 +1,26 @@
+{
+ "name": "sc-cs-shipment-update",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "mutation SetShipmentStatus($input: ShipmentInput!, $where: ShipmentWhereInput!) {\n updateShipment(input: $input, where: $where) { id status } }",
+    "operationName": "SetShipmentStatus",
+    "variables": {
+     "input": {
+      "status": "In Transit"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "as": "carol"
+  }
+ ],
+ "sort_lists_by": "id",
+ "ignore_keys": [
+  "id"
+ ]
+}

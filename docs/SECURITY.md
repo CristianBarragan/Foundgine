@@ -403,3 +403,18 @@ risk; only `policy_probe`'s decision-path detail was in question.
 ---
 
 Next: [Runtime](RUNTIME.md)
+
+
+## Distributed warrant revocation durability
+
+For horizontally scaled hosts, Redis can serve high-volume warrant revocation lookups while a separate durable authority
+tracks the global revocation sequence. The Redis store can be wrapped in `AnchoredSecurityWarrantRevocationStore`; the
+PostgreSQL implementation is `PostgresSecurityWarrantRevocationEpochAnchor` in `Foundgine.Providers`. The host must run
+`PostgresSecurityWarrantRevocationEpochAnchorMigrator.Apply(dataSource)` before serving traffic and must configure the
+readiness check. The anchor data source must read and write against the writable PostgreSQL primary.
+
+A successful anchor update commits a monotonic `GREATEST` upsert with `synchronous_commit=on`. This provides local WAL
+durability, not automatic failover durability: production failover guarantees require synchronous replication, a safe
+synchronous-standby policy, and fencing/promotion procedures that prevent promotion of a lagging replica. Redis and
+PostgreSQL must be independent failure domains. If the anchor is unavailable or Redis is behind the durable mark,
+warrant authorization fails closed. See [`warrant-revocation-checkpoint-8.md`](security/warrant-revocation-checkpoint-8.md).

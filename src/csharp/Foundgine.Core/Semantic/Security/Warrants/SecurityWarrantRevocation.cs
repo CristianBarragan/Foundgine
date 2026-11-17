@@ -1,5 +1,3 @@
-using System.Collections.Concurrent;
-
 namespace Foundgine.Core.Semantic.Security.Warrants;
 
 /// <summary>Records a revoked warrant digest. Revocation is monotonic and cannot be undone.</summary>
@@ -21,10 +19,14 @@ public interface ISecurityWarrantRevocationStore
 /// <summary>Thread-safe in-memory implementation for security tests and deterministic execution tests.</summary>
 public sealed class MemorySecurityWarrantRevocationStore : ISecurityWarrantRevocationStore
 {
-    private readonly ConcurrentDictionary<string, SecurityWarrantRevocation> _revoked = new(StringComparer.Ordinal);
+    private readonly object _gate = new();
+    private readonly Dictionary<string, SecurityWarrantRevocation> _revoked = new(StringComparer.Ordinal);
     private long _sequence;
 
-    public long CurrentSequence => Interlocked.Read(ref _sequence);
+    public long CurrentSequence
+    {
+        get { lock (_gate) return _sequence; }
+    }
 
     public SecurityWarrantRevocation Revoke(SecurityWarrant warrant, DateTimeOffset now)
     {
@@ -32,18 +34,28 @@ public sealed class MemorySecurityWarrantRevocationStore : ISecurityWarrantRevoc
         if (string.IsNullOrWhiteSpace(warrant.Id) || string.IsNullOrWhiteSpace(warrant.Digest))
             throw new InvalidOperationException("A warrant must have an identity and digest before revocation.");
 
-        var key = warrant.Id + "\u001f" + warrant.Digest;
-        var sequence = Interlocked.Increment(ref _sequence);
-        var entry = new SecurityWarrantRevocation(warrant.Id, warrant.Digest, now, sequence);
-        _revoked.TryAdd(key, entry);
-        return _revoked[key];
+        lock (_gate)
+        {
+            var key = warrant.Id + "\u001f" + warrant.Digest;
+            var sequence = ++_sequence;
+            if (!_revoked.TryGetValue(key, out var entry))
+            {
+                entry = new SecurityWarrantRevocation(warrant.Id, warrant.Digest, now, sequence);
+                _revoked.Add(key, entry);
+            }
+            return entry;
+        }
     }
 
-    public bool IsRevoked(string warrantId, string warrantDigest) =>
-        _revoked.ContainsKey(warrantId + "\u001f" + warrantDigest);
+    public bool IsRevoked(string warrantId, string warrantDigest)
+    {
+        lock (_gate) return _revoked.ContainsKey(warrantId + "\u001f" + warrantDigest);
+    }
 
-    public bool IsDigestRevoked(string warrantDigest) =>
-        _revoked.Values.Any(x => StringComparer.Ordinal.Equals(x.WarrantDigest, warrantDigest));
+    public bool IsDigestRevoked(string warrantDigest)
+    {
+        lock (_gate) return _revoked.Values.Any(x => StringComparer.Ordinal.Equals(x.WarrantDigest, warrantDigest));
+    }
 }
 
 /// <summary>Immutable execution-time view of revocation state.</summary>
@@ -76,6 +88,11 @@ public static class SecurityWarrantRevocationGuard
         if (!warrant.IsTimeValid(now))
             throw new InvalidOperationException("Security warrant is expired or not yet valid.");
 
+        // Bracket all revocation reads with the monotonic sequence. If a revocation races any
+        // individual lookup, the sequence changes and this validation fails closed. Capturing
+        // only after the lookups would leave a check-then-capture race window.
+        var sequenceBefore = store.CurrentSequence;
+
         if (store.IsRevoked(warrant.Id, warrant.Digest) || store.IsDigestRevoked(warrant.Digest))
             throw new InvalidOperationException("Security warrant has been revoked.");
 
@@ -85,6 +102,10 @@ public static class SecurityWarrantRevocationGuard
                 throw new InvalidOperationException("A parent security warrant has been revoked.");
         }
 
-        return SecurityWarrantRevocationSnapshot.Capture(store);
+        var sequenceAfter = store.CurrentSequence;
+        if (sequenceAfter != sequenceBefore)
+            throw new InvalidOperationException("Authorization revocation state changed during warrant validation.");
+
+        return new SecurityWarrantRevocationSnapshot(sequenceAfter);
     }
 }

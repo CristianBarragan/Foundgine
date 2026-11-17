@@ -1,0 +1,27 @@
+server:
+  port: 4420
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/sc_java_baseline}
+    username: ${SPRING_DATASOURCE_USERNAME:benchmark}
+    password: ${SPRING_DATASOURCE_PASSWORD:benchmark}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  graphql:
+    schema:
+      locations: classpath:graphql/
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:8080/realms/supplychain}
+          audiences: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_AUDIENCES:supplychain-api}
+
+foundgine:
+  benchmark:
+    redis-uri: ${FOUNGDINE_BENCHMARK_REDIS_URI:redis://localhost:6379}

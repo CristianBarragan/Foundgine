@@ -9,6 +9,7 @@
 The current package consolidates the provider surface into one consumer-facing package, including the relevant implementations under areas such as:
 
 - Storage: SQL and in-memory providers.
+- PostgreSQL-backed durable warrant revocation epoch anchor, explicit schema migrator, and readiness health check.
 - Model/AI provider descriptors, MCP tooling, EventStore, outbox and gateway.
 - Separate optional packages next to this one: `Foundgine.Providers.Redis` (warrant replay and MCP sessions for Redis, Valkey and Garnet), `Foundgine.Providers.AgentFramework` (Microsoft Agent Framework), `Foundgine.Providers.PostgresVector` (pgvector) and `Foundgine.Providers.Elasticsearch`.
 - MCP/tool provider integrations.
@@ -17,6 +18,8 @@ The current package consolidates the provider surface into one consumer-facing p
 - The `Foundgine.Providers.Aot.Generator` and `Foundgine.Providers.Orm.Generator` Roslyn source generators as **build-time analyzers**.
 
 `Foundgine.Providers` brings in `Foundgine.Core` and `Foundgine.Runtime`, plus the NuGet dependencies required by the included provider integrations. In particular, EF Core 10 and its relational / dependency-injection abstractions are restored as NuGet dependencies; their third-party DLLs are not bundled in the package. Hot Chocolate GraphQL translation _and_ secure query/mutation execution both live in `Foundgine.Extensions`, not here — add that package separately if your application uses GraphQL.
+
+The PostgreSQL warrant revocation epoch anchor is registered with `AddFoundginePostgresWarrantRevocationEpochAnchor(dataSource)` after `PostgresSecurityWarrantRevocationEpochAnchorMigrator.Apply(dataSource)` has completed. The configured data source must target the writable primary.
 
 The exact provider implementation you use determines which external infrastructure and configuration your application needs. Installing this package restores dependencies for the included integrations (EF Core, Npgsql, Microsoft.Extensions.AI and ModelContextProtocol). Redis, Agent Framework, pgvector and Elasticsearch client libraries come only with their own packages.
 

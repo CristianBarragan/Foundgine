@@ -1,0 +1,42 @@
+{
+ "name": "sc-java-suppliers-mixed",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query SuppliersNoRisk { supplier(first: 50) { id name country tenantId } }",
+    "operationName": "SuppliersNoRisk"
+   },
+   "as": "dave"
+  },
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query SuppliersNoRisk { supplier(first: 50) { id name country tenantId } }",
+    "operationName": "SuppliersNoRisk"
+   },
+   "as": "erin"
+  },
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query SuppliersNoRisk { supplier(first: 50) { id name country tenantId } }",
+    "operationName": "SuppliersNoRisk"
+   },
+   "as": "carol"
+  },
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query SuppliersNoRisk { supplier(first: 50) { id name country tenantId } }",
+    "operationName": "SuppliersNoRisk"
+   },
+   "as": "admin"
+  }
+ ],
+ "sort_lists_by": "id"
+}

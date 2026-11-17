@@ -1,0 +1,6 @@
+type Query { product(first:Int=50):[Product!]! supplier(first:Int=50):[Supplier!]! warehouse(first:Int=50):[Warehouse!]! }
+type Mutation { updateWarehouse(input:WarehouseInput!, where:WarehouseWhereInput!):Warehouse }
+input WarehouseInput { name:String } input WarehouseWhereInput { id:Int }
+type Product { id:Int sku:String name:String category:String safetyStock:Float }
+type Supplier { id:Int name:String country:String riskScore:Float tenantId:String }
+type Warehouse { id:Int businessUnitId:Int name:String tenantId:String }

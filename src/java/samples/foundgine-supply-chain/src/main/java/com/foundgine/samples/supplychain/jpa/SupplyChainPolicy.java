@@ -20,7 +20,8 @@ import java.util.Map;
  *   <li><b>Row-level tenant isolation:</b> reads of {@code Supplier} and {@code Warehouse} carry the predicate
  *       {@code resource.tenantId == context.tenantId}, which the ORM provider ANDs onto the query. A caller
  *       filter on another tenant therefore returns no rows instead of that tenant's data.
- *   <li><b>Writes and relationships:</b> denied. The starter has no mutation path and maps no relationships.
+ *   <li><b>Writes:</b> warehouse-name updates are allowed only to non-read-only operators/managers and remain tenant-scoped;
+ *       product and supplier writes are denied. Relationships are not mapped.
  * </ul>
  *
  * <p>The tenant value is supplied at execution time through {@link #executionContext}; a missing value fails
@@ -39,8 +40,12 @@ public final class SupplyChainPolicy {
         var supplier = find(metadata, "Supplier");
         var riskScore = supplier.effectiveFields().stream().filter(f -> f.name().equalsIgnoreCase("riskScore"))
                 .findFirst().orElseThrow(() -> new IllegalStateException("Supplier.riskScore is not in the metadata.")).id();
-        return create(supplier.entityId(), find(metadata, "Warehouse").entityId(),
-                find(metadata, "Product").entityId(), riskScore, caller);
+        var warehouse = find(metadata, "Warehouse");
+        var warehouseName = warehouse.effectiveFields().stream()
+                .filter(f -> f.name().equalsIgnoreCase("name"))
+                .findFirst().orElseThrow(() -> new IllegalStateException("Warehouse.name is not in the metadata.")).id();
+        return create(supplier.entityId(), warehouse.entityId(),
+                find(metadata, "Product").entityId(), riskScore, warehouseName, caller);
     }
 
     private static com.foundgine.core.semantic.metadata.EntityMetadata find(
@@ -52,21 +57,31 @@ public final class SupplyChainPolicy {
     private static ConfiguredSemanticAuthorizationPolicy create(
             com.foundgine.core.abstractions.EntityId supplier, com.foundgine.core.abstractions.EntityId warehouse,
             com.foundgine.core.abstractions.EntityId product, com.foundgine.core.abstractions.FieldId riskScore,
-            Authorization.Context caller) {
+            com.foundgine.core.abstractions.FieldId warehouseName, Authorization.Context caller) {
         var config = new SemanticAuthorizationConfiguration()
                 .addEntityRule((ctx, entity, op) -> {
-                    if (op != AuthorizationOperation.READ) return false;
-                    if (entity.equals(product)) return true;
-                    return (entity.equals(supplier) || entity.equals(warehouse))
-                            && caller.role() != Authorization.Role.CUSTOMER;
+                    if (op == AuthorizationOperation.READ) {
+                        if (entity.equals(product)) return true;
+                        return (entity.equals(supplier) || entity.equals(warehouse))
+                                && caller.role() != Authorization.Role.CUSTOMER;
+                    }
+                    // The benchmark exposes one real write: an authorized operator/manager may
+                    // update a warehouse belonging to their tenant. Product and supplier remain read-only.
+                    return op == AuthorizationOperation.WRITE && entity.equals(warehouse)
+                            && Authorization.canWrite(caller);
                 })
                 .addFieldRule((ctx, entity, field, op) -> {
-                    if (op != AuthorizationOperation.READ) return false;
-                    return !field.equals(riskScore) || Authorization.canReadSupplierRisk(caller);
+                    if (op == AuthorizationOperation.READ)
+                        return !field.equals(riskScore) || Authorization.canReadSupplierRisk(caller);
+                    // Only the warehouse name is mutable through the benchmark GraphQL operation.
+                    return op == AuthorizationOperation.WRITE && entity.equals(warehouse)
+                            && field.equals(warehouseName) && Authorization.canWrite(caller);
                 })
                 .addRelationshipRule((ctx, entity, relationship, op) -> false)
                 .addPredicateRule((ctx, entity, op) ->
-                        op == AuthorizationOperation.READ && (entity.equals(supplier) || entity.equals(warehouse))
+                        (entity.equals(supplier) && op == AuthorizationOperation.READ)
+                                || (entity.equals(warehouse) && (op == AuthorizationOperation.READ
+                                || op == AuthorizationOperation.WRITE))
                                 ? tenantPredicate()
                                 : null);
         return new ConfiguredSemanticAuthorizationPolicy(

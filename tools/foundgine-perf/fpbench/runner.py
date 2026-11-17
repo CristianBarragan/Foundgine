@@ -2,6 +2,7 @@
 from .io import _wj, _wt, _rj
 import asyncio, gzip, json, os, random, subprocess, sys, time
 from . import env as envmod
+from .auth import TokenCache, identities
 from .loadgen import Target, run_phase, warm_until_stable, windows
 from .sampler import Sampler
 from .stats import summarize_latencies, littles_law_check
@@ -11,7 +12,20 @@ def _load(path, base):
     return _rj(p)
 
 async def _cell(name, t_cfg, scenario, mode, conc, rate, cfg, outdir):
-    target = Target(t_cfg["url"], scenario, cfg.get("timeout_s", 30))
+    tokens = TokenCache.from_cfg(cfg.get("auth"))
+    if tokens:
+        tokens.prefetch(identities(scenario))
+    stop = asyncio.Event()
+    refresher = asyncio.create_task(tokens.keep_fresh(stop)) if tokens else None
+    try:
+        return await _cell_inner(name, t_cfg, scenario, mode, conc, rate, cfg, outdir, tokens)
+    finally:
+        stop.set()
+        if refresher:
+            await refresher
+
+async def _cell_inner(name, t_cfg, scenario, mode, conc, rate, cfg, outdir, tokens):
+    target = Target(t_cfg["url"], scenario, cfg.get("timeout_s", 30), tokens)
     if t_cfg.get("reset_cmd"):
         subprocess.run(t_cfg["reset_cmd"], shell=True, check=True)
     w = cfg.get("warmup", {})
@@ -42,6 +56,10 @@ async def _cell(name, t_cfg, scenario, mode, conc, rate, cfg, outdir):
         res["littles_law"] = littles_law_check(conc, res["throughput_rps"], svc["mean"])
         if res["littles_law"] and not res["littles_law"]["ok"]:
             res["invalid_reasons"].append("Little's Law mismatch (>15%)")
+    if tokens:
+        res["auth"] = {"identities": sorted(identities(scenario)), "token_fetches": tokens.fetches, "refresh_failures": tokens.failures}
+        if tokens.failures:
+            res["invalid_reasons"].append(f"{tokens.failures} token refresh failures")
     res["valid"] = not res["invalid_reasons"]
     d = os.path.join(outdir, scenario["name"], name)
     os.makedirs(d, exist_ok=True)
@@ -55,7 +73,10 @@ async def _cell(name, t_cfg, scenario, mode, conc, rate, cfg, outdir):
 async def _equivalence(cfg, scenarios, outdir):
     out = {}
     for sc in scenarios:
-        probes = {n: await Target(t["url"], sc).probe() for n, t in cfg["targets"].items()}
+        tokens = TokenCache.from_cfg(cfg.get("auth"))
+        if tokens:
+            tokens.prefetch(identities(sc))
+        probes = {n: await Target(t["url"], sc, tokens=tokens).probe() for n, t in cfg["targets"].items()}
         names = list(probes)
         ref = probes[names[0]]
         mism = []

@@ -1,0 +1,8 @@
+.git
+**/bin
+**/obj
+src/java
+src/python
+src/typescript
+src/wasm
+**/node_modules

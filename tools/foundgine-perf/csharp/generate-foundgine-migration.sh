@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
+PROJECT="$ROOT/src/csharp/benchmarks/SupplyChain.Performance/Foundgine.SupplyChain.BenchmarkApi"
+if ! command -v dotnet >/dev/null 2>&1; then
+  echo "dotnet SDK is required to generate the Foundgine EF Core migration" >&2
+  exit 127
+fi
+if ! dotnet tool list --global | grep -q '^dotnet-ef '; then
+  echo "Install dotnet-ef 10.0.x first: dotnet tool install --global dotnet-ef --version 10.0.14" >&2
+  exit 2
+fi
+if compgen -G "$PROJECT/Migrations/*_InitialSupplyChain.cs" >/dev/null; then
+  echo "Foundgine benchmark migration already exists; refusing to overwrite it" >&2
+  exit 3
+fi
+dotnet ef migrations add InitialSupplyChain \
+  --project "$PROJECT" \
+  --startup-project "$PROJECT" \
+  --context FoundgineDbContext \
+  --output-dir Migrations
+echo "Generated Foundgine EF Core migration in $PROJECT/Migrations"

@@ -1,0 +1,86 @@
+{
+  "_comment": "C# pair: Hot Chocolate+plain EF vs Foundgine+Foundgine EF migrations. Run from tools/foundgine-perf. Gate order: schemaparity, armauthz, then run. Not yet runnable: arm projects not built.",
+  "scenarios": [
+    "../scenarios/sc-cs-orders-customer.json",
+    "../scenarios/sc-cs-orders-operator.json",
+    "../scenarios/sc-cs-products.json",
+    "../scenarios/sc-cs-orders-mixed.json",
+    "../scenarios/sc-cs-shipment-update.json",
+    "../scenarios/sc-cs-order-create.json"
+  ],
+  "closed_concurrency": [
+    1,
+    8,
+    16,
+    32,
+    64,
+    128
+  ],
+  "open_loop_fractions": [
+    0.25,
+    0.5,
+    0.75,
+    0.9
+  ],
+  "sessions": 5,
+  "measure_s": 20,
+  "max_error_rate": 0.01,
+  "seed": 20261117,
+  "warmup": {
+    "min_s": 5,
+    "max_s": 60,
+    "cv": 0.05
+  },
+  "environment": {
+    "note": "Record host details and equal service cpusets; Redis is shared by the four arms and included in each arm resource sample."
+  },
+  "auth": {
+    "keycloak_url": "http://127.0.0.1:8080",
+    "realm": "supplychain",
+    "client_id": "supplychain-bench",
+    "password": "dev-password",
+    "refresh_margin_s": 20
+  },
+  "targets": {
+    "cs-baseline": {
+      "url": "http://127.0.0.1:4410/graphql",
+      "group": "csharp",
+      "history_kind": "ef",
+      "expect_history": [
+        "_Baseline$"
+      ],
+      "forbid_history": [
+        "_Initial$"
+      ],
+      "schema_cmd": "docker compose -f compose/keycloak.yml -f compose/supplychain.yml exec -T postgres psql -U benchmark -d sc_cs_baseline -At < scenarios/schema_dump.sql",
+      "reset_cmd": "docker compose -f compose/keycloak.yml -f compose/supplychain.yml restart cs-baseline >/dev/null && sleep 8 && docker compose -f compose/keycloak.yml -f compose/supplychain.yml exec -T postgres psql -U benchmark -d sc_cs_baseline -At < seed/reset-csharp.sql >/dev/null",
+      "resources": {
+        "kind": "docker",
+        "containers": [
+          "supplychain-cs-baseline-1",
+          "supplychain-redis-1"
+        ]
+      }
+    },
+    "cs-foundgine": {
+      "url": "http://127.0.0.1:4411/graphql",
+      "group": "csharp",
+      "history_kind": "ef",
+      "expect_history": [
+        "_Initial$"
+      ],
+      "forbid_history": [
+        "_Baseline$"
+      ],
+      "schema_cmd": "docker compose -f compose/keycloak.yml -f compose/supplychain.yml exec -T postgres psql -U benchmark -d sc_cs_foundgine -At < scenarios/schema_dump.sql",
+      "reset_cmd": "docker compose -f compose/keycloak.yml -f compose/supplychain.yml restart cs-foundgine >/dev/null && sleep 8 && docker compose -f compose/keycloak.yml -f compose/supplychain.yml exec -T postgres psql -U benchmark -d sc_cs_foundgine -At < seed/reset-csharp.sql >/dev/null",
+      "resources": {
+        "kind": "docker",
+        "containers": [
+          "supplychain-cs-foundgine-1",
+          "supplychain-redis-1"
+        ]
+      }
+    }
+  }
+}

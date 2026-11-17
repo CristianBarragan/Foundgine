@@ -1,0 +1,15 @@
+{
+ "name": "sc-cs-orders-customer",
+ "requests": [
+  {
+   "method": "POST",
+   "path": "",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "as": "alice"
+  }
+ ],
+ "sort_lists_by": "id"
+}

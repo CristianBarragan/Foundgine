@@ -1,0 +1,780 @@
+{
+ "group": "csharp",
+ "min_vectors": 12,
+ "vectors": [
+  {
+   "id": "cs-alice-own-orders",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "salesOrder",
+     "field": "customerId",
+     "in": [
+      1
+     ],
+     "min_rows": 1
+    }
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-bob-own-orders",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "salesOrder",
+     "field": "customerId",
+     "in": [
+      2
+     ],
+     "min_rows": 1
+    }
+   },
+   "as": "bob"
+  },
+  {
+   "id": "cs-operator-all-orders",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "salesOrder",
+     "field": "customerId",
+     "in": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "min_rows": 2
+    }
+   },
+   "as": "carol"
+  },
+  {
+   "id": "cs-manager-all-orders",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "salesOrder",
+     "field": "customerId",
+     "in": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "min_rows": 2
+    }
+   },
+   "as": "admin"
+  },
+  {
+   "id": "cs-analyst-no-orders",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "dave"
+  },
+  {
+   "id": "cs-customer-products",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Products { catalogProduct(first: 50) { id name sku unitPrice supplierId categoryId } }",
+    "operationName": "Products"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "catalogProduct",
+     "field": "id",
+     "in": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+     ],
+     "min_rows": 1
+    }
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-customer-no-suppliers",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name email } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-analyst-suppliers",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Suppliers { supplier(first: 50) { id name email } }",
+    "operationName": "Suppliers"
+   },
+   "expect": {
+    "decision": "allow",
+    "rows": {
+     "path": "supplier",
+     "field": "id",
+     "in": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+     ],
+     "min_rows": 1
+    }
+   },
+   "as": "dave"
+  },
+  {
+   "id": "cs-customer-no-root-shipments",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Shipments { shipment(first: 50) { id orderId status } }",
+    "operationName": "Shipments"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-norole-denied",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Products { catalogProduct(first: 50) { id name sku unitPrice supplierId categoryId } }",
+    "operationName": "Products"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "mallory"
+  },
+  {
+   "id": "cs-notenant-denied",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Products { catalogProduct(first: 50) { id name sku unitPrice supplierId categoryId } }",
+    "operationName": "Products"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "notenant"
+  },
+  {
+   "id": "cs-operator-updates-shipment",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation SetShipmentStatus($input: ShipmentInput!, $where: ShipmentWhereInput!) {\n updateShipment(input: $input, where: $where) { id status } }",
+    "operationName": "SetShipmentStatus",
+    "variables": {
+     "input": {
+      "status": "In Transit"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "expect": {
+    "decision": "allow"
+   },
+   "ignore_keys": [
+    "id"
+   ],
+   "as": "carol"
+  },
+  {
+   "id": "cs-customer-cannot-update-shipment",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation SetShipmentStatus($input: ShipmentInput!, $where: ShipmentWhereInput!) {\n updateShipment(input: $input, where: $where) { id status } }",
+    "operationName": "SetShipmentStatus",
+    "variables": {
+     "input": {
+      "status": "In Transit"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-analyst-cannot-update-shipment",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation SetShipmentStatus($input: ShipmentInput!, $where: ShipmentWhereInput!) {\n updateShipment(input: $input, where: $where) { id status } }",
+    "operationName": "SetShipmentStatus",
+    "variables": {
+     "input": {
+      "status": "In Transit"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "dave"
+  },
+  {
+   "id": "cs-customer-orders-for-self",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation PlaceOrder($input: SalesOrderInput!) {\n createSalesOrder(input: $input) { id customerId status totalAmount } }",
+    "operationName": "PlaceOrder",
+    "variables": {
+     "input": {
+      "customerId": 1,
+      "status": "Pending",
+      "totalAmount": 70.0,
+      "lines": [
+       {
+        "productId": 1,
+        "quantity": 2,
+        "unitPrice": 10.0
+       },
+       {
+        "productId": 2,
+        "quantity": 1,
+        "unitPrice": 50.0
+       }
+      ]
+     }
+    }
+   },
+   "expect": {
+    "decision": "allow"
+   },
+   "ignore_keys": [
+    "id"
+   ],
+   "as": "alice"
+  },
+  {
+   "id": "cs-customer-cannot-order-for-other",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation PlaceOrder($input: SalesOrderInput!) {\n createSalesOrder(input: $input) { id customerId status totalAmount } }",
+    "operationName": "PlaceOrder",
+    "variables": {
+     "input": {
+      "customerId": 2,
+      "status": "Pending",
+      "totalAmount": 70.0,
+      "lines": [
+       {
+        "productId": 1,
+        "quantity": 2,
+        "unitPrice": 10.0
+       },
+       {
+        "productId": 2,
+        "quantity": 1,
+        "unitPrice": 50.0
+       }
+      ]
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-manager-updates-shipment",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation SetShipmentStatus($input: ShipmentInput!, $where: ShipmentWhereInput!) {\n updateShipment(input: $input, where: $where) { id status } }",
+    "operationName": "SetShipmentStatus",
+    "variables": {
+     "input": {
+      "status": "In Transit"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "expect": {
+    "decision": "allow"
+   },
+   "ignore_keys": [
+    "id"
+   ],
+   "as": "admin"
+  },
+  {
+   "id": "cs-operator-unknown-shipment",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation SetShipmentStatus($input: ShipmentInput!, $where: ShipmentWhereInput!) {\n updateShipment(input: $input, where: $where) { id status } }",
+    "operationName": "SetShipmentStatus",
+    "variables": {
+     "input": {
+      "status": "In Transit"
+     },
+     "where": {
+      "id": 999999
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "carol"
+  },
+  {
+   "id": "cs-operator-invalid-shipment-status",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation SetShipmentStatus($input: ShipmentInput!, $where: ShipmentWhereInput!) {\n updateShipment(input: $input, where: $where) { id status } }",
+    "operationName": "SetShipmentStatus",
+    "variables": {
+     "input": {
+      "status": "Teleported"
+     },
+     "where": {
+      "id": 1
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "carol"
+  },
+  {
+   "id": "cs-manager-cannot-create-order",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation PlaceOrder($input: SalesOrderInput!) {\n createSalesOrder(input: $input) { id customerId status totalAmount } }",
+    "operationName": "PlaceOrder",
+    "variables": {
+     "input": {
+      "customerId": 1,
+      "status": "Pending",
+      "totalAmount": 70.0,
+      "lines": [
+       {
+        "productId": 1,
+        "quantity": 2,
+        "unitPrice": 10.0
+       },
+       {
+        "productId": 2,
+        "quantity": 1,
+        "unitPrice": 50.0
+       }
+      ]
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "admin"
+  },
+  {
+   "id": "cs-operator-cannot-create-order",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation PlaceOrder($input: SalesOrderInput!) {\n createSalesOrder(input: $input) { id customerId status totalAmount } }",
+    "operationName": "PlaceOrder",
+    "variables": {
+     "input": {
+      "customerId": 1,
+      "status": "Pending",
+      "totalAmount": 70.0,
+      "lines": [
+       {
+        "productId": 1,
+        "quantity": 2,
+        "unitPrice": 10.0
+       },
+       {
+        "productId": 2,
+        "quantity": 1,
+        "unitPrice": 50.0
+       }
+      ]
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "carol"
+  },
+  {
+   "id": "cs-customer-order-unknown-product",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation PlaceOrder($input: SalesOrderInput!) {\n createSalesOrder(input: $input) { id customerId status totalAmount } }",
+    "operationName": "PlaceOrder",
+    "variables": {
+     "input": {
+      "customerId": 1,
+      "status": "Pending",
+      "totalAmount": 70.0,
+      "lines": [
+       {
+        "productId": 999999,
+        "quantity": 1,
+        "unitPrice": 10.0
+       }
+      ]
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-customer-two-orders-one-request",
+   "token_mode": "valid",
+   "body": {
+    "query": "mutation PlaceTwo($input: SalesOrderInput!) {\n first: createSalesOrder(input: $input) { id } second: createSalesOrder(input: $input) { id } }",
+    "operationName": "PlaceTwo",
+    "variables": {
+     "input": {
+      "customerId": 1,
+      "status": "Pending",
+      "totalAmount": 70.0,
+      "lines": [
+       {
+        "productId": 1,
+        "quantity": 2,
+        "unitPrice": 10.0
+       },
+       {
+        "productId": 2,
+        "quantity": 1,
+        "unitPrice": 50.0
+       }
+      ]
+     }
+    }
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-customer-mixed-roots-with-shipments",
+   "token_mode": "valid",
+   "body": {
+    "query": "query Both { salesOrder(first: 5) { id } shipment(first: 5) { id orderId status } }",
+    "operationName": "Both"
+   },
+   "expect": {
+    "decision": "deny"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-token-none",
+   "token_mode": "none",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-token-garbage",
+   "token_mode": "garbage",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-token-bad_signature",
+   "token_mode": "bad_signature",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-token-alg_none",
+   "token_mode": "alg_none",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "alice"
+  },
+  {
+   "id": "cs-token-edited_payload",
+   "token_mode": "edited_payload",
+   "body": {
+    "query": "query Orders { salesOrder(first: 50) { id customerId status totalAmount\n lines { id productId quantity unitPrice } shipments { id trackingNumber status } } }",
+    "operationName": "Orders"
+   },
+   "expect": {
+    "decision": "unauthenticated"
+   },
+   "as": "alice"
+  }
+ ]
+}

@@ -27,6 +27,8 @@ public sealed class FoundgineMutationEngine : IFoundgineMutations
     private readonly ISecurityWarrantKeyResolver? _warrantKeyResolver;
     private readonly string? _expectedWarrantIssuer;
     private readonly ISecurityWarrantReplayStore? _warrantReplayStore;
+    private readonly ISecurityWarrantRevocationStore? _warrantRevocationStore;
+    private readonly ISecurityWarrantDelegationTrustResolver? _warrantDelegationTrustResolver;
     private readonly SecurityResourceLimits _securityResourceLimits;
 
     public FoundgineMutationEngine(
@@ -37,7 +39,9 @@ public sealed class FoundgineMutationEngine : IFoundgineMutations
         ISecurityWarrantKeyResolver? warrantKeyResolver = null,
         string? expectedWarrantIssuer = null,
         ISecurityWarrantReplayStore? warrantReplayStore = null,
-        SecurityResourceLimits? securityResourceLimits = null)
+        SecurityResourceLimits? securityResourceLimits = null,
+        ISecurityWarrantRevocationStore? warrantRevocationStore = null,
+        ISecurityWarrantDelegationTrustResolver? warrantDelegationTrustResolver = null)
     {
         _schema = schema ?? throw new ArgumentNullException(nameof(schema));
         _model = model;
@@ -50,6 +54,8 @@ public sealed class FoundgineMutationEngine : IFoundgineMutations
         _warrantKeyResolver = warrantKeyResolver;
         _expectedWarrantIssuer = expectedWarrantIssuer;
         _warrantReplayStore = warrantReplayStore;
+        _warrantRevocationStore = warrantRevocationStore;
+        _warrantDelegationTrustResolver = warrantDelegationTrustResolver;
         _securityResourceLimits = securityResourceLimits ?? new SecurityResourceLimits();
         _securityResourceLimits.Validate();
     }
@@ -131,13 +137,28 @@ public sealed class FoundgineMutationEngine : IFoundgineMutations
         // bypass the same mutation security boundary used by MCP/direct callers.
         MutationExecutionSecurityGate.EnsureExecutable(ir, _provider, certificate);
 
-        // A warrant is single-use when a replay store is configured. Consume it
-        // only after every authorization/certification check has passed.
+        // Revalidate the complete warrant trust and revocation boundary as late
+        // as possible: authorization and IR certification may have taken time,
+        // and a warrant can be revoked while those checks are running.
+        SecurityWarrantRevocationSnapshot? revocationSnapshot = null;
         if (security is not null)
+        {
+            var dispatchTime = DateTimeOffset.UtcNow;
+            VerifyWarrantTrust(security, dispatchTime);
+            revocationSnapshot = ValidateWarrantRevocation(security, dispatchTime);
+
+            // A warrant is single-use. Consume it only after all checks, including
+            // the final trust/revocation check, have passed.
             ConsumeWarrantReplay(security);
+        }
 
         var result = _provider.ExecuteBatch(ir, executionContext, deadlineCts.Token);
         executionContext.EnsureWithinDeadline();
+        if (security is not null && revocationSnapshot is { } snapshot)
+        {
+            snapshot.AssertUnchanged(_warrantRevocationStore!);
+            ValidateWarrantRevocation(security, DateTimeOffset.UtcNow);
+        }
         var resultFingerprint = FingerprintResult(result);
         return Task.FromResult(new MutationExecutionResult(
             result,
@@ -157,12 +178,19 @@ public sealed class FoundgineMutationEngine : IFoundgineMutations
             throw new InvalidOperationException(
                 "A security warrant was supplied, but no warrant key resolver is configured.");
 
-        SecurityWarrantVerifier.Verify(
-            security.Warrant,
-            _warrantKeyResolver,
-            DateTimeOffset.UtcNow,
-            _expectedWarrantIssuer,
-            security.Audience);
+        var now = DateTimeOffset.UtcNow;
+        VerifyWarrantTrust(security, now);
+        ValidateWarrantRevocation(security, now);
+
+        if (!StringComparer.Ordinal.Equals(security.Warrant.Subject, security.Subject))
+            throw new UnauthorizedAccessException(
+                "The warrant does not authorize the requested subject.");
+
+        var allowedTenants = security.Warrant.Constraints.AllowedTenants;
+        if (allowedTenants.Count > 0 &&
+            (security.Tenant is null || !allowedTenants.Contains(security.Tenant, StringComparer.Ordinal)))
+            throw new UnauthorizedAccessException(
+                "The warrant does not authorize the requested tenant scope.");
 
         foreach (var operation in request.Graph.Operations)
         {
@@ -191,6 +219,44 @@ public sealed class FoundgineMutationEngine : IFoundgineMutations
         }
     }
 
+
+
+    private void VerifyWarrantTrust(SecurityExecutionContext security, DateTimeOffset now)
+    {
+        var warrant = security.Warrant;
+        var isDelegated = warrant.ParentId is not null || warrant.ParentDigest is not null ||
+                          warrant.DelegationPath.Count != 0;
+
+        if (isDelegated || security.DelegationChain is not null)
+        {
+            SecurityWarrantExecutionTrust.Verify(
+                warrant,
+                _warrantKeyResolver!,
+                _expectedWarrantIssuer ?? throw new InvalidOperationException(
+                    "Delegated warrant execution requires an explicitly configured root issuer."),
+                security.Audience,
+                now,
+                security.DelegationChain,
+                _warrantDelegationTrustResolver,
+                security.Tenant);
+            return;
+        }
+
+        SecurityWarrantVerifier.Verify(
+            warrant, _warrantKeyResolver!, now, _expectedWarrantIssuer, security.Audience);
+    }
+
+    private SecurityWarrantRevocationSnapshot ValidateWarrantRevocation(
+        SecurityExecutionContext security,
+        DateTimeOffset now)
+    {
+        if (_warrantRevocationStore is null)
+            throw new InvalidOperationException(
+                "Warrant-backed mutation discovery and execution require a warrant revocation store; refusing to run without current revocation state.");
+
+        return SecurityWarrantRevocationGuard.Validate(
+            security.Warrant, _warrantRevocationStore, now);
+    }
 
     private void ValidateWarrantAllowedFields(
         SemanticMutationOperation operation,

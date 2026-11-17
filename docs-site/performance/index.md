@@ -15,6 +15,10 @@ The separate [CoffeeBeanery benchmark suite](https://github.com/CristianBarragan
 
 Published JSON, CSV and Markdown report artifacts are indexed at [CoffeeBeanery report index](../assets/coffee-beanery-benchmark/reports-index.json).
 
+## SupplyChain ORM comparison (implementation in progress)
+
+The four-arm [SupplyChain benchmark contract](../../docs/performance/SUPPLYCHAIN-ARMS.md) compares Hot Chocolate/EF Core with Foundgine/EF Core and Spring GraphQL/JPA with Foundgine/JPA. Each pair shares Redis-backed revocation checks and a PostgreSQL durable epoch anchor; the plain Hot Chocolate baseline uses direct StackExchange.Redis/Npgsql rather than Foundgine providers. The implementation and wiring are present, but no accepted runtime measurements are published yet. See `tools/foundgine-perf/docs/SUPPLYCHAIN-ARMS.md` for the run gates.
+
 ## Interpretation
 
 Read the experiment question, workload, fixture, concurrency and measurement date before comparing values. Do not generalize beyond the published fixture and configuration. Historical results are not a live feed.
