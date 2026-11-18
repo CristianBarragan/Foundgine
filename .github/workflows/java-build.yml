@@ -497,24 +497,24 @@ jobs:
       - name: Validate Wiki token
         shell: bash
         env:
-          WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
+          WIKI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
-          if [[ -z "$WIKI_TOKEN" ]]; then
-            echo "::error::WIKI_TOKEN is empty or unavailable."
+          if [[ -z "$GITHUB_TOKEN" ]]; then
+            echo "::error::GITHUB_TOKEN is empty or unavailable."
             exit 1
           fi
 
       - name: Clone GitHub Wiki
         env:
-          WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
+          WIKI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
 
           git clone \
-            "https://x-access-token:${WIKI_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" \
             /tmp/foundgine-wiki
 
       - name: Synchronize Wiki documentation
