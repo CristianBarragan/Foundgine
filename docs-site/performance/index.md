@@ -15,9 +15,11 @@ The separate [CoffeeBeanery benchmark suite](https://github.com/CristianBarragan
 
 Published JSON, CSV and Markdown report artifacts are indexed at [CoffeeBeanery report index](../assets/coffee-beanery-benchmark/reports-index.json).
 
-## SupplyChain ORM comparison (implementation in progress)
+## SupplyChain ORM comparison (preliminary C# results)
 
-The four-arm [SupplyChain benchmark contract](../../docs/performance/SUPPLYCHAIN-ARMS.md) compares Hot Chocolate/EF Core with Foundgine/EF Core and Spring GraphQL/JPA with Foundgine/JPA. Each pair shares Redis-backed revocation checks and a PostgreSQL durable epoch anchor; the plain Hot Chocolate baseline uses direct StackExchange.Redis/Npgsql rather than Foundgine providers. The implementation and wiring are present, but no accepted runtime measurements are published yet. See `tools/foundgine-perf/docs/SUPPLYCHAIN-ARMS.md` for the run gates.
+The four-arm [SupplyChain benchmark contract](../../docs/performance/SUPPLYCHAIN-ARMS.md) compares Hot Chocolate/EF Core with Foundgine/EF Core and Spring GraphQL/JPA with Foundgine/JPA. Each pair shares Redis-backed revocation checks and a PostgreSQL durable epoch anchor; the plain Hot Chocolate baseline uses direct StackExchange.Redis/Npgsql rather than Foundgine providers.
+
+A first, **preliminary** C# closed-loop run on one read scenario (`salesOrder(first: 50)` as a customer) is recorded in [SupplyChain C# preliminary results](../../docs/performance/SUPPLYCHAIN-CSHARP-PRELIMINARY-RESULTS.md). In every cell where both arms were valid (concurrency 1, 8 and 16), the plain Hot Chocolate + EF Core baseline had higher throughput (about 2.3x to 3.1x) and lower p99 than the Foundgine arm. Foundgine plateaued near 510-520 rps; both arms were invalid from concurrency 64. The page lists likely causes as hypotheses with how to check each. The run is not claim-grade (not five sessions, no recorded equivalence gate or resource telemetry), so it is not a published performance claim, and no Java results exist. See `tools/foundgine-perf/docs/SUPPLYCHAIN-ARMS.md` for the run gates.
 
 ## Interpretation
 

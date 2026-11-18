@@ -10,7 +10,7 @@ PostgreSQL-backed high-assurance `place_order` / `cancel_order` boundary.
 > sample's numbered `docs/` set — see
 > [`SupplyChain-Advanced-Tutorial.md`](./SupplyChain-Advanced-Tutorial.md).
 
-> **Verification status (3.3.5 source):** the latest reported Maven run failed in the Advanced
+> **Verification status (3.4.0 source):** the latest reported Maven run failed in the Advanced
 > sample test phase. Fixes for semantic discovery, physical-column expectations and the catalog
 > count are present in this checkpoint, but have not yet been rerun. Treat this sample as
 > implemented-unverified until the Java 27 Maven and PostgreSQL gates pass.

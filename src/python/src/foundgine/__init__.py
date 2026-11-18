@@ -24,7 +24,7 @@ from .workflows import (
     WorkflowWatch,
 )
 
-__version__ = "3.3.5"
+__version__ = "3.4.0"
 
 __all__ = [
     "DEFAULT_PROTOCOL_VERSION",

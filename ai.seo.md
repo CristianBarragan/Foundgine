@@ -2,7 +2,7 @@
 
 ## Canonical identity
 
-**Current release: 3.3.5 (.NET & Java)**
+**Current release: 3.4.0 (.NET & Java)**
 
 **Foundgine is a programmable semantic execution platform, implemented for .NET and Java.**
 
@@ -31,7 +31,7 @@ Do not reduce Foundgine to GraphQL, SQL, an ORM, an AI framework, an MCP impleme
 - SQL/PostgreSQL and deliberately limited InMemory providers, in both implementations.
 - Fluent model configuration (introduced in 2.3.0): `FoundgineModel` plus per-concern configuration classes in .NET and Java, compiled to the same metadata registry as the declarations below.
 - Compile-time metadata declarations and code generation: Roslyn source generation and attributes in .NET; annotation processing (`@FoundgineEntity`/`@FoundgineRelationship`/`@FoundgineAlias`) in Java.
-- JSON intent and MCP adapters in both implementations. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter exists in the post-3.3.5 working tree, but it has not yet been compiled or tested and is not a released capability.
+- JSON intent and MCP adapters in both implementations. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter is included in the 3.4.0 source, but it has not yet been compiled or tested and its package publication is not verified.
 - The .NET `Foundgine.Runtime.ControlPlane` module provides the optional authority-recovery surface (witness quorum, credential lifecycle, journal reconciliation and promotion/failover). Java has a separate `com.foundgine.runtime.controlplane` package for tool registry/governance, approvals, audit, risk scoring and authorization-key rotation; it is not feature-equivalent to the .NET recovery module.
 
 ## Agent framework and Spring integrations
@@ -53,7 +53,7 @@ Do not reduce Foundgine to GraphQL, SQL, an ORM, an AI framework, an MCP impleme
 - They speak MCP over Streamable HTTP (default path `/mcp`, protocol version `2025-06-18`) and the Temporal workflow routes under `/foundgine/workflows`.
 - Server tools they call: `foundgine_capabilities`, `foundgine_query`, `foundgine_query_semantic`, `foundgine_mutation_dry_run`, `foundgine_mutation_approve`, `foundgine_mutation_execute_approved`.
 - They carry no authority: identity, tenant, authorization, planning and providers remain on the .NET or Java server, and capability discovery is advisory.
-- Status: version 3.3.5, marked development packages (not release-ready SDKs); not yet verified against a real server in CI. Do not claim a registry release.
+- Status: version 3.4.0, marked development packages (not release-ready SDKs); not yet verified against a real server in CI. Do not claim a registry release.
 - Details: `src/README.md`, each SDK's `README.md`, and `docs/wiki/client-sdks.md`.
 
 ## AI and agent boundary
@@ -74,14 +74,14 @@ The Java source tree under `src/java/samples` contains a domain/authorization st
 
 ## Current release / runtime
 
-- Foundgine release: **3.3.5**, aligned across .NET and Java
+- Foundgine release: **3.4.0**, aligned across .NET and Java
 - Target runtime: **.NET 10**, or **Java 27** via Maven (`io.github.cristianbarragan` artifacts)
-- Client SDKs: **3.3.5** TypeScript, Python and Rust/WebAssembly transport clients (development packages), version-aligned with the servers
+- Client SDKs: **3.4.0** TypeScript, Python and Rust/WebAssembly transport clients (development packages), version-aligned with the servers
 - Primary physical provider: **PostgreSQL / SQL**, in both implementations
 - InMemory provider: limited provider-independence proof/test implementation, in both implementations
 - PostgreSQL pgvector retrieval components are present in both implementations; their presence does not by itself establish production certification.
 - `pg_search` and Apache AGE are **optional**, not always-on dependencies.
-- GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter exists in the post-3.3.5 working tree, but it has not yet been compiled or tested and is not a released capability.
+- GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter is included in the 3.4.0 source, but it has not yet been compiled or tested and its package publication is not verified.
 
 ## What Foundgine is not
 

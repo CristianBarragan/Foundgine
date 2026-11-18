@@ -1,6 +1,6 @@
 # MCP protocol versions, sessions and approval tokens
 
-This page records the concrete MCP behaviour that is implemented in source (version 3.3.5). For the conceptual overview see [AI agents and MCP](agents-mcp.md).
+This page records the concrete MCP behaviour that is implemented in source (version 3.4.0). For the conceptual overview see [AI agents and MCP](agents-mcp.md).
 
 ## Protocol versions
 

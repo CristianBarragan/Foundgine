@@ -1,4 +1,4 @@
-# Foundgine 3.3.5 (.NET & Java) — Website full context
+# Foundgine 3.4.0 (.NET & Java) — Website full context
 
 Foundgine is a **semantic execution layer for .NET 10 and Java 27**. It resolves structured caller intent into authorized, deterministic execution plans within an application-controlled boundary, using language-idiomatic mechanisms in each implementation. Thin TypeScript, Python and WebAssembly client SDKs for a running server are included under `src/typescript/`, `src/python/` and `src/wasm/` (see *Client SDKs* below). Optional Microsoft Agent Framework (.NET), LangChain4j and Spring Boot (Java) integrations are documented in *Agent framework and Spring integrations*.
 
@@ -37,7 +37,7 @@ Caller → Intent → Semantic Model → Semantic Operation Graph
 
 ## AI and MCP
 
-AI agents are untrusted callers. MCP and AI integrations expose capabilities but do not grant authority. Identity, tenant context, secrets and application policy remain host-owned. MCP adapters exist in both .NET and Java; GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter exists in the post-3.3.5 working tree, but it has not yet been compiled or tested and is not a released capability.
+AI agents are untrusted callers. MCP and AI integrations expose capabilities but do not grant authority. Identity, tenant context, secrets and application policy remain host-owned. MCP adapters exist in both .NET and Java; GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java); Microsoft.Extensions.AI is .NET-specific. A Microsoft Agent Framework adapter is included in the 3.4.0 source, but it has not yet been compiled or tested and its package publication is not verified.
 
 ## Language-specific implementation status
 
@@ -69,7 +69,7 @@ Three thin **transport clients** for a running Foundgine server live in this rep
 - **Protocols:** MCP over Streamable HTTP (default path `/mcp`, default protocol version `2025-06-18`) and the Temporal workflow HTTP routes under `/foundgine/workflows` (`processes`, `describe`, `start`, `status`, `decide`, `cancel`, plus `waitForCompletion`, `watch`, `startAndWatch`).
 - **Main calls:** `listCapabilities()` / `list_capabilities()`, `execute(toolName, args)`, `notifications()`, `close()`, and the `workflows` client.
 - **Server MCP tools they call:** `foundgine_capabilities`, `foundgine_query` (open intent), `foundgine_query_semantic` (structured JSON intent), `foundgine_mutation_dry_run`, `foundgine_mutation_approve`, `foundgine_mutation_execute_approved`. Query tools take one `intentJson` string (`rootEntity`, `selections`, optional `filter`/`order`/`limit`/`offset`/`after`). Discovery via `foundgine_capabilities` is advisory and is not authorization.
-- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.3.5. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
+- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.4.0. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
 - **Docs:** `src/README.md` (layout), `src/typescript/README.md`, `src/python/README.md`, `src/wasm/README.md`, and `docs/wiki/client-sdks.md` (comparison, quick start, verification status).
 - **Do not describe the SDKs as:** a semantic runtime, a Foundgine server, an authorization layer, or an ORM/database client.
 
@@ -83,7 +83,7 @@ Optional adapters that put Foundgine behind agent frameworks or host it in Sprin
 | LangChain4j | Java | `foundgine-langchain4j` (`src/java/foundgine-langchain4j/`) | `FoundgineLangChain4jTools.toolMap(FoundgineMcpServer)` returning LangChain4j `ToolSpecification`/`ToolExecutor` pairs for `AiServices` |
 | Spring Boot | Java | `foundgine-spring` (`src/java/foundgine-spring/`) | Auto-configuration for the MCP server and `POST /mcp` controller (sessions, SSE; property prefix `foundgine.mcp.*`, off by default) and for the JPA `FoundgineOrm` provider |
 
-- **Status:** source and tests present for all three; **not yet build- or runtime-verified** in this snapshot. The MAF adapter is a separate packable project outside `Foundgine.sln` and is unreleased (post-3.3.5). `foundgine-langchain4j` and `foundgine-spring` are in the Maven reactor with dependency pins (LangChain4j 1.0.0, Spring Boot 4.0.0) pending verification. Do not describe them as released or verified.
+- **Status:** source and tests present for all three; **not yet build- or runtime-verified** in this snapshot. The MAF adapter is a separate packable project outside `Foundgine.sln` and is new in 3.4.0 (source only; package publication not verified). `foundgine-langchain4j` and `foundgine-spring` are in the Maven reactor with dependency pins (LangChain4j 1.0.0, Spring Boot 4.0.0) pending verification. Do not describe them as released or verified.
 - **Docs:** `docs/wiki/agent-framework-integrations.md`, plus each module's `README.md`.
 
 ## Client SDKs (TypeScript, Python, WebAssembly)
@@ -99,7 +99,7 @@ Three thin **transport clients** for a running Foundgine server live in this rep
 - **Protocols:** MCP over Streamable HTTP (default path `/mcp`, default protocol version `2025-06-18`) and the Temporal workflow HTTP routes under `/foundgine/workflows` (`processes`, `describe`, `start`, `status`, `decide`, `cancel`, plus `waitForCompletion`, `watch`, `startAndWatch`).
 - **Main calls:** `listCapabilities()` / `list_capabilities()`, `execute(toolName, args)`, `notifications()`, `close()`, and the `workflows` client.
 - **Server MCP tools they call:** `foundgine_capabilities`, `foundgine_query` (open intent), `foundgine_query_semantic` (structured JSON intent), `foundgine_mutation_dry_run`, `foundgine_mutation_approve`, `foundgine_mutation_execute_approved`. Query tools take one `intentJson` string (`rootEntity`, `selections`, optional `filter`/`order`/`limit`/`offset`/`after`). Discovery via `foundgine_capabilities` is advisory and is not authorization.
-- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.3.5. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
+- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.4.0. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
 - **Docs:** `src/README.md` (layout), `src/typescript/README.md`, `src/python/README.md`, `src/wasm/README.md`, and `docs/wiki/client-sdks.md` (comparison, quick start, verification status).
 - **Do not describe the SDKs as:** a semantic runtime, a Foundgine server, an authorization layer, or an ORM/database client.
 
@@ -134,7 +134,7 @@ execution
 
 ## Current release
 
-**3.3.5 · .NET 10 and Java 27**
+**3.4.0 · .NET 10 and Java 27**
 
 The fluent configuration API was introduced in 2.3.0 and remains part of the current model API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
 

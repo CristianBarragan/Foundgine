@@ -1,4 +1,4 @@
-# Foundgine 3.3.5 (.NET & Java)
+# Foundgine 3.4.0 (.NET & Java)
 
 Foundgine is a **semantic execution layer for .NET 10 and Java 27**. It resolves structured caller intent into authorized, deterministic execution plans within an application-controlled boundary. Both implementations share the same architecture and vocabulary, expressed through language-idiomatic mechanisms. Thin TypeScript, Python and WebAssembly client SDKs for a running server are included under `src/typescript/`, `src/python/` and `src/wasm/` (see *Client SDKs* below). Optional Microsoft Agent Framework (.NET), LangChain4j and Spring Boot (Java) integrations are documented in *Agent framework and Spring integrations*.
 
@@ -33,7 +33,7 @@ Retrieval is candidate discovery, not authorization.
 
 ## Adapters and providers
 
-Intent can originate from application code, JSON, GraphQL, MCP or AI tools. These are adapters/consumers of the semantic boundary. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java). Microsoft.Extensions.AI and the Microsoft Agent Framework adapter are included in the .NET `Foundgine.Providers` package; the adapter was added after the 3.3.5 tag and has not yet been build-verified in this snapshot. JSON intent and MCP adapters exist in both .NET and Java.
+Intent can originate from application code, JSON, GraphQL, MCP or AI tools. These are adapters/consumers of the semantic boundary. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java). Microsoft.Extensions.AI and the Microsoft Agent Framework adapter are included in the .NET `Foundgine.Providers` package; the adapter was added after the 3.4.0 tag and has not yet been build-verified in this snapshot. JSON intent and MCP adapters exist in both .NET and Java.
 
 Current providers include `Foundgine.Providers.Storage.Sql` (`foundgine-providers` in Java) for SQL/PostgreSQL and a deliberately limited InMemory provider, in both implementations. ORM execution is available through the EF Core adapter (.NET, `Foundgine.Providers.EntityFrameworkCore`) and the JPA adapter (Java, `storage/orm/jpa`) over a shared ORM-neutral core; maturity is tracked per capability. PostgreSQL retrieval includes relational lookup, `pg_trgm`, native full text, optional `pg_search`/BM25 and optional Apache AGE graph similarity, also in both implementations. PostgreSQL pgvector retrieval components exist in both implementations; production certification is a separate question.
 
@@ -73,7 +73,7 @@ Three thin **transport clients** for a running Foundgine server live in this rep
 - **Protocols:** MCP over Streamable HTTP (default path `/mcp`, default protocol version `2025-06-18`) and the Temporal workflow HTTP routes under `/foundgine/workflows` (`processes`, `describe`, `start`, `status`, `decide`, `cancel`, plus `waitForCompletion`, `watch`, `startAndWatch`).
 - **Main calls:** `listCapabilities()` / `list_capabilities()`, `execute(toolName, args)`, `notifications()`, `close()`, and the `workflows` client.
 - **Server MCP tools they call:** `foundgine_capabilities`, `foundgine_query` (open intent), `foundgine_query_semantic` (structured JSON intent), `foundgine_mutation_dry_run`, `foundgine_mutation_approve`, `foundgine_mutation_execute_approved`. Query tools take one `intentJson` string (`rootEntity`, `selections`, optional `filter`/`order`/`limit`/`offset`/`after`). Discovery via `foundgine_capabilities` is advisory and is not authorization.
-- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.3.5. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
+- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.4.0. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
 - **Docs:** `src/README.md` (layout), `src/typescript/README.md`, `src/python/README.md`, `src/wasm/README.md`, and `docs/wiki/client-sdks.md` (comparison, quick start, verification status).
 - **Do not describe the SDKs as:** a semantic runtime, a Foundgine server, an authorization layer, or an ORM/database client.
 
@@ -123,7 +123,7 @@ Java (Maven, groupId `io.github.cristianbarragan`):
 
 ## Current release
 
-**3.3.5 · .NET 10 and Java 27**
+**3.4.0 · .NET 10 and Java 27**
 
 The fluent configuration API was introduced in 2.3.0 and remains part of the current model API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
 

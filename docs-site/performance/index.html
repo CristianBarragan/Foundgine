@@ -228,6 +228,22 @@
           </p>
           <p><a href="../agent-benchmark/supply-chain/index.html">Open Supply Chain E2E →</a></p>
         </section>
+        <section id="supplychain-orm-comparison">
+          <h2>SupplyChain ORM comparison (preliminary C# results)</h2>
+          <p>
+            A first, preliminary C# closed-loop run on one read scenario
+            (<code>salesOrder(first: 50)</code> as a customer) compared Hot Chocolate + EF Core with
+            the Foundgine GraphQL adapter and EF Core provider. In every cell where both arms were
+            valid (concurrency 1, 8 and 16), the plain baseline had higher throughput (about 2.3x to
+            3.1x) and lower p99 latency. Foundgine plateaued near 510-520 rps, and both arms were
+            invalid from concurrency 64. The run is not claim-grade (not five sessions, no recorded
+            equivalence gate or resource telemetry) and no Java results exist, so it is not a
+            published performance claim.
+          </p>
+          <p>
+            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/performance/SUPPLYCHAIN-CSHARP-PRELIMINARY-RESULTS.md">Results, hypotheses and limits →</a>
+          </p>
+        </section>
         <section id="coffeebeanery-performance">
           <h2>CoffeeBeanery API and database performance</h2>
           <p>
@@ -277,13 +293,14 @@
           </li>
           <li class=""><a href="#coffeebeanery-performance">CoffeeBeanery API and database performance</a></li>
           <li class=""><a href="#supply-chain-e2e">Supply Chain E2E</a></li>
+          <li class=""><a href="#supplychain-orm-comparison">SupplyChain ORM comparison</a></li>
           <li class=""><a href="#do-not-over-generalize">Do not over-generalize</a></li>
         </ol>
         <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>
       </aside>
     </div>
     <footer class="site-footer">
-      Foundgine 3.3.5 · .NET 10 & Java 27 ·
+      Foundgine 3.4.0 · .NET 10 & Java 27 ·
       <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
     </footer>
     <script>

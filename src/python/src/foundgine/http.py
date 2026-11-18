@@ -17,7 +17,7 @@ T = TypeVar("T")
 TokenProvider = str | Callable[[], "Awaitable[str | None] | str | None"] | None
 """A bearer token: a string, or a sync/async callable resolved for every request."""
 
-USER_AGENT = "foundgine-python/3.3.5"
+USER_AGENT = "foundgine-python/3.4.0"
 
 
 async def resolve_token(token: TokenProvider) -> str | None:
