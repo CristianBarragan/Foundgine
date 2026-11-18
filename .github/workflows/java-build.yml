@@ -464,7 +464,7 @@ jobs:
   # ------------------------------------------------------------
   # 5. Publish GitHub Wiki
   # ------------------------------------------------------------
-  publish-wiki:
+    publish-wiki:
     name: Publish GitHub Wiki
     runs-on: ubuntu-latest
     environment: production
@@ -473,7 +473,7 @@ jobs:
     timeout-minutes: 10
 
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -501,7 +501,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ -z "$GITHUB_TOKEN" ]]; then
+          if [[ -z "${WIKI_TOKEN:-}" ]]; then
             echo "::error::GITHUB_TOKEN is empty or unavailable."
             exit 1
           fi
@@ -514,7 +514,7 @@ jobs:
           set -euo pipefail
 
           git clone \
-            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" \
+            "https://x-access-token:${WIKI_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" \
             /tmp/foundgine-wiki
 
       - name: Synchronize Wiki documentation
