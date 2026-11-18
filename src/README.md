@@ -10,8 +10,8 @@ src/
 │   ├── Foundgine.Runtime/
 │   ├── Foundgine.Providers/             # core providers: SQL, EventStore, gateway, MCP, models, AOT runtime
 │   ├── Foundgine.Providers.Orm/ .Orm.Generator/ .EntityFrameworkCore/ .Aot.Generator/   # bundled into the Providers package
-│   ├── Foundgine.Providers.Redis/ .AgentFramework/ .PostgresVector/ .Elasticsearch/   # optional adapters, one package each
-│   ├── Foundgine.Extensions.GraphQL/ .Temporal/ .Keycloak/                            # optional integrations, one package each
+│   ├── Foundgine.Providers.Redis/ .AgentFramework/ .PostgresVector/ .Elasticsearch/   # adapters, bundled into the Foundgine.Providers package
+│   ├── Foundgine.Extensions.GraphQL/ .Temporal/ .Keycloak/                            # integrations, bundled into the Foundgine.Extensions package
 │   └── tests/ samples/ benchmarks/ ...
 ├── java/                           # Java 27 Maven reactor
 │   ├── pom.xml
@@ -33,7 +33,7 @@ src/
 
 | Integration | Path | README | Status |
 |---|---|---|---|
-| Microsoft Agent Framework | `src/csharp/Foundgine.Providers.AgentFramework/` | [README](csharp/Foundgine.Providers.AgentFramework/README.md) | Separate package `Foundgine.Providers.AgentFramework` |
+| Microsoft Agent Framework | `src/csharp/Foundgine.Providers.AgentFramework/` | [README](csharp/Foundgine.Providers.AgentFramework/README.md) | Included in the `Foundgine.Providers` package |
 | LangChain4j | `src/java/foundgine-providers` | [README](java/foundgine-providers/LANGCHAIN4J.md) | Included in `foundgine-providers` |
 | Spring Boot | `src/java/foundgine-providers` | [README](java/foundgine-providers/SPRING-BOOT.md) | Included in `foundgine-providers` |
 

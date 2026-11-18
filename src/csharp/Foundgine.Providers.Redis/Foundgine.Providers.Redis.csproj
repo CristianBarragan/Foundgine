@@ -9,7 +9,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Providers.Redis</RootNamespace>
     <AssemblyName>Foundgine.Providers.Redis</AssemblyName>
-    <IsPackable>true</IsPackable>
+    <!-- Bundled into the Foundgine.Providers package by Foundgine.Providers.Package; not published on its own. -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

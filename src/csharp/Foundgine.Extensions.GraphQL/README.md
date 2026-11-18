@@ -31,5 +31,5 @@ For secure query execution, add `Foundgine.Extensions.GraphQL.HotChocolate.HotCh
 ## Install
 
 ```bash
-dotnet add package Foundgine.Extensions.GraphQL
+dotnet add package Foundgine.Extensions   # includes this integration
 ```

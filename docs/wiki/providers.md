@@ -57,15 +57,15 @@ The .NET and Java provider modules are intentionally broad distribution units. A
 | JPA provider | Executes plans and mutations through Jakarta Persistence | n/a | `.../storage/orm/jpa` |
 | ORM map generator | Roslyn generator for typed entity maps | `Foundgine.Providers.Orm.Generator` | n/a |
 | PostgreSQL retrieval | pg_trgm / full-text (optional pg_search, Apache AGE) candidate retrieval | `Storage/Sql/Retrieval` | `.../storage/sql/retrieval` (source and parity tests; database runtime unverified) |
-| Elasticsearch retrieval | Lexical candidate retrieval backed by an Elasticsearch index | `Foundgine.Providers.Elasticsearch` (own package) | `.../storage/elasticsearch` |
-| PostgreSQL + pgvector retrieval | Vector/semantic lexicon indexing and candidate retrieval using pgvector | `Foundgine.Providers.PostgresVector` (own package) | `.../storage/postgresvector` |
+| Elasticsearch retrieval | Lexical candidate retrieval backed by an Elasticsearch index | `Foundgine.Providers` package (project `Foundgine.Providers.Elasticsearch`) | `.../storage/elasticsearch` |
+| PostgreSQL + pgvector retrieval | Vector/semantic lexicon indexing and candidate retrieval using pgvector | `Foundgine.Providers` package (project `Foundgine.Providers.PostgresVector`) | `.../storage/postgresvector` |
 | PostgreSQL event store | Persist and read event envelopes | `EventStore` | `.../eventstore` |
 | PostgreSQL outbox | Durable dispatch queue for integration events | `Outbox` | `.../outbox` |
 | Gateway/provider registry | Transport-neutral capability facade, provider registration/negotiation, events, approvals and HTTP/SSE adapters | `Gateway` | `.../gateway` |
 | MCP tools and client | Expose Foundgine capabilities to MCP clients and consume remote MCP capabilities | `Tools/MCP` | `.../tools/mcp` |
 | AOT metadata | Compile-time declarations and generated semantic metadata | `Aot` + `Foundgine.Providers.Aot.Generator` | `.../aot` + `foundgine-aot-generator` |
 | AI agent/toolset descriptors | Describe agent/toolset integration surfaces | `Models` | `.../models` |
-| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools; separate package `Foundgine.Providers.AgentFramework` | `src/csharp/Foundgine.Providers.AgentFramework` | n/a |
+| Microsoft Agent Framework adapter | Expose Foundgine to MAF agents as governed, approval-gated tools; included in the `Foundgine.Providers` package | `src/csharp/Foundgine.Providers.AgentFramework` | n/a |
 | Graph retrieval capability | Declare graph-retrieval capability metadata for provider negotiation | `Hosting/Capabilities` | `.../capabilities` |
 
 > The table is a source map, not a promise of identical implementation maturity or runtime dependencies. Verify the concrete language module, tests and package release before relying on a feature.

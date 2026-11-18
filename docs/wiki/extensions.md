@@ -24,7 +24,7 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 
 Spring Boot and LangChain4j are included in the Java `foundgine-providers` artifact, not in `foundgine-extensions`. Their framework dependencies are optional. See [Agent and framework integrations](agent-framework-integrations.md), [Spring Boot guide](../../src/java/foundgine-providers/SPRING-BOOT.md) and [LangChain4j guide](../../src/java/foundgine-providers/LANGCHAIN4J.md).
 
-**Install what you use.** In .NET each integration is its own package: `Foundgine.Extensions.GraphQL`, `Foundgine.Extensions.Temporal` and `Foundgine.Extensions.Keycloak` (Keycloak depends on Temporal). None of them includes include the Foundgine runtime, any storage provider, an MCP server or an LLM client.
+**Install the package.** In .NET the GraphQL, Temporal and Keycloak integrations ship in one package, `Foundgine.Extensions` (source projects `Foundgine.Extensions.GraphQL`, `.Temporal` and `.Keycloak`; Keycloak uses Temporal). It depends on `Foundgine.Providers`, and third-party libraries (Hot Chocolate language, Temporal SDK, JWT bearer) are restored as NuGet dependencies. It does not include any storage provider, an MCP server or an LLM client beyond what `Foundgine.Providers` brings.
 
 ## Which extension do I need?
 

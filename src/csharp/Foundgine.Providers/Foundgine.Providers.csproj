@@ -2,13 +2,13 @@
   <PropertyGroup>
     <Authors>Foundgine</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageId>Foundgine.Providers</PackageId>
     <Description>Foundgine.Providers contains the concrete provider and integration implementations for Foundgine 3.x, including SQL and in-memory storage providers, AI/model and MCP tooling integrations, EventStore, outbox and gateway integrations, and the Entity Framework Core execution provider. The package includes Foundgine-owned ORM and EF Core assemblies and the AOT and ORM source generators as build-time analyzers. The Redis, Microsoft Agent Framework, PostgreSQL pgvector and Elasticsearch integrations are separate optional packages (Foundgine.Providers.Redis, .AgentFramework, .PostgresVector, .Elasticsearch). EF Core and other third-party libraries are restored as NuGet dependencies and are not bundled as DLLs. Secure GraphQL/Hot Chocolate execution lives in Foundgine.Extensions alongside GraphQL translation. Consumers supply the semantic model and runtime configuration required by Foundgine.</Description>
     <PackageTags>providers;storage;orm;entity-framework-core;aot;ai;mcp;dotnet</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Providers</RootNamespace>
     <AssemblyName>Foundgine.Providers</AssemblyName>
-    <IsPackable>true</IsPackable>
+    <!-- Bundled into the Foundgine.Providers package by Foundgine.Providers.Package; not published on its own. -->
+    <IsPackable>false</IsPackable>
     <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
   </PropertyGroup>
 
@@ -56,7 +56,7 @@
     <!--
       Build the ORM and EF Core components as part of this package, but do not
       create separate Foundgine package dependencies. Their Foundgine-owned
-      assemblies and analyzers are added to this package by PackProviderComponents.
+      assemblies and analyzers are packed by Foundgine.Providers.Package (the only packable provider project).
     -->
     <ProjectReference Include="../Foundgine.Providers.Orm/Foundgine.Providers.Orm.csproj"
                       ReferenceOutputAssembly="false"
@@ -92,58 +92,6 @@
                       Version="10.0.3" />
 
   </ItemGroup>
-
-  <Target Name="PackProviderComponents" BeforeTargets="_GetPackageFiles">
-    <PropertyGroup>
-      <_AotGeneratorDll>$(MSBuildThisFileDirectory)..\Foundgine.Providers.Aot.Generator/bin/$(Configuration)/netstandard2.0/Foundgine.Providers.Aot.Generator.dll</_AotGeneratorDll>
-      <_OrmGeneratorDll>$(MSBuildThisFileDirectory)..\Foundgine.Providers.Orm.Generator/bin/$(Configuration)/netstandard2.0/Foundgine.Providers.Orm.Generator.dll</_OrmGeneratorDll>
-      <_OrmAssembly>$(MSBuildThisFileDirectory)..\Foundgine.Providers.Orm/bin/$(Configuration)/$(TargetFramework)/Foundgine.Providers.Orm.dll</_OrmAssembly>
-      <_OrmXml>$(MSBuildThisFileDirectory)..\Foundgine.Providers.Orm/bin/$(Configuration)/$(TargetFramework)/Foundgine.Providers.Orm.xml</_OrmXml>
-      <_EfCoreAssembly>$(MSBuildThisFileDirectory)..\Foundgine.Providers.EntityFrameworkCore/bin/$(Configuration)/$(TargetFramework)/Foundgine.Providers.EntityFrameworkCore.dll</_EfCoreAssembly>
-      <_EfCoreXml>$(MSBuildThisFileDirectory)..\Foundgine.Providers.EntityFrameworkCore/bin/$(Configuration)/$(TargetFramework)/Foundgine.Providers.EntityFrameworkCore.xml</_EfCoreXml>
-    </PropertyGroup>
-
-    <Error Condition="!Exists('$(_AotGeneratorDll)')"
-           Text="AOT generator DLL not found: $(_AotGeneratorDll)" />
-    <Error Condition="!Exists('$(_OrmGeneratorDll)')"
-           Text="ORM generator DLL not found: $(_OrmGeneratorDll)" />
-    <Error Condition="!Exists('$(_OrmAssembly)')"
-           Text="ORM assembly not found: $(_OrmAssembly)" />
-    <Error Condition="!Exists('$(_EfCoreAssembly)')"
-           Text="EF Core provider assembly not found: $(_EfCoreAssembly)" />
-
-    <ItemGroup>
-      <!-- Only Foundgine-owned runtime assemblies are bundled. -->
-      <None Include="$(_OrmAssembly)"
-            Pack="true"
-            PackagePath="lib/$(TargetFramework)/Foundgine.Providers.Orm.dll"
-            Visible="false" />
-      <None Include="$(_EfCoreAssembly)"
-            Pack="true"
-            PackagePath="lib/$(TargetFramework)/Foundgine.Providers.EntityFrameworkCore.dll"
-            Visible="false" />
-      <None Include="$(_OrmXml)"
-            Pack="true"
-            PackagePath="lib/$(TargetFramework)/Foundgine.Providers.Orm.xml"
-            Visible="false"
-            Condition="Exists('$(_OrmXml)')" />
-      <None Include="$(_EfCoreXml)"
-            Pack="true"
-            PackagePath="lib/$(TargetFramework)/Foundgine.Providers.EntityFrameworkCore.xml"
-            Visible="false"
-            Condition="Exists('$(_EfCoreXml)')" />
-
-      <!-- Both Foundgine source generators are compiler analyzers, not runtime assets. -->
-      <None Include="$(_AotGeneratorDll)"
-            Pack="true"
-            PackagePath="analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
-            Visible="false" />
-      <None Include="$(_OrmGeneratorDll)"
-            Pack="true"
-            PackagePath="analyzers/dotnet/cs/Foundgine.Providers.Orm.Generator.dll"
-            Visible="false" />
-    </ItemGroup>
-  </Target>
 
   <!-- Items are removed here (not only in the ItemGroup above) so an explicit <Compile Include> added later by an
        IDE for a file under these folders cannot pull the ORM/EF/generator sources into this assembly. -->

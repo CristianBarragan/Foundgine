@@ -29,5 +29,5 @@ depends on this package for translation and adds the secure execution boundary.
 ## Install
 
 ```bash
-dotnet add package Foundgine.Extensions.GraphQL
+dotnet add package Foundgine.Extensions   # includes this integration
 ```

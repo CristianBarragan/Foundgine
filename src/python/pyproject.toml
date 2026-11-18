@@ -3,9 +3,9 @@ requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
 [project]
-name = "foundgine-sdk"
+name = "foundgine"
 version = "3.4.0"
-description = "Thin MCP client for Foundgine (transport only). Python transport client with an API aligned to @foundgine/typescript."
+description = "Thin MCP client for Foundgine (transport only)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"

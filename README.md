@@ -15,7 +15,7 @@
 [![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 [![Java Security Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 
-[![Python Version](https://img.shields.io/pypi/v/foundgine-sdk?label=PyPI%20Version)](https://pypi.org/project/foundgine-sdk/)
+[![Python Version](https://img.shields.io/pypi/v/foundgine?label=PyPI%20Version)](https://pypi.org/foundgine/foundgine)
 [![Python Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/python-build.yml)
 
 [![TypeScript Version](https://img.shields.io/npm/v/@foundgine/typescript?label=npm%20%40foundgine%2Ftypescript)](https://www.npmjs.com/package/@foundgine/typescript)
@@ -34,6 +34,8 @@ Foundgine gives AI agents and other callers a way to express what they want, whi
 - and the actual operations performed on your data, APIs, GraphQL, MCP tools, or backend systems.
 
 This boundary ensures that agents can propose actions, but only your application decides **what is allowed, what is safe, and what is actually executed.**
+
+[**Go to website →**](https://cristianbarragan.github.io/Foundgine/)
 
 ## Why Foundgine matters
 
@@ -197,8 +199,8 @@ The core package family has four architectural packages (the .NET names are show
 | `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts                            |
 | `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                                            |
 | `Foundgine.Providers`  | Concrete storage (SQL, **EF Core**, in-memory), events, outbox, gateway, AI/model, MCP and AOT |
-| `Foundgine.Providers.Redis` / `.AgentFramework` / `.PostgresVector` / `.Elasticsearch` | Optional adapters, one package each |
-| `Foundgine.Extensions.GraphQL` / `.Temporal` / `.Keycloak` | Optional GraphQL, Temporal workflow and Keycloak identity integrations, one package each |
+| `Foundgine.Providers.Redis` / `.AgentFramework` / `.PostgresVector` / `.Elasticsearch` | Redis, Agent Framework, pgvector and Elasticsearch adapters; projects bundled into the `Foundgine.Providers` package |
+| `Foundgine.Extensions.GraphQL` / `.Temporal` / `.Keycloak` | GraphQL, Temporal workflow and Keycloak identity integrations; projects bundled into the `Foundgine.Extensions` package |
 
 The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. The Redis, Microsoft Agent Framework, pgvector and Elasticsearch integrations are separate optional .NET packages. Java Redis, Spring Boot and LangChain4j integrations ship in the `foundgine-providers` Maven artifact; Spring Boot and LangChain4j framework dependencies are optional. See the [package guide](docs-site/packages/) for the current boundary map.
 
@@ -229,7 +231,7 @@ Three optional integrations put Foundgine behind the frameworks teams already us
 
 | Integration | Module | Docs |
 | --- | --- | --- |
-| Microsoft Agent Framework (.NET) | `Foundgine.Providers.AgentFramework` | [README](src/csharp/Foundgine.Providers.AgentFramework/README.md) |
+| Microsoft Agent Framework (.NET) | `Foundgine.Providers` (project `Foundgine.Providers.AgentFramework`) | [README](src/csharp/Foundgine.Providers.AgentFramework/README.md) |
 | LangChain4j (Java) | `foundgine-providers` | [README](src/java/foundgine-providers/LANGCHAIN4J.md) |
 | Spring Boot (Java) | `foundgine-providers` | [README](src/java/foundgine-providers/SPRING-BOOT.md) |
 
@@ -294,7 +296,7 @@ PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). 
 
 Foundgine 3.4.0 hardens the warrant security path and broadens the integration surface. Warrant-backed reads now enforce delegation trust and fail-closed revocation checks, with batched revocation lookup in Java and shared Redis-protocol replay/revocation stores (Redis, Valkey, Garnet) in both implementations; warrant replay stores are bounded, and the provider-plan cache has bounded admission with single-flight compilation and namespace invalidation. The release adds a Microsoft Agent Framework adapter, Java model-derived PostgreSQL migrations, and an expanded .NET Supply Chain starter.
 
-The .NET `src/csharp` tree is restructured so each optional adapter or extension is its own NuGet package (`Foundgine.Providers.Redis`, `.AgentFramework`, `.PostgresVector`, `.Elasticsearch`, `Foundgine.Extensions.GraphQL`, `.Temporal`, `.Keycloak`); C# namespaces are unchanged. See [`CHANGELOG.md`](CHANGELOG.md) for details and the verification status. Version metadata is aligned across .NET, Java/Maven, MCP manifests, TypeScript, Python and Rust/WASM client metadata. The transport SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface.
+The .NET `src/csharp` tree keeps each optional adapter and extension as its own project (`Foundgine.Providers.Redis`, `.AgentFramework`, `.PostgresVector`, `.Elasticsearch`, `Foundgine.Extensions.GraphQL`, `.Temporal`, `.Keycloak`) but publishes exactly four NuGet packages, like the four Maven artifacts on the Java side: `Foundgine.Core`, `Foundgine.Runtime`, `Foundgine.Providers` and `Foundgine.Extensions`. C# namespaces are unchanged. See [`CHANGELOG.md`](CHANGELOG.md) for details and the verification status. Version metadata is aligned across .NET, Java/Maven, MCP manifests, TypeScript, Python and Rust/WASM client metadata. The transport SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface.
 
 ## License
 

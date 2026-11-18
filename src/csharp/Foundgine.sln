@@ -298,6 +298,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Extensions.Tempor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Extensions.Keycloak", "Foundgine.Extensions.Keycloak\Foundgine.Extensions.Keycloak.csproj", "{7627C37B-A01A-5585-898B-17D7248AEFDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Providers.Package", "Foundgine.Providers.Package\Foundgine.Providers.Package.csproj", "{6B1F0E52-4C7D-4A1B-9E35-2A8D0C5F7A11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.Extensions.Package", "Foundgine.Extensions.Package\Foundgine.Extensions.Package.csproj", "{9D3A7C64-1E28-4F0B-8B52-7C4E1A6D3F22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -596,6 +600,14 @@ Global
 		{7627C37B-A01A-5585-898B-17D7248AEFDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7627C37B-A01A-5585-898B-17D7248AEFDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7627C37B-A01A-5585-898B-17D7248AEFDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B1F0E52-4C7D-4A1B-9E35-2A8D0C5F7A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B1F0E52-4C7D-4A1B-9E35-2A8D0C5F7A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B1F0E52-4C7D-4A1B-9E35-2A8D0C5F7A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B1F0E52-4C7D-4A1B-9E35-2A8D0C5F7A11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D3A7C64-1E28-4F0B-8B52-7C4E1A6D3F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D3A7C64-1E28-4F0B-8B52-7C4E1A6D3F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D3A7C64-1E28-4F0B-8B52-7C4E1A6D3F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D3A7C64-1E28-4F0B-8B52-7C4E1A6D3F22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0632B953-266D-5603-925B-586D3556DAE4} = {AA23A18E-EAB6-5A02-8809-526627983EC7}
@@ -739,6 +751,8 @@ Global
 		{870A51EE-0801-5FD6-867E-1F19F6620E42} = {23A944E0-9A9E-5BF2-A4A4-C0BF1A7DC833}
 		{E91E45AB-707C-5353-84FA-E179A208F7E0} = {23A944E0-9A9E-5BF2-A4A4-C0BF1A7DC833}
 		{7627C37B-A01A-5585-898B-17D7248AEFDA} = {23A944E0-9A9E-5BF2-A4A4-C0BF1A7DC833}
+		{6B1F0E52-4C7D-4A1B-9E35-2A8D0C5F7A11} = {133A04CC-5D91-5D72-84B7-76D59253671E}
+		{9D3A7C64-1E28-4F0B-8B52-7C4E1A6D3F22} = {23A944E0-9A9E-5BF2-A4A4-C0BF1A7DC833}
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

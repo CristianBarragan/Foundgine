@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Packaging-only project. It produces the single Foundgine.Extensions NuGet package, which bundles the GraphQL
+    (Hot Chocolate), Temporal and Keycloak integration assemblies. It contains no code of its own and depends on the
+    Foundgine.Providers package. This mirrors the Java side, where foundgine-extensions is one Maven artifact.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>Foundgine</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageId>Foundgine.Extensions</PackageId>
+    <Description>Foundgine.Extensions contains the optional host integrations for Foundgine 3.x: Hot Chocolate GraphQL translation and the secure query and mutation executors, Temporal durable-workflow integration (outbox bridge, saga and approval workflow, operation activities and endpoints), and Keycloak identity integration (JWT validation, role and tenant mapping, short-lived signed warrants, including for Temporal workers). Third-party libraries are restored as NuGet dependencies and are not bundled as DLLs.</Description>
+    <PackageTags>extensions;graphql;hotchocolate;temporal;keycloak;oidc;jwt;warrants;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsPackable>true</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+    <NoWarn>$(NoWarn);NU5128;NU5017</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="README.md" />
+    <None Include="../../../LICENSE" Pack="true" PackagePath="LICENSE" />
+
+    <!-- Declared package dependencies: Foundgine.Core, Foundgine.Runtime and Foundgine.Providers at the same version. -->
+    <ProjectReference Include="../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../Foundgine.Providers.Package/Foundgine.Providers.Package.csproj" />
+
+    <!-- Built first, bundled by BundleExtensionAssemblies, never a package dependency. -->
+    <ProjectReference Include="../Foundgine.Extensions.GraphQL/Foundgine.Extensions.GraphQL.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <ProjectReference Include="../Foundgine.Extensions.Temporal/Foundgine.Extensions.Temporal.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <ProjectReference Include="../Foundgine.Extensions.Keycloak/Foundgine.Extensions.Keycloak.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+
+    <!-- Third-party dependencies of the bundled assemblies (restored by consumers, never bundled). -->
+    <PackageReference Include="HotChocolate.Language" Version="16.7.3" />
+    <PackageReference Include="Temporalio" Version="1.21.1" />
+    <PackageReference Include="Temporalio.Extensions.Hosting" Version="1.18.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
+  </ItemGroup>
+
+  <Target Name="BundleExtensionAssemblies" BeforeTargets="_GetPackageFiles">
+    <PropertyGroup>
+      <_Foundgine_Extensions_GraphQLDll>$(MSBuildThisFileDirectory)..\Foundgine.Extensions.GraphQL\bin\$(Configuration)\$(TargetFramework)\Foundgine.Extensions.GraphQL.dll</_Foundgine_Extensions_GraphQLDll>
+      <_Foundgine_Extensions_TemporalDll>$(MSBuildThisFileDirectory)..\Foundgine.Extensions.Temporal\bin\$(Configuration)\$(TargetFramework)\Foundgine.Extensions.Temporal.dll</_Foundgine_Extensions_TemporalDll>
+      <_Foundgine_Extensions_KeycloakDll>$(MSBuildThisFileDirectory)..\Foundgine.Extensions.Keycloak\bin\$(Configuration)\$(TargetFramework)\Foundgine.Extensions.Keycloak.dll</_Foundgine_Extensions_KeycloakDll>
+    </PropertyGroup>
+
+    <Error Condition="!Exists('$(_Foundgine_Extensions_GraphQLDll)')" Text="Assembly not found (build the solution first): $(_Foundgine_Extensions_GraphQLDll)" />
+    <Error Condition="!Exists('$(_Foundgine_Extensions_TemporalDll)')" Text="Assembly not found (build the solution first): $(_Foundgine_Extensions_TemporalDll)" />
+    <Error Condition="!Exists('$(_Foundgine_Extensions_KeycloakDll)')" Text="Assembly not found (build the solution first): $(_Foundgine_Extensions_KeycloakDll)" />
+
+    <PropertyGroup>
+      <_Foundgine_Extensions_GraphQLXml>$([System.IO.Path]::ChangeExtension('$(_Foundgine_Extensions_GraphQLDll)', '.xml'))</_Foundgine_Extensions_GraphQLXml>
+      <_Foundgine_Extensions_TemporalXml>$([System.IO.Path]::ChangeExtension('$(_Foundgine_Extensions_TemporalDll)', '.xml'))</_Foundgine_Extensions_TemporalXml>
+      <_Foundgine_Extensions_KeycloakXml>$([System.IO.Path]::ChangeExtension('$(_Foundgine_Extensions_KeycloakDll)', '.xml'))</_Foundgine_Extensions_KeycloakXml>
+    </PropertyGroup>
+    <ItemGroup>
+      <!-- Only Foundgine-owned assemblies are bundled. Third-party libraries are declared as NuGet dependencies. -->
+      <None Include="$(_Foundgine_Extensions_GraphQLDll)" Pack="true" PackagePath="lib/$(TargetFramework)/Foundgine.Extensions.GraphQL.dll" Visible="false" />
+      <None Include="$(_Foundgine_Extensions_GraphQLXml)" Pack="true" PackagePath="lib/$(TargetFramework)/Foundgine.Extensions.GraphQL.xml" Visible="false" Condition="Exists('$(_Foundgine_Extensions_GraphQLXml)')" />
+      <None Include="$(_Foundgine_Extensions_TemporalDll)" Pack="true" PackagePath="lib/$(TargetFramework)/Foundgine.Extensions.Temporal.dll" Visible="false" />
+      <None Include="$(_Foundgine_Extensions_TemporalXml)" Pack="true" PackagePath="lib/$(TargetFramework)/Foundgine.Extensions.Temporal.xml" Visible="false" Condition="Exists('$(_Foundgine_Extensions_TemporalXml)')" />
+      <None Include="$(_Foundgine_Extensions_KeycloakDll)" Pack="true" PackagePath="lib/$(TargetFramework)/Foundgine.Extensions.Keycloak.dll" Visible="false" />
+      <None Include="$(_Foundgine_Extensions_KeycloakXml)" Pack="true" PackagePath="lib/$(TargetFramework)/Foundgine.Extensions.Keycloak.xml" Visible="false" Condition="Exists('$(_Foundgine_Extensions_KeycloakXml)')" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -32,7 +32,7 @@ A search score is never authorization and cannot redefine the semantic graph.
 ## Install
 
 ```bash
-dotnet add package Foundgine.Providers.Elasticsearch
+dotnet add package Foundgine.Providers   # includes this integration
 ```
 
 Use this package when free-form language needs Elasticsearch/OpenSearch lexical retrieval before semantic resolution.

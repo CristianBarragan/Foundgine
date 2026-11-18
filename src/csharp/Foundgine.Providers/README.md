@@ -11,7 +11,7 @@ The current package consolidates the provider surface into one consumer-facing p
 - Storage: SQL and in-memory providers.
 - PostgreSQL-backed durable warrant revocation epoch anchor, explicit schema migrator, and readiness health check.
 - Model/AI provider descriptors, MCP tooling, EventStore, outbox and gateway.
-- Separate optional packages next to this one: `Foundgine.Providers.Redis` (warrant replay and MCP sessions for Redis, Valkey and Garnet), `Foundgine.Providers.AgentFramework` (Microsoft Agent Framework), `Foundgine.Providers.PostgresVector` (pgvector) and `Foundgine.Providers.Elasticsearch`.
+- Redis (warrant replay, revocation and MCP sessions for Redis, Valkey and Garnet), Microsoft Agent Framework, PostgreSQL pgvector and Elasticsearch integrations. They are separate projects in the repository (`Foundgine.Providers.Redis`, `.AgentFramework`, `.PostgresVector`, `.Elasticsearch`) but ship inside this one NuGet package, as one `foundgine-providers` artifact does on the Java side.
 - MCP/tool provider integrations.
 - ORM execution through the shared `Foundgine.Providers.Orm` layer and the Entity Framework Core adapter.
 - AOT-friendly metadata support.
@@ -21,7 +21,7 @@ The current package consolidates the provider surface into one consumer-facing p
 
 The PostgreSQL warrant revocation epoch anchor is registered with `AddFoundginePostgresWarrantRevocationEpochAnchor(dataSource)` after `PostgresSecurityWarrantRevocationEpochAnchorMigrator.Apply(dataSource)` has completed. The configured data source must target the writable primary.
 
-The exact provider implementation you use determines which external infrastructure and configuration your application needs. Installing this package restores dependencies for the included integrations (EF Core, Npgsql, Microsoft.Extensions.AI and ModelContextProtocol). Redis, Agent Framework, pgvector and Elasticsearch client libraries come only with their own packages.
+The exact provider implementation you use determines which external infrastructure and configuration your application needs. Installing this package restores dependencies for the included integrations (EF Core, Npgsql, Microsoft.Extensions.AI, ModelContextProtocol, StackExchange.Redis, Microsoft.Agents.AI and Pgvector).
 
 ## AOT generator behavior
 
@@ -66,7 +66,7 @@ dotnet add package Foundgine.Providers --version 3.4.0
 The optional ASP.NET Core gateway facade is included in this package under `Foundgine.Providers.Gateway`. It exposes capability/semantic discovery, protected semantic read and mutation workflows, opaque approval handles, execution status, replayable SSE notifications, provider lifecycle hooks, and diagnostics. Its default event and approval stores are process-local development implementations; production hosts must provide durable distributed adapters. See [`Gateway/README.md`](Gateway/README.md) for the HTTP contract, event-store requirements, AOT serialization limits, security requirements, sample host, and tests.
 
 
-## Optional adapters (separate packages)
+## Bundled adapters (separate projects, one package)
 
 - [`Foundgine.Providers.Redis`](../Foundgine.Providers.Redis/README.md): shared warrant replay protection and MCP session storage using atomic Redis operations (Redis, Valkey, Garnet).
 - [`Foundgine.Providers.AgentFramework`](../Foundgine.Providers.AgentFramework/README.md): Microsoft Agent Framework adapter exposing governed Foundgine tools.

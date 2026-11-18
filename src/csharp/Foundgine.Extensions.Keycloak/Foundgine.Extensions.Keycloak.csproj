@@ -12,7 +12,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>Foundgine.Extensions.Keycloak</RootNamespace>
     <AssemblyName>Foundgine.Extensions.Keycloak</AssemblyName>
-    <IsPackable>true</IsPackable>
+    <!-- Bundled into the Foundgine.Extensions package by Foundgine.Extensions.Package; not published on its own. -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="README.md" Condition="Exists('README.md')" />

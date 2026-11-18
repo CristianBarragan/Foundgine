@@ -131,17 +131,11 @@ jobs:
             "Foundgine.Core"
             "Foundgine.Runtime"
             "Foundgine.Providers"
-            "Foundgine.Providers.Redis"
-            "Foundgine.Providers.AgentFramework"
-            "Foundgine.Providers.PostgresVector"
-            "Foundgine.Providers.Elasticsearch"
-            "Foundgine.Extensions.GraphQL"
-            "Foundgine.Extensions.Temporal"
-            "Foundgine.Extensions.Keycloak"
+            "Foundgine.Extensions"
           )
 
           if [[ "${#packages[@]}" -ne "${#expected_packages[@]}" ]]; then
-            echo "ERROR: Expected exactly ten NuGet packages, produced ${#packages[@]}."
+            echo "ERROR: Expected exactly four NuGet packages, produced ${#packages[@]}."
             exit 1
           fi
 
@@ -192,6 +186,10 @@ jobs:
             "lib/net10.0/Foundgine.Providers.dll"
             "lib/net10.0/Foundgine.Providers.Orm.dll"
             "lib/net10.0/Foundgine.Providers.EntityFrameworkCore.dll"
+            "lib/net10.0/Foundgine.Providers.Redis.dll"
+            "lib/net10.0/Foundgine.Providers.AgentFramework.dll"
+            "lib/net10.0/Foundgine.Providers.PostgresVector.dll"
+            "lib/net10.0/Foundgine.Providers.Elasticsearch.dll"
             "analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
             "analyzers/dotnet/cs/Foundgine.Providers.Orm.Generator.dll"
             "README.md"
@@ -214,8 +212,12 @@ jobs:
 
           runtime_dlls="$(grep -E '^lib/net10\.0/[^/]+\.dll$' <<< "$entries" | sed 's#^lib/net10.0/##' | sort)"
           expected_runtime_dlls="$(printf '%s\n' \
+            'Foundgine.Providers.AgentFramework.dll' \
+            'Foundgine.Providers.Elasticsearch.dll' \
             'Foundgine.Providers.EntityFrameworkCore.dll' \
             'Foundgine.Providers.Orm.dll' \
+            'Foundgine.Providers.PostgresVector.dll' \
+            'Foundgine.Providers.Redis.dll' \
             'Foundgine.Providers.dll' | sort)"
           if [[ "$runtime_dlls" != "$expected_runtime_dlls" ]]; then
             echo "ERROR: Unexpected runtime DLL set in Foundgine.Providers package."
@@ -260,22 +262,28 @@ jobs:
             fi
           done
 
-          # Each optional integration is its own package and must carry its own assembly.
-          for optional in Foundgine.Providers.Redis Foundgine.Providers.AgentFramework Foundgine.Providers.PostgresVector Foundgine.Providers.Elasticsearch Foundgine.Extensions.GraphQL Foundgine.Extensions.Temporal Foundgine.Extensions.Keycloak; do
-            optional_packages=(artifacts/nuget/"${optional}".[0-9]*.nupkg)
-            if ! unzip -Z1 "${optional_packages[0]}" | grep -Fxq "lib/net10.0/${optional}.dll"; then
-              echo "ERROR: ${optional} package does not contain lib/net10.0/${optional}.dll"
+          # The Extensions package bundles the GraphQL, Temporal and Keycloak assemblies and depends on Foundgine.Providers.
+          extensions_packages=(artifacts/nuget/Foundgine.Extensions.[0-9]*.nupkg)
+          extensions_entries="$(unzip -Z1 "${extensions_packages[0]}")"
+          for assembly in Foundgine.Extensions.GraphQL Foundgine.Extensions.Temporal Foundgine.Extensions.Keycloak; do
+            if ! grep -Fxq "lib/net10.0/${assembly}.dll" <<< "$extensions_entries"; then
+              echo "ERROR: Foundgine.Extensions package does not contain lib/net10.0/${assembly}.dll"
               exit 1
             fi
-            echo "OK: ${optional} carries its own assembly"
+            echo "OK: Foundgine.Extensions carries ${assembly}"
           done
+          extensions_nuspec="$(unzip -p "${extensions_packages[0]}" Foundgine.Extensions.nuspec)"
+          if ! grep -q 'id="Foundgine.Providers"' <<< "$extensions_nuspec"; then
+            echo "ERROR: Foundgine.Extensions must declare a dependency on Foundgine.Providers."
+            exit 1
+          fi
 
           if compgen -G "artifacts/nuget/Foundgine.Experimental.Aot.*.nupkg" > /dev/null; then
             echo "ERROR: Obsolete Foundgine.Experimental.Aot package was produced."
             exit 1
           fi
 
-          echo "OK: exactly ten expected NuGet packages"
+          echo "OK: exactly four expected NuGet packages"
           echo "OK: AOT generator included as a compiler analyzer"
           echo "OK: no separate AOT generator package"
           echo "OK: no obsolete Experimental.Aot package"
@@ -854,17 +862,11 @@ jobs:
             "Foundgine.Core"
             "Foundgine.Runtime"
             "Foundgine.Providers"
-            "Foundgine.Providers.Redis"
-            "Foundgine.Providers.AgentFramework"
-            "Foundgine.Providers.PostgresVector"
-            "Foundgine.Providers.Elasticsearch"
-            "Foundgine.Extensions.GraphQL"
-            "Foundgine.Extensions.Temporal"
-            "Foundgine.Extensions.Keycloak"
+            "Foundgine.Extensions"
           )
 
           if [[ "${#packages[@]}" -ne "${#expected_packages[@]}" ]]; then
-            echo "ERROR: Expected exactly ten packages, found ${#packages[@]}."
+            echo "ERROR: Expected exactly four packages, found ${#packages[@]}."
             exit 1
           fi
 
@@ -895,6 +897,10 @@ jobs:
           required_assets=(
             "lib/net10.0/Foundgine.Providers.Orm.dll"
             "lib/net10.0/Foundgine.Providers.EntityFrameworkCore.dll"
+            "lib/net10.0/Foundgine.Providers.Redis.dll"
+            "lib/net10.0/Foundgine.Providers.AgentFramework.dll"
+            "lib/net10.0/Foundgine.Providers.PostgresVector.dll"
+            "lib/net10.0/Foundgine.Providers.Elasticsearch.dll"
             "analyzers/dotnet/cs/Foundgine.Providers.Aot.Generator.dll"
             "analyzers/dotnet/cs/Foundgine.Providers.Orm.Generator.dll"
           )
@@ -938,7 +944,7 @@ jobs:
           packages=(artifacts/nuget/*.nupkg)
 
           if [[ "${#packages[@]}" -ne 4 ]]; then
-            echo "ERROR: Expected exactly four packages to publish."
+            echo "ERROR: Expected exactly four packages to publish, found ${#packages[@]}."
             exit 1
           fi
 

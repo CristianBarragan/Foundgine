@@ -72,5 +72,5 @@ When a run needs approval, the `AgentResponse` contains an approval request cont
 ## Install
 
 ```bash
-dotnet add package Foundgine.Providers.AgentFramework
+dotnet add package Foundgine.Providers   # includes this integration
 ```

@@ -32,7 +32,7 @@ This package is separate from `Foundgine.Providers.Storage.Sql`: SQL execution a
 ## Install
 
 ```bash
-dotnet add package Foundgine.Providers.PostgresVector
+dotnet add package Foundgine.Providers   # includes this integration
 ```
 
 Use it when vector similarity is useful for grounding free-form language against a Foundgine semantic lexicon.
