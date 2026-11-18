@@ -15,7 +15,7 @@
 [![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 [![Java Security Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
 
-[![Python Version](https://img.shields.io/pypi/v/foundgine?label=PyPI%20Version)](https://pypi.org/foundgine/foundgine)
+[![Python Version](https://img.shields.io/pypi/v/foundgine?label=PyPI%20Version)](https://pypi.org/project/foundgine)
 [![Python Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/python-build.yml)
 
 [![TypeScript Version](https://img.shields.io/npm/v/@foundgine/typescript?label=npm%20%40foundgine%2Ftypescript)](https://www.npmjs.com/package/@foundgine/typescript)
