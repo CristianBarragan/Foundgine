@@ -464,85 +464,85 @@ jobs:
   # ------------------------------------------------------------
   # 5. Publish GitHub Wiki
   # ------------------------------------------------------------
-    publish-wiki:
-      name: Publish GitHub Wiki
-      runs-on: ubuntu-latest
-      environment: production
-  
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      timeout-minutes: 10
-  
-      permissions:
-        contents: write
-  
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v7
-  
-        - name: Validate Wiki source
-          shell: bash
-          run: |
-            set -euo pipefail
-  
-            if [[ ! -d "docs/wiki" ]]; then
-              echo "::error::docs/wiki directory does not exist."
-              exit 1
-            fi
-  
-            if [[ ! -f "docs/wiki/index.md" ]]; then
-              echo "::error::docs/wiki/index.md does not exist."
-              exit 1
-            fi
-  
-        - name: Validate Wiki token
-          shell: bash
-          env:
-            WIKI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
-            set -euo pipefail
-  
-            if [[ -z "${WIKI_TOKEN:-}" ]]; then
-              echo "::error::GITHUB_TOKEN is empty or unavailable."
-              exit 1
-            fi
-  
-        - name: Clone GitHub Wiki
-          env:
-            WIKI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          shell: bash
-          run: |
-            set -euo pipefail
-  
-            git clone \
-              "https://x-access-token:${WIKI_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" \
-              /tmp/foundgine-wiki
-  
-        - name: Synchronize Wiki documentation
-          shell: bash
-          run: |
-            set -euo pipefail
-  
-            rsync -av --delete \
-              --exclude='.git/' \
-              --exclude='index.md' \
-              docs/wiki/ /tmp/foundgine-wiki/
-  
-            cp docs/wiki/index.md /tmp/foundgine-wiki/Home.md
-  
-        - name: Commit and publish Wiki
-          shell: bash
-          run: |
-            set -euo pipefail
-  
-            cd /tmp/foundgine-wiki
-  
-            if [[ -n "$(git status --porcelain)" ]]; then
-              git config user.name "github-actions[bot]"
-              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-  
-              git add -A
-              git commit -m "Update Foundgine Wiki from docs/wiki"
-              git push
-            else
-              echo "Wiki is already up to date."
-            fi
+  publish-wiki:
+    name: Publish GitHub Wiki
+    runs-on: ubuntu-latest
+    environment: production
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate Wiki source
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ ! -d "docs/wiki" ]]; then
+            echo "::error::docs/wiki directory does not exist."
+            exit 1
+          fi
+
+          if [[ ! -f "docs/wiki/index.md" ]]; then
+            echo "::error::docs/wiki/index.md does not exist."
+            exit 1
+          fi
+
+      - name: Validate Wiki token
+        shell: bash
+        env:
+          WIKI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${WIKI_TOKEN:-}" ]]; then
+            echo "::error::GITHUB_TOKEN is empty or unavailable."
+            exit 1
+          fi
+
+      - name: Clone GitHub Wiki
+        env:
+          WIKI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git clone \
+            "https://x-access-token:${WIKI_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" \
+            /tmp/foundgine-wiki
+
+      - name: Synchronize Wiki documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rsync -av --delete \
+            --exclude='.git/' \
+            --exclude='index.md' \
+            docs/wiki/ /tmp/foundgine-wiki/
+
+          cp docs/wiki/index.md /tmp/foundgine-wiki/Home.md
+
+      - name: Commit and publish Wiki
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cd /tmp/foundgine-wiki
+
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            git add -A
+            git commit -m "Update Foundgine Wiki from docs/wiki"
+            git push
+          else
+            echo "Wiki is already up to date."
+          fi
