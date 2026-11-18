@@ -35,7 +35,7 @@ Foundgine gives AI agents and other callers a way to express what they want, whi
 
 This boundary ensures that agents can propose actions, but only your application decides **what is allowed, what is safe, and what is actually executed.**
 
-[**Go to website →**](https://cristianbarragan.github.io/Foundgine/)
+[**Go to website →**][https://Foundgine.github.io/Foundgine](https://foundgine.github.io/Foundgine/docs-site/index.html)
 
 ## Why Foundgine matters
 
