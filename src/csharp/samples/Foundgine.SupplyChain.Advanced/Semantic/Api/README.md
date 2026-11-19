@@ -32,3 +32,5 @@ The endpoint is `/mcp` and the health endpoint is `/health`.
 ## Semantic contract used by the API
 
 The API registers the composed `SupplyChainSemanticModel`. That model discovers the full Supply Chain structure from generated metadata, applies the two-entity `ManualSupplyChainSemanticModel` overlay, and then exposes the resulting contract to the semantic/MCP flow.
+
+The `Mcp` host also serves the canonical intent endpoint (`/intent`, `/intent/explain`, `/intent/capabilities`) and the `foundgine_intent` tool. See "Canonical intent endpoint" in the sample README.

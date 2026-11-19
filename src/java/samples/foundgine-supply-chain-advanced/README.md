@@ -51,6 +51,9 @@ status is recorded above.
 | `mutation`      | `Semantic/Application` + `MCP.Foundgine`                        | `AdvancedMutationPipeline` drives Foundgine's `FoundgineMutationEngine` end to end (intent → plan → authorization → ExecutionIR → provider). `PlaceOrderService`/`CancelOrderService` are the in-memory high-assurance domain services; `AdvancedMcpFacade` is the transport-neutral JSON boundary MCP calls into.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `postgres`      | `MCP.Foundgine` (SQL boundary)                                  | `PostgresSupplyChainStore` owns the physical transaction, advisory locks, server-side pricing, and exact inventory-lot allocation for `place_order`/`cancel_order` against real PostgreSQL.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `mcp`           | `MCP.Foundgine/Program.cs` + `Semantic/McpClient`               | `AdvancedMcpServer` is a dependency-free JSON-RPC-over-HTTP MCP server (JDK `HttpServer`, no extra runtime dependency beyond Jackson) exposing `foundgine_query`/`foundgine_mutation`. `AdvancedMcpClientDemo` is a raw-HTTP MCP client that calls it, no SDK required.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `intent`        | `MCP.Foundgine` (open intent)                                   | `SupplyChainIntentService` is the canonical intent boundary: one provider-neutral read intent in, run through a real Foundgine engine (resolution, authorization, planning, execution, receipt) as a host-supplied caller. `AdvancedIntentEndpoint` serves it over HTTP (`/intent`, `/intent/explain`, `/intent/capabilities`) and as the `foundgine_intent` MCP tool. |
+| `intent` | `Semantic/Tests/OpenIntentSupplyChainTests.cs` (+ `MCP.Foundgine`) | `SupplyChainIntentService` is the canonical intent boundary: the body is a provider-neutral `ReadIntent` and it runs through a real Foundgine engine per caller. `IntentCaller` (tenant + role) is host-supplied and never part of the intent. `EvidencingProvider` adds provider evidence so in-memory runs also return a receipt. Served by `AdvancedIntentEndpoint` at `/intent` and as the `foundgine_intent` MCP tool. |
+| `intent`        | `MCP.Foundgine` (open intent)                                   | `SupplyChainIntentService` is the canonical intent boundary: it takes the provider-neutral read intent JSON and runs it through a real Foundgine engine (name resolution, relationship paths, authorization, planning, execution, receipt) as a caller the host supplies. `IntentCaller` is that caller (tenant and role); `EvidencingProvider` adds provider evidence so every result carries a receipt. |
 | `candidate-search demo` | `MCP.Foundgine/Program.cs` (`find_top_supplier_overdue_orders`) | `TopSupplierOverdueOrdersService` is a direct PostgreSQL candidate-search demo: it ranks exact, `pg_trgm`, full-text and optional `pg_search` matches and returns `resolved` / `clarification_needed` / `not_found`. It is hand-registered as a fourth MCP tool and queries PostgreSQL directly; it is **not** wired through the Java core `SemanticLexicalResolver` or its `GroundingDecision` pipeline. Its `plan` field is a stable hash of the fixed Supplier read shape, not a full `ExecutionIRCompiler`-derived fingerprint — see the class Javadoc. |
 | `scenarios`     | `Semantic/Tests` (adversarial cases)                            | `Scenarios`/`ScenariosAdversarialInvariants` — recursive BOM/supplier-risk traversal with cycle detection, and fulfillment-shortage calculation, run against the live semantic model and authorization context rather than a disconnected fixture.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
@@ -106,6 +109,51 @@ and idempotency-key replay protection — implemented in both the in-memory
 (`PostgresSupplyChainStore`) paths. The PostgreSQL store additionally takes a
 `pg_advisory_xact_lock` on the idempotency key so concurrent replays of the same key serialize
 instead of racing. Runtime verification remains pending as noted above.
+
+## Canonical intent endpoint
+
+One endpoint takes the canonical read intent itself, not an endpoint per query. The intent names
+*what is wanted* in the semantic vocabulary (entity, field and relationship names or aliases). Foundgine
+does the rest in a real engine: name and path resolution, authorization, planning, execution, receipt.
+The caller (tenant and role) is supplied by the host and is never part of the intent.
+
+```bash
+mvn -q -pl samples/foundgine-supply-chain-advanced -am exec:java \
+  -Dexec.mainClass=com.foundgine.samples.supplychain.advanced.mcp.AdvancedMcpServer
+
+# 1. Same intent, two roles: the analyst sees RiskScore, the operator does not (it is pruned, not an error)
+INTENT='{"rootEntity":"Supplier","selections":[{"field":"Name"},{"field":"RiskScore"}]}'
+curl -s localhost:4783/intent -H 'X-Foundgine-Role: analyst'            -d "$INTENT"
+curl -s localhost:4783/intent -H 'X-Foundgine-Role: warehouse_operator' -d "$INTENT"
+
+# 2. Tenant isolation comes from the policy, not the intent
+curl -s localhost:4783/intent -H 'X-Foundgine-Role: analyst' -H 'X-Foundgine-Tenant: tenant-b' \
+  -d '{"rootEntity":"Supplier","selections":[{"field":"Name"}]}'
+
+# 3. A relationship name resolves to the declared path (Product > PurchaseOrderLine > PurchaseOrder > Shipment)
+curl -s localhost:4783/intent/explain -H 'X-Foundgine-Role: analyst' \
+  -d '{"rootEntity":"Product","selections":[{"field":"Name"},{"relationship":"shipments","children":[{"field":"Status"}]}]}'
+
+# 4. What may this caller do?
+curl -s localhost:4783/intent/capabilities -H 'X-Foundgine-Role: customer'
+```
+
+| Path | Method | Does |
+| --- | --- | --- |
+| `/intent` | POST | Executes the intent as the caller; returns rows keyed `Entity.Field`, evidence and receipt. |
+| `/intent/explain` | POST | Dry run: how names resolved, which requested fields the caller's policy removed (`prunedFields`), the authorized plan. |
+| `/intent/capabilities` | GET | Per entity: read access (`ALLOWED`/`CONDITIONAL`/`DENIED`), visible fields and relationships, aliases, intent shape. |
+| `/mcp` tool `foundgine_intent` | POST | `{"intent": {...}, "mode": "execute\|explain\|capabilities"}`, same service and header-based caller. |
+
+Errors are `{"error":{"type","message"}}`: `invalid_intent` (400, including unknown names and any
+identity-shaped property such as `tenant` or `role` in the body), `forbidden` (403), `payload_too_large`
+(413, limit 64 KiB), `method_not_allowed` (405), `timeout` (504).
+
+DEMO ONLY: `X-Foundgine-Tenant` and `X-Foundgine-Role` are plain headers so the sample can show one intent
+behaving differently per role. A real host derives identity from an authenticated principal. Unknown
+tenants and roles are refused, the default is the least privileged role, and every response echoes the
+effective caller. Reads run on a snapshot of the in-memory fixture taken at startup, so orders placed
+through the mutation tools are not visible to intents. Tests: `CanonicalIntentEndpointTest`.
 
 ## Where to go next
 

@@ -184,3 +184,62 @@ See `Semantic/README.md` and `Semantic/GUIDE.md` for the full architecture and a
 ## HTTP execution boundary hardening
 
 The Semantic MCP API also provides a plain JSON open semantic agent adapter. Its authoritative actor is resolved by the host, not supplied by the request body. The semantic request is passed through resolution and authorization before planning and SQL execution; there is no named-intent dispatch layer on this endpoint.
+
+## Canonical intent endpoint
+
+One endpoint takes the canonical read intent itself, not an endpoint per query. The intent names
+*what is wanted* in the semantic vocabulary (entity, field and relationship names or aliases). Foundgine
+does the rest in a real engine: name and path resolution, authorization, planning, execution, receipt.
+The caller (tenant and role) is supplied by the host and is never part of the intent. This is the C#
+counterpart of the Java Advanced sample's endpoint and speaks the same wire format.
+
+```bash
+dotnet run --project Semantic/Api/Mcp --urls http://localhost:4783
+
+# 1. Same intent, two roles: the analyst sees RiskScore, the operator does not (it is pruned, not an error)
+INTENT='{"rootEntity":"Supplier","selections":[{"field":"Name"},{"field":"RiskScore"}]}'
+curl -s localhost:4783/intent -H 'X-Foundgine-Role: analyst'            -d "$INTENT"
+curl -s localhost:4783/intent -H 'X-Foundgine-Role: warehouse_operator' -d "$INTENT"
+
+# 2. Tenant isolation comes from the policy, not the intent
+curl -s localhost:4783/intent -H 'X-Foundgine-Role: analyst' -H 'X-Foundgine-Tenant: tenant-b' \
+  -d '{"rootEntity":"Supplier","selections":[{"field":"Name"}]}'
+
+# 3. A relationship name resolves to the declared path (Product > PurchaseOrderLine > PurchaseOrder > Shipment)
+curl -s localhost:4783/intent/explain -H 'X-Foundgine-Role: analyst' \
+  -d '{"rootEntity":"Product","selections":[{"field":"Name"},{"relationship":"shipments","children":[{"field":"Status"}]}]}'
+
+# 4. What may this caller do?
+curl -s localhost:4783/intent/capabilities -H 'X-Foundgine-Role: customer'
+```
+
+| Path | Method | Does |
+| --- | --- | --- |
+| `/intent` | POST | Executes the intent as the caller; returns rows keyed `Entity.Field`, evidence and receipt. |
+| `/intent/explain` | POST | Dry run: how names resolved, which requested fields the caller's policy removed (`prunedFields`), the authorized plan. |
+| `/intent/capabilities` | GET | Per entity: read access (`ALLOWED`/`CONDITIONAL`/`DENIED`), visible fields and relationships, aliases, intent shape. |
+| `/mcp` tool `foundgine_intent` | POST | `{"intent": {...}, "mode": "execute\|explain\|capabilities"}`, same service and header-based caller. |
+
+| Piece | File | Role |
+| --- | --- | --- |
+| Intent boundary | `Semantic/Intent/SupplyChainIntentService.cs` | Parses the intent with `JsonReadIntentAdapter`, then runs it through one real `IFoundgine` engine per (tenant, role): execute, explain, capabilities, and failure classification. |
+| Caller | `Semantic/Intent/IntentCaller.cs` | Host-owned tenant and role. Unknown tenants and roles are refused; the default is the least privileged role (`Customer`). |
+| Fixture rows | `Semantic/Intent/SupplyChainRows.cs` | Loads `SupplyChainData` into the in-memory provider keyed by the semantic metadata, so no second hand-written model exists. |
+| Receipt evidence | `Semantic/Intent/EvidencingProvider.cs` | The in-memory provider returns rows only; this adds provider evidence so every result carries a receipt, as the SQL and ORM providers do. |
+| HTTP and MCP | `Semantic/Api/Mcp/IntentEndpoint.cs`, `Program.cs` | `/intent*` routes (64 KiB body limit) and the `foundgine_intent` tool. |
+
+Errors are `{"error":{"type","message"}}`: `invalid_intent` (400, including unknown names and any
+identity-shaped property such as `tenant` or `role` in the body), `forbidden` (403), `payload_too_large`
+(413, limit 64 KiB), `method_not_allowed` (405), `timeout` (504). Through MCP the same classification is
+the error text, for example `forbidden: Access denied for entity 'Supplier'.`
+
+DEMO ONLY: `X-Foundgine-Tenant` and `X-Foundgine-Role` are plain headers so the sample can show one intent
+behaving differently per role. A real host derives identity from an authenticated principal. Unknown
+tenants and roles are refused, the default is the least privileged role, and every response echoes the
+effective caller. Reads run on a snapshot of the in-memory fixture taken at startup. Tests:
+`Semantic/Tests/CanonicalIntentEndpointTests.cs`.
+
+Differences from the Java sample, all from the C# fixture: `Product` has `SafetyStock` rather than
+`UnitPrice`, so the ordering example sorts on `SafetyStock`; and the fixture has no customers table, so
+tenants come from suppliers and warehouses.
+

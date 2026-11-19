@@ -8,6 +8,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <!-- CanonicalIntentEndpointTests hosts the intent endpoint on Kestrel and calls it over HTTP. The endpoint
+         source belongs to the Mcp.Api project (Api/Mcp is excluded from the sample assembly), so it is linked. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <Compile Include="../Api/Mcp/IntentEndpoint.cs" Link="Intent/IntentEndpoint.cs" />
+    <Compile Include="../Api/Mcp/IntentMcpTools.cs" Link="Intent/IntentMcpTools.cs" />
+    <!-- Mcp_transport_* posts real JSON-RPC to /mcp, so the tests host the real MCP server. -->
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.3.1" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1" />
