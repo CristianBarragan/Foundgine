@@ -11,7 +11,7 @@
 
   <name>Foundgine Java</name>
   <description>Java implementation of Foundgine, aligned with the current C# source packages.</description>
-  <url>https://github.com/CristianBarragan/Foundgine</url>
+  <url>https://github.com/Foundgine/Foundgine</url>
 
   <licenses>
     <license>
@@ -25,14 +25,14 @@
     <developer>
       <name>Foundgine</name>
       <organization>Foundgine</organization>
-      <organizationUrl>https://github.com/CristianBarragan/Foundgine</organizationUrl>
+      <organizationUrl>https://github.com/Foundgine/Foundgine</organizationUrl>
     </developer>
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/CristianBarragan/Foundgine.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/CristianBarragan/Foundgine.git</developerConnection>
-    <url>https://github.com/CristianBarragan/Foundgine</url>
+    <connection>scm:git:https://github.com/Foundgine/Foundgine.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/Foundgine/Foundgine.git</developerConnection>
+    <url>https://github.com/Foundgine/Foundgine</url>
   </scm>
 
   <properties>

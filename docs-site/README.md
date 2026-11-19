@@ -14,7 +14,8 @@ The site is a guided product story rather than a dump of repository internals:
 6. **Security** — inspect authorization and fail-closed invariants.
 7. **Samples** — choose starter, advanced semantic and PenTest material.
 8. **Evidence** — inspect benchmark methodology and results.
-9. **Packages** — choose packages by architectural responsibility, including the TypeScript, Python and WebAssembly client SDKs.
+9. **App spec form** — fill in one form describing a domain; it produces a prompt for an AI to generate a Foundgine application.
+10. **Packages** — choose packages by architectural responsibility, including the TypeScript, Python and WebAssembly client SDKs.
 
 The main concept pages include an in-page table of contents and previous/home/next navigation. Benchmark and run-result pages use a separate evidence layout. Deeper implementation detail belongs in the linked repository Markdown files, including the Java 27 build guide at `src/java/BUILDING.md` and the shared technical reference under `docs/`.
 
@@ -42,6 +43,17 @@ The served HTML is the public rendering source. The smaller Markdown files besid
 4. add public/indexable pages to `sitemap.xml` and `llms.txt`;
 5. verify relative links before committing.
 
+
+## App spec form (embeddable component)
+
+`assets/spec-form.js` is a dependency-free component that renders inside a Shadow DOM, so site CSS cannot affect it and it cannot affect the site. `spec-form/index.html` is the public page. To embed it on any page:
+
+```html
+<div id="foundgine-spec-form"></div>
+<script src="../assets/spec-form.js"></script>
+```
+
+Any element with `id="foundgine-spec-form"` or a `data-foundgine-spec-form` attribute is mounted. It inherits the site tokens (`--surface`, `--ink`, `--signal`, `--muted`, `--line`, `--gate`) and can be overridden with `--fsf-accent`, `--fsf-bg`, `--fsf-panel`, `--fsf-ink`, `--fsf-mute`, `--fsf-line`, `--fsf-warn` and `--fsf-font`. Set `--fsf-sticky-top` to the height of a sticky header, and `data-theme="light"` or `"dark"` to force a theme. The section list and the generated AI prompt live in the `SECTIONS` array and `PREAMBLE` string in the script; the prompt's Foundgine rules mirror `foundgine-supply-chain-advanced` and must be updated when that sample's conventions change. Drafts are kept only in the viewer's own browser (`localStorage`); nothing is sent anywhere.
 
 ## Benchmark evidence publication
 

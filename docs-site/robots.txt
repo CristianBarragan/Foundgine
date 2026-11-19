@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cristianbarragan.github.io/Foundgine/sitemap.xml
+Sitemap: https://foundgine.github.io/Foundgine/docs-site/sitemap.xml

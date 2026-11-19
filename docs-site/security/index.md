@@ -10,8 +10,8 @@ Capability discovery is descriptive. Caller-supplied authorization claims cannot
 
 ## Go deeper
 
-- [Authorization](https://github.com/CristianBarragan/Foundgine/blob/main/docs/AUTHORIZATION.md)
-- [Security model](https://github.com/CristianBarragan/Foundgine/blob/main/docs/SECURITY.md)
+- [Authorization](https://github.com/Foundgine/Foundgine/blob/main/docs/AUTHORIZATION.md)
+- [Security model](https://github.com/Foundgine/Foundgine/blob/main/docs/SECURITY.md)
 - [Security PenTest sample](../samples/pentest/index.html)
 
 ## Continue

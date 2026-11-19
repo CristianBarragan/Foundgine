@@ -32,7 +32,7 @@ Say a caller asks: *"show me customers whose orders include SKU A."*
 2. Build the registry once from your model metadata, the generated maps and the relationship metadata: `OrmRegistry.Create(entities, maps, relationships)`.
 3. Register the EF Core provider with your `DbContext` and that registry, then run your normal Foundgine configuration for the model and authorization. The ORM provider never decides permissions itself.
 
-Java uses the JPA provider with `jakarta.persistence` as an optional dependency; see `src/java/foundgine-providers/.../storage/orm/jpa` and [`src/java/conformance/orm-jpa-parity-plan.json`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/conformance/orm-jpa-parity-plan.json) for current wiring and evidence status. Check exact registration method names in the source for your version.
+Java uses the JPA provider with `jakarta.persistence` as an optional dependency; see `src/java/foundgine-providers/.../storage/orm/jpa` and [`src/java/conformance/orm-jpa-parity-plan.json`](https://github.com/Foundgine/Foundgine/blob/main/src/java/conformance/orm-jpa-parity-plan.json) for current wiring and evidence status. Check exact registration method names in the source for your version.
 
 ## Reading and writing from your code
 
@@ -101,7 +101,7 @@ The neutral core references **no** ORM package. The .NET ORM track contains EF C
 | Atomic mutation batches | transaction/rollback implementation; not separately tracked in the current provider matrix | resource-local mutation implementation is present; runtime evidence remains unverified |
 | Native AOT / Native Image | publish-warning gate configured but not run; native execution not certified | not assessed |
 
-The machine-readable source of truth for .NET is [`src/csharp/conformance/orm/provider-conformance-matrix.json`](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/conformance/orm/provider-conformance-matrix.json). It separates implementation, translation, runtime, Native AOT publish and native execution, and states the policy: *a capability is certified only by executed, provider-specific evidence; source presence, expression construction and a configured CI job are not passing evidence.* The Java JSON plan applies the same evidence rule. For Java, see [`src/java/conformance/orm-jpa-parity-plan.json`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/conformance/orm-jpa-parity-plan.json) (workstreams JPA-0 to JPA-9).
+The machine-readable source of truth for .NET is [`src/csharp/conformance/orm/provider-conformance-matrix.json`](https://github.com/Foundgine/Foundgine/blob/main/src/csharp/conformance/orm/provider-conformance-matrix.json). It separates implementation, translation, runtime, Native AOT publish and native execution, and states the policy: *a capability is certified only by executed, provider-specific evidence; source presence, expression construction and a configured CI job are not passing evidence.* The Java JSON plan applies the same evidence rule. For Java, see [`src/java/conformance/orm-jpa-parity-plan.json`](https://github.com/Foundgine/Foundgine/blob/main/src/java/conformance/orm-jpa-parity-plan.json) (workstreams JPA-0 to JPA-9).
 
 Two consistency notes the docs repeat on purpose: the default per-fetch path is live, read-committed-style data (not a snapshot), and a cursor fingerprint alone is not a snapshot guarantee.
 

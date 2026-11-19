@@ -124,6 +124,7 @@ execution
 - `/` — landing page and documentation map
 - `/what-is-foundgine.html` — concept and boundary
 - `/getting-started/` — first application
+- `/spec-form/` — app spec form: describe a domain, get an AI prompt that generates a Foundgine application
 - `/walkthrough/` — one request, end to end
 - `/architecture/` — canonical architecture
 - `/ai-agents/` — agent boundary
@@ -142,11 +143,11 @@ For implementation truth, use the active source tree, tests and package READMEs 
 
 ## Deeper repository documentation
 
-- [Documentation index](https://github.com/CristianBarragan/Foundgine/blob/main/docs/README.md)
-- [Architecture](https://github.com/CristianBarragan/Foundgine/blob/main/docs/ARCHITECTURE.md)
-- [Authorization](https://github.com/CristianBarragan/Foundgine/blob/main/docs/AUTHORIZATION.md)
-- [Security](https://github.com/CristianBarragan/Foundgine/blob/main/docs/SECURITY.md)
-- [AI agents](https://github.com/CristianBarragan/Foundgine/blob/main/docs/AI-AGENT.md)
-- [Lexical grounding](https://github.com/CristianBarragan/Foundgine/blob/main/docs/LEXICAL-GROUNDING.md)
-- [Grounding decisions](https://github.com/CristianBarragan/Foundgine/blob/main/docs/GROUNDING-DECISIONS.md)
-- [Testing](https://github.com/CristianBarragan/Foundgine/blob/main/docs/TESTING.md)
+- [Documentation index](https://github.com/Foundgine/Foundgine/blob/main/docs/README.md)
+- [Architecture](https://github.com/Foundgine/Foundgine/blob/main/docs/ARCHITECTURE.md)
+- [Authorization](https://github.com/Foundgine/Foundgine/blob/main/docs/AUTHORIZATION.md)
+- [Security](https://github.com/Foundgine/Foundgine/blob/main/docs/SECURITY.md)
+- [AI agents](https://github.com/Foundgine/Foundgine/blob/main/docs/AI-AGENT.md)
+- [Lexical grounding](https://github.com/Foundgine/Foundgine/blob/main/docs/LEXICAL-GROUNDING.md)
+- [Grounding decisions](https://github.com/Foundgine/Foundgine/blob/main/docs/GROUNDING-DECISIONS.md)
+- [Testing](https://github.com/Foundgine/Foundgine/blob/main/docs/TESTING.md)

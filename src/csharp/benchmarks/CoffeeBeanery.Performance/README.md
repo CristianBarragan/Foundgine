@@ -10,7 +10,7 @@ The latest checked-in report set was generated on **15 August 2026**. The query 
 2. **Whole-graph mutation:** at concurrency 32 / batch 50, Hot Chocolate + EF Core reached 56.4 HTTP RPS (2,820 logical mutations/s), Foundgine without the provider-plan cache reached 155.7 RPS (7,785 logical mutations/s), and Foundgine with the provider-plan cache reached 264.4 RPS (13,220 logical mutations/s). Request RPS and logical throughput must be kept distinct.
 3. **Upsert + select:** the 15 August report set includes the corrected real upsert of existing deterministic customer rows followed by the same top-50/full-graph query. Treat the result as an initial measured snapshot, not a stable conclusion; repeat independent sessions before making broader claims.
 
-The published JSON reports currently contain zero values for Docker CPU and memory measurements. They therefore do **not** support a comparative CPU or memory claim. These results are workload-specific and are not universal performance claims. See the full [checked-in benchmark reports](reports/query/) and the [public performance evidence page](https://cristianbarragan.github.io/Foundgine/performance/#coffeebeanery-performance).
+The published JSON reports currently contain zero values for Docker CPU and memory measurements. They therefore do **not** support a comparative CPU or memory claim. These results are workload-specific and are not universal performance claims. See the full [checked-in benchmark reports](reports/query/) and the [public performance evidence page](https://foundgine.github.io/Foundgine/docs-site/performance/#coffeebeanery-performance).
 
 ## Benchmark matrix
 
@@ -106,4 +106,4 @@ The latest checked-in benchmark baseline is the report set generated on 15 Augus
 
 ## Public website evidence
 
-The published benchmark evidence is linked from the [Foundgine performance page](https://cristianbarragan.github.io/Foundgine/performance/#coffeebeanery-performance). The site report index is generated from the checked-in files under `reports/` and serves each JSON, CSV and Markdown artifact. To refresh the website assets after producing new reports, run `./publish-site-reports.ps1` from this directory. `run-benchmarks.ps1` also invokes this publisher after all suites complete successfully.
+The published benchmark evidence is linked from the [Foundgine performance page](https://foundgine.github.io/Foundgine/docs-site/performance/#coffeebeanery-performance). The site report index is generated from the checked-in files under `reports/` and serves each JSON, CSV and Markdown artifact. To refresh the website assets after producing new reports, run `./publish-site-reports.ps1` from this directory. `run-benchmarks.ps1` also invokes this publisher after all suites complete successfully.

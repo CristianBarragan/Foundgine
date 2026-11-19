@@ -22,7 +22,7 @@ Foundgine is not an ORM replacement, database, identity provider, authorization 
 
 ## Ambiguity is explicit
 
-Retrieval is evidence, not truth. When free-form language has two genuinely different legal meanings, the semantic resolver can require clarification instead of silently executing the highest-scoring candidate. See [Grounding decisions](https://github.com/CristianBarragan/Foundgine/blob/main/docs/GROUNDING-DECISIONS.md).
+Retrieval is evidence, not truth. When free-form language has two genuinely different legal meanings, the semantic resolver can require clarification instead of silently executing the highest-scoring candidate. See [Grounding decisions](https://github.com/Foundgine/Foundgine/blob/main/docs/GROUNDING-DECISIONS.md).
 
 ## Continue
 

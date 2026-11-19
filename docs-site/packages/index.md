@@ -16,7 +16,7 @@ The Java artifacts use the `io.github.cristianbarragan` groupId and the reposito
 | Java module | Purpose | Audit status |
 | --- | --- | --- |
 | `foundgine-core`, `foundgine-runtime`, `foundgine-providers`, `foundgine-extensions` | Main server implementation; `foundgine-providers` also contains Redis, Spring Boot and LangChain4j adapters | Source and tests present; full Maven verification for this checkpoint remains pending |
-| `foundgine-migrations` | PostgreSQL schema diff and Flyway migration generation | Source and tests present; Maven/runtime verification pending; see [module README](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/foundgine-migrations/README.md) |
+| `foundgine-migrations` | PostgreSQL schema diff and Flyway migration generation | Source and tests present; Maven/runtime verification pending; see [module README](https://github.com/Foundgine/Foundgine/blob/main/src/java/foundgine-migrations/README.md) |
 | `foundgine-aot-generator` | Build-time annotation processor module | Not published as a standalone runtime artifact |
 
 The Central publishing configuration includes the Maven artifacts above except the build-time-only `foundgine-aot-generator`:
@@ -48,11 +48,11 @@ The Central publishing configuration includes the Maven artifacts above except t
 
 The .NET `Foundgine.Providers` package includes Redis and Microsoft Agent Framework adapters. Java `foundgine-providers` includes Redis, Spring Boot and LangChain4j adapters; Spring Boot and LangChain4j dependencies are optional.
 
-For installation and package-level details, see the project READMEs under [`src/`](https://github.com/CristianBarragan/Foundgine/tree/main/src).
+For installation and package-level details, see the project READMEs under [`src/`](https://github.com/Foundgine/Foundgine/tree/main/src).
 
 ## Agent framework and Spring integrations
 
-Optional integrations are included in the provider packages: Microsoft Agent Framework and Redis in .NET `Foundgine.Providers`; LangChain4j, Spring Boot and Redis in Java `foundgine-providers`. See [Agent and framework integrations](https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md).
+Optional integrations are included in the provider packages: Microsoft Agent Framework and Redis in .NET `Foundgine.Providers`; LangChain4j, Spring Boot and Redis in Java `foundgine-providers`. See [Agent and framework integrations](https://github.com/Foundgine/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md).
 
 ## Client SDKs: TypeScript, Python and WebAssembly
 
@@ -60,11 +60,11 @@ Three thin transport clients talk to a running Foundgine server over MCP (Stream
 
 | SDK | Package | Runtime | Source |
 | --- | --- | --- | --- |
-| TypeScript | `@foundgine/typescript` (npm) | Node.js 20+ or any runtime with `fetch` | [`src/typescript`](https://github.com/CristianBarragan/Foundgine/tree/main/src/typescript) |
-| Python | `foundgine-sdk` (PyPI name) | Python 3.11+, `httpx`; async and sync clients | [`src/python`](https://github.com/CristianBarragan/Foundgine/tree/main/src/python) |
-| Rust / WebAssembly | `@foundgine/wasm` (npm) | Node.js 20+, browsers, Workers, Deno; host supplies `fetch` | [`src/wasm`](https://github.com/CristianBarragan/Foundgine/tree/main/src/wasm) |
+| TypeScript | `@foundgine/typescript` (npm) | Node.js 20+ or any runtime with `fetch` | [`src/typescript`](https://github.com/Foundgine/Foundgine/tree/main/src/typescript) |
+| Python | `foundgine-sdk` (PyPI name) | Python 3.11+, `httpx`; async and sync clients | [`src/python`](https://github.com/Foundgine/Foundgine/tree/main/src/python) |
+| Rust / WebAssembly | `@foundgine/wasm` (npm) | Node.js 20+, browsers, Workers, Deno; host supplies `fetch` | [`src/wasm`](https://github.com/Foundgine/Foundgine/tree/main/src/wasm) |
 
-All three are development packages, not release-ready SDKs; the repository does not claim a registry release, so verify that a version exists on npm or PyPI before pinning it. See the [client SDK overview](https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/client-sdks.md) for a comparison, a quick start and the verification status.
+All three are development packages, not release-ready SDKs; the repository does not claim a registry release, so verify that a version exists on npm or PyPI before pinning it. See the [client SDK overview](https://github.com/Foundgine/Foundgine/blob/main/docs/wiki/client-sdks.md) for a comparison, a quick start and the verification status.
 
 ## Continue
 

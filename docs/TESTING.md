@@ -18,7 +18,7 @@ cd src/java
 mvn -U test
 ```
 
-The .NET Redis and Microsoft Agent Framework adapter tests are part of the solution and reference the consolidated `Foundgine.Providers` project. The Java Spring Boot and LangChain4j adapter sources and tests are compiled as part of `foundgine-providers`; framework dependencies are optional. The latest reported Maven run had the Starter sample passing and the Advanced sample test phase failing; fixes are present but have not been rerun. The PostgreSQL 16 schema-parity test is also not executed by the current PostgreSQL 17 CI job. See [source coverage](SOURCE-COVERAGE.md) and the [Advanced schema audit](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/ADVANCED-SCHEMA-AUDIT.md). These commands describe how to run the suites; they are not evidence that a run passed.
+The .NET Redis and Microsoft Agent Framework adapter tests are part of the solution and reference the consolidated `Foundgine.Providers` project. The Java Spring Boot and LangChain4j adapter sources and tests are compiled as part of `foundgine-providers`; framework dependencies are optional. The latest reported Maven run had the Starter sample passing and the Advanced sample test phase failing; fixes are present but have not been rerun. The PostgreSQL 16 schema-parity test is also not executed by the current PostgreSQL 17 CI job. See [source coverage](SOURCE-COVERAGE.md) and the [Advanced schema audit](https://github.com/Foundgine/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/ADVANCED-SCHEMA-AUDIT.md). These commands describe how to run the suites; they are not evidence that a run passed.
 
 ## Test layers
 
@@ -40,7 +40,7 @@ Security.Authority
 E2E
 ```
 
-Exact .NET test project names are visible under `src/csharp/tests/`. Java tests follow Maven convention under each module's `src/test/java/`; see [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md) for module-specific commands.
+Exact .NET test project names are visible under `src/csharp/tests/`. Java tests follow Maven convention under each module's `src/test/java/`; see [`src/java/BUILDING.md`](https://github.com/Foundgine/Foundgine/blob/main/src/java/BUILDING.md) for module-specific commands.
 
 ## What the tests should prove
 
