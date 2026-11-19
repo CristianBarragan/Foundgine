@@ -35,9 +35,7 @@ Foundgine gives AI agents and other callers a way to express what they want, whi
 
 This boundary ensures that agents can propose actions, but only your application decides **what is allowed, what is safe, and what is actually executed.**
 
-## Generate your own app 
-
-The [app spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) (`docs-site/spec-form/`) turns a description of your domain, entities, roles and intents into a prompt that has an AI build a Foundgine application for .NET, Java or both, modelled on the Advanced supply-chain samples and including whichever providers and extensions you select. It runs entirely in the browser.
+[**Go to website →**][https://Foundgine.github.io/Foundgine](https://foundgine.github.io/Foundgine/docs-site/index.html)
 
 ## Why Foundgine matters
 
@@ -112,6 +110,8 @@ The fastest path is the Supply Chain sample pair:
  
 - **Enterprise integration example (separate work-in-progress repository):**
   - .NET/Java CRM, ERP, Temporal and Keycloak example — [`Foundgine-e2e-example`](https://github.com/CristianBarragan/Foundgine-e2e-example): [`Tutorial`](https://github.com/CristianBarragan/Foundgine-e2e-example/blob/main/docs/tutorial.md). Check that repository's README for its current build and verification status; it is not a certified Foundgine sample.
+
+- **Generate your own app:** the [app spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) (`docs-site/spec-form/`) turns a description of your domain, entities, roles and intents into a prompt that has an AI build a Foundgine application for .NET, Java or both, modelled on the Advanced supply-chain samples and including whichever providers and extensions you select. It runs entirely in the browser; the component is `docs-site/assets/spec-form.js`.
 
 For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://foundgine.github.io/Foundgine/docs-site/).
 

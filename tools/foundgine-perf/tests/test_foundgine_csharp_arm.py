@@ -3,18 +3,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 ARM = ROOT / "src/csharp/benchmarks/SupplyChain.Performance/Foundgine.SupplyChain.BenchmarkApi"
+# The HTTP endpoint now lives in the library; the benchmark keeps only its rules (BenchmarkGraphQL.cs).
+LIB_ENDPOINT = ROOT / "src/csharp/Foundgine.Extensions.GraphQL/Http/GraphQLHttpEndpoint.cs"
 
 
 def test_foundgine_host_registers_real_query_and_mutation_executors():
     program = (ARM / "Program.cs").read_text()
-    endpoint = (ARM / "GraphQLHttpEndpoint.cs").read_text()
+    endpoint = LIB_ENDPOINT.read_text()
+    assert "MapFoundgineGraphQL(BenchmarkGraphQL.Configure)" in program
     assert "options.UseEngineProvider()" in program
     assert "options.MutationSchema = metadata" in program
     assert "AddSingleton<IMutationSchema>(metadata)" in program
     assert "options.MutationProviderFactory" in program
     assert "FoundgineGraphQLQueryExecutor" in program
     assert "FoundgineGraphQLMutationExecutor" in program
-    assert 'MapPost("/graphql"' in endpoint
+    assert "MapPost(options.Path" in endpoint
     assert "http.User.Identity?.IsAuthenticated != true" in endpoint
     assert "TryExecuteAsync" in endpoint
 
@@ -42,12 +45,12 @@ def test_keycloak_grants_match_the_supplychain_realm_and_operation_contract():
 
 
 def test_customer_order_scope_is_a_bound_semantic_predicate_from_validated_claim():
-    endpoint = (ARM / "GraphQLHttpEndpoint.cs").read_text()
+    endpoint = (ARM / "BenchmarkGraphQL.cs").read_text()
     policy = (ARM / "WarrantSemanticAuthorizationPolicy.cs").read_text()
     program = (ARM / "Program.cs").read_text()
     assert 'principal.FindFirst("customer_id")' in endpoint
     assert "Customers may only create orders for their own customer_id" in endpoint
-    assert "rootFields.Length != 1" in endpoint  # prevents an unvalidated batched second mutation
+    assert "rootFields.Count != 1" in endpoint  # prevents an unvalidated batched second mutation
     assert 'AuthorizationPredicate.ResourceParameter("resource"), "CustomerId"' in policy
     assert 'AuthorizationPredicate.ContextParameter("user"), "CustomerId"' in policy
     assert 'values["user.CustomerId"] = customerId' in program

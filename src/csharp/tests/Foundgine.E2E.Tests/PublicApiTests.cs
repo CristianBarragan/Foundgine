@@ -26,6 +26,20 @@ public sealed class PublicApiTests
     }
 
     [Fact]
+    public void Add_foundgine_registers_shared_authorization_and_planning_services()
+    {
+        var policy = new AllowAllSemanticAuthorizationPolicy();
+        var services = new ServiceCollection();
+        services.AddFoundgine(Banking.BankingSemanticModel.Build(), policy);
+
+        using var provider = services.BuildServiceProvider();
+
+        Assert.Same(policy, provider.GetRequiredService<ISemanticAuthorizationPolicy>());
+        Assert.NotNull(provider.GetRequiredService<SemanticAuthorizer>());
+        Assert.NotNull(provider.GetRequiredService<Planner>());
+    }
+
+    [Fact]
     public async Task Public_facade_executes_the_core_pipeline_through_di()
     {
         var model = Banking.BankingSemanticModel.Build();

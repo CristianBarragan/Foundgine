@@ -107,6 +107,7 @@ The Java source tree (`src/java/samples/foundgine-supply-chain-advanced`) contai
 - `Foundgine.Providers.Aot` / `Foundgine.Providers.Aot.Generator` — AOT declarations and source generation
 - `Foundgine.Core.Serialization` — JSON intent adapter
 - `Foundgine.Extensions.GraphQL.HotChocolate*` — GraphQL adapters/execution boundaries
+- `Foundgine.Extensions.GraphQL.Http` — `MapFoundgineGraphQL` HTTP endpoint (fail-closed root-field roles, host authorization hook)
 - `Foundgine.Providers.Tools.MCP` — MCP adapter
 - `Foundgine.Providers.Models` — `Microsoft.Extensions.AI` integration
 - `Foundgine.Runtime.ControlPlane` — optional authority/recovery control-plane infrastructure

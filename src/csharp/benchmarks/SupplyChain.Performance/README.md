@@ -15,7 +15,7 @@ Both hosts use the same benchmark schema contract and deterministic seed SQL. Th
 - Registers `MetadataRegistry` as the actual `IMutationSchema`.
 - Creates an `EfCoreMutationExecutionProvider` from `IDbContextFactory<FoundgineDbContext>` for each atomic mutation batch. The singleton Foundgine mutation engine never captures a scoped `DbContext`.
 - Registers `IFoundgineMutations` through `FoundgineOptions.MutationProviderFactory`.
-- Registers `FoundgineGraphQLQueryExecutor` and `FoundgineGraphQLMutationExecutor` behind `POST /graphql`.
+- Registers `FoundgineGraphQLQueryExecutor` and `FoundgineGraphQLMutationExecutor` behind `POST /graphql`, served by the shared `MapFoundgineGraphQL` endpoint in `Foundgine.Extensions.GraphQL`; this host only supplies its rules (`BenchmarkGraphQL.cs`: query root roles and the customer ownership checks).
 - Uses Keycloak JWT validation as the only HTTP identity source. The Keycloak extension maps `sc-customer`, `sc-operator`, `sc-analyst`, and `sc-manager` roles into short-lived signed warrants. The runtime verifies issuer, audience, expiry, tenant, capability and operation before execution.
 - Requires a `tenant_id` claim and uses the trusted `customer_id` claim to scope customer order reads and validate customer order creation. Neither value is accepted from GraphQL input as an authority source.
 - Reassembles the query executor's flat provider rows/cells into nested GraphQL selections, preserving aliases and de-duplicating collection relationships by identity.

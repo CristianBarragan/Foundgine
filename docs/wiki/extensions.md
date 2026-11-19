@@ -14,6 +14,7 @@ Extensions adapt a framework, identity system or workflow engine to Foundgine's 
 |---|---|---|---|---|
 | 1 | **GraphQL, Hot Chocolate adapter** | Reads a GraphQL query and turns it into a Foundgine request | `src/csharp/Foundgine.Extensions.GraphQL/HotChocolate` | `src/java/foundgine-extensions/.../graphql` |
 | 2 | **GraphQL secure execution** (`...HotChocolate.Execution`) | Runs those requests through Foundgine's safe path (permissions, plan, provider) | `GraphQL/HotChocolate/Execution` | query and mutation executors in `...graphql` |
+| 2b | **GraphQL HTTP endpoint** (`...GraphQL.Http`) | `MapFoundgineGraphQL`: a bearer-authenticated `POST /graphql` in front of the secure executors, with per-root-field roles and a host rule hook | `GraphQL/Http` | n/a |
 | 3 | **Keycloak identity** | Turns a Keycloak login into trusted Foundgine identity and short-lived signed permission slips (warrants) | `src/csharp/Foundgine.Extensions.Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
 | 4 | **Temporal durable workflows** | Runs long, multi-step business processes with retries, timers, approvals and undo steps | `src/csharp/Foundgine.Extensions.Temporal` | `src/java/foundgine-extensions/.../temporal` |
 | 5 | **Extension registry** | A small list of which extensions are installed | n/a in .NET (each integration is its own project) | `com.foundgine.extensions` |
@@ -49,7 +50,9 @@ Spring Boot and LangChain4j are included in the Java `foundgine-providers` artif
 - Mutation adapter/converter/result shaper: adapts GraphQL mutation input and Foundgine mutation results.
 - `FoundgineHotChocolateQueryExecutor` / `FoundgineHotChocolateMutationExecutor` and the corresponding `FoundgineGraphQL*Executor` classes: invoke the secure Foundgine execution boundary with host-supplied security context.
 
-The C# source is under `GraphQL/HotChocolate`; query/mutation execution has a dedicated `Execution` folder. Some APIs are split into package-level adapters and execution adapters, so inspect the package README and project/package references before installing only part of the integration.
+The HTTP endpoint (`app.MapFoundgineGraphQL(o => ...)`, namespace `Foundgine.Extensions.GraphQL.Http`) is fail-closed: list each query root field and its roles in `QueryRootRoles`, add an `Authorize` rule for claim-based checks, and set `AllowMutations` only when a mutation executor is registered. Claims must come from the validated token, never from a GraphQL argument.
+
+The C# source is under `GraphQL/HotChocolate` (and `GraphQL/Http` for the endpoint); query/mutation execution has a dedicated `Execution` folder. Some APIs are split into package-level adapters and execution adapters, so inspect the package README and project/package references before installing only part of the integration.
 
 **Java components.** The `foundgine-extensions` module contains GraphQL schema adaptation, type mapping, directive evaluation, variable coercion, query and mutation semantic conversion, result shaping, error types, and query/mutation executors under `com.foundgine.extensions.graphql`.
 
