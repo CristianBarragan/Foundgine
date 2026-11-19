@@ -24,8 +24,6 @@
 [![WASM Version](https://img.shields.io/npm/v/@foundgine/wasm?label=npm%20%40foundgine%2Fwasm)](https://www.npmjs.com/package/@foundgine/wasm)
 [![WASM Build](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/wasm-build.yml?branch=main&label=Rust%20%2F%20WASM%20Build)](https://github.com/Foundgine/Foundgine/actions/workflows/wasm-build.yml)
 
-# Foundgine
-
 Foundgine gives AI agents and other callers a way to express what they want, while your application retains full control over how anything is executed. It introduces a single, application‑controlled semantic execution boundary that sits between:
 
 - caller intent,
@@ -34,10 +32,6 @@ Foundgine gives AI agents and other callers a way to express what they want, whi
 - and the actual operations performed on your data, APIs, GraphQL, MCP tools, or backend systems.
 
 This boundary ensures that agents can propose actions, but only your application decides **what is allowed, what is safe, and what is actually executed.**
-
-## Generate your own app 
-
-The [app spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) (`docs-site/spec-form/`) turns a description of your domain, entities, roles and intents into a prompt that has an AI build a Foundgine application for .NET, Java or both, modelled on the Advanced supply-chain samples and including whichever providers and extensions you select. It runs entirely in the browser.
 
 ## Why Foundgine matters
 
@@ -56,7 +50,6 @@ Foundgine complements rather than replaces ORMs, GraphQL, API gateways, integrat
 
 **Read the [Product Positioning & Commercial Strategy](docs/PRODUCT-POSITIONING-AND-COMMERCIAL-STRATEGY.md)** for the enterprise problem, target buyers, competitive positioning, ROI model, proof requirements and website messaging.
 
-
 **Where to read next**
 
 | I want to... | Go to |
@@ -69,31 +62,6 @@ Foundgine complements rather than replaces ORMs, GraphQL, API gateways, integrat
 | Use **Microsoft Agent Framework**, **LangChain4j** or **Spring Boot** | [Agent and framework integrations](docs/wiki/agent-framework-integrations.md) |
 | Call a Foundgine server from **TypeScript**, **Python** or **WebAssembly** | [Client SDKs](docs/wiki/client-sdks.md) · [`src/typescript`](src/typescript/README.md) · [`src/python`](src/python/README.md) · [`src/wasm`](src/wasm/README.md) |
 | Check implementation and test coverage | [Source coverage](docs/SOURCE-COVERAGE.md) · [Conformance and hardening](docs/wiki/conformance-hardening.md) |
-
-# The problem
-
-As applications expose more functionality to callers, you can end up with lots of individual tools/endpoints, each containing its own validation, authorization, query logic, and business rules.
-
-Foundgine centralizes that responsibility into a semantic execution boundary. The caller expresses intent, while the application remains responsible for deciding what that intent means, what is allowed, and how it gets executed.
-
-A complex application may have several ways to express an operation:
-
-```text
-Application code
-GraphQL
-JSON
-AI-generated intent
-```
-
-Without a common semantic execution layer, each surface tends to grow its own rules for:
-
-- what entities and fields exist;
-- which relationships can be traversed;
-- which filters are valid;
-- what the caller is authorized to access; and
-- how the request becomes database or service operations.
-
-That produces duplicated semantics and inconsistent security boundaries.
 
 ## The idea
 
@@ -115,7 +83,11 @@ The fastest path is the Supply Chain sample pair:
 
 For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://foundgine.github.io/Foundgine/docs-site/).
 
-# A concrete example
+## Generate your own app 
+
+The [app spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) (`docs-site/spec-form/`) turns a description of your domain, entities, roles and intents into a prompt that has an AI build a Foundgine application for .NET, Java or both, modelled on the Advanced supply-chain samples and including whichever providers and extensions you select. It runs entirely in the browser.
+
+## A concrete example
 
 Two callers can ask for the same thing in different words:
 
@@ -150,7 +122,7 @@ _Tests:_
 
 > **The invariant:** alias matching changes vocabulary, not authority. “Buys” does not create a new capability, and “seller” does not create a second supplier meaning — both are application-declared paths to identities that already exist.
 
-# When more than one meaning is legal
+## When more than one meaning is legal
 
 Aliases collapse _different words_ onto _one_ meaning. Sometimes the ambiguity runs the other way: the **same word** is a legal match for **two different meanings at once**, and neither the graph nor a retrieval score can tell them apart on its own.
 
