@@ -14,7 +14,7 @@ services:
   mcp-foundgine:
     build:
       context: ../../../../
-      dockerfile: src/csharp/samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine/Dockerfile
+      dockerfile: src/csharp/samples/Foundgine.SupplyChain.Advanced.Benchmark/MCP.Foundgine/Dockerfile
     environment:
       SupplyChainConnectionString: Host=postgres;Port=5432;Database=foundgine_supply_chain;Username=benchmark;Password=benchmark
       SupplyChainCustomers: ${SUPPLY_CHAIN_CUSTOMERS:-5}

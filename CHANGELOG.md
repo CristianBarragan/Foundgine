@@ -458,7 +458,7 @@ The package version remained `2.3.1`, so these changes are recorded here as a ta
   (`IHostEnvironment.IsDevelopment()`). In every other environment it logs
   the full decision server-side via `ILogger`, keyed by a short opaque
   correlation id, and returns only `{ allowed: false, reference: <id> }` —
-  matching the correlation-id pattern `MCP.Foundgine/Program.cs`'s `Execute`
+  matching the correlation-id pattern `Semantic/Api/Mcp/BenchmarkHost/Program.cs`'s `Execute`
   helper already used for the execution API, so a caller probing many
   `attack` variants can no longer use the response shape to map policy
   boundaries.
@@ -505,7 +505,7 @@ The package version remained `2.3.1`, so these changes are recorded here as a ta
 
 ### Fixed
 
-- The commit that added the generic MCP server also deleted `src/csharp/samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine` (the Postgres-backed MCP server the Supply Chain E2E `Agent` and `run-supply-chain.ps1` actually depend on — `get_order`, `get_inventory`, `list_suppliers`, and the rest of the Agent's tool contract) along with its `docker-compose.yml` service and solution entries, without updating the harness. This broke `run-supply-chain.ps1` at step 3/8 with `no such service: mcp-foundgine`. Restored the `MCP.Foundgine` project, its `docker-compose.yml` service, and its `Foundgine.sln` entries so the Supply Chain E2E + PenTest harness runs again.
+- The commit that added the generic MCP server also deleted `src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/BenchmarkHost` (the Postgres-backed MCP server the Supply Chain E2E `Agent` and `run-supply-chain.ps1` actually depend on — `get_order`, `get_inventory`, `list_suppliers`, and the rest of the Agent's tool contract) along with its `docker-compose.yml` service and solution entries, without updating the harness. This broke `run-supply-chain.ps1` at step 3/8 with `no such service: mcp-foundgine`. Restored the `MCP.Foundgine` project, its `docker-compose.yml` service, and its `Foundgine.sln` entries so the Supply Chain E2E + PenTest harness runs again.
 - Reverted an unrelated, uncommitted in-progress edit to `src/csharp/benchmarks/AgentEndToEnd/Run5/docker-compose.yml` that had stripped its `mcp-foundgine` service block while the project files were left in place, which would have broken Run5 the same way.
 
 ### Release

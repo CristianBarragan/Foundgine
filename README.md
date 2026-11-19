@@ -102,8 +102,8 @@ Retrieval can discover candidates and evidence, but **retrieval is not authoriza
 The fastest path is the Supply Chain sample pair:
 
 - **Starter:** the smallest realistic application boundary.
-  - .NET — [`src/csharp/samples/Foundgine.SupplyChain`](src/csharp/samples/Foundgine.SupplyChain): [Build it step by step](src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md) · [Understand why it is structured this way](src/csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md)
-  - Java — [`src/java/samples/foundgine-supply-chain`](src/java/samples/foundgine-supply-chain): [Build it step by step](src/java/samples/foundgine-supply-chain/SupplyChain-Starter-Tutorial.md) · [Understand why it is structured this way](src/java/samples/foundgine-supply-chain/Foundgine-SupplyChain-Explained.md)
+  - .NET — [`src/csharp/samples/Foundgine.SupplyChain`](src/csharp/samples/Foundgine.SupplyChain) (current README and implementation)
+  - Java — [`src/java/samples/foundgine-supply-chain`](src/java/samples/foundgine-supply-chain) (current README and implementation)
 - **Advanced:** richer semantics, grounding, retrieval, authorization and adversarial testing.
   - .NET — [`src/csharp/samples/Foundgine.SupplyChain.Advanced`](src/csharp/samples/Foundgine.SupplyChain.Advanced): start at [`docs/00-Overview-And-Setup.md`](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) and follow 01–05.
   - Java — [`src/java/samples/foundgine-supply-chain-advanced`](src/java/samples/foundgine-supply-chain-advanced): [`SupplyChain-Advanced-Tutorial.md`](src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md).

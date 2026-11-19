@@ -151,7 +151,7 @@ The lists below were enumerated from the supplied source archive. They make it p
 - `csharp/benchmarks/CoffeeBeanery.Performance/HotChocolate.CoffeeBeanery.BenchmarkApi/HotChocolate.CoffeeBeanery.BenchmarkApi.csproj`
 - `csharp/samples/Foundgine.SupplyChain.Advanced/Agent/Agent.csproj`
 - `csharp/samples/Foundgine.SupplyChain.Advanced/Database/Database.csproj`
-- `csharp/samples/Foundgine.SupplyChain.Advanced/MCP.Foundgine/MCP.Foundgine.csproj`
+- `csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/BenchmarkHost/MCP.Foundgine.csproj`
 - `csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Foundgine.SupplyChain.Advanced.Mcp.Api.csproj`
 - `csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Benchmarks/Foundgine.SupplyChain.Advanced.Benchmarks.csproj`
 - `csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Foundgine.SupplyChain.Advanced.csproj`

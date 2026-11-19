@@ -8,6 +8,13 @@ A reproducible end-to-end supply-chain reference application exercising the Foun
 > testing, each tied to the exact test files that prove it — see
 > [`docs/00-Overview-And-Setup.md`](./docs/00-Overview-And-Setup.md).
 
+## Two execution paths in this folder
+
+The canonical semantic API/MCP project lives under `Semantic/Api/Mcp/`. The PostgreSQL-backed benchmark
+host is a separate sibling project at `../Foundgine.SupplyChain.Advanced.Benchmark/`. It owns its host,
+Dockerfile, Compose configuration, and benchmark runtime. The two projects are independent execution modes,
+not interchangeable evidence.
+
 ## Flow
 
 AI agent bot → MCP → Foundgine capability boundary → semantic model → authorization → semantic planner → execution service → Npgsql → PostgreSQL.
@@ -110,7 +117,7 @@ A few more walkthrough-shaped cases that would extend this further, not yet impl
 - **Near-tie below a confidence threshold.** Today "ambiguous" (the tie case) means an exact numeric tie on `total_order_value`. A more realistic case is two candidates close enough (e.g. within 5%) that guessing is risky even without an exact tie — worth its own threshold-based `clarification_needed` variant, distinct from the approximate-name-match case above (that one is about a misspelled _string_, this one would be about closeness in a _ranking value_).
 - **Multi-field ambiguity.** Combine an ambiguous supplier with an ambiguous product/category reference in the same request, to check that the graph carries and resolves more than one candidate node at once.
 
-## Code layout of `MCP.Foundgine`
+## Code layout of the database-backed benchmark MCP host
 
 | Layer | Where | Owns |
 |---|---|---|

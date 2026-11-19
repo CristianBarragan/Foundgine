@@ -26,7 +26,7 @@ import java.util.concurrent.CompletionStage;
  * A minimal, dependency-free MCP (Model Context Protocol) server for the Advanced Supply Chain
  * sample.
  *
- * <p>This is the Java counterpart of the C# {@code MCP.Foundgine} sample project: it hosts the same
+ * <p>This is the Java counterpart of the C# database-backed benchmark MCP host: it hosts the same
  * transport-neutral {@link AdvancedMcpFacade} behind a JSON-RPC-over-HTTP endpoint at {@code /mcp},
  * so that an external MCP client (see {@link AdvancedMcpClientDemo}, or any standard MCP client)
  * can call {@code tools/call} against it.
@@ -174,7 +174,7 @@ public final class AdvancedMcpServer {
     // database key, so it is resolved through ranked candidates + evidence
     // rather than guessed. Unlike foundgine_query/foundgine_mutation above,
     // this is a hand-registered tool that talks directly to Postgres via
-    // TopSupplierOverdueOrdersService, exactly as the C# MCP.Foundgine
+    // TopSupplierOverdueOrdersService, exactly as the C# database-backed benchmark MCP host
     // sample registers it outside the generic Foundgine dispatch. Requires
     // FOUNDGINE_POSTGRES_CONNECTION_STRING (see AmbiguityConnectionStrings);
     // if it's unset, only this one tool fails — the rest of the server

@@ -11,7 +11,7 @@ import java.util.Map;
  * capability (backed by {@link TopSupplierOverdueOrdersService}) doesn't need a second env var.
  *
  * <p>Note this deviates deliberately from the C# original, which reads a separate {@code
- * SupplyChainConnectionString} env var for the {@code MCP.Foundgine}/{@code Database} console apps:
+ * SupplyChainConnectionString} env var for the {@code database-backed benchmark MCP host}/{@code Database} console apps:
  * the Java sample only has one Postgres-backed demo path, so reusing the existing convention avoids
  * a second, easily-confused env var name.
  */

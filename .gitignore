@@ -12,6 +12,7 @@ target/
 
 # Maven generated files
 pom.xml.tag
+.flattened-pom.xml
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next

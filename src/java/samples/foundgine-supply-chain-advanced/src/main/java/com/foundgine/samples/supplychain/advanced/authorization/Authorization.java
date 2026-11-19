@@ -1,7 +1,6 @@
 package com.foundgine.samples.supplychain.advanced.authorization;
 
 import com.foundgine.samples.supplychain.advanced.authorization.claims.Claims;
-import com.foundgine.samples.supplychain.advanced.data.SupplyChainData;
 
 import java.util.*;
 
@@ -43,10 +42,6 @@ public final class Authorization {
         Object scope = claims.typedAccepted().get("scope");
         if ("read-only".equals(scope)) readOnly = true;
         return new Context(identity.tenantId(), warehouses, identity.role(), readOnly);
-    }
-
-    public static List<SupplyChainData> unused() {
-        return List.of();
     }
 
     private Authorization() {}

@@ -1,10 +1,12 @@
-# Foundgine Samples
+# C# Samples
 
-There are intentionally only two public Supply Chain samples.
+## Supply Chain learning path
 
-| Sample                           | Purpose                                                                                                                                                    |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Foundgine.SupplyChain`          | **Starter** — one project, small domain, basic semantic model, authorization, MCP and PostgreSQL.                                                          |
-| `Foundgine.SupplyChain.Advanced` | **Advanced** — full semantic proving ground with grounding, retrieval, bounded traversal, authorization, adversarial tests and agent-facing E2E execution. |
+- [`Foundgine.SupplyChain`](./Foundgine.SupplyChain/README.md) — starter: one application, fluent semantic model, EF Core persistence, PostgreSQL, MCP.
+- [`Foundgine.SupplyChain.Advanced`](./Foundgine.SupplyChain.Advanced/README.md) — advanced semantic/security proving ground with MCP, tests, retrieval and agent tooling.
 
-Do not add a new sample just to demonstrate another capability. If a capability belongs to the advanced Supply Chain story, add it there. If it is framework-wide behavior, add a test under `src/csharp/tests/`. Benchmark-only applications and compatibility fixtures belong under `src/csharp/benchmarks/`.
+## Extension integration sketch
+
+- [`Foundgine.Extensions.Temporal`](./Foundgine.Extensions.Temporal/README.md) — API + worker integration sketches for Temporal workflows and Keycloak-backed warrants. **Not a standalone runnable sample yet**; host registrations are placeholders.
+
+Provider gateway samples are maintained with the provider projects in [`Foundgine.Providers/Samples`](../../Foundgine.Providers/Samples/README.md).

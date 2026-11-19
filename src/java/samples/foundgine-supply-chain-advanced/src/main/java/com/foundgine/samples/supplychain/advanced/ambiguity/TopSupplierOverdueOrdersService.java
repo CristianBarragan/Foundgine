@@ -20,7 +20,7 @@ import java.util.Objects;
 
 /**
  * Java parity port of the C# advanced sample's ambiguity-resolution demo capability, {@code
- * find_top_supplier_overdue_orders} in {@code MCP.Foundgine/Program.cs} (backed by the schema in
+ * find_top_supplier_overdue_orders} in {@code Semantic/Api/Mcp/BenchmarkHost/Program.cs} (backed by the schema in
  * {@code Database/Program.cs}).
  *
  * <p>"top supplier in &lt;state&gt;" is not a database key, so it is resolved through ranked
