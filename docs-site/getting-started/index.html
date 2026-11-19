@@ -188,128 +188,18 @@ Foundgine.Providers → PostgreSQL</pre>
         </section>
         <section>
           <h2 id="run-the-starter">Run the starter — .NET</h2>
-          <p>
-            Use the repository sample as the executable source of truth. The website deliberately
-            avoids copying a long command transcript that can drift from the sample.
-          </p>
-          <ol>
-            <li>
-              Open
-              <a
-                href="https://github.com/CristianBarragan/Foundgine/tree/main/src/csharp/samples/Foundgine.SupplyChain"
-                ><code>samples/Foundgine.SupplyChain</code></a
-              >.
-            </li>
-            <li>
-              Follow
-              <a
-                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md"
-                >Building the Starter, step by step</a
-              >.
-            </li>
-            <li>
-              Use
-              <a
-                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/Foundgine-SupplyChain-Explained.md"
-                >Foundgine Supply Chain, Explained</a
-              >
-              when you want the reasoning behind each file and boundary.
-            </li>
-          </ol>
+          <p>Use the repository sample as the executable source of truth. Its README contains the current setup, configuration and run instructions.</p>
+          <p><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/csharp/samples/Foundgine.SupplyChain">C# Supply Chain starter</a></p>
         </section>
         <section>
           <h2 id="run-the-starter-java">Run the starter — Java</h2>
-          <p>
-            The Java port follows the same shape, built as a Maven module instead of an ASP.NET Core
-            project.
-          </p>
-          <ol>
-            <li>
-              Open
-              <a
-                href="https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain"
-                ><code>samples/foundgine-supply-chain</code></a
-              >.
-            </li>
-            <li>
-              Follow
-              <a
-                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/SupplyChain-Starter-Tutorial.md"
-                >Building the Java Starter, step by step</a
-              >.
-            </li>
-            <li>
-              Use
-              <a
-                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/Foundgine-SupplyChain-Explained.md"
-                >Foundgine Supply Chain (Java), Explained</a
-              >
-              for the reasoning behind each file.
-            </li>
-            <li>
-              For the Advanced MCP + PostgreSQL source path in Java, continue with
-              <a
-                href="https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain-advanced"
-                ><code>samples/foundgine-supply-chain-advanced</code></a
-              >
-              and its
-              <a
-                href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md"
-                >step-by-step tutorial</a
-              >.
-            </li>
-          </ol>
-          <p>
-            <strong>Verification note:</strong> the latest reported Maven run failed in the Java
-            Advanced sample test phase. Fixes are present but have not yet been rerun; see the
-            sample README before treating that path as verified.
-          </p>
-        </section>
-        <section>
-          <h2 id="describe-your-model-in-code">Describe your model in code</h2>
-          <p>
-            Both starters configure their semantic model fluently instead of with attributes.
-            Plain domain and storage types stay free of Foundgine references; small configuration
-            classes (semantic, persistence, entity map, connection) are registered once on a
-            <code>FoundgineModel</code> subclass, and <code>Build()</code> (<code>build()</code>
-            in Java) compiles them to the same metadata registry the attribute and AOT-generator
-            path produces. The tutorials above walk through each file. See
-            <a
-              href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/MAPPING.md"
-              >Mapping and Connections</a
-            >
-            for the full API and its current limits.
-          </p>
-        </section>
-        <section>
-          <h2 id="what-to-notice-while-running-it">What to notice while running it</h2>
-          <div class="link-grid">
-            <a class="link-card" href="../architecture/index.html"
-              ><strong>Semantic boundary</strong
-              ><span>Meaning is separated from persistence and transport.</span></a
-            ><a class="link-card" href="../security/index.html"
-              ><strong>Authorization</strong
-              ><span
-                >The host supplies trusted identity and the request is authorized before
-                execution.</span
-              ></a
-            ><a class="link-card" href="../walkthrough/index.html"
-              ><strong>Execution trace</strong
-              ><span>See the same idea with concrete payloads at every stage.</span></a
-            ><a class="link-card" href="../samples/index.html"
-              ><strong>Sample progression</strong
-              ><span>Move from starter to advanced semantics and PenTest coverage.</span></a
-            >
-          </div>
+          <p>Use the Java sample README for the current Maven, JPA, PostgreSQL and migration instructions.</p>
+          <p><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain">Java Supply Chain starter</a></p>
         </section>
         <section>
           <h2 id="go-deeper">Go deeper</h2>
-          <p>
-            Once the starter makes sense, move to the
-            <a href="../samples/semantic/index.html">advanced semantic sample</a>. Its numbered
-            repository docs cover claims and authorization, high-assurance scenarios,
-            ambiguity/grounding, retrieval strategies and adversarial testing.
-          </p>
+          <p>The advanced samples add authorization, semantic grounding, retrieval, mutation and security testing. Start with their READMEs before using the tutorials or test harnesses.</p>
+          <p><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/csharp/samples/Foundgine.SupplyChain.Advanced">C# Advanced</a> · <a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/java/samples/foundgine-supply-chain-advanced">Java Advanced</a></p>
         </section>
         <nav aria-label="Documentation navigation" class="page-nav">
           <a class="page-nav-link prev" href="../what-is-foundgine.html"
@@ -327,9 +217,6 @@ Foundgine.Providers → PostgreSQL</pre>
           <li class=""><a href="#prerequisites">Prerequisites</a></li>
           <li class=""><a href="#run-the-starter">Run the starter — .NET</a></li>
           <li class=""><a href="#run-the-starter-java">Run the starter — Java</a></li>
-          <li class="">
-            <a href="#what-to-notice-while-running-it">What to notice while running it</a>
-          </li>
           <li class=""><a href="#go-deeper">Go deeper</a></li>
         </ol>
         <div class="toc-return"><a href="../index.html">↑ Documentation home</a></div>

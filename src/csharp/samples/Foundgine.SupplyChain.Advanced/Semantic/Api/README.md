@@ -1,6 +1,6 @@
 # API layer
 
-The semantic showcase entry point lives in the API layer, matching the physical layering used by `Foundgine.SupplyChain`.
+The semantic execution showcase is a console executable at `Semantic/Program.cs`. The HTTP/MCP host is in `Semantic/Api/Mcp/`.
 
 # SupplyChain MCP authorization lab
 

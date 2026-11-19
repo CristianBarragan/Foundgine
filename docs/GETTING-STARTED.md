@@ -36,8 +36,8 @@ The reactor includes the runtime modules, migration tooling, the Redis/Spring Bo
 
 ## Run a sample
 
-- .NET: start with the [Supply Chain starter README](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/README.md) and the [starter tutorial](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/SupplyChain-Starter-Tutorial.md).
-- Java: start with the [Java Supply Chain starter README](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/README.md) and the [Java starter tutorial](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/SupplyChain-Starter-Tutorial.md).
+- .NET: start with the [Supply Chain starter README](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/README.md).
+- Java: start with the [Java Supply Chain starter README](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/README.md).
 
 For PostgreSQL integration tests, see [POSTGRES-E2E.md](POSTGRES-E2E.md).
 ## First application (.NET)

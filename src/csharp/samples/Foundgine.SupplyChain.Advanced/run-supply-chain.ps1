@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 $root = $PSScriptRoot
-$compose = Join-Path $root "docker-compose.yml"
+$compose = Join-Path $root "../Foundgine.SupplyChain.Advanced.Benchmark/docker-compose.yml"
 
 $env:SUPPLY_CHAIN_CUSTOMERS = if ($env:SUPPLY_CHAIN_CUSTOMERS) { $env:SUPPLY_CHAIN_CUSTOMERS } else { "5" }
 $env:SUPPLY_CHAIN_STEPS = if ($env:SUPPLY_CHAIN_STEPS) { $env:SUPPLY_CHAIN_STEPS } else { "25" }

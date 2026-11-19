@@ -66,7 +66,7 @@ CREATE INDEX IF NOT EXISTS ix_orders_customer_status ON orders(customer_id, stat
 
 -- Backs the ambiguity-resolution demo capability
 -- (find_top_supplier_overdue_orders / TopSupplierOverdueOrdersService), the
--- Java port of the C# MCP.Foundgine sample's same-named tool. pg_trgm is
+-- Java port of the C# database-backed benchmark MCP host sample's same-named tool. pg_trgm is
 -- contrib and ships with every stock PostgreSQL image, so it needs no
 -- separate opt-in; the "did you mean" fallback in
 -- TopSupplierOverdueOrdersService degrades to no candidates if it is

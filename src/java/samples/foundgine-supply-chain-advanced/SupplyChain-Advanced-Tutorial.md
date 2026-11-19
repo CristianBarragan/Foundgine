@@ -6,8 +6,7 @@ separate files, this single tutorial walks through the same five concerns in ord
 real code in `src/java/samples/foundgine-supply-chain-advanced`, so you can build the module from
 an empty Maven project and understand why each piece exists.
 
-> Start with [`../foundgine-supply-chain/SupplyChain-Starter-Tutorial.md`](../foundgine-supply-chain/SupplyChain-Starter-Tutorial.md)
-> first if you haven't — this tutorial assumes you already know how Foundgine turns a domain model
+> Start with the [Java starter README](../foundgine-supply-chain/README.md) first if you haven't — this tutorial assumes you already know how Foundgine turns a domain model
 > into metadata. This sample takes the **fluent configuration** route instead of the starter's
 > annotation processor: the domain records carry no Foundgine annotations at all.
 
@@ -395,7 +394,7 @@ reconciled with its physical tables; do not generate or apply an Advanced migrat
 
 `mcp/AdvancedMcpServer.java` hosts `AdvancedMcpFacade` behind a minimal JSON-RPC-over-HTTP `/mcp`
 endpoint, using only the JDK's built-in `com.sun.net.httpserver.HttpServer` — no MCP SDK dependency,
-matching the C# sample's `MCP.Foundgine` project but with a hand-rolled transport instead of
+the Java sample's own server implementation; the C# sample has separate hosts but with a hand-rolled transport instead of
 `ModelContextProtocol.AspNetCore`. It exposes exactly two tools:
 
 - `foundgine_query` — `{"tool": "capabilities"}` for capability discovery.

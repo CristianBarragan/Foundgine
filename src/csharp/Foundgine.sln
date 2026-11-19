@@ -210,7 +210,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent", "samples\Foundgine.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database.Foundgine.SupplyChain.Advanced.Database", "samples\Foundgine.SupplyChain.Advanced\Database\Database.csproj", "{9431B48B-F967-5024-A299-2EA7D8CA05EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCP.Foundgine.Foundgine.SupplyChain.Advanced.MCP.Foundgine", "samples\Foundgine.SupplyChain.Advanced\MCP.Foundgine\MCP.Foundgine.csproj", "{BDF54498-4591-54D6-A3AD-B4657B086AAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.SupplyChain.Advanced.Benchmark.MCP.Foundgine", "samples\Foundgine.SupplyChain.Advanced.Benchmark\MCP.Foundgine\MCP.Foundgine.csproj", "{BDF54498-4591-54D6-A3AD-B4657B086AAD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundgine.SupplyChain.Advanced.Mcp.Api", "samples\Foundgine.SupplyChain.Advanced\Semantic\Api\Mcp\Foundgine.SupplyChain.Advanced.Mcp.Api.csproj", "{F1DBBC8A-1D4E-57ED-81AD-CEEA19182C53}"
 EndProject

@@ -30,6 +30,10 @@ var app = builder.Build();
 app.MapMcp("/mcp");
 app.MapIntentEndpoints(app.Services.GetRequiredService<SupplyChainIntentService>());
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+// Readiness is required by the Advanced sample agent and startup scripts.
+// This canonical host uses the in-memory intent service, so readiness means
+// the host and its registered semantic services have finished starting.
+app.MapGet("/health/ready", () => Results.Ok(new { status = "ready" }));
 app.Run();
 
 public partial class Program
@@ -52,7 +56,7 @@ public sealed class SupplyChainMcpTools(
     // — unset/anything else defaults to production behavior, fail-closed).
     // Any other environment gets the same uniform,
     // correlation-id-only shape the execution API already uses (see
-    // MCP.Foundgine/Program.cs's Execute/BlockedCallError), with the full
+    // ../../../../Foundgine.SupplyChain.Advanced.Benchmark/MCP.Foundgine/Program.cs's Execute/BlockedCallError), with the full
     // decision detail going only to the structured server-side log.
     private bool ExposeDiagnostics => environment.IsDevelopment();
     private static readonly IReadOnlyDictionary<string, (string TenantId, SupplyChainRole Role, string Token)> Actors =

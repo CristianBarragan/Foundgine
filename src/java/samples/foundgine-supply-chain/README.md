@@ -132,7 +132,6 @@ reachable, `Main` prints a "JPA demo skipped" line instead of failing.
 against the in-memory ORM source) and `SupplyChainApplicationTest` (method-reference names, write gate)
 cover the application path.
 
-## Not yet updated
+## Next sample
 
-`SupplyChain-Starter-Tutorial.md` and `Foundgine-SupplyChain-Explained.md` still describe the old annotation-based
-version. For the complete MCP and mutation path see [`../foundgine-supply-chain-advanced`](../foundgine-supply-chain-advanced/README.md).
+For the complete MCP and mutation path, see [`../foundgine-supply-chain-advanced`](../foundgine-supply-chain-advanced/README.md).

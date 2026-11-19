@@ -50,7 +50,7 @@ POST /foundgine/workflows/{process}/{key}/cancel
 
 ## Local development
 
-`docker compose -f docker-compose.temporal.yml up` then run `samples/Foundgine.Extensions.Temporal/Temporal.Worker` and `samples/Foundgine.Extensions.Temporal/Temporal.Api`.
+The repository currently contains integration sketches under `samples/Foundgine.Extensions.Temporal`; they are not standalone hosts. Their `Program.cs` files contain placeholder registrations for application-owned runtime, semantic model, persistence, event-store, outbox and gateway services. Complete those registrations and a local infrastructure setup before attempting to run them. See the sample README for the status and configuration notes.
 
 ## With Keycloak
 
