@@ -4,25 +4,25 @@
 </picture>
 
 [![NuGet Version](https://img.shields.io/nuget/v/Foundgine.Core?label=NuGet%20Version)](https://www.nuget.org/packages/Foundgine.Core/)
-[![Unit Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/csharp-build.yml?branch=main&job=unit-tests&label=Unit%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/csharp-build.yml)
-[![Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/csharp-build.yml?branch=main&job=integration-tests&label=Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/csharp-build.yml)
-[![Performance (Hot Chocolate)](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/csharp-build.yml?branch=main&job=benchmark-build-hotchocolate&label=Performance%20%28Hot%20Chocolate%29)](https://github.com/CristianBarragan/Foundgine/actions/workflows/csharp-build.yml)
-[![Performance (Foundgine)](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/csharp-build.yml?branch=main&job=benchmark-build-foundgine&label=Performance%20%28Foundgine%29)](https://github.com/CristianBarragan/Foundgine/actions/workflows/csharp-build.yml)
-[![Authority PenTest](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/security.yml?branch=main&job=security-penetration&label=Authority%20PenTest)](https://github.com/CristianBarragan/Foundgine/actions/workflows/security.yml)
+[![Unit Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/csharp-build.yml?branch=main&job=unit-tests&label=Unit%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/csharp-build.yml)
+[![Integration Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/csharp-build.yml?branch=main&job=integration-tests&label=Integration%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/csharp-build.yml)
+[![Performance (Hot Chocolate)](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/csharp-build.yml?branch=main&job=benchmark-build-hotchocolate&label=Performance%20%28Hot%20Chocolate%29)](https://github.com/Foundgine/Foundgine/actions/workflows/csharp-build.yml)
+[![Performance (Foundgine)](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/csharp-build.yml?branch=main&job=benchmark-build-foundgine&label=Performance%20%28Foundgine%29)](https://github.com/Foundgine/Foundgine/actions/workflows/csharp-build.yml)
+[![Authority PenTest](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/security.yml?branch=main&job=security-penetration&label=Authority%20PenTest)](https://github.com/Foundgine/Foundgine/actions/workflows/security.yml)
 
 [![Maven Central Version](https://img.shields.io/maven-central/v/io.github.cristianbarragan/foundgine-core?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.cristianbarragan/foundgine-core)
-[![Java Unit Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-build&label=Java%20Unit%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
-[![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
-[![Java Security Tests](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Tests)](https://github.com/CristianBarragan/Foundgine/actions/workflows/java-build.yml)
+[![Java Unit Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/java-build.yml?branch=main&job=java-build&label=Java%20Unit%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/java-build.yml)
+[![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/java-build.yml)
+[![Java Security Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/java-build.yml)
 
 [![Python Version](https://img.shields.io/pypi/v/foundgine?label=PyPI%20Version)](https://pypi.org/project/foundgine)
-[![Python Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/python-build.yml)
+[![Python Build](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/Foundgine/Foundgine/actions/workflows/python-build.yml)
 
 [![TypeScript Version](https://img.shields.io/npm/v/@foundgine/typescript?label=npm%20%40foundgine%2Ftypescript)](https://www.npmjs.com/package/@foundgine/typescript)
-[![TypeScript Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/typescript-build.yml?branch=main&label=TypeScript%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/typescript-build.yml)
+[![TypeScript Build](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/typescript-build.yml?branch=main&label=TypeScript%20Build)](https://github.com/Foundgine/Foundgine/actions/workflows/typescript-build.yml)
 
 [![WASM Version](https://img.shields.io/npm/v/@foundgine/wasm?label=npm%20%40foundgine%2Fwasm)](https://www.npmjs.com/package/@foundgine/wasm)
-[![WASM Build](https://img.shields.io/github/actions/workflow/status/CristianBarragan/Foundgine/wasm-build.yml?branch=main&label=Rust%20%2F%20WASM%20Build)](https://github.com/CristianBarragan/Foundgine/actions/workflows/wasm-build.yml)
+[![WASM Build](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/wasm-build.yml?branch=main&label=Rust%20%2F%20WASM%20Build)](https://github.com/Foundgine/Foundgine/actions/workflows/wasm-build.yml)
 
 # Foundgine
 
@@ -111,7 +111,9 @@ The fastest path is the Supply Chain sample pair:
 - **Enterprise integration example (separate work-in-progress repository):**
   - .NET/Java CRM, ERP, Temporal and Keycloak example — [`Foundgine-e2e-example`](https://github.com/CristianBarragan/Foundgine-e2e-example): [`Tutorial`](https://github.com/CristianBarragan/Foundgine-e2e-example/blob/main/docs/tutorial.md). Check that repository's README for its current build and verification status; it is not a certified Foundgine sample.
 
-For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://cristianbarragan.github.io/Foundgine/).
+- **Generate your own app:** the [app spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) (`docs-site/spec-form/`) turns a description of your domain, entities, roles and intents into a prompt that has an AI build a Foundgine application modelled on the Java Advanced sample. It runs entirely in the browser; the component is `docs-site/assets/spec-form.js`.
+
+For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://foundgine.github.io/Foundgine/docs-site/).
 
 # A concrete example
 
@@ -253,10 +255,10 @@ The SDK READMEs mark all three as development packages, not release-ready SDKs, 
 
 The repository contains controlled benchmarks and deterministic security tests. The public evidence distinguishes **measured** tool calls, latency, RPS and success/failure counts from **estimated** context metrics.
 
-- [Agent benchmark explorer](https://cristianbarragan.github.io/Foundgine/agent-benchmark/)
-- [CoffeeBeanery API/database performance and downloadable reports](https://cristianbarragan.github.io/Foundgine/performance/#coffeebeanery-performance)
-- [Supply Chain E2E](https://cristianbarragan.github.io/Foundgine/agent-benchmark/supply-chain/)
-- [Security PenTest](https://cristianbarragan.github.io/Foundgine/samples/pentest/)
+- [Agent benchmark explorer](https://foundgine.github.io/Foundgine/docs-site/agent-benchmark/)
+- [CoffeeBeanery API/database performance and downloadable reports](https://foundgine.github.io/Foundgine/docs-site/performance/#coffeebeanery-performance)
+- [Supply Chain E2E](https://foundgine.github.io/Foundgine/docs-site/agent-benchmark/supply-chain/)
+- [Security PenTest](https://foundgine.github.io/Foundgine/docs-site/samples/pentest/)
 - [`src/csharp/benchmarks/AgentEndToEnd/README.md`](src/csharp/benchmarks/AgentEndToEnd/README.md)
 - [`src/csharp/benchmarks/CoffeeBeanery.Performance/README.md`](src/csharp/benchmarks/CoffeeBeanery.Performance/README.md)
 
@@ -288,7 +290,8 @@ PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). 
 - [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, client SDKs, AOT, auditing and operations.
 - [Agent and framework integrations](docs/wiki/agent-framework-integrations.md) — Microsoft Agent Framework, LangChain4j and Spring Boot.
 - [Client SDKs](docs/wiki/client-sdks.md) — TypeScript, Python and WebAssembly clients.
-- [Website](https://cristianbarragan.github.io/Foundgine/) · [`CHANGELOG.md`](CHANGELOG.md)
+- [App spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) — fill in one form, get an AI prompt that generates a Foundgine app.
+- [Website](https://foundgine.github.io/Foundgine/docs-site/) · [`CHANGELOG.md`](CHANGELOG.md)
 
 ## Release 3.4.0
 

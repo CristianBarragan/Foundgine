@@ -11,7 +11,7 @@ Foundgine benchmark claims are scoped to explicit workloads. The site distinguis
 
 ## CoffeeBeanery API and database performance
 
-The separate [CoffeeBeanery benchmark suite](https://github.com/CristianBarragan/Foundgine/tree/main/src/csharp/benchmarks/CoffeeBeanery.Performance) compares Hot Chocolate + EF Core with Foundgine against the same PostgreSQL-backed graph fixture. The [methodology and findings](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/benchmarks/CoffeeBeanery.Performance/README.md) describe query, mutation and update workloads. The checked-in report set dated 15 August 2026 includes query, whole-graph mutation and upsert + select measurements. Separate update-suite artifacts are not present in this snapshot. The report JSON records zero for Docker CPU and memory, so it does not support comparative resource-usage claims.
+The separate [CoffeeBeanery benchmark suite](https://github.com/Foundgine/Foundgine/tree/main/src/csharp/benchmarks/CoffeeBeanery.Performance) compares Hot Chocolate + EF Core with Foundgine against the same PostgreSQL-backed graph fixture. The [methodology and findings](https://github.com/Foundgine/Foundgine/blob/main/src/csharp/benchmarks/CoffeeBeanery.Performance/README.md) describe query, mutation and update workloads. The checked-in report set dated 15 August 2026 includes query, whole-graph mutation and upsert + select measurements. Separate update-suite artifacts are not present in this snapshot. The report JSON records zero for Docker CPU and memory, so it does not support comparative resource-usage claims.
 
 Published JSON, CSV and Markdown report artifacts are indexed at [CoffeeBeanery report index](../assets/coffee-beanery-benchmark/reports-index.json).
 

@@ -269,7 +269,7 @@ Every new transport/provider should have adversarial tests proving that it canno
 
 ## Historical red-team run (Advanced Supply Chain .NET sample)
 
-Recorded on 7 September 2026. This is evidence for that .NET sample run only; it is not a current release certification, does not establish Java parity, and does not prove that the current CI PenTest jobs executed. The current CI opt-in gaps are documented in [PostgreSQL E2E](POSTGRES-E2E.md) and the [Supply Chain PenTest fixture README](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/README.md).
+Recorded on 7 September 2026. This is evidence for that .NET sample run only; it is not a current release certification, does not establish Java parity, and does not prove that the current CI PenTest jobs executed. The current CI opt-in gaps are documented in [PostgreSQL E2E](POSTGRES-E2E.md) and the [Supply Chain PenTest fixture README](https://github.com/Foundgine/Foundgine/blob/main/src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/README.md).
 
 This section records the outcome of a live adversarial run of `Foundgine.RedTeam`
 against the running `Foundgine.SupplyChain.Advanced` sample, exercising both the
@@ -352,7 +352,7 @@ error would allow.
 ### Implemented: server-side classification with a correlation id
 
 The execution API's `Execute` helper in
-[`Semantic/Api/Mcp/Program.cs`](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs)
+[`Semantic/Api/Mcp/Program.cs`](https://github.com/Foundgine/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs)
 now:
 
 1. Generates a short opaque correlation id for every call before it runs.
@@ -383,7 +383,7 @@ applies to the execution API applied to it too: is that detail something a
 live caller should see, or does it belong in server-side logging only?
 
 This is now made explicit rather than left open. `SupplyChainMcpTools` (in
-[`Semantic/Api/Mcp/Program.cs`](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs))
+[`Semantic/Api/Mcp/Program.cs`](https://github.com/Foundgine/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Api/Mcp/Program.cs))
 gates the verbose decision detail on `IHostEnvironment.IsDevelopment()`:
 
 - **Development/lab** (`ASPNETCORE_ENVIRONMENT=Development`): `policy_probe`

@@ -1,7 +1,7 @@
 site_name: Foundgine
 site_description: "Semantic execution layer for .NET and Java, with TypeScript, Python and WebAssembly client SDKs"
-repo_url: https://github.com/CristianBarragan/Foundgine
-repo_name: CristianBarragan/Foundgine
+repo_url: https://github.com/Foundgine/Foundgine
+repo_name: Foundgine/Foundgine
 
 theme:
   name: material

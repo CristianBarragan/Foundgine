@@ -124,6 +124,7 @@ execution
 - `/` — landing page and documentation map
 - `/what-is-foundgine.html` — concept and boundary
 - `/getting-started/` — first application
+- `/spec-form/` — app spec form: describe a domain, get an AI prompt that generates a Foundgine application
 - `/walkthrough/` — one request, end to end
 - `/architecture/` — canonical architecture
 - `/ai-agents/` — agent boundary

@@ -9,17 +9,17 @@
       content="Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions."
       name="description"
     />
-    <link href="https://cristianbarragan.github.io/Foundgine/packages/" rel="canonical" />
+    <link href="https://foundgine.github.io/Foundgine/docs-site/packages/" rel="canonical" />
     <meta content="Foundgine Packages | .NET" property="og:title" />
     <meta
       content="Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions."
       property="og:description"
     />
     <meta content="website" property="og:type" />
-    <meta content="https://cristianbarragan.github.io/Foundgine/packages/" property="og:url" />
+    <meta content="https://foundgine.github.io/Foundgine/docs-site/packages/" property="og:url" />
     <meta content="Foundgine" property="og:site_name" />
     <meta
-      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      content="https://foundgine.github.io/Foundgine/docs-site/Foundgine.webp"
       property="og:image"
     />
     <meta content="1280" property="og:image:width" />
@@ -31,7 +31,7 @@
       name="twitter:description"
     />
     <meta
-      content="https://cristianbarragan.github.io/Foundgine/Foundgine.webp"
+      content="https://foundgine.github.io/Foundgine/docs-site/Foundgine.webp"
       name="twitter:image"
     />
     <link href="https://fonts.googleapis.com" rel="preconnect" />
@@ -48,7 +48,7 @@
         "@type": "TechArticle",
         "headline": "Foundgine Packages | .NET",
         "description": "Choose the Foundgine packages by architectural responsibility: Core, Runtime, Providers and Extensions.",
-        "url": "https://cristianbarragan.github.io/Foundgine/packages/",
+        "url": "https://foundgine.github.io/Foundgine/docs-site/packages/",
         "author": { "@type": "Organization", "name": "Foundgine" }
       }
     </script>
@@ -142,7 +142,7 @@
             </div>
           </div>
           <a href="index.html">Packages</a>
-          <a href="https://github.com/CristianBarragan/Foundgine" rel="noopener" target="_blank"
+          <a href="https://github.com/Foundgine/Foundgine" rel="noopener" target="_blank"
             >GitHub</a
           >
         </nav>
@@ -271,7 +271,7 @@ dotnet add package Foundgine.Providers --version 3.4.0</pre>
           </p>
           <ul>
             <li><code>foundgine-core</code>, <code>foundgine-runtime</code>, <code>foundgine-providers</code> and <code>foundgine-extensions</code>: main server implementation; source and tests are present, but the full Maven verification for this checkpoint remains pending.</li>
-            <li><code>foundgine-migrations</code>: PostgreSQL schema diff and Flyway migration generation; source and tests are present, Maven/runtime verification is pending. See the <a href="https://github.com/CristianBarragan/Foundgine/blob/main/src/java/foundgine-migrations/README.md">module README</a>.</li>
+            <li><code>foundgine-migrations</code>: PostgreSQL schema diff and Flyway migration generation; source and tests are present, Maven/runtime verification is pending. See the <a href="https://github.com/Foundgine/Foundgine/blob/main/src/java/foundgine-migrations/README.md">module README</a>.</li>
             <li><code>foundgine-aot-generator</code>: build-time annotation processor module, not a standalone runtime artifact.</li>
           </ul>
           <p>
@@ -285,7 +285,7 @@ dotnet add package Foundgine.Providers --version 3.4.0</pre>
             Optional adapters are included in the provider packages: Microsoft Agent Framework and Redis in .NET
             <code>Foundgine.Providers</code>; LangChain4j, Spring Boot and Redis in Java
             <code>foundgine-providers</code>. See
-            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md">Agent and framework integrations</a>.
+            <a href="https://github.com/Foundgine/Foundgine/blob/main/docs/wiki/agent-framework-integrations.md">Agent and framework integrations</a>.
           </p>
         </section>
         <section>
@@ -305,19 +305,19 @@ dotnet add package Foundgine.Providers --version 3.4.0</pre>
                 <td>TypeScript</td>
                 <td><code>@foundgine/typescript</code> (npm)</td>
                 <td>Node.js 20+ or any runtime with <code>fetch</code></td>
-                <td><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/typescript">src/typescript</a></td>
+                <td><a href="https://github.com/Foundgine/Foundgine/tree/main/src/typescript">src/typescript</a></td>
               </tr>
               <tr>
                 <td>Python</td>
                 <td><code>foundgine-sdk</code> (PyPI name)</td>
                 <td>Python 3.11+, <code>httpx</code>; async and sync clients</td>
-                <td><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/python">src/python</a></td>
+                <td><a href="https://github.com/Foundgine/Foundgine/tree/main/src/python">src/python</a></td>
               </tr>
               <tr>
                 <td>Rust / WebAssembly</td>
                 <td><code>@foundgine/wasm</code> (npm)</td>
                 <td>Node.js 20+, browsers, Workers, Deno; host supplies <code>fetch</code></td>
-                <td><a href="https://github.com/CristianBarragan/Foundgine/tree/main/src/wasm">src/wasm</a></td>
+                <td><a href="https://github.com/Foundgine/Foundgine/tree/main/src/wasm">src/wasm</a></td>
               </tr>
             </tbody>
           </table>
@@ -325,7 +325,7 @@ dotnet add package Foundgine.Providers --version 3.4.0</pre>
             All three are development packages, not release-ready SDKs; the repository does not
             claim a registry release, so verify that a version exists on npm or PyPI before pinning
             it. See the
-            <a href="https://github.com/CristianBarragan/Foundgine/blob/main/docs/wiki/client-sdks.md">client SDK overview</a>
+            <a href="https://github.com/Foundgine/Foundgine/blob/main/docs/wiki/client-sdks.md">client SDK overview</a>
             for a comparison, a quick start and the verification status.
           </p>
         </section>
@@ -349,7 +349,7 @@ dotnet add package Foundgine.Providers --version 3.4.0</pre>
           <h2 id="go-deeper">Go deeper</h2>
           <p>
             Read the package READMEs in
-            <a href="https://github.com/CristianBarragan/Foundgine/tree/main/src"
+            <a href="https://github.com/Foundgine/Foundgine/tree/main/src"
               ><code>src/</code></a
             >
             for API-level detail, or return to
@@ -382,7 +382,7 @@ dotnet add package Foundgine.Providers --version 3.4.0</pre>
     </div>
     <footer class="site-footer">
       Foundgine 3.4.0 · .NET 10 & Java 27 ·
-      <a href="https://github.com/CristianBarragan/Foundgine">source on GitHub</a>
+      <a href="https://github.com/Foundgine/Foundgine">source on GitHub</a>
     </footer>
     <script src="../assets/site-nav.js"></script>
     <script src="../assets/toc.js"></script>

@@ -136,7 +136,7 @@ A provider implementation should prove:
 - pagination semantics;
 - mutation dependencies if mutations are supported.
 
-For .NET, see the [execution source](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/Foundgine.Core/Execution) and [SQL provider source](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/Foundgine.Providers/Storage/Sql). For Java module and provider boundaries, see [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md) and the [ORM provider matrix](wiki/orm-providers.md).
+For .NET, see the [execution source](https://github.com/Foundgine/Foundgine/blob/main/src/csharp/Foundgine.Core/Execution) and [SQL provider source](https://github.com/Foundgine/Foundgine/blob/main/src/csharp/Foundgine.Providers/Storage/Sql). For Java module and provider boundaries, see [`src/java/BUILDING.md`](https://github.com/Foundgine/Foundgine/blob/main/src/java/BUILDING.md) and the [ORM provider matrix](wiki/orm-providers.md).
 
 ---
 

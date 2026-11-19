@@ -2,7 +2,7 @@
 
 Foundgine has a .NET 10 implementation and a Java 27 implementation. Both follow the same semantic execution architecture; use the language-specific sample and build instructions for the runtime you are adopting.
 
-The quickest way to understand it is to run the repository's Supply Chain sample and then inspect the same pipeline in the `src/` packages. The build section covers both runtimes; the application and adapter code examples below use the .NET 10 API. For Java API examples, start with the linked Java sample READMEs and [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md).
+The quickest way to understand it is to run the repository's Supply Chain sample and then inspect the same pipeline in the `src/` packages. The build section covers both runtimes; the application and adapter code examples below use the .NET 10 API. For Java API examples, start with the linked Java sample READMEs and [`src/java/BUILDING.md`](https://github.com/Foundgine/Foundgine/blob/main/src/java/BUILDING.md).
 
 ## Requirements
 
@@ -32,12 +32,12 @@ cd src/java
 mvn -U clean verify -Dgpg.skip=true
 ```
 
-The reactor includes the runtime modules, migration tooling, the Redis/Spring Boot/LangChain4j provider implementations, security module and Supply Chain samples. Spring Boot and LangChain4j adapters are compiled into `foundgine-providers`; their framework dependencies are optional. The consolidated Maven build has not been verified in this snapshot. See [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md) for module-specific commands and the Java ORM/JPA verification plan.
+The reactor includes the runtime modules, migration tooling, the Redis/Spring Boot/LangChain4j provider implementations, security module and Supply Chain samples. Spring Boot and LangChain4j adapters are compiled into `foundgine-providers`; their framework dependencies are optional. The consolidated Maven build has not been verified in this snapshot. See [`src/java/BUILDING.md`](https://github.com/Foundgine/Foundgine/blob/main/src/java/BUILDING.md) for module-specific commands and the Java ORM/JPA verification plan.
 
 ## Run a sample
 
-- .NET: start with the [Supply Chain starter README](https://github.com/CristianBarragan/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/README.md).
-- Java: start with the [Java Supply Chain starter README](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/README.md).
+- .NET: start with the [Supply Chain starter README](https://github.com/Foundgine/Foundgine/blob/main/src/csharp/samples/Foundgine.SupplyChain/README.md).
+- Java: start with the [Java Supply Chain starter README](https://github.com/Foundgine/Foundgine/blob/main/src/java/samples/foundgine-supply-chain/README.md).
 
 For PostgreSQL integration tests, see [POSTGRES-E2E.md](POSTGRES-E2E.md).
 ## First application (.NET)
@@ -176,7 +176,7 @@ The model can call semantic tools:
 
 The model is an untrusted producer of intent.
 
-For package-specific .NET details, see the `README.md` in each `src/csharp/Foundgine.*` project. For Java module details, see [`src/java/BUILDING.md`](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/BUILDING.md) and the Java sample READMEs.
+For package-specific .NET details, see the `README.md` in each `src/csharp/Foundgine.*` project. For Java module details, see [`src/java/BUILDING.md`](https://github.com/Foundgine/Foundgine/blob/main/src/java/BUILDING.md) and the Java sample READMEs.
 
 ---
 

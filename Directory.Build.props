@@ -25,8 +25,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>semantic-execution;authorization;execution-plan;graphql;ai;dotnet</PackageTags>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/CristianBarragan/Foundgine</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Foundgine/Foundgine</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Foundgine/Foundgine</PackageProjectUrl>
     <PackageReleaseNotes>See CHANGELOG.md.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Public API documentation is generated for NuGet packages; missing XML comments are not a CI error. -->

@@ -19,5 +19,5 @@ $page = Get-Content -LiteralPath $pagePath -Raw
 if ($page -notmatch 'coffee-beanery-benchmark/reports-index\.json') { throw 'Performance page does not load the CoffeeBeanery report index.' }
 if ($page -notmatch 'coffeebeanery-performance') { throw 'Performance page has no CoffeeBeanery evidence section.' }
 $readme = Get-Content -LiteralPath (Join-Path $BenchmarkRoot 'README.md') -Raw
-if ($readme -notmatch 'cristianbarragan\.github\.io/Foundgine/performance/#coffeebeanery-performance') { throw 'CoffeeBeanery README does not link to the public performance evidence.' }
+if ($readme -notmatch 'foundgine\.github\.io/Foundgine/docs-site/performance/#coffeebeanery-performance') { throw 'CoffeeBeanery README does not link to the public performance evidence.' }
 Write-Host "CoffeeBeanery website publication validation: PASS ($(@($manifest.reports).Count) artifacts)" -ForegroundColor Green

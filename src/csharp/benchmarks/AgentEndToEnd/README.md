@@ -157,4 +157,4 @@ This benchmark currently measures a real Foundgine graph/mutation path but uses 
 
 ## Public benchmark explorer
 
-Published Run 1–5b aggregates and the Supply Chain E2E evidence are presented in the [Foundgine benchmark explorer](https://cristianbarragan.github.io/Foundgine/agent-benchmark/). The methodology and evidence index are linked from the [performance page](https://cristianbarragan.github.io/Foundgine/performance/). Use `publish-all-reports.ps1` after completing runs to copy raw artifacts, rebuild aggregates and refresh the website matrix; run `validate-published-benchmarks.ps1` before committing.
+Published Run 1–5b aggregates and the Supply Chain E2E evidence are presented in the [Foundgine benchmark explorer](https://foundgine.github.io/Foundgine/docs-site/agent-benchmark/). The methodology and evidence index are linked from the [performance page](https://foundgine.github.io/Foundgine/docs-site/performance/). Use `publish-all-reports.ps1` after completing runs to copy raw artifacts, rebuild aggregates and refresh the website matrix; run `validate-published-benchmarks.ps1` before committing.

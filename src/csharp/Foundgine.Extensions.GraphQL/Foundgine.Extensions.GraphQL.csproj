@@ -3,9 +3,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Authors>Foundgine</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/CristianBarragan/Foundgine</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Foundgine/Foundgine</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Foundgine/Foundgine</PackageProjectUrl>
     <PackageId>Foundgine.Extensions.GraphQL</PackageId>
     <Description>Hot Chocolate GraphQL integration for Foundgine 3.x: translates GraphQL operations into Foundgine semantic intent and provides the secure query and mutation executors that run that intent through the Foundgine authorization and execution boundary. It does not replace the Foundgine runtime and does not provide storage providers. Consumers configure their GraphQL server and semantic model; concrete provider execution is supplied by Foundgine.Providers.</Description>
     <PackageTags>graphql;hotchocolate;semantic-execution;authorization;dotnet</PackageTags>

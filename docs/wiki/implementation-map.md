@@ -54,7 +54,7 @@ Microsoft Agent Framework (C#), LangChain4j and Spring Boot (Java) are optional 
 
 ### Migrations
 
-Java's `foundgine-migrations` module is developer tooling, not a runtime provider. It derives a PostgreSQL schema from Foundgine metadata, diffs it against a committed JSON snapshot and generates Flyway SQL plus rollback/history files. Its source and tests are present, but full Maven/runtime verification remains pending. It does not infer renames, partial/expression indexes, triggers, views, generated columns or data backfills. Review generated SQL before applying it; see the [module README](https://github.com/CristianBarragan/Foundgine/blob/main/src/java/foundgine-migrations/README.md). .NET applications continue to use EF Core's migration tooling.
+Java's `foundgine-migrations` module is developer tooling, not a runtime provider. It derives a PostgreSQL schema from Foundgine metadata, diffs it against a committed JSON snapshot and generates Flyway SQL plus rollback/history files. Its source and tests are present, but full Maven/runtime verification remains pending. It does not infer renames, partial/expression indexes, triggers, views, generated columns or data backfills. Review generated SQL before applying it; see the [module README](https://github.com/Foundgine/Foundgine/blob/main/src/java/foundgine-migrations/README.md). .NET applications continue to use EF Core's migration tooling.
 
 ## How to verify a component
 

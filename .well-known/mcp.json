@@ -46,7 +46,7 @@
     "clientSuppliedAuthorizationContext": false
   },
   "source": {
-    "repository": "https://github.com/CristianBarragan/Foundgine",
+    "repository": "https://github.com/Foundgine/Foundgine",
     "mcpProject": "src/csharp/Foundgine.Providers/Tools/MCP"
   },
   "clients": [

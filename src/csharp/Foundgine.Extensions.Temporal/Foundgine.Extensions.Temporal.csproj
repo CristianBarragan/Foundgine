@@ -3,9 +3,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Authors>Foundgine</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/CristianBarragan/Foundgine</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Foundgine/Foundgine</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/CristianBarragan/Foundgine</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Foundgine/Foundgine</PackageProjectUrl>
     <PackageId>Foundgine.Extensions.Temporal</PackageId>
     <Description>Optional Temporal durable-workflow integration for Foundgine 3.x: outbox-to-workflow bridge, saga and approval process workflow, operation activities, and start, status, decision and cancel endpoints. Reuses Foundgine.Providers contracts (outbox publisher seam, provider descriptors, gateway execution).</Description>
     <PackageTags>temporal;workflow;saga;outbox;extensions;dotnet</PackageTags>
