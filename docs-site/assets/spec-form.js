@@ -27,15 +27,16 @@ const L=(key,label,item,fields,o={})=>Object.assign({t:'list',key,label,item,fie
 const AI='Let AI decide';
 
 const SECTIONS=[
-{id:'project',title:'1. Project',intro:'What you are generating and where it lives.',items:[
-  T('name','Application name',{req:1,hint:'Used for the module, class prefixes and docs, e.g. "EquipmentRental".'}),
+{id:'project',title:'1. Project',intro:'What you are generating, in which language, and where it lives.',items:[
+  T('name','Application name',{req:1,hint:'Used for the project, class prefixes and docs, e.g. "EquipmentRental".'}),
   A('purpose','What does it do, in 2-4 sentences?',{req:1,hint:'The business problem and who gets value from an agent being able to ask questions or act.'}),
-  S('language','Language / runtime',['Java 27 (Maven)  - matches the sample','.NET 10','Both (Java first)']),
-  S('shape','Deliverable shape',['New sample module inside the Foundgine reactor (like foundgine-supply-chain-advanced)','Standalone Maven project depending on published Foundgine artifacts','Spring Boot app using the Foundgine Spring auto-configuration'],{req:1}),
-  T('basePackage','Base package',{req:1,hint:'e.g. com.acme.rental. The sample uses com.foundgine.samples.supplychain.advanced.'}),
-  T('groupArtifact','Maven groupId : artifactId',{hint:'Foundgine itself is io.github.cristianbarragan; version 3.4.0.'}),
+  S('language','Language / runtime',['.NET 10 (C#)  - reference sample: Foundgine.SupplyChain.Advanced','Java 27 (Maven)  - port: foundgine-supply-chain-advanced','Both: .NET first, then a Java port with the same model and behaviour'],{req:1,hint:'Foundgine is one architecture in two languages. The .NET sample is the reference; the Java sample mirrors it.'}),
+  S('shape','Deliverable shape',['New sample project inside the Foundgine repo (like the Advanced supply-chain samples)','Standalone project depending on published packages (NuGet / Maven)','ASP.NET Core app (.NET)','Spring Boot app (Java, Foundgine Spring auto-configuration)'],{req:1}),
+  S('modelStyle','How the semantic model is declared',['Fluent configuration (FoundgineModel; sample default)','Attributes / annotations','AOT source generator (Foundgine.Providers.Aot.Generator / foundgine-aot-generator)','Manual semantic model builder'],{hint:'All compile to the same metadata registry; see docs/MAPPING.md.'}),
+  T('basePackage','Namespace / base package',{req:1,hint:'C#: Acme.Rental. Java: com.acme.rental. The samples use Foundgine.SupplyChain.Advanced and com.foundgine.samples.supplychain.advanced.'}),
+  T('groupArtifact','Project coordinates',{hint:'NuGet package id and/or Maven groupId : artifactId. Foundgine itself ships as io.github.cristianbarragan on Maven.'}),
   T('foundgineVersion','Foundgine version',{def:'3.4.0'}),
-  T('port','HTTP port',{def:'4783',hint:'The sample serves /mcp and /intent on 4783.'}),
+  T('port','HTTP port',{def:'4783',hint:'The Java sample serves /mcp and /intent on 4783.'}),
 ]},
 {id:'actors',title:'2. Actors and questions',intro:'Who asks, and what an agent should be able to answer. These drive the example intents and scenario tests.',items:[
   L('actors','Actors / callers','Actor',[T('name','Name',{req:1}),A('desc','Description and what they should be allowed to do')]),
@@ -78,20 +79,20 @@ const SECTIONS=[
     A('notes','Notes',{hint:'Self-referencing? Recursive traversal (BOM, hierarchy)? Multi-hop paths (Product > Line > Order > Shipment)?'}),
   ]),
 ]},
-{id:'persist',title:'5. Persistence',intro:'Physical database. The Foundgine schema generator does not emit foreign keys, CHECKs, defaults, identity or extensions yet, so these stay in reviewed hand-written SQL.',items:[
-  S('db','Database',['PostgreSQL 16','PostgreSQL (other version)','In-memory only (limited provider)']),
-  M('ext','Extensions / retrieval',['pg_trgm (fuzzy)','native full text','pg_search (BM25)','pgvector','Apache AGE (graph)','none']),
-  S('migr','Migrations',['Flyway, hand-written V1 baseline (recommended)','Generated from model (foundgine-migrations)','None, schema.sql only']),
-  S('ormPath','Read/ORM path',['SQL provider only','SQL provider + JPA for selected entities','JPA for all persisted entities']),
-  T('jpaEntities','JPA-mapped entities (if any)'),
+{id:'persist',title:'5. Persistence',intro:'Physical storage. The Foundgine schema generator does not emit foreign keys, CHECKs, defaults, identity or extensions yet, so these stay in reviewed hand-written SQL.',items:[
+  S('db','Database',['PostgreSQL 16 / 17','PostgreSQL (other version)','In-memory only (limited provider, tests and demos)','Other relational database via the SQL provider']),
+  S('queryProvider','Primary query/mutation provider',['SQL provider (compiled, parameterised SQL; most control)','EF Core (.NET) over the shared ORM core','JPA (Java) over the shared ORM core','In-memory'],{req:1,hint:'Detail the full provider set in section 10.'}),
+  S('ormPath','Mixed approach',['One provider only','SQL provider + EF Core / JPA for selected entities','EF Core / JPA for all persisted entities']),
+  T('ormEntities','ORM-mapped entities (if any)',{hint:'.NET: the Roslyn ORM map generator writes typed maps. Java: JPA currently covers selected entities.'}),
+  S('migr','Migrations',['Hand-written SQL baseline (Flyway on Java; SQL scripts on .NET)','Generated from model (foundgine-migrations)','EF Core migrations (.NET)','None, schema.sql only']),
   S('ids','ID strategy',['Integer keys, identity on transactional tables','UUID keys','Caller-supplied keys']),
-  C('docker','Include docker-compose.yml for PostgreSQL',{def:true}),
+  C('docker','Include docker-compose for PostgreSQL and any services selected in section 10',{def:true}),
   A('tenants','Tenants in sample data',{hint:'e.g. tenant-a, tenant-b (at least two, to prove isolation).'}),
   A('seed','Seed data notes',{hint:'Roughly how many rows per entity, any specific records the scenarios need.'}),
 ]},
 {id:'semantic',title:'6. Semantic layer and grounding',intro:'How loose language becomes the right entity or field. Retrieval is candidate discovery only; it never authorizes.',items:[
   S('naming','Field naming',['PASCAL_CASE (sample default)','Other (explain in notes)']),
-  M('retrieval','Candidate retrieval for ambiguous names/values',['exact','pg_trgm fuzzy','native full text','pg_search BM25','pgvector similarity','graph similarity','alias weights only']),
+  M('retrieval','Candidate retrieval for ambiguous names/values',['exact','pg_trgm fuzzy','native full text','pg_search BM25','pgvector similarity','Elasticsearch lexical','graph similarity (Apache AGE)','alias weights only']),
   S('ambig','When ambiguity is unresolved',['Return REQUIRES_CLARIFICATION with candidates','Reject','AI decides']),
   T('budget','Grounding budget / deadline',{hint:'e.g. max 10 candidates, 250 ms retrieval deadline'}),
   L('search','Special candidate-search tools (optional)','Tool',[T('name','Tool name',{hint:'find_top_supplier_overdue_orders'}),A('desc','What it ranks and the outcomes it returns (resolved / clarification_needed / not_found)')]),
@@ -99,7 +100,7 @@ const SECTIONS=[
 ]},
 {id:'authz',title:'7. Authorization',intro:'Identity and authority are host-owned. The AI and the intent body never supply tenant or role. Policy decides what is visible; denied fields are pruned from results rather than erroring.',items:[
   S('tenancy','Tenancy model',['Tenant field on each tenant-scoped entity','Tenant inherited via parent entity','Single tenant']),
-  S('identity','Where caller identity comes from',['Demo headers X-Foundgine-Tenant / X-Foundgine-Role (sample only)','OIDC / JWT','mTLS','Keycloak','Other']),
+  S('identity','Where caller identity comes from',['Demo headers X-Foundgine-Tenant / X-Foundgine-Role (sample only)','OIDC / JWT','mTLS','Keycloak extension (identity + signed warrants)','ASP.NET authenticated principal (.NET)','Other']),
   L('roles','Roles','Role',[T('name','Role (UPPER_SNAKE)',{req:1}),A('read','Entities it can read'),A('denied','Entities / fields / relationships it cannot see'),A('write','What it can write')]),
   L('rules','Rules','Rule',[
     S('kind','Rule type',['Entity read','Entity write','Field read','Field write','Relationship read','Row predicate (e.g. tenant)','Named operation']),
@@ -112,7 +113,7 @@ const SECTIONS=[
 ]},
 {id:'intent',title:'8. Canonical intent endpoint',intro:'One generic endpoint that takes a provider-neutral intent in the semantic vocabulary (rootEntity, selections, filter, order, limit, offset, after). Not one endpoint per query.',items:[
   M('paths','Endpoints',['POST /intent (execute)','POST /intent/explain (dry run: resolution, prunedFields, plan)','GET /intent/capabilities (what may this caller do)','MCP tool foundgine_intent','MCP tools foundgine_query / foundgine_mutation']),
-  S('server','HTTP server',['JDK HttpServer, dependency-free (sample)','Spring MVC (Foundgine Spring auto-config)','Other']),
+  S('server','HTTP server',['ASP.NET Core minimal API (.NET sample)','JDK HttpServer, dependency-free (Java sample)','Spring MVC (Foundgine Spring auto-config)','Other']),
   T('limits','Limits',{def:'body 64 KiB, timeout 504, max rows per request: ',hint:'Error shape: {"error":{"type","message"}} with invalid_intent 400, forbidden 403, payload_too_large 413, method_not_allowed 405, timeout 504.'}),
   A('rootEntities','Entities exposed as intent roots',{hint:'Leave blank for all entities the policy allows.'}),
   L('examples','Example intents that must work','Intent',[
@@ -135,10 +136,24 @@ const SECTIONS=[
     A('effects','Tables / rows changed atomically'),
     T('backing','Backing',{def:'In-memory service for Main + PostgreSQL store'}),
   ]),
+  S('approval','Approval flow for writes',['None','Dry run, then approve, then execute approved (foundgine_mutation_dry_run / _approve / _execute_approved)','Human approval through a Temporal workflow','Agent-framework approval (MAF / LangChain4j)']),
   C('readOnlyOk','No mutations needed (read-only app)'),
 ]},
-{id:'adapters',title:'10. Adapters and extras',items:[
-  M('adapt','Include',['MCP server (JSON-RPC over HTTP, /mcp, /health)','MCP client demo (raw HTTP)','GraphQL adapter','Spring Boot auto-config (foundgine.mcp.*)','LangChain4j tools','Keycloak dev realm','Temporal workflows','Client SDK examples (TypeScript / Python)','Main in-memory smoke test']),
+{id:'adapters',title:'10. Providers and extensions',intro:'Everything optional that plugs into the core. A provider does the real work against storage or infrastructure; an extension connects a framework or service. Tick only what you need; the AI wires each one through the documented seams and keeps authority host-owned.',items:[
+  M('exec','Query and mutation providers',['SQL provider (SqlCompiler / SqlExecutionProvider)','SQL mutations incl. PostgreSQL batched','In-memory provider','ORM core (shared, ORM-neutral)','EF Core provider (.NET)','JPA provider (Java, partial)'],{hint:'Pick the one primary provider in section 5; list any additional ones here.'}),
+  M('retr','Candidate retrieval providers (grounding)',['PostgreSQL retrieval: pg_trgm + native full text','PostgreSQL pg_search (BM25)','PostgreSQL + Apache AGE graph similarity','PostgreSQL + pgvector','Elasticsearch lexical candidates']),
+  M('durable','Durability and delivery',['PostgreSQL event store','PostgreSQL outbox + dispatcher','Gateway (provider registry, negotiation, approvals, HTTP/SSE routes, live updates)','Redis / Valkey / Garnet stores (warrant replay + revocation, MCP sessions)']),
+  M('ai','AI and agents',['MCP server (tools, sessions, SSE, approval tokens)','MCP agent client','Microsoft.Extensions.AI toolset (.NET)','Microsoft Agent Framework (.NET, approval-gated writes)','LangChain4j tools (Java)']),
+  M('ext','Extensions',['GraphQL (Hot Chocolate on .NET, GraphQL Java on Java) with secure execution','Keycloak identity and warrants (dev realm included)','Temporal durable workflows (retries, timers, approvals, compensation)']),
+  M('host','Hosting and control',['ASP.NET Core hosting (.NET)','Spring Boot auto-configuration (foundgine.mcp.*, JPA FoundgineOrm)','JDK HttpServer (dependency-free)','Runtime control plane (tool registry and governance, approvals, audit, risk scoring, key rotation)']),
+  M('build','Build-time generators and tooling',['AOT metadata generator','ORM map generator (.NET Roslyn)','foundgine-migrations (schema/migration source, Java)','Conformance vectors from src/conformance']),
+  M('ops','Evidence and operations',['Execution evidence and receipts on every result','Audit log','Diagnostics and health endpoints','Live events (SSE)','Benchmark project like the Advanced sample']),
+  M('sdk','Client SDKs and demos',['MCP client demo (raw HTTP)','TypeScript SDK example','Python SDK example','WebAssembly SDK example','Main / in-memory smoke test']),
+  L('provCfg','Per-provider configuration','Provider',[
+    T('name','Provider or extension',{req:1,hint:'e.g. Elasticsearch, Redis, Keycloak, Temporal'}),
+    T('conn','Connection / endpoint / index / realm / task queue'),
+    A('notes','Behaviour, limits and what it must prove in tests'),
+  ]),
   A('notes','Other integrations or constraints'),
 ]},
 {id:'tests',title:'11. Scenarios and tests',intro:'The sample proves its claims with adversarial tests, not only happy paths.',items:[
@@ -147,9 +162,9 @@ const SECTIONS=[
   A('accept','Acceptance criteria',{hint:'What makes you say "this works"?'}),
 ]},
 {id:'gen',title:'12. Generation rules',intro:'How the AI should behave while generating.',items:[
-  M('layout','Packages / files to generate',['model (fluent semantic + persistence + entity maps + connections)','domain (annotation-free records)','semantics','authorization (+ claims)','mutation','postgres','jpa','intent (service, caller, endpoint)','mcp','scenarios','data fixture','migrations / schema.sql / seed','tests','README (how to run)','Tutorial (file-by-file why)','Schema audit doc'],{req:0}),
+  M('layout','Packages / files to generate',['model (fluent semantic + persistence + entity maps + connections)','domain (annotation-free records)','semantics','authorization (+ claims)','mutation','postgres','ORM mapping (EF Core / JPA)','intent (service, caller, endpoint)','mcp','providers and extensions wiring (section 10)','scenarios','data fixture','migrations / schema.sql / seed','tests','README (how to run)','Tutorial (file-by-file why)','Schema audit doc','docker-compose for every selected service'],{req:0}),
   S('blank','For blanks I left empty',['Choose sensible defaults and list them at the end','Ask me before generating','Insert TODO markers in the code']),
-  C('verify','Compile and run tests in Maven before declaring done; state plainly anything unverified',{def:true}),
+  C('verify','Compile and run the tests (dotnet test / mvn test) before declaring done; state plainly anything unverified',{def:true}),
   C('zip','Return the whole project as a zip with all files',{def:true}),
   A('extra','Extra rules or style constraints'),
 ]},
@@ -248,7 +263,7 @@ function reqTotals(){
   SECTIONS.forEach(sec=>{
     const d=data[sec.id]||{};let st=0,sf=0;
     const walk=(items,obj)=>items.forEach(it=>{
-      if(it.t==='list'){(obj[it.key]||[]).forEach(r=>walk(it.fields,r));if(it.fields[0].req&&!(obj[it.key]||[]).length){st++}}
+      if(it.t==='list'){(obj[it.key]||[]).forEach(r=>walk(it.fields,r));}
       else if(it.req){st++;const v=obj[it.key];if(!(v===undefined||v===''||(Array.isArray(v)&&!v.length)))sf++}
     });
     // lists with required first field and no rows count as missing
@@ -303,34 +318,53 @@ function specMd(){
   });
   return o;
 }
-const PREAMBLE=[
-'You are generating a complete Foundgine application from the specification below. Foundgine is a semantic execution layer (Java 27 / .NET 10). The attached zip is the Foundgine repository; use it as the source of truth for APIs and conventions.',
-'',
-'## Template to follow',
-'Mirror src/java/samples/foundgine-supply-chain-advanced (README.md, SupplyChain-Advanced-Tutorial.md, ADVANCED-SCHEMA-AUDIT.md and the code). Same package roles: model (SupplyChainFoundgineModel-style registrar + SemanticConfigurations + PersistenceConfigurations + EntityMaps + Connections + ModelConnections), domain (annotation-free records), semantics, authorization (+ claims), mutation, postgres, jpa, intent, mcp, scenarios, data, tests, resources (db/migration/V1__*.sql, seed, persistence.xml), docker-compose.yml, pom.xml joining the reactor (foundgine-core, foundgine-runtime, foundgine-providers, jackson-databind, postgresql driver).',
-'',
-'## Non-negotiable Foundgine rules',
+const TPL_NET=[
+'- .NET reference: src/csharp/samples/Foundgine.SupplyChain.Advanced (README.md, VERIFY-GATES.md, docs/00-Overview-And-Setup.md to 05-Adversarial-Security-Testing.md). The project lives under Semantic/: Domain, Semantics (model + Configuration), Authorization (+ Claims: ClaimSchema, IdentitySpoofingValidator, CrossFieldClaimValidator), Application/Scenarios, Intent (SupplyChainIntentService, IntentCaller, EvidencingProvider), Api/Mcp (Program.cs, IntentEndpoint.cs, IntentMcpTools.cs), Infrastructure/Data, McpClient, Tests (xUnit), Benchmarks.',
+'- net10.0, ProjectReference or package references to Foundgine.Core and Foundgine.Providers; ModelContextProtocol.AspNetCore for MCP; Npgsql for PostgreSQL; actor resolved from the ASP.NET authenticated principal (demo: server-side FOUNDGINE_DEMO_ACTOR or the X-Foundgine-* headers, labelled DEMO ONLY).',
+'- Verify with dotnet restore / build / test as in VERIFY-GATES.md.'
+];
+const TPL_JAVA=[
+'- Java port: src/java/samples/foundgine-supply-chain-advanced (README.md, SupplyChain-Advanced-Tutorial.md, ADVANCED-SCHEMA-AUDIT.md). Package roles: model (SupplyChainFoundgineModel-style registrar + SemanticConfigurations + PersistenceConfigurations + EntityMaps + Connections + ModelConnections), domain (annotation-free records), semantics, authorization (+ claims), mutation, postgres, jpa, intent, mcp, scenarios, data, tests, resources (db/migration/V1__*.sql, seed, persistence.xml), docker-compose.yml, pom.xml joining the reactor (foundgine-core, foundgine-runtime, foundgine-providers, jackson-databind, postgresql driver).',
+'- Java 27 and Maven. Note the Java sample is marked implemented-unverified until the Maven and PostgreSQL gates pass; say so for anything you cannot run.'
+];
+function preamble(){
+  const lang=((data.project||{}).language)||'';
+  const net=lang.indexOf('.NET')===0, jv=lang.indexOf('Java')===0, both=lang.indexOf('Both')===0;
+  const L=[];
+  L.push('You are generating a complete Foundgine application from the specification below. Foundgine is a semantic execution layer implemented in .NET 10 and Java 27 with the same architecture and vocabulary. The attached zip is the Foundgine repository; use it as the source of truth for APIs and conventions.','');
+  L.push('## Language and template');
+  if(net) L.push('Target: .NET 10 (C#).',...TPL_NET);
+  else if(jv) L.push('Target: Java 27.',...TPL_JAVA,'- The .NET sample (src/csharp/samples/Foundgine.SupplyChain.Advanced) is the reference implementation; consult it when the Java behaviour is unclear.');
+  else if(both) L.push('Target: BOTH. Build the .NET application first (it is the reference), then a Java port with identical entity/field/relationship names, aliases, roles, intents and tests. Use the shared vectors under src/conformance where they apply and flag any language-specific capability difference explicitly.','','### .NET',...TPL_NET,'','### Java',...TPL_JAVA);
+  else L.push('The target language was not chosen. Ask which of .NET 10, Java 27 or both before generating.');
+  L.push('','## Non-negotiable Foundgine rules',
 '- Lifecycle: Caller > Intent > Semantic Model > Operation Graph > Retrieval > Resolution > Authorization > Plan Binding > Execution IR > Provider > Execution > Evidence.',
 '- Retrieval is candidate discovery, never authorization. Unresolved ambiguity is rejected or returned as REQUIRES_CLARIFICATION, never guessed.',
 '- Identity (tenant, role, audience) is host-owned. It is never part of the intent body; any identity-shaped property in an intent must be rejected as an unknown property. AI generates intent only.',
 '- Client claims may only narrow access. Reject reserved/hostile keys (role, isAdmin, tenant...) before they reach policy.',
 '- Fields the caller may not read are pruned from results (reported in explain as prunedFields), not turned into errors.',
-'- The canonical intent endpoint is ONE generic endpoint (POST /intent, POST /intent/explain, GET /intent/capabilities, plus MCP tool foundgine_intent) that takes the provider-neutral read intent {rootEntity, selections, filter, order, limit, offset, after} and runs it through a real Foundgine engine. It is not an endpoint per query.',
-'- Domain records carry no Foundgine annotations; semantic names, aliases (with weights), dimensions, storage and relationships live in fluent configuration (FoundgineModel).',
+'- The canonical intent endpoint is ONE generic endpoint (POST /intent, POST /intent/explain, GET /intent/capabilities, plus the foundgine_intent MCP tool) that takes the provider-neutral read intent {rootEntity, selections, filter, order, limit, offset, after} and runs it through a real Foundgine engine. It is not an endpoint per query.',
+'- Domain types carry no Foundgine annotations when the fluent model style is chosen; semantic names, aliases (with weights), dimensions, storage and relationships live in the model configuration.',
 '- Keep semantic/planning entities separate from persisted row types. Do not let semantic-only entities become tables.',
 '- The schema generator does not emit foreign keys, CHECK constraints, defaults, identity or extensions: write reviewed SQL for those and add a schema drift test.',
 '- Mutations go through the mutation engine; the domain service is the final enforcement point. Use idempotency keys with request fingerprints and server-side calculations.',
-'- Do not claim anything is verified unless you actually ran the Maven build and tests. Say plainly what was not run.',
+'- Do not claim anything is verified unless you actually ran the build and tests. Say plainly what was not run.',
+'',
+'## Providers and extensions',
+'- Wire exactly the providers and extensions ticked in section 10 of the specification, through the documented seams (docs/wiki/providers.md, extensions.md, agent-framework-integrations.md, gateway-events.md, approvals-audit-governance.md, orm-providers.md, agents-mcp.md). Do not add unticked ones.',
+'- A provider executes the already-authorized artifact and never reinterprets caller authority. An extension is an adapter, not a second semantic engine. Identity for Keycloak, warrants and agent frameworks is host-supplied, never model-supplied.',
+'- Respect each provider\'s maturity notes in docs/wiki and the module READMEs (for example JPA is partial, Java PostgreSQL retrieval runtime is unverified, the MAF adapter is not build-verified) and report them instead of overclaiming.',
+'- For every ticked provider or extension: add its configuration, a docker-compose service where one is needed, and at least one test or a documented verification step.',
 '',
 '## Process',
-'1. Read the sample and the relevant core/runtime/providers classes first.',
-'2. Restate the model you will build (entities, relationships, roles, intents) in a short summary and flag gaps or contradictions in the spec.',
-'3. Generate the module in stages: model + domain + SQL, authorization, intent service/endpoint, mutations, MCP, scenarios and tests, docs.',
-'4. Build and test. Return the whole project as a zip with all files.',
-'',
-'# SPECIFICATION'
-].join('\n');
-function prompt(){return PREAMBLE+'\n'+specMd()+'\n\n# END OF SPECIFICATION\nFor any blank item, follow the rule in section 12. Start with step 1 and step 2, then continue.\n'}
+'1. Read the template sample(s) and the relevant core, runtime and provider code first.',
+'2. Restate the model you will build (entities, relationships, roles, intents, providers) in a short summary and flag gaps or contradictions in the spec.',
+'3. Generate in stages: model + domain + SQL, authorization, intent service and endpoint, mutations, providers and extensions, MCP, scenarios and tests, docs.',
+'4. Build and test with the language\'s toolchain. Return the whole project as a zip with all files.',
+'','# SPECIFICATION');
+  return L.join('\n');
+}
+function prompt(){return preamble()+'\n'+specMd()+'\n\n# END OF SPECIFICATION\nFor any blank item, follow the rule in section 12. Start with step 1 and step 2, then continue.\n'}
 function pruneEmpty(v){if(Array.isArray(v))return v.map(pruneEmpty).filter(x=>x!==undefined);if(v&&typeof v==='object'){const o={};for(const k in v){const p=pruneEmpty(v[k]);if(p!==undefined)o[k]=p}return Object.keys(o).length?o:undefined}if(v===''||v===false||v===undefined)return undefined;return v}
 function json(){return JSON.stringify(pruneEmpty(data)||{},null,2)}
 
@@ -367,21 +401,21 @@ root.getElementById('bReset').onclick=function(){
 root.getElementById('bExample').onclick=()=>{data=EXAMPLE();build()};
 
 function EXAMPLE(){return {
-project:{name:'EquipmentRental',purpose:'Small equipment-rental business. Staff and agents ask which items are available, who has what out, and which rentals are overdue; customers can book and cancel.',language:'Java 27 (Maven)  - matches the sample',shape:'New sample module inside the Foundgine reactor (like foundgine-supply-chain-advanced)',basePackage:'com.foundgine.samples.rental',groupArtifact:'io.github.cristianbarragan : foundgine-sample-rental',foundgineVersion:'3.4.0',port:'4790'},
+project:{name:'EquipmentRental',purpose:'Small equipment-rental business. Staff and agents ask which items are available, who has what out, and which rentals are overdue; customers can book and cancel.',language:'Java 27 (Maven)  - port: foundgine-supply-chain-advanced',shape:'New sample module inside the Foundgine reactor (like foundgine-supply-chain-advanced)',basePackage:'com.foundgine.samples.rental',groupArtifact:'io.github.cristianbarragan : foundgine-sample-rental',foundgineVersion:'3.4.0',port:'4790'},
 actors:{actors:[{name:'CUSTOMER',desc:'Books and cancels own rentals; sees equipment catalogue.'},{name:'CLERK',desc:'Sees all rentals in own branch tenant.'},{name:'MANAGER',desc:'Sees everything incl. replacement cost.'}],questions:[{q:'Which rentals are overdue?',entities:'Rental, Customer',who:'CLERK'},{q:'What drill models are free this weekend?',entities:'Equipment',who:'CUSTOMER'}],out:'Payments, invoicing.'},
 entities:{entities:[
 {name:'Customer',storage:'Persisted in a table',table:'customers',key:'id int',tenantScoped:true,tenantField:'tenantId',aliases:'Client:90, Renter:85',fields:[{name:'Name',type:'String',sqlType:'varchar(120)',required:true},{name:'TenantId',type:'String',sqlType:'varchar(80)',required:true}]},
 {name:'Equipment',storage:'Persisted in a table',table:'equipment',key:'id int',tenantScoped:true,aliases:'Tool:90, Gear:80',dimensions:'category as "category"',fields:[{name:'Name',type:'String',sqlType:'varchar(120)',required:true},{name:'Category',type:'String',sqlType:'varchar(80)'},{name:'DailyRate',type:'BigDecimal',sqlType:'numeric(18,2)',constraint:'>= 0'},{name:'ReplacementCost',type:'BigDecimal',sqlType:'numeric(18,2)',sensitive:true}]},
 {name:'Rental',storage:'Persisted in a table',table:'rentals',key:'id int',tenantScoped:true,aliases:'Booking:90, Hire:85',fields:[{name:'CustomerId',type:'int',required:true},{name:'EquipmentId',type:'int',required:true},{name:'DueOn',type:'LocalDate',required:true,fAliases:'ReturnDate:90'},{name:'Status',type:'enum',constraint:'Booked, Out, Returned, Cancelled'}]}]},
 rels:{rels:[{from:'Rental',name:'customer',to:'Customer',card:'One',fk:'Rental.customerId references Customer.id',follow:'Same tenant only'},{from:'Rental',name:'equipment',to:'Equipment',card:'One',fk:'Rental.equipmentId references Equipment.id'},{from:'Customer',name:'rentals',to:'Rental',card:'Many',inverse:'customer'}]},
-persist:{db:'PostgreSQL 16',ext:['pg_trgm (fuzzy)'],migr:'Flyway, hand-written V1 baseline (recommended)',ormPath:'SQL provider only',ids:'Integer keys, identity on transactional tables',docker:true,tenants:'tenant-a, tenant-b'},
+persist:{db:'PostgreSQL 16 / 17',queryProvider:'SQL provider (compiled, parameterised SQL; most control)',migr:'Hand-written SQL baseline (Flyway on Java; SQL scripts on .NET)',ormPath:'One provider only',ids:'Integer keys, identity on transactional tables',docker:true,tenants:'tenant-a, tenant-b'},
 semantic:{naming:'PASCAL_CASE (sample default)',retrieval:['exact','pg_trgm fuzzy','alias weights only'],ambig:'Return REQUIRES_CLARIFICATION with candidates'},
 authz:{tenancy:'Tenant field on each tenant-scoped entity',identity:'Demo headers X-Foundgine-Tenant / X-Foundgine-Role (sample only)',roles:[{name:'CUSTOMER',read:'Equipment, own Rentals',denied:'Equipment.ReplacementCost, other customers'},{name:'CLERK',read:'All except cost fields',denied:'Equipment.ReplacementCost'},{name:'MANAGER',read:'All',write:'All'}],rules:[{kind:'Field read',target:'Equipment.ReplacementCost',who:'MANAGER'},{kind:'Row predicate (e.g. tenant)',target:'Customer, Rental',who:'all',cond:'tenantId equals caller tenant'}],claims:[{key:'branch',meaning:'Restricts reads to one branch'}],reserved:'role, isAdmin, tenant, tenantId'},
-intent:{paths:['POST /intent (execute)','POST /intent/explain (dry run: resolution, prunedFields, plan)','GET /intent/capabilities (what may this caller do)','MCP tool foundgine_intent'],server:'JDK HttpServer, dependency-free (sample)',examples:[{title:'Same intent, two roles',role:'CLERK vs MANAGER',tenant:'tenant-a',json:'{"rootEntity":"Equipment","selections":[{"field":"Name"},{"field":"ReplacementCost"}]}',expect:'MANAGER sees ReplacementCost; CLERK gets it pruned, not an error.'}]},
+intent:{paths:['POST /intent (execute)','POST /intent/explain (dry run: resolution, prunedFields, plan)','GET /intent/capabilities (what may this caller do)','MCP tool foundgine_intent'],server:'JDK HttpServer, dependency-free (Java sample)',examples:[{title:'Same intent, two roles',role:'CLERK vs MANAGER',tenant:'tenant-a',json:'{"rootEntity":"Equipment","selections":[{"field":"Name"},{"field":"ReplacementCost"}]}',expect:'MANAGER sees ReplacementCost; CLERK gets it pruned, not an error.'}]},
 mut:{muts:[{name:'book_rental',desc:'Create a booking for a customer.',input:'customerId, equipmentId, from, to, idempotencyKey',actor:'Customer may only book for self; tenant must match.',invariants:'Equipment not double-booked in the date range; to after from.',idem:'Idempotency key with request fingerprint, replay returns original',lock:'pg_advisory_xact_lock on idempotency key + row locks',server:'total price = daily rate x days'},{name:'cancel_rental',desc:'Cancel a booking not yet picked up.',invariants:'Status must be Booked.'}]},
-adapters:{adapt:['MCP server (JSON-RPC over HTTP, /mcp, /health)','MCP client demo (raw HTTP)','Main in-memory smoke test']},
+adapters:{exec:['SQL provider (SqlCompiler / SqlExecutionProvider)','SQL mutations incl. PostgreSQL batched'],retr:['PostgreSQL retrieval: pg_trgm + native full text'],ai:['MCP server (tools, sessions, SSE, approval tokens)'],ops:['Execution evidence and receipts on every result','Diagnostics and health endpoints'],sdk:['MCP client demo (raw HTTP)','Main / in-memory smoke test']},
 tests:{scen:[{name:'Overdue rentals',desc:'Rentals with DueOn before today and Status Out.',expect:'Clerk sees them in own tenant only.'}],sec:['Tenant isolation: same intent, other tenant returns nothing','Same intent, different role: sensitive fields pruned not errored','Reserved claim keys (role, isAdmin) rejected','Identity-shaped property in intent body rejected','Idempotency replay returns original result'],accept:'mvn test green; curl examples return expected per-role output.'},
-gen:{layout:['model (fluent semantic + persistence + entity maps + connections)','domain (annotation-free records)','semantics','authorization (+ claims)','mutation','postgres','intent (service, caller, endpoint)','mcp','scenarios','data fixture','migrations / schema.sql / seed','tests','README (how to run)'],blank:'Choose sensible defaults and list them at the end',verify:true,zip:true}
+gen:{layout:['model (fluent semantic + persistence + entity maps + connections)','domain (annotation-free records)','semantics','authorization (+ claims)','mutation','postgres','intent (service, caller, endpoint)','mcp','providers and extensions wiring (section 10)','scenarios','data fixture','migrations / schema.sql / seed','tests','README (how to run)'],blank:'Choose sensible defaults and list them at the end',verify:true,zip:true}
 }}
     load();build();
   }
