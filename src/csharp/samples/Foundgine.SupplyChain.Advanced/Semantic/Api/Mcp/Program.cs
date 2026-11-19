@@ -2,21 +2,33 @@ using Foundgine.Core.Abstractions;
 using Foundgine.Core.Semantic;
 using Foundgine.Core.Semantic.Authorization;
 using Foundgine.Core.Semantic.IR;
+using System.ComponentModel;
+using System.Text.Json;
 using Foundgine.SupplyChain.Advanced.Authorization;
+using Foundgine.SupplyChain.Advanced.Data;
+using Foundgine.SupplyChain.Advanced.Intent;
 using Foundgine.SupplyChain.Advanced.Semantics;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ModelContextProtocol;
 using ModelContextProtocol.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton(SupplyChainSemanticModel.Build());
+// Canonical intent boundary: one service, served at /intent* and as the foundgine_intent MCP tool.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton(new SupplyChainIntentService(SupplyChainData.Seed()));
 builder.Services.AddMcpServer()
     .WithHttpTransport(o => o.Stateless = true)
-    .WithTools<SupplyChainMcpTools>();
+    .WithTools<SupplyChainMcpTools>()
+    .WithTools<IntentMcpTools>();
 
 var app = builder.Build();
 app.MapMcp("/mcp");
+app.MapIntentEndpoints(app.Services.GetRequiredService<SupplyChainIntentService>());
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.Run();
 

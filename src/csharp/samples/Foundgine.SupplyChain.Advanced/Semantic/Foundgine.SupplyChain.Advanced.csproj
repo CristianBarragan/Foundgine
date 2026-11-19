@@ -16,6 +16,8 @@
     <None Remove="McpClient/**/*.cs" />
     <Compile Remove="Benchmarks/**/*.cs" />
     <None Remove="Benchmarks/**/*.cs" />
+    <!-- Intent/SupplyChainIntentService builds one real Foundgine engine per caller from a ServiceCollection. -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
     <ProjectReference Include="../../../Foundgine.Core/Foundgine.Core.csproj" />
     <ProjectReference Include="../../../Foundgine.Providers/Foundgine.Providers.csproj" />
     <ProjectReference

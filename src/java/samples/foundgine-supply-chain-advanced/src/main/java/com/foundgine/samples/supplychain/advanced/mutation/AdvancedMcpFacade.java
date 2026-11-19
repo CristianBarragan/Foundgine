@@ -7,6 +7,7 @@ import com.foundgine.providers.tools.mcp.FoundgineMcpTools;
 import com.foundgine.runtime.MutationExecutionResult;
 import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import com.foundgine.samples.supplychain.advanced.data.SupplyChainData;
+import com.foundgine.samples.supplychain.advanced.intent.SupplyChainIntentService;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,14 +27,25 @@ public final class AdvancedMcpFacade {
     private final AdvancedMutationPipeline pipeline;
     private final FoundgineMcpTools queryTools;
     private final FoundgineMcpMutationTools mutationTools;
+    private final SupplyChainIntentService intentService;
 
     public AdvancedMcpFacade(SupplyChainData data, Authorization.Context auth) {
         this.pipeline =
                 new AdvancedMutationPipeline(
                         Objects.requireNonNull(data), Objects.requireNonNull(auth));
 
+        this.intentService = new SupplyChainIntentService(data);
         this.queryTools = new FoundgineMcpTools(this::query);
         this.mutationTools = new FoundgineMcpMutationTools(this::mutate);
+    }
+
+    /**
+     * The canonical intent boundary over the same fixture. Unlike {@link #queryTools()}, whose
+     * {@code capabilities} query is a fixed response, this runs the caller's intent through a real
+     * Foundgine engine: resolution, authorization, planning and execution.
+     */
+    public SupplyChainIntentService intentService() {
+        return intentService;
     }
 
     public FoundgineMcpTools queryTools() {

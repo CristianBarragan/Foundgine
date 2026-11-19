@@ -2,7 +2,13 @@
 
 ## Unreleased
 
-_No unreleased changes._
+### Added
+
+- C# Advanced Supply Chain sample: canonical intent endpoint, matching the Java sample's wire format. `POST /intent`, `POST /intent/explain` and `GET /intent/capabilities` plus the `foundgine_intent` MCP tool run a provider-neutral `ReadIntent` through a real `IFoundgine` engine per (tenant, role), with the caller taken from `X-Foundgine-Tenant` / `X-Foundgine-Role` and never from the body. New: `Semantic/Intent/*` (`SupplyChainIntentService`, `IntentCaller`, `SupplyChainRows`, `EvidencingProvider`), `Semantic/Api/Mcp/IntentEndpoint.cs`, `Semantic/Tests/CanonicalIntentEndpointTests.cs`.
+
+### Verification status
+
+- The 13 of the 14 `CanonicalIntentEndpointTests` pass against the real engine (resolution, authorization, planning, in-memory execution, receipts) and a Kestrel-hosted `/intent` endpoint, built with warnings as errors and XML docs on, on the .NET 10 SDK. They were compiled together with `Foundgine.Core`, `Foundgine.Runtime` and the in-memory provider because NuGet was unreachable, and run with a small xunit-compatible harness rather than xunit itself. The 14th, `Mcp_transport_takes_the_caller_from_headers_and_never_from_arguments`, posts JSON-RPC to the real `/mcp` server and needs `ModelContextProtocol.AspNetCore`, so it has not been compiled or run; the `foundgine_intent` tool class compiles only against stubbed SDK types. The new `Microsoft.Extensions.DependencyInjection` package reference and the Tests project's `FrameworkReference` were not restored.
 
 ## 3.4.0 — November 18, 2026
 

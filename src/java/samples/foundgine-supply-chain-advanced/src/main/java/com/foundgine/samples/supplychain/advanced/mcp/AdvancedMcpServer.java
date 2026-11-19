@@ -7,6 +7,7 @@ import com.foundgine.samples.supplychain.advanced.ambiguity.AmbiguityConnectionS
 import com.foundgine.samples.supplychain.advanced.ambiguity.TopSupplierOverdueOrdersService;
 import com.foundgine.samples.supplychain.advanced.authorization.Authorization;
 import com.foundgine.samples.supplychain.advanced.data.SupplyChainData;
+import com.foundgine.samples.supplychain.advanced.intent.SupplyChainIntentService;
 import com.foundgine.samples.supplychain.advanced.mutation.AdvancedMcpFacade;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -36,6 +37,10 @@ import java.util.concurrent.CompletionStage;
  * <ul>
  *   <li>{@code foundgine_query} — arguments: {@code {"intentJson": "..."}}
  *   <li>{@code foundgine_mutation} — arguments: {@code {"mutationJson": "..."}}
+ *   <li>{@code foundgine_intent} — arguments: {@code {"intent": {...}, "mode":
+ *       "execute|explain|capabilities"}}. The canonical read intent run through a real Foundgine
+ *       engine as the caller given by the {@code X-Foundgine-Tenant}/{@code X-Foundgine-Role}
+ *       headers; also served directly at {@code /intent} (see {@link AdvancedIntentEndpoint}).
  *   <li>{@code find_top_supplier_overdue_orders} — arguments: {@code {"actor": "...", "state":
  *       "...", "supplierName": "..." (optional)}}. Backed directly by Postgres via {@link
  *       com.foundgine.samples.supplychain.advanced.ambiguity.TopSupplierOverdueOrdersService}, not
@@ -52,12 +57,15 @@ public final class AdvancedMcpServer {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final AdvancedMcpFacade facade;
+    private final AdvancedIntentEndpoint intentEndpoint;
     private final HttpServer httpServer;
 
     public AdvancedMcpServer(AdvancedMcpFacade facade, String host, int port) throws IOException {
         this.facade = Objects.requireNonNull(facade, "facade");
         this.httpServer = HttpServer.create(new InetSocketAddress(host, port), 0);
+        this.intentEndpoint = new AdvancedIntentEndpoint(facade.intentService());
         this.httpServer.createContext(MCP_PATH, this::handleMcp);
+        this.intentEndpoint.register(httpServer);
         this.httpServer.createContext(
                 "/health", exchange -> respond(exchange, 200, "{\"status\":\"ok\"}"));
     }
@@ -105,6 +113,7 @@ public final class AdvancedMcpServer {
                                         .foundgineMutation(
                                                 arguments.path("mutationJson").asText("{}"))
                                         .thenApply(this::toJson);
+                        case "foundgine_intent" -> callIntentTool(exchange, arguments);
                         case "find_top_supplier_overdue_orders" ->
                                 findTopSupplierOverdueOrders(arguments);
                         default -> null;
@@ -120,7 +129,7 @@ public final class AdvancedMcpServer {
                             (json, error) -> {
                                 try {
                                     if (error != null) {
-                                        respondRpcToolError(exchange, id, rootMessage(error));
+                                        respondRpcToolError(exchange, id, toolErrorMessage(toolName, error));
                                     } else {
                                         respondRpcToolSuccess(exchange, id, json);
                                     }
@@ -137,6 +146,27 @@ public final class AdvancedMcpServer {
                 exchange.close();
             }
         }
+    }
+
+    /**
+     * The intent tool. Its caller comes from the /mcp request headers, never from tool arguments,
+     * so an unknown tenant or role fails the tool call (as "forbidden") rather than the transport.
+     */
+    private CompletionStage<String> callIntentTool(HttpExchange exchange, JsonNode arguments) {
+        try {
+            return intentEndpoint.callTool(intentEndpoint.caller(exchange), arguments);
+        } catch (Throwable t) {
+            return CompletableFuture.failedFuture(t);
+        }
+    }
+
+    /** Intent errors keep their classification (e.g. "forbidden: ..."); other tools keep the root message. */
+    private static String toolErrorMessage(String toolName, Throwable error) {
+        if ("foundgine_intent".equals(toolName)) {
+            var failure = SupplyChainIntentService.failure(error);
+            return failure.type() + ": " + failure.message();
+        }
+        return rootMessage(error);
     }
 
     // The ambiguity-resolution demo capability from the Foundgine walkthrough
@@ -253,5 +283,12 @@ public final class AdvancedMcpServer {
         System.out.println("Listening on http://" + DEFAULT_HOST + ":" + server.port() + MCP_PATH);
         System.out.println(
                 "Health check: http://" + DEFAULT_HOST + ":" + server.port() + "/health");
+        System.out.println(
+                "Canonical intent: POST http://"
+                        + DEFAULT_HOST
+                        + ":"
+                        + server.port()
+                        + AdvancedIntentEndpoint.PATH
+                        + "  (also /explain, /capabilities; headers X-Foundgine-Tenant, X-Foundgine-Role)");
     }
 }
