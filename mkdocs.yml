@@ -1,5 +1,5 @@
 site_name: Foundgine
-site_description: "Semantic execution layer for .NET and Java, with TypeScript, Python and WebAssembly client SDKs"
+site_description: "Configurable semantic and execution boundary for application capabilities in .NET and Java; optional interfaces, integrations and client SDKs."
 repo_url: https://github.com/Foundgine/Foundgine
 repo_name: Foundgine/Foundgine
 
@@ -38,6 +38,7 @@ nav:
   - Open Intent API: OPEN-INTENT-API.md
   - Lexical grounding: LEXICAL-GROUNDING.md
   - Grounding decisions: GROUNDING-DECISIONS.md
+  - "Example: alias grounding": ALIAS-EXAMPLE.md
   - Public API and provider independence: PUBLIC-API.md
   - Security: SECURITY.md
   - Warrant revocation durability: security/warrant-revocation-checkpoint-8.md
@@ -77,3 +78,4 @@ nav:
       - Cross-language implementation map: wiki/implementation-map.md
       - Glossary (plain words): wiki/glossary.md
   - Verification report: VERIFICATION-REPORT.md
+  - Documentation audit: DOCUMENTATION-AUDIT.md

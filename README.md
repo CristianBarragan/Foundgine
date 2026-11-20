@@ -6,275 +6,120 @@
 [![NuGet Version](https://img.shields.io/nuget/v/Foundgine.Core?label=NuGet%20Version)](https://www.nuget.org/packages/Foundgine.Core/)
 [![Unit Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/csharp-build.yml?branch=main&job=unit-tests&label=Unit%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/csharp-build.yml)
 [![Integration Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/csharp-build.yml?branch=main&job=integration-tests&label=Integration%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/csharp-build.yml)
-[![Performance (Hot Chocolate)](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/csharp-build.yml?branch=main&job=benchmark-build-hotchocolate&label=Performance%20%28Hot%20Chocolate%29)](https://github.com/Foundgine/Foundgine/actions/workflows/csharp-build.yml)
-[![Performance (Foundgine)](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/csharp-build.yml?branch=main&job=benchmark-build-foundgine&label=Performance%20%28Foundgine%29)](https://github.com/Foundgine/Foundgine/actions/workflows/csharp-build.yml)
-[![Authority PenTest](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/security.yml?branch=main&job=security-penetration&label=Authority%20PenTest)](https://github.com/Foundgine/Foundgine/actions/workflows/security.yml)
-
 [![Maven Central Version](https://img.shields.io/maven-central/v/io.github.cristianbarragan/foundgine-core?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.cristianbarragan/foundgine-core)
 [![Java Unit Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/java-build.yml?branch=main&job=java-build&label=Java%20Unit%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/java-build.yml)
-[![Java Integration Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/java-build.yml?branch=main&job=java-postgres-e2e&label=Java%20Integration%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/java-build.yml)
-[![Java Security Tests](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/java-build.yml?branch=main&job=java-security-penetration&label=Java%20Security%20Tests)](https://github.com/Foundgine/Foundgine/actions/workflows/java-build.yml)
-
 [![Python Version](https://img.shields.io/pypi/v/foundgine?label=PyPI%20Version)](https://pypi.org/project/foundgine)
-[![Python Build](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/python-build.yml?branch=main&label=Python%20Build)](https://github.com/Foundgine/Foundgine/actions/workflows/python-build.yml)
+[![TypeScript Version](https://img.shields.io/npm/v/@foundgine/typescript?label=npm)](https://www.npmjs.com/package/@foundgine/typescript)
+[![WASM Version](https://img.shields.io/npm/v/@foundgine/wasm?label=npm%20WASM)](https://www.npmjs.com/package/@foundgine/wasm)
 
-[![TypeScript Version](https://img.shields.io/npm/v/@foundgine/typescript?label=npm%20%40foundgine%2Ftypescript)](https://www.npmjs.com/package/@foundgine/typescript)
-[![TypeScript Build](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/typescript-build.yml?branch=main&label=TypeScript%20Build)](https://github.com/Foundgine/Foundgine/actions/workflows/typescript-build.yml)
+# Foundgine
 
-[![WASM Version](https://img.shields.io/npm/v/@foundgine/wasm?label=npm%20%40foundgine%2Fwasm)](https://www.npmjs.com/package/@foundgine/wasm)
-[![WASM Build](https://img.shields.io/github/actions/workflow/status/Foundgine/Foundgine/wasm-build.yml?branch=main&label=Rust%20%2F%20WASM%20Build)](https://github.com/Foundgine/Foundgine/actions/workflows/wasm-build.yml)
+**A configurable semantic and execution boundary for application capabilities.**
 
-Foundgine gives AI agents and other callers a way to express what they want, while your application retains full control over how anything is executed. It introduces a single, application‑controlled semantic execution boundary that sits between:
+Foundgine separates application meaning, persistence mapping, authorization and execution from the interfaces and agents that consume them. Configure capabilities with fluent APIs, resolve operations against application-defined semantics, and execute through providers—without making a particular API, ORM, database, or AI framework the center of your architecture.
 
-- caller intent,
-- your domain meaning,
-- your authorization rules,
-- and the actual operations performed on your data, APIs, GraphQL, MCP tools, or backend systems.
+It is built for conventional application development as well as applications that expose capabilities to AI agents. **AI is an optional consumer, not a prerequisite.**
 
-This boundary ensures that agents can propose actions, but only your application decides **what is allowed, what is safe, and what is actually executed.**
+## Why Foundgine?
 
-## Why Foundgine matters
+Applications commonly duplicate business meaning, query logic, validation and authorization across REST endpoints, GraphQL resolvers, internal services, automation and agent tools. That duplication makes behavior harder to keep consistent and increases the cost of adding another interface.
 
-**Foundgine is the semantic execution layer for enterprise applications and AI.**
+Foundgine provides a configurable boundary where applications define capabilities and their semantics, map them to their persistence and domain environment, and control execution. Interfaces consume that boundary instead of independently implementing its rules.
 
-Enterprises already have CRMs, ERPs, databases, APIs and workflow systems. The problem is that every new access path—an application, REST or GraphQL endpoint, MCP tool or AI agent—can end up reimplementing business meaning, validation, authorization and query or mutation logic.
+- **Configure meaning, not transport:** define entities, fields, relationships, aliases and capabilities through fluent configuration.
+- **Separate concerns:** semantic configuration, persistence mapping, authorization and execution are distinct responsibilities.
+- **Use familiar infrastructure:** integrate with existing EF Core, JPA, databases and application architecture; Foundgine is not a mandate to replace them.
+- **Reuse across consumers:** application code, supported APIs, GraphQL, MCP and agent integrations can use the same configured capabilities.
+- **Adopt incrementally:** start with the operations where a shared execution boundary is useful. The semantic/AI features are optional.
 
-Foundgine is designed to provide one **application-controlled semantic execution boundary** between caller intent and physical operations. The application defines what its business entities mean and who may use them; Foundgine resolves and plans supported operations, applies the configured authorization boundary, and passes an authorized execution artifact to the relevant provider.
+## Architecture at a glance
 
-**Why it matters**
-- **Less duplication:** Reuse semantic definitions and execution infrastructure across supported interfaces.
-- **More control:** Keep identity, business policy and authorization under application control; AI-generated intent does not become authority.
-- **Lower architectural friction:** Keep existing applications, databases and persistence technologies where supported instead of replacing them to adopt Foundgine.
+```text
+Application / API / GraphQL / MCP / Agent / Other Consumer
+                         │
+                         ▼
+          Configured Semantic Capabilities
+                         │
+          Meaning · Mapping · Relationships
+                         │
+                         ▼
+             Resolution and Authorization
+                         │
+                         ▼
+              Plan / Execution Boundary
+                         │
+                         ▼
+        Provider / ORM / Existing Infrastructure
+```
 
-Foundgine complements rather than replaces ORMs, GraphQL, API gateways, integration platforms, workflow engines or agent frameworks. Its value is the integrated execution boundary between them. Actual savings and security improvements must be demonstrated against equivalent workloads; they are not assumed or guaranteed.
+The application remains responsible for its trusted identity and security context, domain invariants, and policies. Foundgine does not infer authority from caller text, retrieval results, model output or capability discovery. Authorization is applied at the execution boundary.
 
-**Read the [Product Positioning & Commercial Strategy](docs/PRODUCT-POSITIONING-AND-COMMERCIAL-STRATEGY.md)** for the enterprise problem, target buyers, competitive positioning, ROI model, proof requirements and website messaging.
+## Fluent configuration is the primary experience
 
-**Where to read next**
+Foundgine's configuration model is designed to be explicit and language-idiomatic in both C# and Java. The semantic model and persistence mapping are configured separately from the domain types and from transport-specific endpoints. Consult the language samples for the exact APIs supported by the current release.
 
-| I want to... | Go to |
-| ------------ | ----- |
-| Run something now | [Get started](#get-started) |
-| Understand the idea and the boundary | [`docs/WHY-FOUNDGINE.md`](docs/WHY-FOUNDGINE.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| Browse every feature in plain language | [Feature and capability wiki](docs/wiki/index.md) |
-| Pick a database, ORM (**EF Core** / **JPA**) or search provider | [Provider catalogue](docs/wiki/providers.md) · [ORM providers](docs/wiki/orm-providers.md) |
-| Add GraphQL, Keycloak or Temporal | [Extensions](docs/wiki/extensions.md) |
-| Use **Microsoft Agent Framework**, **LangChain4j** or **Spring Boot** | [Agent and framework integrations](docs/wiki/agent-framework-integrations.md) |
-| Call a Foundgine server from **TypeScript**, **Python** or **WebAssembly** | [Client SDKs](docs/wiki/client-sdks.md) · [`src/typescript`](src/typescript/README.md) · [`src/python`](src/python/README.md) · [`src/wasm`](src/wasm/README.md) |
-| Check implementation and test coverage | [Source coverage](docs/SOURCE-COVERAGE.md) · [Conformance and hardening](docs/wiki/conformance-hardening.md) |
+- [.NET starter](src/csharp/samples/Foundgine.SupplyChain/)
+- [Java starter](src/java/samples/foundgine-supply-chain/)
+- [Advanced .NET sample](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md)
+- [Advanced Java sample](src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md)
 
-## The idea
+## Use Foundgine without AI
 
-Retrieval can discover candidates and evidence, but **retrieval is not authorization**. The application owns identity and policy; providers execute the already-authorized artifact. **Foundgine** centralizes this responsibility.
+Foundgine can be used for semantic query and execution, relationships, provider-backed operations and application interfaces without an LLM, MCP or agent framework. AI integrations are optional adapters that consume capabilities; they do not define application authority.
 
-## Get started
+## Existing stack and incremental adoption
 
-The fastest path is the Supply Chain sample pair:
+Foundgine complements rather than universally replaces:
 
-- **Starter:** the smallest realistic application boundary.
-  - .NET — [`src/csharp/samples/Foundgine.SupplyChain`](src/csharp/samples/Foundgine.SupplyChain) (current README and implementation)
-  - Java — [`src/java/samples/foundgine-supply-chain`](src/java/samples/foundgine-supply-chain) (current README and implementation)
-- **Advanced:** richer semantics, grounding, retrieval, authorization and adversarial testing.
-  - .NET — [`src/csharp/samples/Foundgine.SupplyChain.Advanced`](src/csharp/samples/Foundgine.SupplyChain.Advanced): start at [`docs/00-Overview-And-Setup.md`](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) and follow 01–05.
-  - Java — [`src/java/samples/foundgine-supply-chain-advanced`](src/java/samples/foundgine-supply-chain-advanced): [`SupplyChain-Advanced-Tutorial.md`](src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md).
- 
-- **Enterprise integration example (separate work-in-progress repository):**
-  - .NET/Java CRM, ERP, Temporal and Keycloak example — [`Foundgine-e2e-example`](https://github.com/CristianBarragan/Foundgine-e2e-example): [`Tutorial`](https://github.com/CristianBarragan/Foundgine-e2e-example/blob/main/docs/tutorial.md). Check that repository's README for its current build and verification status; it is not a certified Foundgine sample.
+- **EF Core and JPA:** ORM integration and provider paths are available; capability maturity and constraints are documented per provider.
+- **GraphQL:** adapters are available for Hot Chocolate (.NET) and GraphQL Java.
+- **Databases and providers:** use supported provider paths and existing infrastructure; see the provider catalogue.
+- **Identity and authorization:** host/application supplies trusted execution context and policy. Foundgine is not an identity provider or authorization server.
+- **Workflow and agent frameworks:** optional integrations, including Temporal and agent-framework adapters, are documented separately.
 
-- **Generate your own app:** the [app spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) (`docs-site/spec-form/`) turns a description of your domain, entities, roles and intents into a prompt that has an AI build a Foundgine application for .NET, Java or both, modelled on the Advanced supply-chain samples and including whichever providers and extensions you select. It runs entirely in the browser; the component is `docs-site/assets/spec-form.js`.
+Adopt it around a selected capability, validate behavior and operational fit, then expand as appropriate. Do not assume every existing application or operation needs to move behind Foundgine.
 
-For the conceptual path, use [`docs/README.md`](docs/README.md) or the [documentation site](https://foundgine.github.io/Foundgine/docs-site/).
+## Examples and comparisons
 
-## Generate your own app 
+- **Starter applications:** [.NET](src/csharp/samples/Foundgine.SupplyChain/) · [Java](src/java/samples/foundgine-supply-chain/)
+- **Advanced semantic and security examples:** [.NET](src/csharp/samples/Foundgine.SupplyChain.Advanced/docs/00-Overview-And-Setup.md) · [Java](src/java/samples/foundgine-supply-chain-advanced/SupplyChain-Advanced-Tutorial.md)
+- **Conventional stack comparisons:** [.NET — Hot Chocolate and EF Core](src/csharp/samples/Foundgine.Comparison/README.md) · [Java — Spring](src/java/samples/foundgine-comparison/README.md)
+- [Alias grounding example](docs/ALIAS-EXAMPLE.md) · [Grounding decisions](docs/GROUNDING-DECISIONS.md)
 
-The [app spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) (`docs-site/spec-form/`) turns a description of your domain, entities, roles and intents into a prompt that has an AI build a Foundgine application for .NET, Java or both, modelled on the Advanced supply-chain samples and including whichever providers and extensions you select. It runs entirely in the browser.
+Comparisons are workload-specific. Foundgine does not claim to replace every ORM, API framework or provider, nor that it is universally faster or inherently more secure than every alternative.
 
-## A concrete example
+## Documentation
 
-Two callers can ask for the same thing in different words:
-
-- **Canonical:** “show me overdue purchase orders from our top supplier in Texas”
-- **Paraphrase:** “show me the overdue buys from our top seller in Texas”
-
-Foundgine does not treat the paraphrase as a fuzzy guess at a _different_ operation. In the Supply Chain semantic contract, `Buy`/`Buys` are declared aliases of `PurchaseOrder`, and `Seller` is a declared alias of `Supplier`. Both sentences are grounded onto the **same canonical semantic identities** before authorization or planning ever runs — the diagram below follows one request all the way from words to a database call.
-
-_Tests:_
-
-- .NET — [`SupplyChainGroundingAliasTests.cs`](src/csharp/samples/Foundgine.SupplyChain.Advanced/Semantic/Tests/Grounding/SupplyChainGroundingAliasTests.cs) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingTests.cs`](src/csharp/tests/Foundgine.Semantics.Tests/SemanticAliasSynonymGroundingTests.cs) (core semantics).
-- Java — [`SupplyChainGroundingAliasParityTest.java`](src/java/samples/foundgine-supply-chain-advanced/src/test/java/com/foundgine/samples/supplychain/advanced/SupplyChainGroundingAliasParityTest.java) (advanced Supply Chain sample) · [`SemanticAliasSynonymGroundingParityTest.java`](src/java/foundgine-core/src/test/java/com/foundgine/core/semantic/resolution/SemanticAliasSynonymGroundingParityTest.java) (core semantics).
-
-<p align="center"><img src="docs/assets/overdue-purchase-orders-alias-flow.svg" alt="Foundgine alias-matched Supply Chain request from caller intent through semantic resolution, authorization, planning, PostgreSQL execution and evidence." width="100%"></p>
-
-### The request, layer by layer
-
-| #   | Layer                        | What happens                                                                                                                               |
-| --- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **Caller intent**            | The caller sends either sentence. Neither one contains SQL or provider instructions.                                                       |
-| 2   | **Intent representation**    | The request becomes structured intent — the caller never constructs a physical query directly.                                             |
-| 3   | **Semantic Model**           | The generated contract exposes canonical meanings and their declared aliases: `PurchaseOrder ← Buy, Buys` and `Supplier ← Vendor, Seller`. |
-| 4   | **Semantic Operation Graph** | The request becomes application meaning: overdue purchase-order semantics, a ranked “top supplier” relationship, and a `Texas` constraint. |
-| 5   | **Retrieval**                | Relational, fuzzy/full-text, BM25/search, or graph strategies propose candidates and evidence. **They never grant authority.**             |
-| 6   | **Semantic Resolution**      | `buys → PurchaseOrder` and `seller → Supplier`. The aliases normalize to the same canonical identities as the original wording.            |
-| 7   | **Authorization**            | Application policy runs against the resolved semantic graph and caller identity. Retrieval results cannot bypass this step.                |
-| 8   | **Plan Binding**             | The authorized decision is bound to a provider-independent execution plan.                                                                 |
-| 9   | **ExecutionIR**              | The executable artifact carries the resolved plan and its authorization provenance across the execution boundary.                          |
-| 10  | **Provider**                 | Only now does a physical provider — PostgreSQL, here — receive the already-authorized artifact.                                            |
-| 11  | **Execution**                | The provider executes the constrained plan; it does not reinterpret caller vocabulary.                                                     |
-| 12  | **Evidence**                 | The result carries evidence of what was resolved and executed. Evidence records what happened — **it does not grant authority.**           |
-
-> **The invariant:** alias matching changes vocabulary, not authority. “Buys” does not create a new capability, and “seller” does not create a second supplier meaning — both are application-declared paths to identities that already exist.
-
-## When more than one meaning is legal
-
-Aliases collapse _different words_ onto _one_ meaning. Sometimes the ambiguity runs the other way: the **same word** is a legal match for **two different meanings at once**, and neither the graph nor a retrieval score can tell them apart on its own.
-
-Take the request **“active customers”**. Both of the following are structurally valid readings:
-
-- a customer whose **account is enabled** (`Customer.AccountEnabled`)
-- a customer who **placed a recent order** (`Customer.HasRecentOrder`)
-
-A fuzzy/BM25/vector retriever can legitimately return both, with close scores (`0.91` vs. `0.89`). Foundgine does not break the tie by picking whichever scored higher: a higher retrieval score is not evidence of what the caller meant, and authorization can’t rescue a wrong guess — a request built from the wrong meaning is still a _fully authorized_ request. It would just be a perfectly authorized misunderstanding.
-
-<p align="center"><img src="docs/assets/lexical-grounding-clarification-flow.svg" alt="Foundgine lexical grounding when two meanings are legal: fuzzy retrieval returns tied candidates, both form a valid semantic path, grounding reports RequiresClarification, and the caller picks one before authorization runs." width="100%"></p>
-
-### What Foundgine does instead of guessing
-
-| Stage                              | What happens                                                                                                                                                                                                                                                                                                                                                                         |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Retrieval (fuzzy)**              | Every plausible reading comes back as a candidate, each with its own score and evidence. Retrieval only ever proposes — it never decides.                                                                                                                                                                                                                                            |
-| **Graph-constrained resolution**   | Each candidate is checked against the frozen semantic contract. Both `AccountEnabled` and `HasRecentOrder` form a legal path. A legal path only proves an interpretation is _possible_ — not that it is the one _intended_.                                                                                                                                                          |
-| **Grounding decision**             | `SemanticLexicalResolver.Ground` compares the two paths’ **signatures** — what each one means, not how it got there. The signatures differ and neither dominates on confidence, so the outcome is `GroundingOutcome.RequiresClarification`: `Committed` stays `null`, and both readings are listed in `CompetingInterpretations`, each with its own steps, confidence, and evidence. |
-| **Caller chooses**                 | The competing meanings are surfaced back as a clarifying question — _“Did you mean customers with an enabled account, or customers with a recent order?”_ — instead of silently executing a guess.                                                                                                                                                                                   |
-| **Same boundary as everyone else** | Once the caller picks one, that single interpretation goes through the exact same Authorization → Planning → Execution path as any other request.                                                                                                                                                                                                                                    |
-
-> **The invariant:** a legal semantic path is not proof of intent. When retrieval genuinely can’t tell two meanings apart, Foundgine surfaces the ambiguity instead of silently authorizing a coin flip.
-
-The same mechanism fails closed the same way in two other cases: when a resource limit (token count, search budget, timeout) stops the search before it can prove there is only one meaning (`GroundingOutcome.BudgetExceeded`), and when no legal interpretation exists at all (`GroundingOutcome.Unresolved`). Neither one ever falls back to a best-effort guess.
-
-Read more: **[Lexical grounding](docs/LEXICAL-GROUNDING.md)** covers fuzzy retrieval, the resolver’s complexity bounds, and worked adversarial examples end-to-end. **[Grounding decisions](docs/GROUNDING-DECISIONS.md)** covers the full `GroundingDecision` shape, the difference between “different evidence for the same meaning” and “different meanings,” and the complete `active customers` walkthrough, backed by a passing test.
-
-## Why the boundary matters
-
-The number of independent execution surfaces is a security and maintenance multiplier. A tool-per-capability design can give an agent dozens of places where authorization, tenant filtering and query construction are implemented differently. Foundgine centralizes the semantic decision without making a transport or database the center of the architecture.
-
-For the deeper rationale, read:
-
-- [`docs/WHY-FOUNDGINE.md`](docs/WHY-FOUNDGINE.md)
-- [`docs/APPLICATION-CATEGORIES.md`](docs/APPLICATION-CATEGORIES.md)
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-- [`docs/AUTHORIZATION.md`](docs/AUTHORIZATION.md)
-- [`docs/SECURITY.md`](docs/SECURITY.md)
-- [`docs/AI-AGENT.md`](docs/AI-AGENT.md)
-
-## Package shape
-
-The core package family has four architectural packages (the .NET names are shown; Java uses `foundgine-*` artifacts under `io.github.cristianbarragan`). Some framework adapters are included in the provider distribution; larger optional framework/service integrations remain in Extensions:
-
-| Package                | Responsibility                                                                                           |
-| ---------------------- | -------------------------------------------------------------------------------------------------------- |
-| `Foundgine.Core`       | Semantic model, metadata, intent, planning and provider-independent contracts                            |
-| `Foundgine.Runtime`    | Application-facing orchestration, authorization and execution                                            |
-| `Foundgine.Providers`  | Concrete storage (SQL, **EF Core**, in-memory), events, outbox, gateway, AI/model, MCP and AOT |
-| `Foundgine.Providers.Redis` / `.AgentFramework` / `.PostgresVector` / `.Elasticsearch` | Redis, Agent Framework, pgvector and Elasticsearch adapters; projects bundled into the `Foundgine.Providers` package |
-| `Foundgine.Extensions.GraphQL` / `.Temporal` / `.Keycloak` | GraphQL, Temporal workflow and Keycloak identity integrations; projects bundled into the `Foundgine.Extensions` package |
-
-The normal application starting point is `Foundgine.Runtime` + `Foundgine.Providers`. The Redis, Microsoft Agent Framework, pgvector and Elasticsearch integrations are separate optional .NET packages. Java Redis, Spring Boot and LangChain4j integrations ship in the `foundgine-providers` Maven artifact; Spring Boot and LangChain4j framework dependencies are optional. See the [package guide](docs-site/packages/) for the current boundary map.
-
-## Providers and extensions at a glance
-
-A **provider** does the real work against infrastructure; an **extension** connects an outside framework or service. Both sit outside the semantic boundary: they never decide what is allowed.
-
-| Need | Use | Notes |
-| ---- | --- | ----- |
-| Relational database, Foundgine writes the SQL | **SQL provider** (incl. PostgreSQL batched mutations) | .NET and Java |
-| Your existing ORM | **EF Core** (.NET) or **JPA** (Java) over a shared ORM-neutral core | Permission filters are always added; maturity is tracked per capability. See [ORM providers](docs/wiki/orm-providers.md) |
-| Tests and demos, no database | **In-memory provider** | Deliberately limited |
-| Understanding free-form wording | **Elasticsearch**, **PostgreSQL + pgvector**, **PostgreSQL trigram/full-text** retrieval | Candidates and evidence only, never authority |
-| Durable events and reliable delivery | **Event store** and **outbox** | At-least-once delivery |
-| One front door for other products | **Gateway** (approvals, events, status, diagnostics) | Opaque one-time approval handles |
-| AI agents and tools | **MCP tools**, **Microsoft.Extensions.AI** models and the optional **Microsoft Agent Framework** adapter | Model supplies intent, host supplies authority |
-| GraphQL API | **GraphQL extension** (Hot Chocolate for .NET; GraphQL Java for Java) | Translates only |
-| Keycloak logins | **Keycloak extension** | Short-lived signed warrants |
-| Long-running processes | **Temporal extension** | Retries, timers, approvals, compensation |
-| Agent frameworks and hosting | **Microsoft Agent Framework** (.NET), **LangChain4j** and **Spring Boot** (Java) | Tools and hosting only; host owns identity, writes are gated. See [integrations](docs/wiki/agent-framework-integrations.md) |
-| Calling a server from TypeScript, Python or browsers/Workers | **Client SDKs** (`@foundgine/typescript`, `foundgine-sdk`, `@foundgine/wasm`) | Thin MCP and Temporal-route clients; no semantic runtime, no authority. See [Client SDKs](docs/wiki/client-sdks.md) |
-
-The full inventory with source paths is the [Provider catalogue](docs/wiki/providers.md) and the [Extensions page](docs/wiki/extensions.md). Receipts, audit and diagnostics are explained in [Insights, evidence and auditing](docs/wiki/insights-evidence-auditing.md).
-
-## Agent framework and Spring integrations
-
-Three optional integrations put Foundgine behind the frameworks teams already use. The framework handles the conversation or hosting; Foundgine still resolves, authorizes and executes, and the host supplies identity.
-
-| Integration | Module | Docs |
-| --- | --- | --- |
-| Microsoft Agent Framework (.NET) | `Foundgine.Providers` (project `Foundgine.Providers.AgentFramework`) | [README](src/csharp/Foundgine.Providers.AgentFramework/README.md) |
-| LangChain4j (Java) | `foundgine-providers` | [README](src/java/foundgine-providers/LANGCHAIN4J.md) |
-| Spring Boot (Java) | `foundgine-providers` | [README](src/java/foundgine-providers/SPRING-BOOT.md) |
-
-All three adapters are part of their language provider artifact; verify them with the included provider test suites before release. Overview, security model and status: [Agent and framework integrations](docs/wiki/agent-framework-integrations.md).
-
-## Client SDKs (TypeScript, Python, WebAssembly)
-
-Besides the .NET and Java server implementations, the repository contains three thin client SDKs for talking to a running Foundgine server over MCP (Streamable HTTP) and the Temporal workflow routes. They are transport clients only: identity, tenant and authorization stay on the server.
-
-| SDK | Package | Install / build | Docs |
-| --- | ------- | --------------- | ---- |
-| TypeScript | `@foundgine/typescript` (npm) | `npm install @foundgine/typescript` (or `cd src/typescript && npm ci && npm test` from source) | [`src/typescript/README.md`](src/typescript/README.md) |
-| Python | `foundgine-sdk` (PyPI name; 3.11+) | `cd src/python && pip install -e ".[dev]"` | [`src/python/README.md`](src/python/README.md) |
-| Rust / WebAssembly | `@foundgine/wasm` (npm) | `cd src/wasm && cargo test && npm run build && npm test` | [`src/wasm/README.md`](src/wasm/README.md) |
-
-The SDK READMEs mark all three as development packages, not release-ready SDKs, so verify that a registry release exists before depending on one. Overview, comparison and verification status: [Client SDKs](docs/wiki/client-sdks.md).
-
-## Evidence
-
-The repository contains controlled benchmarks and deterministic security tests. The public evidence distinguishes **measured** tool calls, latency, RPS and success/failure counts from **estimated** context metrics.
-
-- [Agent benchmark explorer](https://foundgine.github.io/Foundgine/docs-site/agent-benchmark/)
-- [CoffeeBeanery API/database performance and downloadable reports](https://foundgine.github.io/Foundgine/docs-site/performance/#coffeebeanery-performance)
-- [Supply Chain E2E](https://foundgine.github.io/Foundgine/docs-site/agent-benchmark/supply-chain/)
-- [Security PenTest](https://foundgine.github.io/Foundgine/docs-site/samples/pentest/)
-- [`src/csharp/benchmarks/AgentEndToEnd/README.md`](src/csharp/benchmarks/AgentEndToEnd/README.md)
-- [`src/csharp/benchmarks/CoffeeBeanery.Performance/README.md`](src/csharp/benchmarks/CoffeeBeanery.Performance/README.md)
-
-Benchmark results are workload-specific and should not be generalized beyond the published experiment.
-
-### Historical red-team run (7 September 2026)
-
-A recorded manual run of `Foundgine.RedTeam` against the Advanced Supply Chain .NET sample sent 18 attack attempts — cross-tenant probes, role/identity claim spoofing, claim-scope widening, write/capability escalation, and unauthenticated-actor calls — across the semantic authorization API and execution/tool-calling API. Every adversarial attempt was denied or blocked; only the two intentionally legitimate baseline calls succeeded. This is evidence for that sample run, not a current release certification or proof of Java parity. See [`docs/SECURITY.md`](docs/SECURITY.md) for the run details. The current CI opt-in gaps are documented in [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md) and the [Supply Chain PenTest fixture README](src/csharp/benchmarks/AgentEndToEnd/Fixtures/SupplyChain.PenTest/README.md).
+| Goal | Resource |
+|---|---|
+| Product overview | [What is Foundgine?](https://foundgine.github.io/Foundgine/docs-site/what-is-foundgine.html) |
+| Get running | [Getting started](docs/GETTING-STARTED.md) |
+| Understand boundaries | [Architecture](docs/ARCHITECTURE.md) · [Authorization](docs/AUTHORIZATION.md) · [Security](docs/SECURITY.md) |
+| Browse concepts and features | [Wiki](docs/wiki/index.md) |
+| Choose persistence and providers | [Provider catalogue](docs/wiki/providers.md) · [ORM providers](docs/wiki/orm-providers.md) |
+| Configure extensions | [Extensions](docs/wiki/extensions.md) |
+| Integrate agents and MCP | [AI agents and MCP](docs/wiki/agents-mcp.md) · [Framework integrations](docs/wiki/agent-framework-integrations.md) |
+| Client SDKs | [TypeScript, Python and WebAssembly](docs/wiki/client-sdks.md) |
+| Packages | [Package guide](docs-site/packages/) |
+| Testing and evidence | [Testing](docs/TESTING.md) · [Benchmarks](https://foundgine.github.io/Foundgine/docs-site/agent-benchmark/) · [PenTest](https://foundgine.github.io/Foundgine/docs-site/samples/pentest/) · [Documentation audit](docs/DOCUMENTATION-AUDIT.md) |
+| Website | [Foundgine documentation site](https://foundgine.github.io/Foundgine/docs-site/) |
 
 ## Development
 
 ```bash
-# .NET 10
-cd src/csharp
-dotnet restore Foundgine.sln
-dotnet build Foundgine.sln
-dotnet test Foundgine.sln
-
-# Java 27
-cd ../java
-mvn -U clean verify -Dgpg.skip=true
+cd src/csharp && dotnet build Foundgine.sln && dotnet test Foundgine.sln
+cd src/java && mvn -U clean verify -Dgpg.skip=true
 ```
 
-PostgreSQL integration testing: [`docs/POSTGRES-E2E.md`](docs/POSTGRES-E2E.md). Shared cross-language test vectors and scenarios: [`src/conformance/README.md`](src/conformance/README.md). Client SDK checks are run from each SDK directory; see [`src/README.md`](src/README.md#client-sdks-typescript-python-and-webassembly). See [`docs/TESTING.md`](docs/TESTING.md) for solution exclusions and test commands. The repository workflows under [`.github/workflows/`](.github/workflows/) define the automated build and release gates; a workflow definition is not proof that a particular run passed or that an opt-in test actually executed.
+See [testing](docs/TESTING.md), [PostgreSQL E2E](docs/POSTGRES-E2E.md) and [changelog](CHANGELOG.md) for prerequisites and verification details. Version and verification status can differ by package, language and integration; consult release artifacts and the relevant documentation.
 
-## Documentation
+## AI and repository guidance
 
-- [Documentation index](docs/README.md) — the reading path.
-- [Feature and capability wiki](docs/wiki/index.md) — by capability, in plain language: providers (EF Core, JPA, SQL, search), extensions, gateway, MCP, client SDKs, AOT, auditing and operations.
-- [Agent and framework integrations](docs/wiki/agent-framework-integrations.md) — Microsoft Agent Framework, LangChain4j and Spring Boot.
-- [Client SDKs](docs/wiki/client-sdks.md) — TypeScript, Python and WebAssembly clients.
-- [App spec form](https://foundgine.github.io/Foundgine/docs-site/spec-form/) — fill in one form, get an AI prompt that generates a Foundgine app.
-- [Website](https://foundgine.github.io/Foundgine/docs-site/) · [`CHANGELOG.md`](CHANGELOG.md)
-
-## Release 3.4.0
-
-**Current server release: 3.4.0 · .NET 10 and Java 27; client SDK publication and verification status is tracked separately**
-
-Foundgine 3.4.0 hardens the warrant security path and broadens the integration surface. Warrant-backed reads now enforce delegation trust and fail-closed revocation checks, with batched revocation lookup in Java and shared Redis-protocol replay/revocation stores (Redis, Valkey, Garnet) in both implementations; warrant replay stores are bounded, and the provider-plan cache has bounded admission with single-flight compilation and namespace invalidation. The release adds a Microsoft Agent Framework adapter, Java model-derived PostgreSQL migrations, and an expanded .NET Supply Chain starter.
-
-The .NET `src/csharp` tree keeps each optional adapter and extension as its own project (`Foundgine.Providers.Redis`, `.AgentFramework`, `.PostgresVector`, `.Elasticsearch`, `Foundgine.Extensions.GraphQL`, `.Temporal`, `.Keycloak`) but publishes exactly four NuGet packages, like the four Maven artifacts on the Java side: `Foundgine.Core`, `Foundgine.Runtime`, `Foundgine.Providers` and `Foundgine.Extensions`. C# namespaces are unchanged. See [`CHANGELOG.md`](CHANGELOG.md) for details and the verification status. Version metadata is aligned across .NET, Java/Maven, MCP manifests, TypeScript, Python and Rust/WASM client metadata. The transport SDKs remain transport clients; they do not claim the C#/Java semantic runtime or persistence-provider surface.
+- [`llms.txt`](llms.txt): concise discovery and canonical links
+- [`llms-full.md`](llms-full.md): extended technical context and capability status
+- [`AGENTS.md`](AGENTS.md): coding-agent guidance for this repository
+- [`docs/AI-AGENT.md`](docs/AI-AGENT.md): runtime AI integration and security boundary
 
 ## License
 
-Foundgine is licensed under the Apache License 2.0.
+Apache License 2.0.

@@ -2,7 +2,7 @@
 
 This wiki explains Foundgine by **capability and architectural responsibility**, not by release. It is intended for application developers, platform engineers, provider authors, and contributors working across the .NET and Java implementations.
 
-Foundgine is a semantic execution boundary: it lets applications, APIs, automation, and AI agents express intent against an application-owned semantic model without taking ownership of database access, authorization policy, or execution strategy.
+Foundgine is a configurable semantic and execution boundary for application capabilities. It separates application meaning, persistence mapping, authorization and execution from the interfaces and agents that consume them. Fluent configuration is the primary developer experience; conventional application use does not require AI, MCP or an agent framework. It complements existing application infrastructure and supports incremental adoption.
 
 ## Start here
 

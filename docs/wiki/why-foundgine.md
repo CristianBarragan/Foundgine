@@ -1,5 +1,8 @@
 # Why Foundgine?
 
+Foundgine provides a configurable semantic and execution boundary for application capabilities. It is intended to solve duplication across conventional application interfaces as well as AI consumers—not to compete only with AI frameworks. Fluent configuration is the primary developer experience in C# and Java. Existing persistence, domain models and interface frameworks can remain; adopt the boundary incrementally where it adds value.
+
+
 > **For technology leaders:** Foundgine is the semantic execution layer for enterprise applications and AI. It helps teams expose business capabilities through multiple interfaces while keeping business meaning, authorization and execution under application control.
 
 ## The problem it addresses
@@ -75,4 +78,3 @@ It may be unnecessary for a small application with one interface, simple policie
 - [AI agents and MCP](agents-mcp.md)
 - [Cross-language implementation map](implementation-map.md)
 - [Product positioning and commercial strategy](../PRODUCT-POSITIONING-AND-COMMERCIAL-STRATEGY.md)
-

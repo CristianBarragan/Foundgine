@@ -48,32 +48,39 @@ builder.Services.AddSingleton<ISecurityExecutionContextProvider, JwtSecurityCont
 builder.Services.AddSingleton<ISecurityWarrantReplayStore, MemorySecurityWarrantReplayStore>();
 builder.Services.AddSingleton<ISecurityWarrantRevocationStore, MemorySecurityWarrantRevocationStore>();
 
-builder.Services.AddSingleton<Foundgine.Core.Semantic.Planning.Planner>();
-builder.Services.AddSingleton(new SemanticAuthorizer(new ShopAuthorizationPolicy(accessor)));
 builder.Services.AddFoundgine(o =>
 {
     o.Model = semanticModel;
-    o.AuthorizationPolicy = new ShopAuthorizationPolicy(accessor);
+    o.AuthorizationPolicy = new ShopAuthorizationPolicy(accessor); // Planner + SemanticAuthorizer are registered by AddFoundgine
     o.ExpectedWarrantIssuer = "shop-jwt-bridge";
 });
 
+// What a customer's row-level rule may reference (validated claim, never GraphQL input). Shared by every protocol below.
+ExecutionContext ShopContext()
+{
+    var values = new Dictionary<string, object?>(StringComparer.Ordinal);
+    var user = accessor.HttpContext?.User;
+    if (user?.IsInRole("customer") == true && int.TryParse(user.FindFirst("customer_id")?.Value, out var id))
+        values["user.CustomerId"] = id;
+    return new ExecutionContext(values);
+}
+
+// ---- Protocol 1: GraphQL ----
 builder.Services.AddSingleton(semanticModel);
 builder.Services.AddScoped(_ => new HotChocolateSemanticAdapter(semanticModel));
 builder.Services.AddScoped(sp => new FoundgineGraphQLQueryExecutor(
     sp.GetRequiredService<IFoundgine>(),
     sp.GetRequiredService<HotChocolateSemanticAdapter>(),
     sp.GetRequiredService<ISecurityExecutionContextProvider>(),
-    () =>
-    {
-        var values = new Dictionary<string, object?>(StringComparer.Ordinal);
-        var user = accessor.HttpContext?.User;
-        if (user?.IsInRole("customer") == true && int.TryParse(user.FindFirst("customer_id")?.Value, out var id))
-            values["user.CustomerId"] = id;
-        return new ExecutionContext(values);
-    }));
+    ShopContext));
+
+// ---- Protocol 2 (opt-in, Mcp:Enabled=true): MCP. Same model, same row-level policy, same JWT. No new mapping code. ----
+var mcp = builder.Configuration.GetValue<bool>("Mcp:Enabled");
+if (mcp) builder.Services.AddShopMcp(ShopContext);
 
 var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapFoundgineGraphQL(ShopGraphQL.Configure);
+if (mcp) app.MapShopMcp();
 app.Run();

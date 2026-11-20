@@ -1,28 +1,30 @@
 # What Is Foundgine?
 
-Foundgine is a programmable semantic execution platform for .NET. It separates **caller intent**, **application meaning**, **authorization**, and **physical execution**.
+Foundgine is a **configurable semantic and execution boundary for application capabilities**. It separates application meaning, persistence mapping, authorization and execution from the interfaces and agents that consume them.
+
+## Built for application development—not only AI
+
+Foundgine's primary developer experience is fluent configuration in C# and Java. Applications can use configured semantic capabilities from conventional application code and supported interfaces without requiring an LLM, MCP or agent framework.
 
 ## The problem
 
-Applications often expose the same business capabilities through APIs, GraphQL, JSON, MCP and AI agents. Without a shared boundary, each surface can duplicate validation, authorization and data access.
+As applications expose the same capabilities through internal code, APIs, GraphQL, automation and agent tools, business meaning, persistence mapping, validation and authorization can become duplicated across entry points. That duplication makes changes harder to coordinate and behavior harder to verify.
 
-## The Foundgine model
+## The boundary
 
-![Foundgine semantic execution boundary](assets/what-is-foundgine-plantuml-01.svg)
+Applications configure their semantic capabilities and persistence mapping. Foundgine resolves operations against that configuration, applies authorization using trusted application context, and executes through configured providers. Interfaces consume the same capability boundary rather than becoming independent sources of domain authority.
 
-Callers describe what they want. The application defines what exists and what is allowed. Foundgine resolves the request and carries the authorized meaning into provider execution.
+## Incremental adoption
 
-## Why it matters for AI
+Foundgine complements existing domain models, databases, EF Core, JPA and API frameworks. It does not require replacing the existing stack. Start with a capability, validate the implementation and operational fit, and expand where useful.
 
-An agent can propose structured intent without becoming the authority over database schema, tenant identity, credentials or business invariants. Capability discovery is advisory; every real operation is resolved and authorized again.
+## Optional integrations
+
+GraphQL, MCP, AI agents, workflow engines and client SDKs are additional consumers or integrations. They are not prerequisites for using Foundgine.
 
 ## What it is not
 
-Foundgine is not an ORM replacement, database, identity provider, authorization server, model provider or general autonomous-agent framework.
-
-## Ambiguity is explicit
-
-Retrieval is evidence, not truth. When free-form language has two genuinely different legal meanings, the semantic resolver can require clarification instead of silently executing the highest-scoring candidate. See [Grounding decisions](https://github.com/Foundgine/Foundgine/blob/main/docs/GROUNDING-DECISIONS.md).
+Foundgine is not an ORM replacement, database, identity provider, authorization server or general autonomous-agent framework. It makes no universal claim of being faster or inherently more secure than every conventional alternative; those outcomes depend on workload, configuration and verification.
 
 ## Continue
 

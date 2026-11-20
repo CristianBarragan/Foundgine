@@ -43,9 +43,7 @@ public sealed class ShopAuthorizationPolicy(IHttpContextAccessor accessor) : ISe
     public bool CanAccessEntity(EntityId entityId) => true;
     public bool CanAccessField(EntityId entityId, FieldId fieldId) => true;
     public bool CanAccessRelationship(EntityId sourceEntityId, RelationshipId relationshipId) => true;
-    public bool CanWriteEntity(EntityId entityId) => false;
-    public bool CanWriteField(EntityId entityId, FieldId fieldId) => false;
-    public bool CanWriteRelationship(EntityId sourceEntityId, RelationshipId relationshipId) => false;
+    // Writes are denied by the interface defaults: this API is read-only.
 
     public AuthorizationPredicate? GetPredicate(EntityId entityId, AuthorizationOperation operation)
     {
@@ -55,13 +53,10 @@ public sealed class ShopAuthorizationPolicy(IHttpContextAccessor accessor) : ISe
         if (entityId == Customer) member = "Id";
         else if (entityId == Order) member = "CustomerId";
         else return null;
+        var row = AuthorizationPredicate.Member(AuthorizationPredicate.ResourceParameter("resource"), member);
         // Fail closed when the claim is missing.
         if (!int.TryParse(user.FindFirstValue("customer_id"), out _))
-            return AuthorizationPredicate.Equal(
-                AuthorizationPredicate.Member(AuthorizationPredicate.ResourceParameter("resource"), member),
-                AuthorizationPredicate.Constant("-1"));
-        return AuthorizationPredicate.Equal(
-            AuthorizationPredicate.Member(AuthorizationPredicate.ResourceParameter("resource"), member),
-            AuthorizationPredicate.Member(AuthorizationPredicate.ContextParameter("user"), "CustomerId"));
+            return AuthorizationPredicate.Equal(row, AuthorizationPredicate.Constant("-1"));
+        return AuthorizationPredicate.Equal(row, AuthorizationPredicate.Member(AuthorizationPredicate.ContextParameter("user"), "CustomerId"));
     }
 }
