@@ -18,6 +18,7 @@ This is a suggested reading path. Start at [Getting started](GETTING-STARTED.md)
 8. [Open Intent API](OPEN-INTENT-API.md) — typed, dynamic, and JSON ways to express intent.
 9. [Lexical grounding](LEXICAL-GROUNDING.md) — resolving free-form language against the semantic contract.
 10. [Grounding decisions](GROUNDING-DECISIONS.md) — telling a competing meaning apart from routing noise, and when Foundgine must ask instead of guess.
+    - Worked example: [alias grounding](ALIAS-EXAMPLE.md) — two wordings of one request, followed layer by layer.
 11. [Authorization](AUTHORIZATION.md) — what a caller may exercise, and under what conditions.
 12. [Security](SECURITY.md) — the untrusted-input boundary and fail-closed rules.
 13. [Runtime](RUNTIME.md) — how a request actually moves through resolution, planning, and execution.
@@ -31,6 +32,16 @@ This is a suggested reading path. Start at [Getting started](GETTING-STARTED.md)
 21. [Client SDKs](wiki/client-sdks.md) — the TypeScript, Python and WebAssembly clients for a running server.
 
 Package-specific architecture and usage guidance lives beside each implementation under `src/csharp/`, `src/java/`, `src/typescript/` (README), `src/python/` (README) and `src/wasm/` (README); [`src/README.md`](../src/README.md) maps them all. Sample tutorials live alongside their sample projects.
+## Side-by-side comparisons
+
+- [Why Foundgine in the comparison samples](comparisons/WHY-FOUNDGINE.md) — fluent configuration, adoption path, what the samples demonstrate, and claims that still need evidence.
+- [.NET: Foundgine vs Hot Chocolate + EF Core](../src/csharp/samples/Foundgine.Comparison/README.md).
+- [Java: Foundgine vs Spring GraphQL + JPA](../src/java/samples/foundgine-comparison/README.md) — includes the current AOT annotation caveat.
+
+## Documentation audit
+
+- [Documentation audit checkpoint](DOCUMENTATION-AUDIT.md) — local link validation, source-checked corrections, and outstanding verification limits.
+
 ## Documentation rules
 
 The documentation follows four rules:

@@ -4,7 +4,7 @@ Foundgine ships its framework adapters inside the existing provider packages. Th
 
 | Integration | Language | Package | Source and guide |
 |---|---|---|---|
-| Microsoft Agent Framework | C# / .NET | `Foundgine.Providers.AgentFramework` | [`AgentFramework/README.md`](../../src/csharp/Foundgine.Providers.AgentFramework/README.md) |
+| Microsoft Agent Framework | C# / .NET | `Foundgine.Providers` (bundled adapter assembly) | [`Foundgine.Providers.AgentFramework/README.md`](../../src/csharp/Foundgine.Providers.AgentFramework/README.md) |
 | Redis / Valkey / Garnet | C# / .NET | `Foundgine.Providers.Redis` | [`Redis/README.md`](../../src/csharp/Foundgine.Providers.Redis/README.md) |
 | LangChain4j | Java | `io.github.cristianbarragan:foundgine-providers` | [`LANGCHAIN4J.md`](../../src/java/foundgine-providers/LANGCHAIN4J.md) |
 | Spring Boot | Java | `io.github.cristianbarragan:foundgine-providers` | [`SPRING-BOOT.md`](../../src/java/foundgine-providers/SPRING-BOOT.md) |
@@ -12,9 +12,9 @@ Foundgine ships its framework adapters inside the existing provider packages. Th
 
 ## Package dependencies
 
-- In .NET, the Redis and Agent Framework adapters ship inside the `Foundgine.Providers` package (their source projects are `Foundgine.Providers.Redis` and `Foundgine.Providers.AgentFramework`). NuGet restores `StackExchange.Redis` and `Microsoft.Agents.AI` as dependencies of that package.
-- The Java `foundgine-providers` jar contains the Redis, LangChain4j and Spring Boot classes and Spring auto-configuration metadata. Lettuce, Spring Boot/Spring MVC and LangChain4j dependencies are declared by the provider artifact; framework integrations are marked optional where consumers should opt in.
-- No separate `foundgine-spring` or `foundgine-langchain4j` Java package is required.
+- In .NET, the Redis and Agent Framework adapter assemblies are bundled into the `Foundgine.Providers` NuGet package. Their source projects (`Foundgine.Providers.Redis` and `Foundgine.Providers.AgentFramework`) are separate, non-packable projects; the packaging project bundles their assemblies. NuGet restores `StackExchange.Redis` and `Microsoft.Agents.AI` as package dependencies.
+- The Java `foundgine-providers` module includes Redis, LangChain4j and Spring Boot adapter source and Spring auto-configuration metadata. Its POM declares Lettuce, Spring Boot/Spring MVC and LangChain4j dependencies. Standalone `foundgine-spring` and `foundgine-langchain4j` module directories also exist, but they are not listed in the parent Maven reactor; do not assume those standalone artifacts are built or published from the normal reactor.
+- The parent Maven reactor currently includes `foundgine-providers`; it does not include the standalone `foundgine-spring` or `foundgine-langchain4j` modules. Verify release artifacts before documenting standalone publication.
 
 ## Shared security model
 

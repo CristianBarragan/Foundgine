@@ -1,5 +1,7 @@
 # AI agent integration
 
+AI is an optional consumer of Foundgine, not its defining purpose. Foundgine is a configurable semantic and execution boundary for application capabilities and is designed for conventional application use without an LLM, MCP or agent framework. This page covers the additional runtime considerations when an application chooses to connect an agent.
+
 Foundgine's AI integration is deliberately small: it exposes semantic execution as tools without making Foundgine depend on a particular LLM provider or agent framework.
 
 ## AI agents use the same canonical lifecycle

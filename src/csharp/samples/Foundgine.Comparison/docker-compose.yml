@@ -4,3 +4,7 @@ services:
     environment: { POSTGRES_USER: shop, POSTGRES_PASSWORD: shop, POSTGRES_DB: shop }
     ports: ["5433:5432"]
     volumes: ["./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro"]
+    healthcheck: # TCP on purpose: the temporary init-time server only listens on a socket, so this passes only once init.sql has run
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U shop -d shop"]
+      interval: 2s
+      retries: 30

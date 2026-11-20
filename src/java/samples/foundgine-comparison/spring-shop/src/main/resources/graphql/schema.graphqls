@@ -1,0 +1,28 @@
+# Schema-first: every type, filter input and sort input is written by hand.
+type Query {
+  customer(where: CustomerWhere, order: CustomerOrder): [Customer!]!
+  order(where: OrderWhere, order: OrderOrder): [Order!]!
+  product(where: ProductWhere, order: ProductOrder): [Product!]!
+  orderLine(where: OrderLineWhere, order: OrderLineOrder): [OrderLine!]!
+}
+type Customer { id: Int! firstName: String! lastName: String! email: String! orders: [Order!]! }
+type Order { id: Int! customerId: Int! status: String! total: Float! customer: Customer lines: [OrderLine!]! }
+type OrderLine { id: Int! orderId: Int! productId: Int! quantity: Int! unitPrice: Float! product: Product }
+type Product { id: Int! sku: String! name: String! price: Float! }
+
+enum SortDirection { ASC DESC }
+input IntFilter { eq: Int neq: Int gt: Int gte: Int lt: Int lte: Int in: [Int!] }
+input FloatFilter { eq: Float neq: Float gt: Float gte: Float lt: Float lte: Float in: [Float!] }
+input StringFilter { eq: String neq: String contains: String in: [String!] }
+
+input CustomerWhere { and: [CustomerWhere!] or: [CustomerWhere!] id: IntFilter firstName: StringFilter lastName: StringFilter email: StringFilter orders: OrderCollection }
+input OrderWhere { and: [OrderWhere!] or: [OrderWhere!] id: IntFilter customerId: IntFilter status: StringFilter total: FloatFilter lines: OrderLineCollection }
+input OrderLineWhere { and: [OrderLineWhere!] or: [OrderLineWhere!] id: IntFilter orderId: IntFilter productId: IntFilter quantity: IntFilter unitPrice: FloatFilter }
+input ProductWhere { and: [ProductWhere!] or: [ProductWhere!] id: IntFilter sku: StringFilter name: StringFilter price: FloatFilter }
+input OrderCollection { some: OrderWhere none: OrderWhere }
+input OrderLineCollection { some: OrderLineWhere none: OrderLineWhere }
+
+input CustomerOrder { id: SortDirection firstName: SortDirection lastName: SortDirection email: SortDirection }
+input OrderOrder { id: SortDirection customerId: SortDirection status: SortDirection total: SortDirection }
+input OrderLineOrder { id: SortDirection orderId: SortDirection productId: SortDirection quantity: SortDirection unitPrice: SortDirection }
+input ProductOrder { id: SortDirection sku: SortDirection name: SortDirection price: SortDirection }
