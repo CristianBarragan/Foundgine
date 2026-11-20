@@ -2,9 +2,6 @@
 
 Same Postgres schema, same GraphQL-only API, same plain JWT bearer authentication, same authorization rules.
 
-> **Not compiled or run.** The session that produced this had no .NET SDK and no NuGet access. Treat both apps as
-> unbuilt source. `tools/parity.py` is the acceptance test: run it once both apps start.
-
 ## The app
 Customers, Orders, OrderLines, Products in a legacy-style schema (`tbl_order.ord_total`, `qty`, `cust_id` ...).
 The API models use different names (`Order.Total`, `OrderLine.Quantity`, `Product.Name`). Read-only GraphQL; roots
