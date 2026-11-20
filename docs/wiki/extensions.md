@@ -50,7 +50,7 @@ Spring Boot and LangChain4j are included in the Java `foundgine-providers` artif
 - Mutation adapter/converter/result shaper: adapts GraphQL mutation input and Foundgine mutation results.
 - `FoundgineHotChocolateQueryExecutor` / `FoundgineHotChocolateMutationExecutor` and the corresponding `FoundgineGraphQL*Executor` classes: invoke the secure Foundgine execution boundary with host-supplied security context.
 
-The HTTP endpoint (`app.MapFoundgineGraphQL(o => ...)`, namespace `Foundgine.Extensions.GraphQL.Http`) is fail-closed: list each query root field and its roles in `QueryRootRoles`, add an `Authorize` rule for claim-based checks, and set `AllowMutations` only when a mutation executor is registered. Claims must come from the validated token, never from a GraphQL argument.
+The HTTP endpoint (guide: [GraphQL HTTP endpoint](../GRAPHQL-HTTP); `app.MapFoundgineGraphQL(o => ...)`, namespace `Foundgine.Extensions.GraphQL.Http`) is fail-closed: list each query root field and its roles in `QueryRootRoles`, add an `Authorize` rule for claim-based checks, and set `AllowMutations` only when a mutation executor is registered. Claims must come from the validated token, never from a GraphQL argument.
 
 The C# source is under `GraphQL/HotChocolate` (and `GraphQL/Http` for the endpoint); query/mutation execution has a dedicated `Execution` folder. Some APIs are split into package-level adapters and execution adapters, so inspect the package README and project/package references before installing only part of the integration.
 

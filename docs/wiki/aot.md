@@ -42,3 +42,4 @@ A successful generator compile is not proof of Native AOT compatibility. Verify 
 - C#: `Foundgine.Providers/Aot`, `Foundgine.Providers.Aot.Generator`.
 - Java: `src/java/foundgine-aot-generator` and the annotations/metadata contracts in `foundgine-providers`.
 - Existing guide: [AOT](../AOT).
+- Mapping-model emitter (work in progress, separate from the Roslyn generator): `Foundgine.Core/Mapping/MappingSourceEmitter.cs`; guide: [Domain / persistence mapping](../DOMAIN-PERSISTENCE-MAPPING).

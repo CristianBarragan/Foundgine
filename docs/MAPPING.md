@@ -1,5 +1,7 @@
 # Mapping and Connections
 
+> This page covers relationship **connections**. Mapping domain types to tables and columns, and generated mapping metadata, is described in [Domain / persistence mapping](DOMAIN-PERSISTENCE-MAPPING.md).
+
 Foundgine does not populate domain models or EF entities.
 
 EF remains the authority for the relational entity model: keys, columns and

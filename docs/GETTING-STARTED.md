@@ -156,7 +156,7 @@ Use `Foundgine.Extensions.GraphQL.HotChocolate` to translate GraphQL operations 
 
 The same namespace also contains the secure query and mutation executors — `FoundgineHotChocolateQueryExecutor` and `FoundgineHotChocolateMutationExecutor` — that run that intent through the Foundgine authorization/execution boundary.
 
-`Foundgine.Extensions.GraphQL.Http` adds `app.MapFoundgineGraphQL(o => ...)`, a bearer-authenticated `POST /graphql` in front of the query executor (and the mutation executor when `o.AllowMutations` is set). It fails closed: list every query root field and its roles in `o.QueryRootRoles`, and use `o.Authorize` for rules that depend on token claims.
+`Foundgine.Extensions.GraphQL.Http` ([guide](GRAPHQL-HTTP.md)) adds `app.MapFoundgineGraphQL(o => ...)`, a bearer-authenticated `POST /graphql` in front of the query executor (and the mutation executor when `o.AllowMutations` is set). It fails closed: list every query root field and its roles in `o.QueryRootRoles`, and use `o.Authorize` for rules that depend on token claims.
 
 The host owns authentication/security context.
 
