@@ -20,7 +20,7 @@ This page maps capabilities to the repository's current module layout. It is an 
 | AOT metadata | `Foundgine.Providers/Aot`, `Foundgine.Providers.Aot.Generator` | `foundgine-aot-generator` and provider annotations/metadata |
 | Keycloak | `src/csharp/Foundgine.Extensions.Keycloak` | `src/java/foundgine-extensions/.../keycloak` |
 | Temporal | `src/csharp/Foundgine.Extensions.Temporal` | `src/java/foundgine-extensions/.../temporal` |
-| GraphQL adapter | `src/csharp/Foundgine.Extensions.GraphQL/HotChocolate` | `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql` (GraphQL Java; different API, no Hot Chocolate parity claim) |
+| GraphQL adapter | `src/csharp/Foundgine.Extensions.GraphQL/HotChocolate` (HTTP endpoint: `.../Http`) | `src/java/foundgine-extensions/src/main/java/com/foundgine/extensions/graphql` (GraphQL Java; different API, no Hot Chocolate parity claim) |
 | Samples and tests | `src/csharp/samples`, `tests`, `security` | `src/java/samples`, module tests, `security` |
 | Client SDK for a running server (TypeScript) | N/A (server) | N/A (server); client lives in `src/typescript` (`@foundgine/typescript`) |
 | Client SDK (Python) | N/A (server) | N/A (server); client lives in `src/python` (`foundgine-sdk`) |

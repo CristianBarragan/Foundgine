@@ -124,7 +124,7 @@ The Java source tree (`src/java/samples/foundgine-supply-chain-advanced`) contai
 - `Foundgine.Providers.Orm` / `Foundgine.Providers.EntityFrameworkCore` (.NET) and `storage/orm` / `storage/orm/jpa` (Java) — ORM execution core with EF Core and JPA adapters
 - `Foundgine.Providers.Aot` / `Foundgine.Providers.Aot.Generator` — AOT declarations and source generation
 - `Foundgine.Core.Serialization` — JSON intent adapter
-- `Foundgine.Extensions.GraphQL*` — GraphQL adapters/execution boundaries
+- `Foundgine.Extensions.GraphQL*` — GraphQL adapters/execution boundaries and the `MapFoundgineGraphQL` HTTP endpoint
 - `Foundgine.Providers.Tools.MCP` — MCP adapter
 - `Foundgine.Providers.Models` — `Microsoft.Extensions.AI` integration
 - `Foundgine.Runtime.ControlPlane` — optional authority/recovery control-plane infrastructure

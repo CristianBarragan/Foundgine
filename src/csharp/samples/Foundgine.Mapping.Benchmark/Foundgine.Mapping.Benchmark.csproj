@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Unbuilt EF Core comparator: needs NuGet (EF Core). Syntax-checked only; see Comparators/README.md -->
+    <Compile Remove="Comparators/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Foundgine.Core/Foundgine.Core.csproj" />
+  </ItemGroup>
+</Project>

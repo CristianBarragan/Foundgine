@@ -15,6 +15,8 @@ This is the Foundgine C# arm of the SupplyChain benchmark. It exposes the same G
 
 The host issues warrants only from the validated Keycloak principal. The tenant and customer identifiers are not accepted from GraphQL variables as authority claims. Customer order reads are constrained by a semantic `CustomerId` predicate whose right-hand value is supplied through the execution context from the validated `customer_id` claim; it is emitted as a bound SQL parameter rather than injected into GraphQL text. Customer order creation must target that same identifier.
 
+`AddFoundgine` also registers the shared `ISemanticAuthorizationPolicy`, `SemanticAuthorizer`, and `Planner` services used by the EF reader. The host supplies one warrant policy instance; it does not manually construct a second authorizer or planner. Provider-specific registrations remain explicit.
+
 ## Mutation provider lifetime
 
 The host registers the same `MetadataRegistry` instance as both `IMutationSchema` and the Foundgine metadata catalog. `AddFoundgine` creates the singleton `IFoundgineMutations` engine from that schema and the configured provider factory. The Foundgine mutation engine is singleton-scoped. `FactoryEfCoreMutationExecutionProvider` uses `IDbContextFactory<FoundgineDbContext>` to create and dispose a fresh context for each mutation batch, then delegates to `EfCoreMutationExecutionProvider` so the complete batch retains its provider transaction and conformance checks.

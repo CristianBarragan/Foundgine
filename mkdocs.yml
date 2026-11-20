@@ -34,6 +34,7 @@ nav:
   - Architecture: ARCHITECTURE.md
   - Metadata → Semantics (layer setup): METADATA-TO-SEMANTICS.md
   - Mapping and connections: MAPPING.md
+  - Domain / persistence mapping (work in progress): DOMAIN-PERSISTENCE-MAPPING.md
   - Open Intent API: OPEN-INTENT-API.md
   - Lexical grounding: LEXICAL-GROUNDING.md
   - Grounding decisions: GROUNDING-DECISIONS.md
@@ -44,6 +45,7 @@ nav:
   - AOT: AOT.md
   - AI agent integration: AI-AGENT.md
   - Authorization: AUTHORIZATION.md
+  - GraphQL HTTP endpoint (.NET): GRAPHQL-HTTP.md
   - PostgreSQL E2E: POSTGRES-E2E.md
   - Testing: TESTING.md
   - Feature and capability wiki:

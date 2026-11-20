@@ -48,6 +48,10 @@ The current metadata describes entity fields, storage mappings, and explicit sem
 
 The expensive discovery work belongs in AOT. Runtime should bind request-specific values and execute the already-known topology.
 
+## Generated mapping metadata
+
+Domain-to-persistence mapping models can be emitted as plain C# with `MappingSourceEmitter` (no reflection, deterministic output). That emitter is separate from the Roslyn generator on this page and is work in progress; see [Domain / persistence mapping](DOMAIN-PERSISTENCE-MAPPING.md).
+
 ---
 
 Next: [Public API](PUBLIC-API.md)

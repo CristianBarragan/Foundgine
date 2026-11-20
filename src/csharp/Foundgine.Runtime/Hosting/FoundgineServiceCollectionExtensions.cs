@@ -4,12 +4,14 @@ using Foundgine.Core.Semantic;
 using Foundgine.Core.Semantic.Authorization;
 using Foundgine.Core.Semantic.Security.Warrants;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Foundgine.Runtime;
 
 /// <summary>
 /// Dependency-injection registration for the application-facing Foundgine API.
-/// Provider adapters register IProviderPlanCompiler and IExecutionProvider.
+/// Provider adapters register IProviderPlanCompiler and IExecutionProvider; this registration
+/// supplies the shared semantic authorizer and planner required by provider readers.
 /// </summary>
 public static class FoundgineServiceCollectionExtensions
 {
@@ -87,6 +89,11 @@ public static class FoundgineServiceCollectionExtensions
 
         services.AddSingleton(options);
         services.AddSingleton(contract);
+        // Provider integrations such as EF Core consume these same semantic services.
+        // Register them centrally so hosts do not need to compose duplicate instances.
+        services.Replace(ServiceDescriptor.Singleton<ISemanticAuthorizationPolicy>(options.AuthorizationPolicy));
+        services.TryAddSingleton<SemanticAuthorizer>();
+        services.TryAddSingleton<Foundgine.Core.Semantic.Planning.Planner>();
         services.AddSingleton<ISemanticContractProvider>(new SemanticContractProvider(contract));
         services.AddSingleton<FoundgineEngine>(serviceProvider =>
         {

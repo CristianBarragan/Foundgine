@@ -25,6 +25,7 @@ public sealed class FoundgineConfigurationContext
     internal List<EntityMapDefinition> Maps { get; } = [];
     internal List<ConnectionDefinition> Connections { get; } = [];
     internal List<ModelConnectionDefinition> ModelConnections { get; } = [];
+    internal List<Foundgine.Core.Mapping.MappingModel> Mappings { get; } = [];
 
     internal ModelDefinition AddModel(Type modelType)
     {
@@ -78,6 +79,18 @@ public sealed class FoundgineModelBuilder
 
     internal FoundgineModelBuilder(FoundgineConfigurationContext context) => _context = context;
 
+    /// <summary>
+    /// Adds Domain -> Persistence mappings (one domain type to several tables, several domain types over one table,
+    /// flattening, inheritance, many-to-many, ...). Independent of <c>FoundgineEntityMap</c>; both can be used in one model
+    /// as long as they do not map the same domain type. Validated, including tenant/owner reachability, by <c>Build()</c>.
+    /// </summary>
+    public FoundgineModelBuilder UseMappings(Foundgine.Core.Mapping.MappingModel mappings)
+    {
+        ArgumentNullException.ThrowIfNull(mappings);
+        _context.Mappings.Add(mappings);
+        return this;
+    }
+
     /// <summary>Applies a configuration class that has a public parameterless constructor.</summary>
     public FoundgineModelBuilder Configure<TConfiguration>()
         where TConfiguration : IFoundgineConfiguration, new() =>
@@ -107,7 +120,9 @@ public abstract class FoundgineModel
     public MetadataRegistry Build()
     {
         var registry = new MetadataRegistry();
-        FoundgineModelCompiler.Compile(Collect(), registry);
+        var context = Collect();
+        FoundgineModelCompiler.Compile(context, registry);
+        Foundgine.Core.Mapping.MappingIntegration.Apply(context.Mappings, registry);
         return registry;
     }
 

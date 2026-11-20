@@ -5,6 +5,7 @@ using Foundgine.Core.Semantic.Security.Execution;
 using Foundgine.Core.Semantic.Metadata;
 using Foundgine.Core.Semantic.Security.Warrants;
 using Foundgine.Extensions.GraphQL.HotChocolate;
+using Foundgine.Extensions.GraphQL.Http;
 using Foundgine.Extensions.Keycloak.Hosting;
 using Foundgine.Runtime;
 using Foundgine.SupplyChain;
@@ -47,6 +48,7 @@ var metadata = SupplyChainDomain.Metadata;
 var httpContextAccessor = new HttpContextAccessor();
 builder.Services.AddSingleton<IHttpContextAccessor>(httpContextAccessor);
 var semanticModel = metadata.Discover();
+var authorizationPolicy = new WarrantSemanticAuthorizationPolicy(httpContextAccessor);
 
 // Register the Foundgine EF provider against the canonical fluent SupplyChain metadata.
 builder.Services.AddFoundgineEf(
@@ -74,16 +76,12 @@ if (builder.Configuration.GetValue<bool>("Foundgine:Keycloak:EphemeralWarrantKey
 builder.Services.AddSingleton<ISecurityWarrantReplayStore, MemorySecurityWarrantReplayStore>();
 builder.Services.AddSingleton<IMutationSchema>(metadata);
 
-// AddFoundgineEf registers FoundgineEfReader, which needs the planner and the semantic authorizer. This host composes its
-// own services, so it must register them. The authorizer uses this host's warrant policy (never allow-all).
-builder.Services.AddSingleton<Foundgine.Core.Semantic.Planning.Planner>();
-builder.Services.AddSingleton(new SemanticAuthorizer(new WarrantSemanticAuthorizationPolicy(httpContextAccessor)));
-
+// AddFoundgine registers the shared planner and semantic authorizer used by the EF reader.
 builder.Services.AddSingleton<FactoryEfCoreMutationExecutionProvider>();
 builder.Services.AddFoundgine(options =>
 {
     options.Model = semanticModel;
-    options.AuthorizationPolicy = new WarrantSemanticAuthorizationPolicy(httpContextAccessor);
+    options.AuthorizationPolicy = authorizationPolicy;
     options.ExpectedWarrantIssuer = builder.Configuration["Foundgine:Keycloak:WarrantIssuer"]
         ?? "foundgine-keycloak-bridge";
     options.MutationSchema = metadata; // MetadataRegistry implements IMutationSchema.
@@ -131,7 +129,7 @@ app.MapGet("/health/ready", async (FoundgineDbContext db, ISecurityWarrantRevoca
     return Results.Ok(new { status = "ready", securityState = "anchored" });
 });
 
-app.MapFoundgineGraphQL();
+app.MapFoundgineGraphQL(BenchmarkGraphQL.Configure);
 app.Run();
 
 public partial class Program;

@@ -4,9 +4,23 @@
 
 ### Added
 
+- `Foundgine.Extensions.GraphQL` now ships the HTTP endpoint (`Http/GraphQLHttpEndpoint.cs`, namespace `Foundgine.Extensions.GraphQL.Http`). `app.MapFoundgineGraphQL(o => ...)` maps a bearer-authenticated `POST` onto the secure query and (optionally) mutation executors, with fail-closed `QueryRootRoles`, an `Authorize` hook for claim-based rules, `AllowMutations` and `Path` options. It replaces the two copies in the Foundgine.Shop sample and the SupplyChain benchmark API, which now keep only their own rules (`ShopGraphQL.cs`, `BenchmarkGraphQL.cs`). The library project gains a `FrameworkReference` to `Microsoft.AspNetCore.App`.
+- Documentation: new pages `docs/GRAPHQL-HTTP.md` and `docs/DOMAIN-PERSISTENCE-MAPPING.md` (added to the MkDocs nav), with pointers from the Mapping, AOT, Getting started and Extensions pages.
+- Checkpoint 2: `MappingSourceEmitter` (`Foundgine.Core/Mapping`) emits a `MappingModel` as plain C# (no reflection, JSON, `typeof` or lambdas; deterministic output), and the mapping harness gains an `emit` mode plus generated-vs-runtime structural checks and a regenerate-and-diff check (`regen-generated.sh`).
+
 - C# Advanced Supply Chain sample: canonical intent endpoint, matching the Java sample's wire format. `POST /intent`, `POST /intent/explain` and `GET /intent/capabilities` plus the `foundgine_intent` MCP tool run a provider-neutral `ReadIntent` through a real `IFoundgine` engine per (tenant, role), with the caller taken from `X-Foundgine-Tenant` / `X-Foundgine-Role` and never from the body. New: `Semantic/Intent/*` (`SupplyChainIntentService`, `IntentCaller`, `SupplyChainRows`, `EvidencingProvider`), `Semantic/Api/Mcp/IntentEndpoint.cs`, `Semantic/Tests/CanonicalIntentEndpointTests.cs`.
 
+### Changed
+
+- The SupplyChain benchmark API no longer runs the temporary Development-only second mutation execution that printed exceptions (it was marked for removal and does not belong in a library endpoint). `app.MapFoundgineGraphQL()` without configuration no longer exists; callers must list their query roots.
+
+### Fixed
+
+- `Foundgine.Shop/Auth.cs`: `.Select(...)` was called on a collection expression (CS9176); it now uses `new[] { ... }`.
+
 ### Verification status
+
+- The GraphQL HTTP endpoint move and the mapping source emitter were written in a sandbox without a .NET SDK and have not been compiled or run. The harness `Generated/ScenarioMappings.g.cs` is a stub until `regen-generated.sh` is run, so the generated-vs-runtime checks fail until then. `test_foundgine_csharp_arm.py` was updated to read the library endpoint and `BenchmarkGraphQL.cs`; its changed assertions were replayed by hand, not with pytest.
 
 - The 13 of the 14 `CanonicalIntentEndpointTests` pass against the real engine (resolution, authorization, planning, in-memory execution, receipts) and a Kestrel-hosted `/intent` endpoint, built with warnings as errors and XML docs on, on the .NET 10 SDK. They were compiled together with `Foundgine.Core`, `Foundgine.Runtime` and the in-memory provider because NuGet was unreachable, and run with a small xunit-compatible harness rather than xunit itself. The 14th, `Mcp_transport_takes_the_caller_from_headers_and_never_from_arguments`, posts JSON-RPC to the real `/mcp` server and needs `ModelContextProtocol.AspNetCore`, so it has not been compiled or run; the `foundgine_intent` tool class compiles only against stubbed SDK types. The new `Microsoft.Extensions.DependencyInjection` package reference and the Tests project's `FrameworkReference` were not restored.
 

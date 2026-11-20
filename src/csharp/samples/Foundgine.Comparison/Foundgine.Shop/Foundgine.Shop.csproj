@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.14" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../Foundgine.Core/Foundgine.Core.csproj" />
+    <ProjectReference Include="../../../Foundgine.Runtime/Foundgine.Runtime.csproj" />
+    <ProjectReference Include="../../../Foundgine.Providers.EntityFrameworkCore/Foundgine.Providers.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="../../../Foundgine.Extensions.GraphQL/Foundgine.Extensions.GraphQL.csproj" />
+    <!-- Used ONLY for its warrant issuer (role -> signed warrant). Authentication below is plain JWT bearer. -->
+    <ProjectReference Include="../../../Foundgine.Extensions.Keycloak/Foundgine.Extensions.Keycloak.csproj" />
+  </ItemGroup>
+</Project>

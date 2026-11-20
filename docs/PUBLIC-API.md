@@ -219,7 +219,7 @@ When changing these, update the affected adapter/provider tests rather than addi
 | InMemory           | `Foundgine.Providers.Storage.InMemory`                                               |
 | AOT                | `Foundgine.Providers.Aot`, `Foundgine.Providers.Aot.Generator` (build-only analyzer) |
 | JSON               | `Foundgine.Core.Serialization`                                                       |
-| GraphQL            | `Foundgine.Extensions.GraphQL.HotChocolate*`                                         |
+| GraphQL            | `Foundgine.Extensions.GraphQL.HotChocolate*`, `Foundgine.Extensions.GraphQL.Http`    |
 | MCP                | `Foundgine.Providers.Tools.MCP`                                                      |
 | AI                 | `Foundgine.Providers.Models`                                                         |
 | Authority recovery | `Foundgine.Runtime.ControlPlane`                                                     |
