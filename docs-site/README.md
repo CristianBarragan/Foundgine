@@ -21,6 +21,10 @@ The main concept pages include an in-page table of contents and previous/home/ne
 
 ## Content rules
 
+- Use the canonical position: Foundgine is a configurable semantic and execution boundary for application capabilities, separating application meaning, persistence mapping, authorization and execution from consumers. Fluent configuration is the primary developer experience; AI/MCP are optional.
+- Position Foundgine for conventional application development and incremental adoption, not only AI-agent use.
+- Describe it as complementary to existing ORMs, API frameworks, databases and identity systems; avoid universal replacement, speed or security claims.
+
 - Describe the current implementation, not historical milestones.
 - Keep the landing page concise; move detailed explanations to dedicated pages or repository docs.
 - Distinguish measured benchmark results from modeled estimates.

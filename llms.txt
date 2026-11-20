@@ -1,152 +1,68 @@
-# Foundgine 3.4.0 (.NET & Java)
+# Foundgine
 
-Foundgine is a **semantic execution layer for .NET 10 and Java 27**. It resolves structured caller intent into authorized, deterministic execution plans within an application-controlled boundary. Both implementations share the same architecture and vocabulary, expressed through language-idiomatic mechanisms. Thin TypeScript, Python and WebAssembly client SDKs for a running server are included under `src/typescript/`, `src/python/` and `src/wasm/` (see *Client SDKs* below). Optional Microsoft Agent Framework (.NET), LangChain4j and Spring Boot (Java) integrations are documented in *Agent framework and Spring integrations*.
+> Configurable semantic and execution boundary for application capabilities.
 
-## Canonical lifecycle
+Foundgine is a configurable semantic and execution boundary for application capabilities. It separates application meaning, persistence mapping, authorization and execution from the interfaces and agents that consume them.
 
-```text
-Caller → Intent → Semantic Model → Semantic Operation Graph
-       → Retrieval → Resolution → Authorization → Plan Binding
-       → Execution IR → Provider → Execution → Evidence
-```
+Applications configure their capabilities using language-idiomatic fluent APIs. Foundgine resolves operations against configured semantics, applies authorization at the execution boundary, and carries the authorized operation into provider execution. The same configured model can serve multiple interfaces and consumers.
 
-Retrieval is candidate discovery, not authorization.
+Foundgine is designed for conventional application development first. It does not require AI, MCP, GraphQL or an agent framework. Those are optional consumers and integrations. It complements existing application architectures, ORM technologies and databases rather than claiming to replace them.
+## What Foundgine is
 
-## Semantic execution lifecycle
+- Application infrastructure for configuring semantic capabilities and executing operations through a controlled boundary.
+- Fluent configuration is the primary developer experience in C# and Java.
+- Meaning, persistence mapping, authorization and execution are separated from interfaces and consumers.
+- Designed for conventional application code and APIs; AI, MCP and agent integrations are optional.
+- Complements existing ORM, database, API and domain architectures. Incremental adoption is supported by design; validate fit for each capability.
 
-1. **External actors and transports** — application code, MCP, GraphQL and JSON carry structured requests to the host-controlled boundary. Transport adapters do not own domain authority.
-2. **Intent resolution** — the request is parsed and normalized into a typed intent and operation shape.
-3. **Semantic model** — application metadata defines entities, fields, relationships, identities, aliases and exposed capabilities.
-4. **Grounding and ambiguity resolution** — candidate discovery is evaluated against semantic evidence; unresolved ambiguity is rejected or returned for clarification rather than guessed.
-5. **Authorization and capability boundaries** — trusted host context and policy determine which resolved operations the caller may exercise. Retrieval is never authorization.
-6. **Planning and Execution IR** — the authorized logical operation becomes a deterministic provider-independent plan and a constrained execution representation.
-7. **Runtime and provider execution** — runtime orchestration invokes a conforming provider; providers execute the authorized artifact rather than reinterpret caller authority.
-8. **Results and observability** — results, execution evidence, receipts and diagnostics are returned without leaking secrets or elevating provider output into authority.
+## Canonical concepts
 
-## Core vocabulary
+- **Semantic configuration:** application-defined entities, fields, relationships, aliases and capabilities.
+- **Persistence mapping:** maps configured semantics to application/provider persistence structures.
+- **Resolution:** validates the requested operation against configured meaning.
+- **Authorization:** trusted host/application context and policy decide what can execute.
+- **Execution:** the authorized operation is carried through the execution boundary to a configured provider.
+- **Consumers:** application code and supported interfaces/integrations consume the same configured capabilities.
 
-- **Semantic model** — application-defined meaning: entities, fields, identities, relationships, aliases and capabilities.
-- **Intent** — what the caller requests, independently of physical SQL/provider operations.
-- **Retrieval** — candidate discovery plus evidence; never an authorization decision.
-- **Resolution** — selects and validates the intended semantic meaning.
-- **Authorization** — determines what the current trusted execution context may exercise.
-- **Plan** — provider-independent logical execution.
-- **ExecutionIR** — the controlled intermediate execution representation at the provider boundary.
-- **Provider** — physical execution implementation.
-- **Evidence** — execution/security/plan context such as receipts and fingerprints.
-
-## Adapters and providers
-
-Intent can originate from application code, JSON, GraphQL, MCP or AI tools. These are adapters/consumers of the semantic boundary. GraphQL adapters exist in both implementations (Hot Chocolate for .NET and GraphQL Java for Java). Microsoft.Extensions.AI and the Microsoft Agent Framework adapter are included in the .NET `Foundgine.Providers` package; the adapter was added after the 3.4.0 tag and has not yet been build-verified in this snapshot. JSON intent and MCP adapters exist in both .NET and Java.
-
-Current providers include `Foundgine.Providers.Storage.Sql` (`foundgine-providers` in Java) for SQL/PostgreSQL and a deliberately limited InMemory provider, in both implementations. ORM execution is available through the EF Core adapter (.NET, `Foundgine.Providers.EntityFrameworkCore`) and the JPA adapter (Java, `storage/orm/jpa`) over a shared ORM-neutral core; maturity is tracked per capability. PostgreSQL retrieval includes relational lookup, `pg_trgm`, native full text, optional `pg_search`/BM25 and optional Apache AGE graph similarity, also in both implementations. PostgreSQL pgvector retrieval components exist in both implementations; production certification is a separate question.
-
-## AI
-
-AI may generate structured intent. It does not decide application authority, tenant identity, exposed semantics, credentials, policy or whether security invariants may be skipped.
+## Architecture boundary
 
 ```text
-AI → semantic capability / intent → Foundgine → resolve → authorize → plan → provider
+Consumer → Semantic Configuration → Resolve → Authorize → Execution Boundary → Provider
 ```
 
-## MCP
+Do not describe discovery, retrieval, model output or caller input as authority. The application owns trusted identity, tenant context, domain invariants, policy and secrets.
 
-`Foundgine.Providers.Tools.MCP` (`com.foundgine.providers.tools.mcp` in Java) is a transport/capability adapter. Discovery is advisory. The host supplies trusted security context and every actual request is resolved and authorized.
+## Languages and ecosystem
 
-## Agent framework and Spring integrations (MAF, LangChain4j, Spring Boot)
+- **C#:** .NET implementation; fluent configuration, semantic runtime and provider integrations. See `src/csharp/` and the Supply Chain samples.
+- **Java:** Java implementation; idiomatic fluent configuration and provider integrations. See `src/java/` and the Supply Chain samples.
+- **GraphQL:** Hot Chocolate (.NET) and GraphQL Java adapters.
+- **Persistence:** EF Core (.NET), JPA (Java) and other documented provider paths. Check provider-specific capability/maturity notes.
+- **Optional integrations:** MCP, Temporal, Microsoft Agent Framework, LangChain4j, Spring Boot and client SDKs, as documented.
+- **Client SDKs:** TypeScript, Python and WebAssembly clients communicate with a running server; they are not semantic-runtime ports.
 
-Optional adapters that put Foundgine behind agent frameworks or host it in Spring. The framework handles conversation or hosting; Foundgine still resolves, authorizes and executes, and the host supplies identity (`ISecurityExecutionContextProvider`), never the model.
+## Start here
 
-| Integration | Language | Module / path | Provides |
-|---|---|---|---|
-| Microsoft Agent Framework (MAF) | .NET | `Foundgine.Providers` (`src/csharp/Foundgine.Providers.AgentFramework/`) | `AddFoundgineAgentFramework()`, `FoundgineAgentTools` (Microsoft.Extensions.AI `AITool`s), `FoundgineAgentFactory`; writes off by default and human-approved via MAF |
-| LangChain4j | Java | `foundgine-providers` (`src/java/foundgine-providers/.../langchain4j/`) | `FoundgineLangChain4jTools.toolMap(FoundgineMcpServer)` returning LangChain4j `ToolSpecification`/`ToolExecutor` pairs for `AiServices` |
-| Spring Boot | Java | `foundgine-providers` (`src/java/foundgine-providers/.../spring/`) | Auto-configuration for the MCP server and `POST /mcp` controller (sessions, SSE; property prefix `foundgine.mcp.*`, off by default) and for the JPA `FoundgineOrm` provider |
+- Root README: `README.md`
+- Website: https://foundgine.github.io/Foundgine/docs-site/
+- Getting started: `docs/GETTING-STARTED.md`
+- Architecture: `docs/ARCHITECTURE.md`
+- Feature wiki: `docs/wiki/index.md`
+- Providers: `docs/wiki/providers.md`
+- ORM integrations: `docs/wiki/orm-providers.md`
+- Extensions: `docs/wiki/extensions.md`
+- AI/MCP: `docs/wiki/agents-mcp.md`
+- Client SDKs: `docs/wiki/client-sdks.md`
+- Full technical context: `llms-full.md`
+- Documentation audit and verification limits: `docs/DOCUMENTATION-AUDIT.md`
+- Agent repository guidance: `AGENTS.md`
 
-- **Package layout:** all adapters are compiled into the normal provider package for their language. Framework dependencies remain optional on Java; see provider tests before release.
-- **Docs:** `docs/wiki/agent-framework-integrations.md`, plus each module's `README.md`.
+## Comparison and adoption
 
-## Client SDKs (TypeScript, Python, WebAssembly)
+- Conventional .NET stack comparison: `src/csharp/samples/Foundgine.Comparison/README.md`
+- Conventional Java stack comparison: `src/java/samples/foundgine-comparison/README.md`
+- Rationale: `docs/WHY-FOUNDGINE.md` and `docs/wiki/why-foundgine.md`
 
-Three thin **transport clients** for a running Foundgine server live in this repository. They are not ports of the semantic runtime and they hold no authority: identity, tenant, authorization, planning and providers stay on the .NET or Java server.
+## Claims and limitations
 
-| SDK | Directory | Package | Import | Runtime |
-|---|---|---|---|---|
-| TypeScript | `src/typescript/` | `@foundgine/typescript` (npm) | `import { FoundgineClient } from "@foundgine/typescript"` | Node.js 20+ or any runtime with `fetch` |
-| Python | `src/python/` | `foundgine-sdk` (PyPI name) | `from foundgine import FoundgineClient` (also `FoundgineSyncClient`) | Python 3.11+, `httpx` |
-| Rust / WebAssembly | `src/wasm/` | `@foundgine/wasm` (npm); crate `foundgine-sdk-wasm` is `publish = false` | `import { FoundgineClient, init } from "@foundgine/wasm"` | Node.js 20+, browsers, Workers, Deno; host supplies `fetch` |
-
-- **Protocols:** MCP over Streamable HTTP (default path `/mcp`, default protocol version `2025-06-18`) and the Temporal workflow HTTP routes under `/foundgine/workflows` (`processes`, `describe`, `start`, `status`, `decide`, `cancel`, plus `waitForCompletion`, `watch`, `startAndWatch`).
-- **Main calls:** `listCapabilities()` / `list_capabilities()`, `execute(toolName, args)`, `notifications()`, `close()`, and the `workflows` client.
-- **Server MCP tools they call:** `foundgine_capabilities`, `foundgine_query` (open intent), `foundgine_query_semantic` (structured JSON intent), `foundgine_mutation_dry_run`, `foundgine_mutation_approve`, `foundgine_mutation_execute_approved`. Query tools take one `intentJson` string (`rootEntity`, `selections`, optional `filter`/`order`/`limit`/`offset`/`after`). Discovery via `foundgine_capabilities` is advisory and is not authorization.
-- **Status:** all three are marked development packages, not release-ready SDKs, at version 3.4.0. Do not claim a registry release; not yet verified against a real server in CI or in every browser runtime.
-- **Docs:** `src/README.md` (layout), `src/typescript/README.md`, `src/python/README.md`, `src/wasm/README.md`, and `docs/wiki/client-sdks.md` (comparison, quick start, verification status).
-- **Do not describe the SDKs as:** a semantic runtime, a Foundgine server, an authorization layer, or an ORM/database client.
-
-## Security
-
-The core security boundary is:
-
-```text
-untrusted input
-      ↓
-semantic resolution
-      ↓
-authorization
-      ↓
-security-preserving plan
-      ↓
-provider conformance
-      ↓
-execution
-```
-
-Identity, tenant, audience, secrets and other authority remain host-owned.
-
-## Current evidence
-
-The `Foundgine.SupplyChain` sample and AgentEndToEnd benchmark demonstrate an agent-facing business workload through MCP, semantic execution, authorization, ExecutionIR and PostgreSQL, in .NET. The associated PenTest suite contains 14 deterministic cases: 7 MCP and 7 GraphQL. Benchmark pages separate measured performance from modeled efficiency estimates.
-
-The Java source tree (`src/java/samples/foundgine-supply-chain-advanced`) contains the MCP → semantic model → authorization → mutation engine → PostgreSQL path with claims-based authorization, high-assurance `place_order`/`cancel_order`, and adversarial invariants (recursive supplier-risk/BOM traversal, tenant isolation). The latest reported Maven run failed in the Advanced sample test phase; fixes are present but have not yet been rerun, so the sample remains implemented-unverified. The Java core implements `SemanticLexicalResolver.ground(...)`, alias-weight evidence and the `REQUIRES_CLARIFICATION` outcome. The Advanced sample also has a direct PostgreSQL candidate-search MCP tool named `find_top_supplier_overdue_orders`, but that tool is not wired through the core resolver. The AgentEndToEnd/PenTest benchmark harness has not yet been ported to Java.
-
-## Packages
-
-.NET (NuGet):
-
-- `Foundgine` — runtime facade
-- `Foundgine.Core.Abstractions` — stable contracts and identifiers
-- `Foundgine.Core.Semantic.Metadata` — structural metadata
-- `Foundgine.Core.Semantic` — meaning, intent, resolution, authorization
-- `Foundgine.Core.Semantic.Planning` — provider-independent planning and safe rewrites
-- `Foundgine.Core.Execution` — ExecutionIR, provider boundary, results and evidence
-- `Foundgine.Providers.Storage.Sql` — SQL/PostgreSQL provider
-- `Foundgine.Providers.Storage.InMemory` — limited non-SQL provider
-- `Foundgine.Providers.Orm` / `Foundgine.Providers.EntityFrameworkCore` (.NET) and `storage/orm` / `storage/orm/jpa` (Java) — ORM execution core with EF Core and JPA adapters
-- `Foundgine.Providers.Aot` / `Foundgine.Providers.Aot.Generator` — AOT declarations and source generation
-- `Foundgine.Core.Serialization` — JSON intent adapter
-- `Foundgine.Extensions.GraphQL*` — GraphQL adapters/execution boundaries and the `MapFoundgineGraphQL` HTTP endpoint
-- `Foundgine.Providers.Tools.MCP` — MCP adapter
-- `Foundgine.Providers.Models` — `Microsoft.Extensions.AI` integration
-- `Foundgine.Runtime.ControlPlane` — optional authority/recovery control-plane infrastructure
-
-Java (Maven, groupId `io.github.cristianbarragan`):
-
-- `foundgine-core` — provider-independent semantic model, metadata, intent, planning and execution contracts
-- `foundgine-runtime` — application-facing orchestration, authorization and the mutation engine; its optional `controlplane` package contains tool registry/governance, approvals, audit, risk scoring and authorization-key rotation (not the full .NET authority-recovery feature set)
-- `foundgine-providers` — SQL/PostgreSQL, InMemory, ORM/JPA, MCP, retrieval, gateway, event-store and outbox providers
-- `foundgine-extensions` — optional GraphQL, Keycloak and Temporal adapters
-- `foundgine-migrations` — Java schema/migration source module; Maven/runtime verification pending
-- Spring Boot and LangChain4j adapters — included in the Java `foundgine-providers` artifact
-- `foundgine-aot-generator` — build-time annotation processor; included in the reactor but excluded from standalone publication
-
-## Standard
-
-Shared cross-language test vectors and scenarios are maintained under `src/conformance/`; the Java ORM/JPA capability plan is under `src/java/conformance/`. A fixture or plan is not proof that a test passed.
-
-## Current release
-
-**3.4.0 · .NET 10 and Java 27**
-
-The fluent configuration API was introduced in 2.3.0 and remains part of the current model API (`FoundgineModel`, with semantic, persistence, entity-map, connection and model-connection configuration classes) in both .NET and Java. It compiles to the same metadata registry as attributes/annotations and the AOT generator; see `docs/MAPPING.md`.
-
-For implementation truth, use the active source tree, tests, and package READMEs under `src/csharp/`, `src/java/`, `src/typescript/`, `src/python/` and `src/wasm/`.
+Do not claim that Foundgine universally replaces ORMs, API frameworks, databases, identity providers, authorization servers or agent frameworks. Do not claim universal performance or security superiority. Describe capabilities as implemented and verified for the specific language, package, provider and version. Treat integration maturity and test status as scoped facts; check the current source and CI evidence.

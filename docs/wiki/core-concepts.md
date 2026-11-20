@@ -1,4 +1,7 @@
-# Core concepts and vocabulary
+# Core concepts
+
+Foundgine is an application capability boundary, not an AI-only runtime. Its primary developer experience is fluent configuration. Conventional application code can use the configured semantics and execution path without introducing AI, MCP or an agent framework. The concepts below describe how meaning, persistence mapping, authorization and execution remain separate from the interfaces that consume them.
+ and vocabulary
 
 ## What Foundgine does
 

@@ -1,0 +1,14 @@
+server:
+  port: 5002
+spring:
+  datasource:
+    url: ${SHOP_DB_URL:jdbc:postgresql://localhost:5433/shop}
+    username: shop
+    password: shop
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: none
+  graphql:
+    path: /graphql
+jwt:
+  signing-key: ${JWT_SIGNING_KEY:dev-only-signing-key-change-me-32bytes!!}

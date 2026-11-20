@@ -9,4 +9,4 @@
 
 - [`Foundgine.Extensions.Temporal`](./Foundgine.Extensions.Temporal/README.md) — API + worker integration sketches for Temporal workflows and Keycloak-backed warrants. **Not a standalone runnable sample yet**; host registrations are placeholders.
 
-Provider gateway samples are maintained with the provider projects in [`Foundgine.Providers/Samples`](../../Foundgine.Providers/Samples/README.md).
+Provider gateway samples are maintained with the provider projects in [`Foundgine.Providers/Samples`](../Foundgine.Providers/Samples/README.md).

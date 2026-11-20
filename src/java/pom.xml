@@ -82,6 +82,7 @@
     <module>benchmarks/supply-chain/foundgine</module>
     <module>samples/foundgine-supply-chain</module>
     <module>samples/foundgine-supply-chain-advanced</module>
+    <module>samples/foundgine-comparison/foundgine-shop</module>
   </modules>
 
   <dependencyManagement>

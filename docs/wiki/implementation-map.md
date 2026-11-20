@@ -42,7 +42,7 @@ Implements physical execution and infrastructure adapters, including the SQL, **
 
 ### Extensions
 
-See [Extensions](extensions) for the single catalogue. Adapts third-party frameworks and services. Extensions should translate to/from Foundgine contracts and delegate the actual semantic and security decisions to the appropriate core/runtime services. Optional Spring Boot and LangChain4j Java modules have source and test definitions, but dependency pins and runtime verification remain pending. The separate C# Microsoft Agent Framework adapter is not included in the main solution and has not been build-verified.
+See [Extensions](extensions) for the single catalogue. Adapts third-party frameworks and services. Extensions should translate to/from Foundgine contracts and delegate the actual semantic and security decisions to the appropriate core/runtime services. Spring Boot and LangChain4j adapter source is included in the Java `foundgine-providers` module; separate module directories exist but are not included in the parent Maven reactor. The C# Microsoft Agent Framework source project and test project are included in `Foundgine.sln`. This audit did not build either integration; source presence is not verification.
 
 ### Framework integrations
 
