@@ -252,30 +252,6 @@
     </pluginManagement>
 
     <plugins>
-      <!-- Central Portal publishing is activated at the reactor root. -->
-      <plugin>
-        <groupId>org.sonatype.central</groupId>
-        <artifactId>central-publishing-maven-plugin</artifactId>
-        <version>${central.publishing.plugin.version}</version>
-        <extensions>true</extensions>
-        <configuration>
-          <publishingServerId>central</publishingServerId>
-          <autoPublish>true</autoPublish>
-          <waitUntil>published</waitUntil>
-
-          <!-- Publish only the four public libraries. The generator is a
-               reactor-only annotation processor; redteam and sample modules
-               are internal verification/example artifacts. -->
-          <excludeArtifacts>
-            <excludeArtifact>foundgine-parent</excludeArtifact>
-            <excludeArtifact>foundgine-aot-generator</excludeArtifact>
-            <excludeArtifact>foundgine-redteam</excludeArtifact>
-            <excludeArtifact>foundgine-sample-supply-chain</excludeArtifact>
-            <excludeArtifact>foundgine-sample-supply-chain-advanced</excludeArtifact>
-          </excludeArtifacts>
-        </configuration>
-      </plugin>
-
       <!-- Central requires a -sources.jar and a -javadoc.jar for every published artifact.
            pluginManagement alone does not execute these plugins, so activate them here. -->
       <plugin>
@@ -322,4 +298,46 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- Publishing is opt-in so ordinary builds, tests, revision discovery, and
+       CodeQL analysis do not need to resolve the Central Publishing extension. -->
+  <profiles>
+    <profile>
+      <id>central-publish</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <executions>
+              <execution>
+                <id>deploy-public-artifacts</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>publish</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+              <waitUntil>published</waitUntil>
+              <!-- Publish only the four public libraries. The generator is a
+                   reactor-only annotation processor; redteam and sample modules
+                   are internal verification/example artifacts. -->
+              <excludeArtifacts>
+                <excludeArtifact>foundgine-parent</excludeArtifact>
+                <excludeArtifact>foundgine-aot-generator</excludeArtifact>
+                <excludeArtifact>foundgine-redteam</excludeArtifact>
+                <excludeArtifact>foundgine-sample-supply-chain</excludeArtifact>
+                <excludeArtifact>foundgine-sample-supply-chain-advanced</excludeArtifact>
+              </excludeArtifacts>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

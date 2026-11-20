@@ -441,6 +441,7 @@ jobs:
             --batch-mode \
             --no-transfer-progress \
             --errors \
+            -Pcentral-publish \
             -Drevision="${{ steps.version.outputs.version }}" \
             -Dgpg.skip=false \
             -Dgpg.signer=bc \
